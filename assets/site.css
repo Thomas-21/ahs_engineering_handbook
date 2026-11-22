@@ -103,11 +103,16 @@ video { width: 100%; height: auto; background: #0e1716; }
   background: #e9efce;
   align-items: center;
 }
-.sponsor-fee { border-left: 1px solid #a8b78f; padding-left: 1.5rem; }
+.sponsor-priorities { margin: 1.2rem 0 0; padding-left: 1.25rem; }
+.sponsor-priorities li + li { margin-top: .65rem; }
+.sponsor-details {
+  padding: 1.25rem 1.5rem;
+  border: 1px solid #a8b78f;
+  background: #f5f7e7;
+}
 .sponsor-fee dt { color: var(--muted); font-weight: 650; }
 .sponsor-fee dd { font-size: 1.35rem; font-weight: 750; }
 .site-footer { justify-content: space-between; border-top: 1px solid var(--line); padding-block: 1.25rem; color: var(--muted); font-size: .9rem; }
 @media (max-width: 49rem) {
   .hero-grid, .section-intro, .project-grid, .demo-grid, .sponsor-panel { grid-template-columns: 1fr; }
-  .sponsor-fee { border-left: 0; border-top: 1px solid #a8b78f; padding: 1rem 0 0; }
 }
