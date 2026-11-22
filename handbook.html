@@ -1,0 +1,494 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="generator" content="ahs-handbook build_index">
+<title>AHS Handbook — Contents</title>
+<style>
+:root {
+  --bg: #fbfaf7;
+  --fg: #1d1f21;
+  --muted: #5d6166;
+  --accent: #1f6f8b;
+  --accent-soft: #e3f0f4;
+  --border: #d9d6cf;
+  --code-bg: #f1efea;
+  --warn-bg: #fff6e0;
+  --warn-border: #e2b54a;
+  --watermark: rgba(200, 60, 60, 0.07);
+  --font-body: system-ui, -apple-system, "Segoe UI",
+    sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #15171a;
+    --fg: #e6e4df;
+    --muted: #a3a7ad;
+    --accent: #6cc3de;
+    --accent-soft: #1d3440;
+    --border: #33373d;
+    --code-bg: #1f2226;
+    --warn-bg: #2e2716;
+    --warn-border: #8c7330;
+    --watermark: rgba(255, 120, 120, 0.06);
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #15171a;
+  --fg: #e6e4df;
+  --muted: #a3a7ad;
+  --accent: #6cc3de;
+  --accent-soft: #1d3440;
+  --border: #33373d;
+  --code-bg: #1f2226;
+  --warn-bg: #2e2716;
+  --warn-border: #8c7330;
+  --watermark: rgba(255, 120, 120, 0.06);
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0 auto;
+  max-width: 52rem;
+  padding: 1.25rem 16px 3rem;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-body);
+  font-size: 1.0625rem;
+  line-height: 1.7;
+  overflow-wrap: anywhere;
+}
+h1 { font-size: 1.9rem; line-height: 1.3; margin: 0.6rem 0 1rem; }
+h2 { font-size: 1.4rem; margin-top: 2.4rem; border-bottom: 1px solid var(--border); padding-bottom: 0.2rem; }
+h3 { font-size: 1.15rem; margin-top: 1.8rem; }
+a { color: var(--accent); }
+code { font-family: var(--font-mono); background: var(--code-bg); padding: 0.05rem 0.3rem; border-radius: 3px; font-size: 0.92em; }
+pre { background: var(--code-bg); padding: 0.8rem 1rem; overflow-x: auto; border-radius: 6px; line-height: 1.45; }
+pre code { background: none; padding: 0; }
+table { border-collapse: collapse; width: 100%; display: block; overflow-x: auto; margin: 1rem 0; }
+th, td { border: 1px solid var(--border); padding: 0.35rem 0.6rem; text-align: left; vertical-align: top; }
+/* Never break inside numbers or IDs in table cells; wide tables scroll horizontally instead. */
+th, td { overflow-wrap: normal; word-break: normal; }
+th { background: var(--accent-soft); }
+blockquote { margin: 1rem 0; padding: 0.2rem 1rem; border-left: 4px solid var(--accent); color: var(--muted); }
+.article-header .meta-row { display: flex; flex-wrap: wrap; gap: 0.4rem 0.9rem; align-items: center; font-size: 0.85rem; color: var(--muted); }
+.chapter-id { font-family: var(--font-mono); font-weight: 600; color: var(--fg); }
+.status { padding: 0.05rem 0.5rem; border: 1px solid var(--border); border-radius: 999px; }
+.status-draft, .status-revision, .status-in-review { border-color: var(--warn-border); background: var(--warn-bg); }
+.theme-toggle { font: inherit; font-size: 0.8rem; color: var(--fg); background: transparent; border: 1px solid var(--border); border-radius: 4px; padding: 0.1rem 0.5rem; cursor: pointer; }
+.toc { border: 1px solid var(--border); border-radius: 6px; padding: 0.6rem 1rem; margin: 1.2rem 0; font-size: 0.92rem; }
+.toc ol { margin: 0.3rem 0 0; padding-left: 1.2rem; }
+.fig { margin: 1.6rem 0; text-align: center; }
+.fig img, .fig svg { max-width: 100%; height: auto; }
+.fig pre.mermaid { background: transparent; text-align: center; }
+figcaption { font-size: 0.9rem; color: var(--muted); margin-top: 0.5rem; }
+.fig-no { font-weight: 600; color: var(--fg); }
+.fig-id { font-family: var(--font-mono); font-size: 0.75rem; opacity: 0.7; }
+.math-block { overflow-x: auto; margin: 1rem 0; }
+math { font-size: 1.1em; }
+.widget { border: 1px solid var(--border); border-radius: 8px; padding: 1rem; margin: 1.5rem 0; background: var(--accent-soft); }
+.widget label { display: block; margin: 0.4rem 0; font-size: 0.95rem; }
+.widget select, .widget input { font: inherit; color: var(--fg); background: var(--bg); border: 1px solid var(--border); border-radius: 4px; padding: 0.15rem 0.3rem; max-width: 100%; }
+.widget .result { font-size: 1.05rem; margin-top: 0.7rem; }
+.widget table { font-size: 0.88rem; }
+.watermark { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; pointer-events: none; font-size: 22vw; font-weight: 800; color: var(--watermark); transform: rotate(-24deg); z-index: 0; }
+.article-header, .toc, .article-body, .article-footer { position: relative; z-index: 1; }
+.article-footer { margin-top: 3rem; font-size: 0.8rem; color: var(--muted); border-top: 1px solid var(--border); padding-top: 0.6rem; }
+@media (max-width: 600px) {
+  body { font-size: 1rem; }
+  h1 { font-size: 1.55rem; }
+}
+@media print { .watermark { color: rgba(0, 0, 0, 0.06); } .theme-toggle { display: none; } }
+
+body { max-width: 64rem; }
+.lead { color: var(--muted); margin-top: -0.4rem; }
+.controls { display: flex; flex-wrap: wrap; gap: 0.6rem 1rem; align-items: center; margin: 1rem 0; font-size: 0.9rem; }
+.controls input[type=search] { font: inherit; padding: 0.3rem 0.6rem; border: 1px solid var(--border);
+  border-radius: 6px; background: var(--bg); color: var(--fg); min-width: 16rem; flex: 1 1 16rem; }
+section.guide { border: 1px solid var(--border); border-radius: 8px; padding: 0.3rem 1rem 0.6rem; margin: 1rem 0; }
+section.guide h2 { font-size: 1.1rem; margin-top: 0.8rem; }
+table.paths { display: table; font-size: 0.9rem; }
+table.paths td:first-child { white-space: nowrap; }
+h2.part { font-size: 1.15rem; color: var(--muted); border: none; margin-top: 2rem; }
+details.vol { border: 1px solid var(--border); border-radius: 8px; margin: 0.6rem 0; padding: 0.2rem 0.9rem; }
+details.vol > summary { cursor: pointer; padding: 0.5rem 0; font-weight: 600; list-style-position: outside; }
+table.chapters { width: 100%; border-collapse: collapse; margin: 0.2rem 0 0.8rem; font-size: 0.92rem; display: table; }
+table.chapters td { border: none; border-top: 1px solid var(--border); padding: 0.45rem 0.4rem; vertical-align: top; }
+td.cid { font-family: var(--font-mono); white-space: nowrap; width: 6.5rem; }
+.status-approved, .status-exported { border-color: var(--accent); background: var(--accent-soft); }
+.status-not-started { color: var(--muted); }
+tr.hidden, details.vol.hidden { display: none; }
+table.data td.id { white-space: nowrap; overflow-wrap: normal; }
+@media (max-width: 40rem) {
+  table.chapters, table.chapters tbody, table.chapters tr, table.chapters td { display: block; width: auto; }
+  table.chapters tr { border-top: 1px solid var(--border); padding: 0.3rem 0; }
+  table.chapters td { border: none; padding: 0.1rem 0.2rem; text-align: left; }
+  table.paths, table.paths tbody, table.paths tr, table.paths td { display: block; width: auto; }
+  table.paths td:first-child { white-space: normal; font-weight: 600; }
+}
+
+</style>
+<script>
+(function () {
+  var root = document.documentElement;
+  try {
+    var saved = localStorage.getItem("ahs-theme");
+    if (saved === "dark" || saved === "light") root.dataset.theme = saved;
+  } catch (e) {}
+  var mq = window.matchMedia ? window.matchMedia("(prefers-color-scheme: dark)") : null;
+  // No explicit choice: follow the system theme (CSS does the same through prefers-color-scheme).
+  function isDark() {
+    return root.dataset.theme ? root.dataset.theme === "dark" : !!(mq && mq.matches);
+  }
+  // Mermaid diagrams keep their original definition in data-source and are re-rendered with the theme that
+  // matches the page whenever the theme changes (review 2026-11-14, R22).
+  window.ahsRenderMermaid = function () {
+    if (!window.mermaid) return;
+    var nodes = Array.prototype.slice.call(document.querySelectorAll("pre.mermaid"));
+    if (!nodes.length) return;
+    nodes.forEach(function (el) {
+      if (el.getAttribute("data-source") === null) {
+        el.setAttribute("data-source", el.textContent);
+      } else {
+        el.removeAttribute("data-processed");
+        el.textContent = el.getAttribute("data-source");
+      }
+    });
+    window.mermaid.initialize({ startOnLoad: false, securityLevel: "strict", theme: isDark() ? "dark" : "default" });
+    var done = window.mermaid.run({ nodes: nodes });
+    if (done && done.catch) done.catch(function (err) { if (window.console) console.error(err); });
+  };
+  function syncButton(btn) {
+    btn.setAttribute("aria-pressed", isDark() ? "true" : "false");
+  }
+  document.addEventListener("DOMContentLoaded", function () {
+    var btn = document.querySelector(".theme-toggle");
+    if (btn) syncButton(btn);
+    if (mq) {
+      var onSystemChange = function () {
+        if (root.dataset.theme) return;
+        if (btn) syncButton(btn);
+        window.ahsRenderMermaid();
+      };
+      if (mq.addEventListener) mq.addEventListener("change", onSystemChange);
+      else if (mq.addListener) mq.addListener(onSystemChange);
+    }
+    if (!btn) return;
+    btn.addEventListener("click", function () {
+      root.dataset.theme = isDark() ? "light" : "dark";
+      try { localStorage.setItem("ahs-theme", root.dataset.theme); } catch (e) {}
+      syncButton(btn);
+      window.ahsRenderMermaid();
+    });
+  });
+})();
+
+
+document.addEventListener("DOMContentLoaded", function () {
+  var q = document.getElementById("q");
+  function apply() {
+    var term = q.value.trim().toLowerCase();
+    document.querySelectorAll("details.vol").forEach(function (v) {
+      var shown = 0;
+      v.querySelectorAll("tr.ch").forEach(function (r) {
+        var chapter = r.cells[0].textContent + " " + r.cells[1].textContent;
+        var ok = !term || chapter.toLowerCase().includes(term);
+        r.classList.toggle("hidden", !ok); if (ok) shown++;
+      });
+      v.classList.toggle("hidden", shown === 0);
+      if (term && shown) v.open = true;
+    });
+  }
+  q.addEventListener("input", apply);
+  // A reading-path link opens the volume it points to.
+  function openTarget() {
+    var el = location.hash && document.getElementById(location.hash.slice(1));
+    if (el && el.tagName === "DETAILS") el.open = true;
+  }
+  window.addEventListener("hashchange", openTarget); openTarget();
+});
+
+</script>
+</head>
+<body>
+<header class="article-header">
+  <a href="./">Project overview</a>
+  <button type="button" class="theme-toggle" aria-label="Toggle color theme">Theme</button>
+  <h1>AHS Engineering &amp; Operations Handbook</h1>
+</header>
+<main class="article-body">
+<section class="guide" aria-labelledby="how-to-read">
+<h2 id="how-to-read">Suggested reading by role</h2>
+<table class="paths"><tbody><tr><td>Newcomers</td><td><a href="#v01" title="AHS Fundamentals &amp; Mine Operations">V01</a> (mine, haul cycle, reference mine, architecture) → <a href="#v04" title="Functional Safety, Emergency Stop, Fire &amp; Cybersecurity">V04</a> (ODD and stopping, overview) → <a href="#v16" title="Control Room Operations &amp; Procedures">V16</a> (operating situations)</td></tr><tr><td>Systems engineers</td><td><a href="#v01" title="AHS Fundamentals &amp; Mine Operations">V01</a> → <a href="#v02" title="Systems Architecture &amp; Interoperability">V02</a> → <a href="#v03" title="Systems Engineering &amp; Development Lifecycle">V03</a>, <a href="#v04" title="Functional Safety, Emergency Stop, Fire &amp; Cybersecurity">V04</a> (read together) → <a href="#v10" title="Fleet Management, Dispatch &amp; Traffic Coordination">V10</a> → <a href="#v11" title="Site Network, Edge Computing &amp; Teleoperation">V11</a>, <a href="#v12" title="Surveying, Mapping, 3DMG &amp; Digital Twin">V12</a> (network and maps) → <a href="#v18" title="Testing, Commissioning, Maintenance &amp; Reliability">V18</a> → <a href="#v19" title="Deployment Project Lifecycle">V19</a></td></tr><tr><td>Controllers and site managers</td><td><a href="#v01" title="AHS Fundamentals &amp; Mine Operations">V01</a> (roles and KPIs) → <a href="#v16" title="Control Room Operations &amp; Procedures">V16</a> → <a href="#v14" title="Ancillary Equipment &amp; Mixed-Fleet Interaction">V14</a> → <a href="#v13" title="Shovel &amp; Excavator Integration">V13</a>, <a href="#v15" title="Crusher, Dump Station &amp; Conveyor Integration">V15</a> (the tasks that apply) → <a href="#v17" title="Mine Planning, Production &amp; Operational Transformation">V17</a> → <a href="#v22" title="AHS Data Management &amp; Operations Analytics">V22</a> (data and analytics)</td></tr><tr><td>Vehicle and autonomy engineers</td><td><a href="#v02" title="Systems Architecture &amp; Interoperability">V02</a>, <a href="#v04" title="Functional Safety, Emergency Stop, Fire &amp; Cybersecurity">V04</a> (boundaries and safety principles) → <a href="#v05" title="GNSS, IMU &amp; Localisation">V05</a>, <a href="#v06" title="LiDAR, Camera &amp; Perception">V06</a>, <a href="#v07" title="Vehicle Dynamics, Planning &amp; Control">V07</a>, <a href="#v08" title="Vehicle Platform &amp; Machine Interfaces">V08</a> → <a href="#v09" title="Battery &amp; Energy Management">V09</a> (as needed) → <a href="#v12" title="Surveying, Mapping, 3DMG &amp; Digital Twin">V12</a> (maps) → <a href="#v18" title="Testing, Commissioning, Maintenance &amp; Reliability">V18</a></td></tr><tr><td>Deployment leads and product owners</td><td><a href="#v01" title="AHS Fundamentals &amp; Mine Operations">V01</a>, <a href="#v02" title="Systems Architecture &amp; Interoperability">V02</a> (overviews) → <a href="#v18" title="Testing, Commissioning, Maintenance &amp; Reliability">V18</a> → <a href="#v19" title="Deployment Project Lifecycle">V19</a> → <a href="#v17" title="Mine Planning, Production &amp; Operational Transformation">V17</a> → <a href="#v20" title="Business Strategy, Product Management &amp; Go-to-Market">V20</a>, <a href="#v21" title="Fleet Optimisation, Economics &amp; Sustainability">V21</a> (business case and economics)</td></tr><tr><td>Simulation and analytics</td><td><a href="#v01" title="AHS Fundamentals &amp; Mine Operations">V01</a> (reference mine) → <a href="#v10" title="Fleet Management, Dispatch &amp; Traffic Coordination">V10</a> → <a href="#v21" title="Fleet Optimisation, Economics &amp; Sustainability">V21</a> → <a href="#v22" title="AHS Data Management &amp; Operations Analytics">V22</a> → <a href="#v23" title="Integrated Autonomous Mine Simulator">V23</a> (integrated simulator)</td></tr></tbody></table>
+</section>
+<p>187 chapters</p>
+<div class="controls">
+  <input id="q" type="search" placeholder="Search by chapter ID or title" aria-label="Search by chapter ID or title">
+</div>
+<h2 class="part">Part I — Foundations</h2>
+<details class="vol" id="v01" open><summary>V01 — AHS Fundamentals &amp; Mine Operations</summary>
+<table class="chapters"><tbody>
+<tr class="ch"><td class="cid">ch-01-01</td><td class="titles">Open-pit mining and the load–haul cycle</td></tr>
+<tr class="ch"><td class="cid">ch-01-02</td><td class="titles">What autonomy changes: from manned to autonomous haulage</td></tr>
+<tr class="ch"><td class="cid">ch-01-03</td><td class="titles">The reference mine</td></tr>
+<tr class="ch"><td class="cid">ch-01-04</td><td class="titles">Reference architecture overview: FMS–AMS–ADS–VCS</td></tr>
+<tr class="ch"><td class="cid">ch-01-05</td><td class="titles">Production KPIs: cycle time, availability, utilisation, productivity</td></tr>
+<tr class="ch"><td class="cid">ch-01-06</td><td class="titles">Operational roles and the control room</td></tr>
+<tr class="ch"><td class="cid">ch-01-07</td><td class="titles">Exceptions, delays and recovery — an overview</td></tr>
+</tbody></table></details>
+<details class="vol" id="v02" open><summary>V02 — Systems Architecture &amp; Interoperability</summary>
+<table class="chapters"><tbody>
+<tr class="ch"><td class="cid">ch-02-01</td><td class="titles">System-of-systems architecture</td></tr>
+<tr class="ch"><td class="cid">ch-02-02</td><td class="titles">Logical and physical deployment</td></tr>
+<tr class="ch"><td class="cid">ch-02-03</td><td class="titles">Responsibility allocation across FMS, AMS, ADS and VCS</td></tr>
+<tr class="ch"><td class="cid">ch-02-04</td><td class="titles">Independent safety functions, onboard safety systems and manned-vehicle devices</td></tr>
+<tr class="ch"><td class="cid">ch-02-05</td><td class="titles">Interoperability and ISO 23725</td></tr>
+<tr class="ch"><td class="cid">ch-02-06</td><td class="titles">Interface control documents</td></tr>
+<tr class="ch"><td class="cid">ch-02-07</td><td class="titles">Messaging semantics: request / grant / acknowledge, idempotency, staleness</td></tr>
+<tr class="ch"><td class="cid">ch-02-08</td><td class="titles">Distributed state, restart and reconciliation</td></tr>
+</tbody></table></details>
+<details class="vol" id="v03" open><summary>V03 — Systems Engineering &amp; Development Lifecycle</summary>
+<table class="chapters"><tbody>
+<tr class="ch"><td class="cid">ch-03-01</td><td class="titles">Stakeholder needs and ConOps</td></tr>
+<tr class="ch"><td class="cid">ch-03-02</td><td class="titles">Requirements engineering</td></tr>
+<tr class="ch"><td class="cid">ch-03-03</td><td class="titles">Traceability</td></tr>
+<tr class="ch"><td class="cid">ch-03-04</td><td class="titles">Use cases and operational scenarios</td></tr>
+<tr class="ch"><td class="cid">ch-03-05</td><td class="titles">MBSE</td></tr>
+<tr class="ch"><td class="cid">ch-03-06</td><td class="titles">Development lifecycles</td></tr>
+<tr class="ch"><td class="cid">ch-03-07</td><td class="titles">Verification and validation strategy</td></tr>
+<tr class="ch"><td class="cid">ch-03-08</td><td class="titles">Configuration and change management</td></tr>
+<tr class="ch"><td class="cid">ch-03-09</td><td class="titles">Engineering roles and leadership</td></tr>
+</tbody></table></details>
+<details class="vol" id="v04" open><summary>V04 — Functional Safety, Emergency Stop, Fire &amp; Cybersecurity</summary>
+<table class="chapters"><tbody>
+<tr class="ch"><td class="cid">ch-04-01</td><td class="titles">Hazard identification and risk assessment</td></tr>
+<tr class="ch"><td class="cid">ch-04-02</td><td class="titles">Operational design domain and operational boundaries</td></tr>
+<tr class="ch"><td class="cid">ch-04-03</td><td class="titles">Safety standards landscape</td></tr>
+<tr class="ch"><td class="cid">ch-04-04</td><td class="titles">Safety architecture and independent safety functions</td></tr>
+<tr class="ch"><td class="cid">ch-04-05</td><td class="titles">Stop categories, emergency stop and remote stop</td></tr>
+<tr class="ch"><td class="cid">ch-04-06</td><td class="titles">Degraded modes and safe states</td></tr>
+<tr class="ch"><td class="cid">ch-04-07</td><td class="titles">Fire detection and suppression in unmanned machines</td></tr>
+<tr class="ch"><td class="cid">ch-04-08</td><td class="titles">Mixed-fleet interaction safety</td></tr>
+<tr class="ch"><td class="cid">ch-04-09</td><td class="titles">Cybersecurity</td></tr>
+<tr class="ch"><td class="cid">ch-04-10</td><td class="titles">Human factors and safety-case evidence</td></tr>
+</tbody></table></details>
+<h2 class="part">Part II — Vehicle &amp; Autonomy</h2>
+<details class="vol" id="v05" open><summary>V05 — GNSS, IMU &amp; Localisation</summary>
+<table class="chapters"><tbody>
+<tr class="ch"><td class="cid">ch-05-01</td><td class="titles">Coordinate systems and datums</td></tr>
+<tr class="ch"><td class="cid">ch-05-02</td><td class="titles">GNSS and RTK</td></tr>
+<tr class="ch"><td class="cid">ch-05-03</td><td class="titles">Inertial navigation</td></tr>
+<tr class="ch"><td class="cid">ch-05-04</td><td class="titles">Kalman filtering</td></tr>
+<tr class="ch"><td class="cid">ch-05-05</td><td class="titles">Sensor fusion and map matching</td></tr>
+<tr class="ch"><td class="cid">ch-05-06</td><td class="titles">Localisation integrity and GNSS degradation in operation</td></tr>
+</tbody></table></details>
+<details class="vol" id="v06" open><summary>V06 — LiDAR, Camera &amp; Perception</summary>
+<table class="chapters"><tbody>
+<tr class="ch"><td class="cid">ch-06-01</td><td class="titles">Sensing requirements in mining</td></tr>
+<tr class="ch"><td class="cid">ch-06-02</td><td class="titles">LiDAR and point clouds</td></tr>
+<tr class="ch"><td class="cid">ch-06-03</td><td class="titles">Cameras and radar</td></tr>
+<tr class="ch"><td class="cid">ch-06-04</td><td class="titles">Object detection and tracking</td></tr>
+<tr class="ch"><td class="cid">ch-06-05</td><td class="titles">Terrain and free-space perception</td></tr>
+<tr class="ch"><td class="cid">ch-06-06</td><td class="titles">Multi-sensor fusion and machine learning</td></tr>
+<tr class="ch"><td class="cid">ch-06-07</td><td class="titles">Perception validation and nuisance stops</td></tr>
+</tbody></table></details>
+<details class="vol" id="v07" open><summary>V07 — Vehicle Dynamics, Planning &amp; Control</summary>
+<table class="chapters"><tbody>
+<tr class="ch"><td class="cid">ch-07-01</td><td class="titles">Haul-truck dynamics</td></tr>
+<tr class="ch"><td class="cid">ch-07-02</td><td class="titles">Traction, grade and braking</td></tr>
+<tr class="ch"><td class="cid">ch-07-03</td><td class="titles">Graph-based route planning</td></tr>
+<tr class="ch"><td class="cid">ch-07-04</td><td class="titles">Behaviour planning</td></tr>
+<tr class="ch"><td class="cid">ch-07-05</td><td class="titles">Trajectory generation</td></tr>
+<tr class="ch"><td class="cid">ch-07-06</td><td class="titles">Path tracking: PID and Pure Pursuit</td></tr>
+<tr class="ch"><td class="cid">ch-07-07</td><td class="titles">Model predictive control</td></tr>
+<tr class="ch"><td class="cid">ch-07-08</td><td class="titles">Control validation</td></tr>
+</tbody></table></details>
+<details class="vol" id="v08" open><summary>V08 — Vehicle Platform &amp; Machine Interfaces</summary>
+<table class="chapters"><tbody>
+<tr class="ch"><td class="cid">ch-08-01</td><td class="titles">Vehicle architecture</td></tr>
+<tr class="ch"><td class="cid">ch-08-02</td><td class="titles">CAN and J1939</td></tr>
+<tr class="ch"><td class="cid">ch-08-03</td><td class="titles">Machine interfaces and drive-by-wire</td></tr>
+<tr class="ch"><td class="cid">ch-08-04</td><td class="titles">Actuation and command arbitration</td></tr>
+<tr class="ch"><td class="cid">ch-08-05</td><td class="titles">Onboard safety-related systems: fire suppression, payload, tyre monitoring</td></tr>
+<tr class="ch"><td class="cid">ch-08-06</td><td class="titles">Diagnostics and fault management</td></tr>
+<tr class="ch"><td class="cid">ch-08-07</td><td class="titles">Retrofit</td></tr>
+<tr class="ch"><td class="cid">ch-08-08</td><td class="titles">Platform reliability</td></tr>
+</tbody></table></details>
+<details class="vol" id="v09" open><summary>V09 — Battery &amp; Energy Management</summary>
+<table class="chapters"><tbody>
+<tr class="ch"><td class="cid">ch-09-01</td><td class="titles">Diesel, hybrid, trolley and battery-electric haulage</td></tr>
+<tr class="ch"><td class="cid">ch-09-02</td><td class="titles">Battery fundamentals</td></tr>
+<tr class="ch"><td class="cid">ch-09-03</td><td class="titles">BMS and state estimation</td></tr>
+<tr class="ch"><td class="cid">ch-09-04</td><td class="titles">Thermal management and thermal runaway</td></tr>
+<tr class="ch"><td class="cid">ch-09-05</td><td class="titles">Charging infrastructure</td></tr>
+<tr class="ch"><td class="cid">ch-09-06</td><td class="titles">Energy-aware dispatch</td></tr>
+<tr class="ch"><td class="cid">ch-09-07</td><td class="titles">Degradation</td></tr>
+<tr class="ch"><td class="cid">ch-09-08</td><td class="titles">Lifecycle economics</td></tr>
+</tbody></table></details>
+<h2 class="part">Part III — Fleet, Network &amp; Site Integration</h2>
+<details class="vol" id="v10" open><summary>V10 — Fleet Management, Dispatch &amp; Traffic Coordination</summary>
+<table class="chapters"><tbody>
+<tr class="ch"><td class="cid">ch-10-01</td><td class="titles">FMS dispatch</td></tr>
+<tr class="ch"><td class="cid">ch-10-02</td><td class="titles">Queueing at shovels and destinations</td></tr>
+<tr class="ch"><td class="cid">ch-10-03</td><td class="titles">AMS mission execution</td></tr>
+<tr class="ch"><td class="cid">ch-10-04</td><td class="titles">Segment and intersection reservation</td></tr>
+<tr class="ch"><td class="cid">ch-10-05</td><td class="titles">Deadlock detection and resolution</td></tr>
+<tr class="ch"><td class="cid">ch-10-06</td><td class="titles">Digital access permissions: the machine side of positive communication</td></tr>
+<tr class="ch"><td class="cid">ch-10-07</td><td class="titles">Shovel and crusher coordination</td></tr>
+<tr class="ch"><td class="cid">ch-10-08</td><td class="titles">Exception recovery and mission cancellation</td></tr>
+</tbody></table></details>
+<details class="vol" id="v11" open><summary>V11 — Site Network, Edge Computing &amp; Teleoperation</summary>
+<table class="chapters"><tbody>
+<tr class="ch"><td class="cid">ch-11-01</td><td class="titles">Mine network architecture</td></tr>
+<tr class="ch"><td class="cid">ch-11-02</td><td class="titles">Wi-Fi / mesh, LTE / 5G, satellite</td></tr>
+<tr class="ch"><td class="cid">ch-11-03</td><td class="titles">Latency, loss and QoS</td></tr>
+<tr class="ch"><td class="cid">ch-11-04</td><td class="titles">Coverage planning</td></tr>
+<tr class="ch"><td class="cid">ch-11-05</td><td class="titles">Edge computing</td></tr>
+<tr class="ch"><td class="cid">ch-11-06</td><td class="titles">Teleoperation</td></tr>
+<tr class="ch"><td class="cid">ch-11-07</td><td class="titles">Monitoring and failover in operation</td></tr>
+</tbody></table></details>
+<details class="vol" id="v12" open><summary>V12 — Surveying, Mapping, 3DMG &amp; Digital Twin</summary>
+<table class="chapters"><tbody>
+<tr class="ch"><td class="cid">ch-12-01</td><td class="titles">Surveying for autonomous mines</td></tr>
+<tr class="ch"><td class="cid">ch-12-02</td><td class="titles">Photogrammetry and drones</td></tr>
+<tr class="ch"><td class="cid">ch-12-03</td><td class="titles">Mobile and aerial LiDAR</td></tr>
+<tr class="ch"><td class="cid">ch-12-04</td><td class="titles">Terrain models</td></tr>
+<tr class="ch"><td class="cid">ch-12-05</td><td class="titles">Haul-road design geometry</td></tr>
+<tr class="ch"><td class="cid">ch-12-06</td><td class="titles">3D machine guidance</td></tr>
+<tr class="ch"><td class="cid">ch-12-07</td><td class="titles">As-built validation</td></tr>
+<tr class="ch"><td class="cid">ch-12-08</td><td class="titles">AHS maps: lanes, zones and attributes</td></tr>
+<tr class="ch"><td class="cid">ch-12-09</td><td class="titles">Map change management and versioning</td></tr>
+<tr class="ch"><td class="cid">ch-12-10</td><td class="titles">Digital twin</td></tr>
+</tbody></table></details>
+<details class="vol" id="v13" open><summary>V13 — Shovel &amp; Excavator Integration</summary>
+<table class="chapters"><tbody>
+<tr class="ch"><td class="cid">ch-13-01</td><td class="titles">Loading productivity</td></tr>
+<tr class="ch"><td class="cid">ch-13-02</td><td class="titles">Loading spots and spotting</td></tr>
+<tr class="ch"><td class="cid">ch-13-03</td><td class="titles">Truck–shovel communication</td></tr>
+<tr class="ch"><td class="cid">ch-13-04</td><td class="titles">Payload</td></tr>
+<tr class="ch"><td class="cid">ch-13-05</td><td class="titles">Shovel relocation and face changes</td></tr>
+<tr class="ch"><td class="cid">ch-13-06</td><td class="titles">Remote and autonomous loading</td></tr>
+<tr class="ch"><td class="cid">ch-13-07</td><td class="titles">Integration testing</td></tr>
+<tr class="ch"><td class="cid">ch-13-08</td><td class="titles">Spotting at the loading unit: designation, manoeuvres and sensing</td></tr>
+</tbody></table></details>
+<details class="vol" id="v14" open><summary>V14 — Ancillary Equipment &amp; Mixed-Fleet Interaction</summary>
+<table class="chapters"><tbody>
+<tr class="ch"><td class="cid">ch-14-01</td><td class="titles">Ancillary fleet roles in an autonomous mine</td></tr>
+<tr class="ch"><td class="cid">ch-14-02</td><td class="titles">Position reporting and awareness for manned vehicles</td></tr>
+<tr class="ch"><td class="cid">ch-14-03</td><td class="titles">Work zones and road-maintenance reservations</td></tr>
+<tr class="ch"><td class="cid">ch-14-04</td><td class="titles">Dozers and graders in autonomous areas</td></tr>
+<tr class="ch"><td class="cid">ch-14-05</td><td class="titles">Water trucks and dust suppression</td></tr>
+<tr class="ch"><td class="cid">ch-14-06</td><td class="titles">Pit patrol and light-vehicle operations</td></tr>
+<tr class="ch"><td class="cid">ch-14-07</td><td class="titles">Road closures and handover</td></tr>
+<tr class="ch"><td class="cid">ch-14-08</td><td class="titles">Failure modes of mixed-fleet awareness</td></tr>
+</tbody></table></details>
+<details class="vol" id="v15" open><summary>V15 — Crusher, Dump Station &amp; Conveyor Integration</summary>
+<table class="chapters"><tbody>
+<tr class="ch"><td class="cid">ch-15-01</td><td class="titles">Crushing and tipping operations</td></tr>
+<tr class="ch"><td class="cid">ch-15-02</td><td class="titles">Dump operations and edge protection</td></tr>
+<tr class="ch"><td class="cid">ch-15-03</td><td class="titles">PLC / SCADA interfaces</td></tr>
+<tr class="ch"><td class="cid">ch-15-04</td><td class="titles">Conveyors and stockpiles</td></tr>
+<tr class="ch"><td class="cid">ch-15-05</td><td class="titles">Material tracking</td></tr>
+<tr class="ch"><td class="cid">ch-15-06</td><td class="titles">Crusher failures and fleet response</td></tr>
+<tr class="ch"><td class="cid">ch-15-07</td><td class="titles">Plant–fleet integration testing</td></tr>
+<tr class="ch"><td class="cid">ch-15-08</td><td class="titles">Spotting at the dump and the crusher: designation, manoeuvres and sensing</td></tr>
+</tbody></table></details>
+<h2 class="part">Part IV — Operations</h2>
+<details class="vol" id="v16" open><summary>V16 — Control Room Operations &amp; Procedures</summary>
+<table class="chapters"><tbody>
+<tr class="ch"><td class="cid">ch-16-01</td><td class="titles">Control room organisation and roles</td></tr>
+<tr class="ch"><td class="cid">ch-16-02</td><td class="titles">Shift start, handover and end of shift</td></tr>
+<tr class="ch"><td class="cid">ch-16-03</td><td class="titles">Positive communication: principles and radio protocol</td></tr>
+<tr class="ch"><td class="cid">ch-16-04</td><td class="titles">Access control, isolation and entering autonomous areas</td></tr>
+<tr class="ch"><td class="cid">ch-16-05</td><td class="titles">Approaching and recovering stopped autonomous trucks</td></tr>
+<tr class="ch"><td class="cid">ch-16-06</td><td class="titles">Emergency response: fire, collision, injury, environmental incidents</td></tr>
+<tr class="ch"><td class="cid">ch-16-07</td><td class="titles">Abnormal-operations playbooks: GNSS loss, comms loss, nuisance stops, map errors</td></tr>
+<tr class="ch"><td class="cid">ch-16-08</td><td class="titles">Troubleshooting and fault triage</td></tr>
+<tr class="ch"><td class="cid">ch-16-09</td><td class="titles">Training, competency and authorisation</td></tr>
+<tr class="ch"><td class="cid">ch-16-10</td><td class="titles">Controller workload, alarms and HMI design</td></tr>
+</tbody></table></details>
+<details class="vol" id="v17" open><summary>V17 — Mine Planning, Production &amp; Operational Transformation</summary>
+<table class="chapters"><tbody>
+<tr class="ch"><td class="cid">ch-17-01</td><td class="titles">Mine planning horizons</td></tr>
+<tr class="ch"><td class="cid">ch-17-02</td><td class="titles">Drill–blast–load–haul interfaces</td></tr>
+<tr class="ch"><td class="cid">ch-17-03</td><td class="titles">Short-interval control</td></tr>
+<tr class="ch"><td class="cid">ch-17-04</td><td class="titles">Road handover and area management</td></tr>
+<tr class="ch"><td class="cid">ch-17-05</td><td class="titles">Transition to mixed and fully autonomous operations</td></tr>
+<tr class="ch"><td class="cid">ch-17-06</td><td class="titles">Organisational change</td></tr>
+<tr class="ch"><td class="cid">ch-17-07</td><td class="titles">Control-room workflow design</td></tr>
+</tbody></table></details>
+<details class="vol" id="v18" open><summary>V18 — Testing, Commissioning, Maintenance &amp; Reliability</summary>
+<table class="chapters"><tbody>
+<tr class="ch"><td class="cid">ch-18-01</td><td class="titles">Verification strategy</td></tr>
+<tr class="ch"><td class="cid">ch-18-02</td><td class="titles">SIL and HIL</td></tr>
+<tr class="ch"><td class="cid">ch-18-03</td><td class="titles">Vehicle and site testing</td></tr>
+<tr class="ch"><td class="cid">ch-18-04</td><td class="titles">Commissioning</td></tr>
+<tr class="ch"><td class="cid">ch-18-05</td><td class="titles">Operational readiness</td></tr>
+<tr class="ch"><td class="cid">ch-18-06</td><td class="titles">Maintenance of autonomous fleets</td></tr>
+<tr class="ch"><td class="cid">ch-18-07</td><td class="titles">RAMS and incident investigation</td></tr>
+</tbody></table></details>
+<details class="vol" id="v19" open><summary>V19 — Deployment Project Lifecycle</summary>
+<table class="chapters"><tbody>
+<tr class="ch"><td class="cid">ch-19-01</td><td class="titles">Opportunity assessment and feasibility</td></tr>
+<tr class="ch"><td class="cid">ch-19-02</td><td class="titles">Site readiness: roads, network, survey, infrastructure</td></tr>
+<tr class="ch"><td class="cid">ch-19-03</td><td class="titles">Regulatory engagement and approvals</td></tr>
+<tr class="ch"><td class="cid">ch-19-04</td><td class="titles">Project organisation, contracts and customer interfaces</td></tr>
+<tr class="ch"><td class="cid">ch-19-05</td><td class="titles">Workforce transition and change management</td></tr>
+<tr class="ch"><td class="cid">ch-19-06</td><td class="titles">From commissioning to first autonomous load</td></tr>
+<tr class="ch"><td class="cid">ch-19-07</td><td class="titles">Ramp-up, performance commitments and steady state</td></tr>
+<tr class="ch"><td class="cid">ch-19-08</td><td class="titles">Lessons learned and case studies</td></tr>
+</tbody></table></details>
+<h2 class="part">Part V — Business, Economics &amp; Data</h2>
+<details class="vol" id="v20" open><summary>V20 — Business Strategy, Product Management &amp; Go-to-Market</summary>
+<table class="chapters"><tbody>
+<tr class="ch"><td class="cid">ch-20-01</td><td class="titles">Market structure</td></tr>
+<tr class="ch"><td class="cid">ch-20-02</td><td class="titles">Customer needs</td></tr>
+<tr class="ch"><td class="cid">ch-20-03</td><td class="titles">Product strategy and positioning</td></tr>
+<tr class="ch"><td class="cid">ch-20-04</td><td class="titles">Roadmaps</td></tr>
+<tr class="ch"><td class="cid">ch-20-05</td><td class="titles">MVP and prioritisation</td></tr>
+<tr class="ch"><td class="cid">ch-20-06</td><td class="titles">Commercial models</td></tr>
+<tr class="ch"><td class="cid">ch-20-07</td><td class="titles">Competition and sales engineering</td></tr>
+<tr class="ch"><td class="cid">ch-20-08</td><td class="titles">Product leadership</td></tr>
+</tbody></table></details>
+<details class="vol" id="v21" open><summary>V21 — Fleet Optimisation, Economics &amp; Sustainability</summary>
+<table class="chapters"><tbody>
+<tr class="ch"><td class="cid">ch-21-01</td><td class="titles">Fleet sizing</td></tr>
+<tr class="ch"><td class="cid">ch-21-02</td><td class="titles">Dispatch optimisation</td></tr>
+<tr class="ch"><td class="cid">ch-21-03</td><td class="titles">Utilisation and availability economics</td></tr>
+<tr class="ch"><td class="cid">ch-21-04</td><td class="titles">Total cost of ownership</td></tr>
+<tr class="ch"><td class="cid">ch-21-05</td><td class="titles">ROI and sensitivity analysis</td></tr>
+<tr class="ch"><td class="cid">ch-21-06</td><td class="titles">Emissions and energy</td></tr>
+<tr class="ch"><td class="cid">ch-21-07</td><td class="titles">Long-term planning</td></tr>
+</tbody></table></details>
+<details class="vol" id="v22" open><summary>V22 — AHS Data Management &amp; Operations Analytics</summary>
+<table class="chapters"><tbody>
+<tr class="ch"><td class="cid">ch-22-01</td><td class="titles">Data architecture</td></tr>
+<tr class="ch"><td class="cid">ch-22-02</td><td class="titles">Telemetry</td></tr>
+<tr class="ch"><td class="cid">ch-22-03</td><td class="titles">Streaming</td></tr>
+<tr class="ch"><td class="cid">ch-22-04</td><td class="titles">Storage</td></tr>
+<tr class="ch"><td class="cid">ch-22-05</td><td class="titles">Governance and data ownership</td></tr>
+<tr class="ch"><td class="cid">ch-22-06</td><td class="titles">KPI definitions</td></tr>
+<tr class="ch"><td class="cid">ch-22-07</td><td class="titles">Delay and loss analysis</td></tr>
+<tr class="ch"><td class="cid">ch-22-08</td><td class="titles">Dashboards for control room and management</td></tr>
+<tr class="ch"><td class="cid">ch-22-09</td><td class="titles">Predictive maintenance</td></tr>
+<tr class="ch"><td class="cid">ch-22-10</td><td class="titles">Advanced analytics</td></tr>
+</tbody></table></details>
+<h2 class="part">Part VI — Integration</h2>
+<details class="vol" id="v23" open><summary>V23 — Integrated Autonomous Mine Simulator</summary>
+<table class="chapters"><tbody>
+<tr class="ch"><td class="cid">ch-23-01</td><td class="titles">Simulator architecture</td></tr>
+<tr class="ch"><td class="cid">ch-23-02</td><td class="titles">Road network model</td></tr>
+<tr class="ch"><td class="cid">ch-23-03</td><td class="titles">Equipment models</td></tr>
+<tr class="ch"><td class="cid">ch-23-04</td><td class="titles">FMS model</td></tr>
+<tr class="ch"><td class="cid">ch-23-05</td><td class="titles">AMS model</td></tr>
+<tr class="ch"><td class="cid">ch-23-06</td><td class="titles">ADS model</td></tr>
+<tr class="ch"><td class="cid">ch-23-07</td><td class="titles">Energy model</td></tr>
+<tr class="ch"><td class="cid">ch-23-08</td><td class="titles">Map updates and network failures</td></tr>
+<tr class="ch"><td class="cid">ch-23-09</td><td class="titles">Safety functions and operational procedures</td></tr>
+<tr class="ch"><td class="cid">ch-23-10</td><td class="titles">Analytics, optimisation and final integration</td></tr>
+</tbody></table></details>
+</main>
+</body>
+</html>
