@@ -116,3 +116,41 @@ video { width: 100%; height: auto; background: #0e1716; }
 @media (max-width: 49rem) {
   .hero-grid, .section-intro, .project-grid, .demo-grid, .sponsor-panel { grid-template-columns: 1fr; }
 }
+
+.sponsor-fee dd { margin-top: .6rem; }
+.sponsor-button { display: inline-block; font-size: 1rem; }
+.sponsor-details > p { margin-top: 1.15rem; overflow-wrap: anywhere; }
+.nav-links [aria-current="page"] { color: var(--lime); }
+
+.handbook-hero { padding-block: clamp(2.75rem, 7vw, 5.5rem); }
+.handbook-hero h1 { max-width: 20ch; }
+.handbook-hero p:last-child { color: #d3e0d7; }
+.handbook-contents .guide {
+  padding: clamp(1rem, 3vw, 2rem);
+  background: #e7eee2;
+  border-top: 3px solid #577963;
+}
+.handbook-contents .guide h2 { margin-bottom: 1rem; font-size: clamp(1.4rem, 3vw, 2rem); }
+.handbook-contents table { width: 100%; border-collapse: collapse; text-align: left; }
+.handbook-contents td { padding: .65rem 0; border-top: 1px solid var(--line); vertical-align: top; }
+.handbook-contents .paths td:first-child { width: 27%; padding-right: 1rem; font-weight: 700; }
+.handbook-contents .controls { margin-top: 2rem; }
+.handbook-contents input {
+  width: min(100%, 35rem);
+  padding: .75rem 1rem;
+  border: 1px solid #577963;
+  color: var(--ink);
+  background: #fff;
+  font: inherit;
+}
+.handbook-contents .part { margin-block: 2rem 1rem; font-size: clamp(1.45rem, 3vw, 2rem); }
+.handbook-contents .vol { margin-top: .55rem; border: 1px solid var(--line); background: #fff; }
+.handbook-contents .vol summary { cursor: pointer; padding: .85rem 1rem; font-weight: 700; }
+.handbook-contents .chapters { width: calc(100% - 2rem); margin-inline: 1rem; }
+.handbook-contents .cid { padding-right: 1rem; font-family: ui-monospace, monospace; white-space: nowrap; }
+.handbook-contents .hidden { display: none; }
+@media (max-width: 38rem) {
+  .handbook-contents .paths td { display: block; width: 100%; }
+  .handbook-contents .paths td:first-child { width: 100%; padding-bottom: 0; }
+  .handbook-contents .paths td + td { border-top: 0; }
+}

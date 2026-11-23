@@ -27,4 +27,12 @@ ffmpeg -i input.mov -vf fps=30 -c:v libx264 -preset fast -crf 21 \
 
 ## Sponsorship
 
-Edit the sponsor fee in the sponsorship section of `index.html` once an amount, currency, and billing period are agreed.
+Use **Sponsor on GitHub** in the site's Sponsorship section to open the project's
+GitHub Sponsors profile. The repository's Sponsor button is configured in
+`.github/FUNDING.yml`.
+
+## License
+
+The website implementation uses the [MIT License](LICENSE). The handbook
+content, simulator screenshot, and demo recording use
+[CC BY 4.0](CONTENT-LICENSE.md).

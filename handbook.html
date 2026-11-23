@@ -5,187 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="generator" content="ahs-handbook build_index">
 <title>AHS Handbook — Contents</title>
-<style>
-:root {
-  --bg: #fbfaf7;
-  --fg: #1d1f21;
-  --muted: #5d6166;
-  --accent: #1f6f8b;
-  --accent-soft: #e3f0f4;
-  --border: #d9d6cf;
-  --code-bg: #f1efea;
-  --warn-bg: #fff6e0;
-  --warn-border: #e2b54a;
-  --watermark: rgba(200, 60, 60, 0.07);
-  --font-body: system-ui, -apple-system, "Segoe UI",
-    sans-serif;
-  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-}
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --bg: #15171a;
-    --fg: #e6e4df;
-    --muted: #a3a7ad;
-    --accent: #6cc3de;
-    --accent-soft: #1d3440;
-    --border: #33373d;
-    --code-bg: #1f2226;
-    --warn-bg: #2e2716;
-    --warn-border: #8c7330;
-    --watermark: rgba(255, 120, 120, 0.06);
-  }
-}
-:root[data-theme="dark"] {
-  --bg: #15171a;
-  --fg: #e6e4df;
-  --muted: #a3a7ad;
-  --accent: #6cc3de;
-  --accent-soft: #1d3440;
-  --border: #33373d;
-  --code-bg: #1f2226;
-  --warn-bg: #2e2716;
-  --warn-border: #8c7330;
-  --watermark: rgba(255, 120, 120, 0.06);
-}
-* { box-sizing: border-box; }
-html { -webkit-text-size-adjust: 100%; }
-body {
-  margin: 0 auto;
-  max-width: 52rem;
-  padding: 1.25rem 16px 3rem;
-  background: var(--bg);
-  color: var(--fg);
-  font-family: var(--font-body);
-  font-size: 1.0625rem;
-  line-height: 1.7;
-  overflow-wrap: anywhere;
-}
-h1 { font-size: 1.9rem; line-height: 1.3; margin: 0.6rem 0 1rem; }
-h2 { font-size: 1.4rem; margin-top: 2.4rem; border-bottom: 1px solid var(--border); padding-bottom: 0.2rem; }
-h3 { font-size: 1.15rem; margin-top: 1.8rem; }
-a { color: var(--accent); }
-code { font-family: var(--font-mono); background: var(--code-bg); padding: 0.05rem 0.3rem; border-radius: 3px; font-size: 0.92em; }
-pre { background: var(--code-bg); padding: 0.8rem 1rem; overflow-x: auto; border-radius: 6px; line-height: 1.45; }
-pre code { background: none; padding: 0; }
-table { border-collapse: collapse; width: 100%; display: block; overflow-x: auto; margin: 1rem 0; }
-th, td { border: 1px solid var(--border); padding: 0.35rem 0.6rem; text-align: left; vertical-align: top; }
-/* Never break inside numbers or IDs in table cells; wide tables scroll horizontally instead. */
-th, td { overflow-wrap: normal; word-break: normal; }
-th { background: var(--accent-soft); }
-blockquote { margin: 1rem 0; padding: 0.2rem 1rem; border-left: 4px solid var(--accent); color: var(--muted); }
-.article-header .meta-row { display: flex; flex-wrap: wrap; gap: 0.4rem 0.9rem; align-items: center; font-size: 0.85rem; color: var(--muted); }
-.chapter-id { font-family: var(--font-mono); font-weight: 600; color: var(--fg); }
-.status { padding: 0.05rem 0.5rem; border: 1px solid var(--border); border-radius: 999px; }
-.status-draft, .status-revision, .status-in-review { border-color: var(--warn-border); background: var(--warn-bg); }
-.theme-toggle { font: inherit; font-size: 0.8rem; color: var(--fg); background: transparent; border: 1px solid var(--border); border-radius: 4px; padding: 0.1rem 0.5rem; cursor: pointer; }
-.toc { border: 1px solid var(--border); border-radius: 6px; padding: 0.6rem 1rem; margin: 1.2rem 0; font-size: 0.92rem; }
-.toc ol { margin: 0.3rem 0 0; padding-left: 1.2rem; }
-.fig { margin: 1.6rem 0; text-align: center; }
-.fig img, .fig svg { max-width: 100%; height: auto; }
-.fig pre.mermaid { background: transparent; text-align: center; }
-figcaption { font-size: 0.9rem; color: var(--muted); margin-top: 0.5rem; }
-.fig-no { font-weight: 600; color: var(--fg); }
-.fig-id { font-family: var(--font-mono); font-size: 0.75rem; opacity: 0.7; }
-.math-block { overflow-x: auto; margin: 1rem 0; }
-math { font-size: 1.1em; }
-.widget { border: 1px solid var(--border); border-radius: 8px; padding: 1rem; margin: 1.5rem 0; background: var(--accent-soft); }
-.widget label { display: block; margin: 0.4rem 0; font-size: 0.95rem; }
-.widget select, .widget input { font: inherit; color: var(--fg); background: var(--bg); border: 1px solid var(--border); border-radius: 4px; padding: 0.15rem 0.3rem; max-width: 100%; }
-.widget .result { font-size: 1.05rem; margin-top: 0.7rem; }
-.widget table { font-size: 0.88rem; }
-.watermark { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; pointer-events: none; font-size: 22vw; font-weight: 800; color: var(--watermark); transform: rotate(-24deg); z-index: 0; }
-.article-header, .toc, .article-body, .article-footer { position: relative; z-index: 1; }
-.article-footer { margin-top: 3rem; font-size: 0.8rem; color: var(--muted); border-top: 1px solid var(--border); padding-top: 0.6rem; }
-@media (max-width: 600px) {
-  body { font-size: 1rem; }
-  h1 { font-size: 1.55rem; }
-}
-@media print { .watermark { color: rgba(0, 0, 0, 0.06); } .theme-toggle { display: none; } }
-
-body { max-width: 64rem; }
-.lead { color: var(--muted); margin-top: -0.4rem; }
-.controls { display: flex; flex-wrap: wrap; gap: 0.6rem 1rem; align-items: center; margin: 1rem 0; font-size: 0.9rem; }
-.controls input[type=search] { font: inherit; padding: 0.3rem 0.6rem; border: 1px solid var(--border);
-  border-radius: 6px; background: var(--bg); color: var(--fg); min-width: 16rem; flex: 1 1 16rem; }
-section.guide { border: 1px solid var(--border); border-radius: 8px; padding: 0.3rem 1rem 0.6rem; margin: 1rem 0; }
-section.guide h2 { font-size: 1.1rem; margin-top: 0.8rem; }
-table.paths { display: table; font-size: 0.9rem; }
-table.paths td:first-child { white-space: nowrap; }
-h2.part { font-size: 1.15rem; color: var(--muted); border: none; margin-top: 2rem; }
-details.vol { border: 1px solid var(--border); border-radius: 8px; margin: 0.6rem 0; padding: 0.2rem 0.9rem; }
-details.vol > summary { cursor: pointer; padding: 0.5rem 0; font-weight: 600; list-style-position: outside; }
-table.chapters { width: 100%; border-collapse: collapse; margin: 0.2rem 0 0.8rem; font-size: 0.92rem; display: table; }
-table.chapters td { border: none; border-top: 1px solid var(--border); padding: 0.45rem 0.4rem; vertical-align: top; }
-td.cid { font-family: var(--font-mono); white-space: nowrap; width: 6.5rem; }
-.status-approved, .status-exported { border-color: var(--accent); background: var(--accent-soft); }
-.status-not-started { color: var(--muted); }
-tr.hidden, details.vol.hidden { display: none; }
-table.data td.id { white-space: nowrap; overflow-wrap: normal; }
-@media (max-width: 40rem) {
-  table.chapters, table.chapters tbody, table.chapters tr, table.chapters td { display: block; width: auto; }
-  table.chapters tr { border-top: 1px solid var(--border); padding: 0.3rem 0; }
-  table.chapters td { border: none; padding: 0.1rem 0.2rem; text-align: left; }
-  table.paths, table.paths tbody, table.paths tr, table.paths td { display: block; width: auto; }
-  table.paths td:first-child { white-space: normal; font-weight: 600; }
-}
-
-</style>
+<link rel="stylesheet" href="assets/site.css">
 <script>
-(function () {
-  var root = document.documentElement;
-  try {
-    var saved = localStorage.getItem("ahs-theme");
-    if (saved === "dark" || saved === "light") root.dataset.theme = saved;
-  } catch (e) {}
-  var mq = window.matchMedia ? window.matchMedia("(prefers-color-scheme: dark)") : null;
-  // No explicit choice: follow the system theme (CSS does the same through prefers-color-scheme).
-  function isDark() {
-    return root.dataset.theme ? root.dataset.theme === "dark" : !!(mq && mq.matches);
-  }
-  // Mermaid diagrams keep their original definition in data-source and are re-rendered with the theme that
-  // matches the page whenever the theme changes (review 2026-11-14, R22).
-  window.ahsRenderMermaid = function () {
-    if (!window.mermaid) return;
-    var nodes = Array.prototype.slice.call(document.querySelectorAll("pre.mermaid"));
-    if (!nodes.length) return;
-    nodes.forEach(function (el) {
-      if (el.getAttribute("data-source") === null) {
-        el.setAttribute("data-source", el.textContent);
-      } else {
-        el.removeAttribute("data-processed");
-        el.textContent = el.getAttribute("data-source");
-      }
-    });
-    window.mermaid.initialize({ startOnLoad: false, securityLevel: "strict", theme: isDark() ? "dark" : "default" });
-    var done = window.mermaid.run({ nodes: nodes });
-    if (done && done.catch) done.catch(function (err) { if (window.console) console.error(err); });
-  };
-  function syncButton(btn) {
-    btn.setAttribute("aria-pressed", isDark() ? "true" : "false");
-  }
-  document.addEventListener("DOMContentLoaded", function () {
-    var btn = document.querySelector(".theme-toggle");
-    if (btn) syncButton(btn);
-    if (mq) {
-      var onSystemChange = function () {
-        if (root.dataset.theme) return;
-        if (btn) syncButton(btn);
-        window.ahsRenderMermaid();
-      };
-      if (mq.addEventListener) mq.addEventListener("change", onSystemChange);
-      else if (mq.addListener) mq.addListener(onSystemChange);
-    }
-    if (!btn) return;
-    btn.addEventListener("click", function () {
-      root.dataset.theme = isDark() ? "light" : "dark";
-      try { localStorage.setItem("ahs-theme", root.dataset.theme); } catch (e) {}
-      syncButton(btn);
-      window.ahsRenderMermaid();
-    });
-  });
-})();
-
-
 document.addEventListener("DOMContentLoaded", function () {
   var q = document.getElementById("q");
   function apply() {
@@ -213,17 +34,30 @@ document.addEventListener("DOMContentLoaded", function () {
 </script>
 </head>
 <body>
-<header class="article-header">
-  <a href="./">Project overview</a>
-  <button type="button" class="theme-toggle" aria-label="Toggle color theme">Theme</button>
-  <h1>AHS Engineering &amp; Operations Handbook</h1>
-</header>
-<main class="article-body">
+  <header class="site-header">
+    <nav class="wrap navigation" aria-label="Main navigation">
+      <a class="wordmark" href="./"><span aria-hidden="true">AHS</span> Engineering Handbook</a>
+      <div class="nav-links">
+        <a href="./#project">The project</a>
+        <a href="./#demo">Simulator demo</a>
+        <a href="handbook.html" aria-current="page">Handbook</a>
+        <a href="./#sponsorship">Sponsorship</a>
+      </div>
+    </nav>
+  </header>
+<main>
+  <section class="hero handbook-hero" aria-labelledby="handbook-title">
+    <div class="wrap">
+      <p class="eyebrow">Autonomous haulage systems</p>
+      <h1 id="handbook-title">Engineering &amp; Operations Handbook</h1>
+      <p>Browse 23 volumes and 187 chapters on autonomous haulage systems.</p>
+    </div>
+  </section>
+  <div class="wrap section handbook-contents">
 <section class="guide" aria-labelledby="how-to-read">
 <h2 id="how-to-read">Suggested reading by role</h2>
 <table class="paths"><tbody><tr><td>Newcomers</td><td><a href="#v01" title="AHS Fundamentals &amp; Mine Operations">V01</a> (mine, haul cycle, reference mine, architecture) → <a href="#v04" title="Functional Safety, Emergency Stop, Fire &amp; Cybersecurity">V04</a> (ODD and stopping, overview) → <a href="#v16" title="Control Room Operations &amp; Procedures">V16</a> (operating situations)</td></tr><tr><td>Systems engineers</td><td><a href="#v01" title="AHS Fundamentals &amp; Mine Operations">V01</a> → <a href="#v02" title="Systems Architecture &amp; Interoperability">V02</a> → <a href="#v03" title="Systems Engineering &amp; Development Lifecycle">V03</a>, <a href="#v04" title="Functional Safety, Emergency Stop, Fire &amp; Cybersecurity">V04</a> (read together) → <a href="#v10" title="Fleet Management, Dispatch &amp; Traffic Coordination">V10</a> → <a href="#v11" title="Site Network, Edge Computing &amp; Teleoperation">V11</a>, <a href="#v12" title="Surveying, Mapping, 3DMG &amp; Digital Twin">V12</a> (network and maps) → <a href="#v18" title="Testing, Commissioning, Maintenance &amp; Reliability">V18</a> → <a href="#v19" title="Deployment Project Lifecycle">V19</a></td></tr><tr><td>Controllers and site managers</td><td><a href="#v01" title="AHS Fundamentals &amp; Mine Operations">V01</a> (roles and KPIs) → <a href="#v16" title="Control Room Operations &amp; Procedures">V16</a> → <a href="#v14" title="Ancillary Equipment &amp; Mixed-Fleet Interaction">V14</a> → <a href="#v13" title="Shovel &amp; Excavator Integration">V13</a>, <a href="#v15" title="Crusher, Dump Station &amp; Conveyor Integration">V15</a> (the tasks that apply) → <a href="#v17" title="Mine Planning, Production &amp; Operational Transformation">V17</a> → <a href="#v22" title="AHS Data Management &amp; Operations Analytics">V22</a> (data and analytics)</td></tr><tr><td>Vehicle and autonomy engineers</td><td><a href="#v02" title="Systems Architecture &amp; Interoperability">V02</a>, <a href="#v04" title="Functional Safety, Emergency Stop, Fire &amp; Cybersecurity">V04</a> (boundaries and safety principles) → <a href="#v05" title="GNSS, IMU &amp; Localisation">V05</a>, <a href="#v06" title="LiDAR, Camera &amp; Perception">V06</a>, <a href="#v07" title="Vehicle Dynamics, Planning &amp; Control">V07</a>, <a href="#v08" title="Vehicle Platform &amp; Machine Interfaces">V08</a> → <a href="#v09" title="Battery &amp; Energy Management">V09</a> (as needed) → <a href="#v12" title="Surveying, Mapping, 3DMG &amp; Digital Twin">V12</a> (maps) → <a href="#v18" title="Testing, Commissioning, Maintenance &amp; Reliability">V18</a></td></tr><tr><td>Deployment leads and product owners</td><td><a href="#v01" title="AHS Fundamentals &amp; Mine Operations">V01</a>, <a href="#v02" title="Systems Architecture &amp; Interoperability">V02</a> (overviews) → <a href="#v18" title="Testing, Commissioning, Maintenance &amp; Reliability">V18</a> → <a href="#v19" title="Deployment Project Lifecycle">V19</a> → <a href="#v17" title="Mine Planning, Production &amp; Operational Transformation">V17</a> → <a href="#v20" title="Business Strategy, Product Management &amp; Go-to-Market">V20</a>, <a href="#v21" title="Fleet Optimisation, Economics &amp; Sustainability">V21</a> (business case and economics)</td></tr><tr><td>Simulation and analytics</td><td><a href="#v01" title="AHS Fundamentals &amp; Mine Operations">V01</a> (reference mine) → <a href="#v10" title="Fleet Management, Dispatch &amp; Traffic Coordination">V10</a> → <a href="#v21" title="Fleet Optimisation, Economics &amp; Sustainability">V21</a> → <a href="#v22" title="AHS Data Management &amp; Operations Analytics">V22</a> → <a href="#v23" title="Integrated Autonomous Mine Simulator">V23</a> (integrated simulator)</td></tr></tbody></table>
 </section>
-<p>187 chapters</p>
 <div class="controls">
   <input id="q" type="search" placeholder="Search by chapter ID or title" aria-label="Search by chapter ID or title">
 </div>
@@ -489,6 +323,11 @@ document.addEventListener("DOMContentLoaded", function () {
 <tr class="ch"><td class="cid">ch-23-09</td><td class="titles">Safety functions and operational procedures</td></tr>
 <tr class="ch"><td class="cid">ch-23-10</td><td class="titles">Analytics, optimisation and final integration</td></tr>
 </tbody></table></details>
+  </div>
 </main>
+<footer class="wrap site-footer">
+  <span>AHS Engineering &amp; Operations Handbook · <a href="CONTENT-LICENSE.md">Licensing</a></span>
+  <a href="#handbook-title">Back to top</a>
+</footer>
 </body>
 </html>
