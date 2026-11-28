@@ -1,0 +1,1400 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="generator" content="ahs-handbook build_articles 2.0.0">
+<meta name="ahs:id" content="ch-03-02">
+<meta name="ahs:version" content="0.1.5">
+<meta name="ahs:status" content="approved">
+<meta name="ahs:source-sha256" content="c2743b8288eb1ccc">
+<title>Requirements engineering</title>
+<style>
+:root {
+  --bg: #fbfaf7;
+  --fg: #1d1f21;
+  --muted: #5d6166;
+  --accent: #1f6f8b;
+  --accent-soft: #e3f0f4;
+  --border: #d9d6cf;
+  --code-bg: #f1efea;
+  --warn-bg: #fff6e0;
+  --warn-border: #e2b54a;
+  --watermark: rgba(200, 60, 60, 0.07);
+  --font-body: system-ui, -apple-system, "Segoe UI", "Hiragino Sans", "Hiragino Kaku Gothic ProN",
+    "Noto Sans JP", "Yu Gothic", Meiryo, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #15171a;
+    --fg: #e6e4df;
+    --muted: #a3a7ad;
+    --accent: #6cc3de;
+    --accent-soft: #1d3440;
+    --border: #33373d;
+    --code-bg: #1f2226;
+    --warn-bg: #2e2716;
+    --warn-border: #8c7330;
+    --watermark: rgba(255, 120, 120, 0.06);
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #15171a;
+  --fg: #e6e4df;
+  --muted: #a3a7ad;
+  --accent: #6cc3de;
+  --accent-soft: #1d3440;
+  --border: #33373d;
+  --code-bg: #1f2226;
+  --warn-bg: #2e2716;
+  --warn-border: #8c7330;
+  --watermark: rgba(255, 120, 120, 0.06);
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0 auto;
+  max-width: 52rem;
+  padding: 1.25rem 16px 3rem;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-body);
+  font-size: 1.0625rem;
+  line-height: 1.7;
+  overflow-wrap: anywhere;
+}
+h1 { font-size: 1.9rem; line-height: 1.3; margin: 0.6rem 0 1rem; }
+h2 { font-size: 1.4rem; margin-top: 2.4rem; border-bottom: 1px solid var(--border); padding-bottom: 0.2rem; }
+h3 { font-size: 1.15rem; margin-top: 1.8rem; }
+a { color: var(--accent); }
+code { font-family: var(--font-mono); background: var(--code-bg); padding: 0.05rem 0.3rem; border-radius: 3px; font-size: 0.92em; }
+pre { background: var(--code-bg); padding: 0.8rem 1rem; overflow-x: auto; border-radius: 6px; line-height: 1.45; }
+pre code { background: none; padding: 0; }
+table { border-collapse: collapse; width: 100%; display: block; overflow-x: auto; margin: 1rem 0; }
+th, td { border: 1px solid var(--border); padding: 0.35rem 0.6rem; text-align: left; vertical-align: top; }
+/* Never break inside numbers or IDs in table cells; wide tables scroll horizontally instead. */
+th, td { overflow-wrap: normal; word-break: normal; }
+th { background: var(--accent-soft); }
+blockquote { margin: 1rem 0; padding: 0.2rem 1rem; border-left: 4px solid var(--accent); color: var(--muted); }
+.article-header .meta-row { display: flex; flex-wrap: wrap; gap: 0.4rem 0.9rem; align-items: center; font-size: 0.85rem; color: var(--muted); }
+.chapter-id { font-family: var(--font-mono); font-weight: 600; color: var(--fg); }
+.status { padding: 0.05rem 0.5rem; border: 1px solid var(--border); border-radius: 999px; }
+.status-draft, .status-revision, .status-in-review { border-color: var(--warn-border); background: var(--warn-bg); }
+.theme-toggle { font: inherit; font-size: 0.8rem; color: var(--fg); background: transparent; border: 1px solid var(--border); border-radius: 4px; padding: 0.1rem 0.5rem; cursor: pointer; }
+.disclaimer { background: var(--warn-bg); border: 1px solid var(--warn-border); border-radius: 6px; padding: 0.6rem 0.9rem; font-size: 0.9rem; }
+.disclaimer p { margin: 0.25rem 0; }
+.toc { border: 1px solid var(--border); border-radius: 6px; padding: 0.6rem 1rem; margin: 1.2rem 0; font-size: 0.92rem; }
+.toc ol { margin: 0.3rem 0 0; padding-left: 1.2rem; }
+.fig { margin: 1.6rem 0; text-align: center; }
+.fig img, .fig svg { max-width: 100%; height: auto; }
+.fig pre.mermaid { background: transparent; text-align: center; }
+figcaption { font-size: 0.9rem; color: var(--muted); margin-top: 0.5rem; }
+.fig-no { font-weight: 600; color: var(--fg); }
+.fig-id { font-family: var(--font-mono); font-size: 0.75rem; opacity: 0.7; }
+.math-block { overflow-x: auto; margin: 1rem 0; }
+math { font-size: 1.1em; }
+.widget { border: 1px solid var(--border); border-radius: 8px; padding: 1rem; margin: 1.5rem 0; background: var(--accent-soft); }
+.widget label { display: block; margin: 0.4rem 0; font-size: 0.95rem; }
+.widget select, .widget input { font: inherit; color: var(--fg); background: var(--bg); border: 1px solid var(--border); border-radius: 4px; padding: 0.15rem 0.3rem; max-width: 100%; }
+.widget .result { font-size: 1.05rem; margin-top: 0.7rem; }
+.widget table { font-size: 0.88rem; }
+.watermark { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; pointer-events: none; font-size: 22vw; font-weight: 800; color: var(--watermark); transform: rotate(-24deg); z-index: 0; }
+.article-header, .toc, .article-body, .article-footer { position: relative; z-index: 1; }
+.article-footer { margin-top: 3rem; font-size: 0.8rem; color: var(--muted); border-top: 1px solid var(--border); padding-top: 0.6rem; }
+@media (max-width: 600px) {
+  body { font-size: 1rem; }
+  h1 { font-size: 1.55rem; }
+}
+@media print { .watermark { color: rgba(0, 0, 0, 0.06); } .theme-toggle { display: none; } }
+
+</style>
+<script>
+(function () {
+  var root = document.documentElement;
+  try {
+    var saved = localStorage.getItem("ahs-theme");
+    if (saved === "dark" || saved === "light") root.dataset.theme = saved;
+  } catch (e) {}
+  var mq = window.matchMedia ? window.matchMedia("(prefers-color-scheme: dark)") : null;
+  // No explicit choice: follow the system theme (CSS does the same through prefers-color-scheme).
+  function isDark() {
+    return root.dataset.theme ? root.dataset.theme === "dark" : !!(mq && mq.matches);
+  }
+  // Mermaid diagrams keep their original definition in data-source and are re-rendered with the theme that
+  // matches the page whenever the theme changes (review 2026-11-14, R22).
+  window.ahsRenderMermaid = function () {
+    if (!window.mermaid) return;
+    var nodes = Array.prototype.slice.call(document.querySelectorAll("pre.mermaid"));
+    if (!nodes.length) return;
+    nodes.forEach(function (el) {
+      if (el.getAttribute("data-source") === null) {
+        el.setAttribute("data-source", el.textContent);
+      } else {
+        el.removeAttribute("data-processed");
+        el.textContent = el.getAttribute("data-source");
+      }
+    });
+    window.mermaid.initialize({ startOnLoad: false, securityLevel: "strict", theme: isDark() ? "dark" : "default" });
+    var done = window.mermaid.run({ nodes: nodes });
+    if (done && done.catch) done.catch(function (err) { if (window.console) console.error(err); });
+  };
+  function syncButton(btn) {
+    btn.setAttribute("aria-pressed", isDark() ? "true" : "false");
+  }
+  document.addEventListener("DOMContentLoaded", function () {
+    var btn = document.querySelector(".theme-toggle");
+    if (btn) syncButton(btn);
+    if (mq) {
+      var onSystemChange = function () {
+        if (root.dataset.theme) return;
+        if (btn) syncButton(btn);
+        window.ahsRenderMermaid();
+      };
+      if (mq.addEventListener) mq.addEventListener("change", onSystemChange);
+      else if (mq.addListener) mq.addListener(onSystemChange);
+    }
+    if (!btn) return;
+    btn.addEventListener("click", function () {
+      root.dataset.theme = isDark() ? "light" : "dark";
+      try { localStorage.setItem("ahs-theme", root.dataset.theme); } catch (e) {}
+      syncButton(btn);
+      window.ahsRenderMermaid();
+    });
+  });
+})();
+
+</script>
+<link rel="canonical" href="https://thomas-21.github.io/ahs_engineering_handbook/vol-03/ch-03-02.en.html">
+</head>
+<body data-chapter-id="ch-03-02" data-status="approved">
+<header class="article-header">
+  <div class="meta-row">
+    <a class="home-link" href="../handbook.html">All chapters</a>
+    <span class="chapter-id">ch-03-02</span>
+    <button type="button" class="theme-toggle" aria-label="Theme">Theme</button>
+  </div>
+  <h1>Requirements engineering</h1>
+</header>
+<nav class="toc" aria-label="Contents"><strong>Contents</strong><ol><li><a href="#s-1">1. Overview</a></li><li><a href="#s-2">2. Operational motivation: the problem at the reference mine</a></li><li><a href="#s-3">3. Terminology and foundations</a></li><li><a href="#s-4">4. Technical explanation</a></li><li><a href="#s-5">5. Responsibilities and interface boundaries</a></li><li><a href="#s-6">6. Normal, abnormal and degraded operation</a></li><li><a href="#s-7">7. Engineering view</a></li><li><a href="#s-8">8. Operations view</a></li><li><a href="#s-9">9. Requirements and acceptance criteria</a></li><li><a href="#s-10">10. Verification and validation</a></li><li><a href="#s-11">11. Common mistakes</a></li><li><a href="#s-12">12. Worked examples</a></li><li><a href="#s-13">13. Hands-on labs</a></li><li><a href="#s-14">14. Discussion questions and assignments</a></li><li><a href="#s-15">15. Key takeaways</a></li><li><a href="#s-16">16. Glossary terms introduced</a></li></ol></nav>
+<main class="article-body">
+<h2 id="s-1">1. Overview</h2>
+<h3 id="s-1-1">1.1 Why this chapter matters</h3>
+<p>Tuesday, 07:30, the weekly site review at the reference mine. Last night the crew ran a fire drill on R05 with DT17
+standing in for a burning truck. Two documents lie on the table. The first is the drill report. At T+140 s, while the
+zone around DT17 held DT14 on the ramp, the AHS Controller tried to shrink the zone so that DT14 could pass on the far
+side. The HMI refused. The controller wrote: &quot;zone could not be reduced — defect?&quot; The second document is a page from
+last month's workshop with the Emergency Response Team (ERT). One line on it reads: <em>The system shall quickly set up an
+appropriate exclusion zone around a burning truck and hold other trucks if possible.</em> Engineering has been asked to
+&quot;turn this into requirements&quot; before the next AMS release.</p>
+<p>The Pit Supervisor asks three questions. Was the refusal a fault, or the system doing what it was asked to do? Can the
+workshop sentence be tested, and by whom? And if engineering writes &quot;within 10 s&quot; and &quot;150 m&quot;, where do those numbers
+come from?</p>
+<p>The questions behind the scene:</p>
+<ul>
+<li>What is the difference between a need written by the ERT, a requirement that engineering can verify, and a design
+that satisfies it?</li>
+<li>Who must do what — the onboard fire system, the VCS, the AMS, the controller — and how is that written down so that a
+central permission never overrides a decision taken on the truck?</li>
+<li>How do we know that a requirement is good enough: unambiguous, verifiable, atomic, consistent, feasible?</li>
+<li>How does an operational report like last night's become either a defect against an existing requirement or a new
+requirement?</li>
+<li>How are procedures and training kept in step when a requirement changes?</li>
+</ul>
+<p>This chapter covers:</p>
+<ul>
+<li>the handbook's requirement format and its parts (FIG-03-02-02), and the hierarchy from stakeholder need to system and
+element requirements (FIG-03-02-01);</li>
+<li>kinds of requirement — functional, performance, interface, safety-related, operational — and why every number needs
+a source or an <code>[A]</code>;</li>
+<li>quality attributes, and what an automated checker can and cannot find, run on the handbook's own 1,086 requirements
+(LAB-03-02-01);</li>
+<li>deriving and allocating requirements from a scenario timeline: SCN-FIRE-DT17 for the exclusion zone and traffic
+holding, SCN-POSCOM-STALE for fail-closed permissions;</li>
+<li>the path from an operational report to a defect or a new requirement, acceptance criteria a controller can observe,
+and the link from requirements to procedures and training.</li>
+</ul>
+<p><strong>The handbook's requirements are the worked corpus.</strong> Every chapter of the handbook ends its section 9 with
+requirements in one format. This chapter uses those of Volumes 01, 02, 04 – 16 and 18 (the corpus volumes).
+LAB-03-02-01 reads all of them with <code>ahs_sim.traceability</code> 0.20.0 and checks them. Where the checker reports something
+about one of these requirements, it is a teaching observation about how real requirement sets look, not a defect
+report; this chapter refers to them without changing them.</p>
+<h3 id="s-1-2">1.2 Learning objectives — Engineering</h3>
+<p>After this chapter an engineering reader will be able to:</p>
+<ol>
+<li>Write system requirements in the handbook format (<code>REQ-VV-CC-NNN</code>, evidence label, rationale, verification method)
+for the exclusion-zone behaviour in SCN-FIRE-DT17.</li>
+<li>Derive fail-closed requirements for access permissions from SCN-POSCOM-STALE, and allocate each to the AMS, the
+field terminal or people.</li>
+<li>Evaluate requirement quality (unambiguous, verifiable, atomic, consistent, feasible) and rewrite defective
+requirements.</li>
+<li>Distinguish functional, performance, interface, safety-related and operational requirements, and explain why
+numeric limits in requirements must be sourced or tagged <code>[A]</code>.</li>
+</ol>
+<h3 id="s-1-3">1.3 Learning objectives — Operations</h3>
+<p>After this chapter an operations reader will be able to:</p>
+<ol>
+<li>Review a set of operational requirements (alarms, procedures, roles) and identify ones that cannot be verified or
+that conflict with current site practice.</li>
+<li>Explain how an operational incident report at the reference mine becomes either a defect against an existing
+requirement or a new requirement.</li>
+<li>Write an acceptance criterion that a controller can observe, such as what the HMI shows when LV07's grant expires.</li>
+<li>Explain why procedures and training material should be linked to requirements, so that a requirement change
+triggers a procedure review.</li>
+</ol>
+<h2 id="s-2">2. Operational motivation: the problem at the reference mine</h2>
+<p>An autonomous haulage system is specified by many hands. The vendor of the vehicle writes what the truck does; the
+supplier of the AMS writes what the central system does; the mine writes its site procedures; the network team writes
+coverage targets; and the people who work the system — the AHS Controller, the Pit Supervisor, the Field Technician,
+the ERT — carry needs in their heads that nobody has written at all. ch-03-01 showed how to collect those needs. This
+chapter is about what happens next: turning them into statements that someone can build, someone else can verify, and
+everyone can read in the same way.</p>
+<p>Three things go wrong at the reference mine when this step is skipped or rushed.</p>
+<p><strong>Needs are written as solutions.</strong> &quot;Hold every truck within 150 m of a truck on fire within 10 s&quot; sounds precise.
+But 150 m is a design choice about one geometry on one ramp (ch-04-07 uses 150 m <code>[A]</code> on R05 and makes the
+geometry configurable), and 10 s is a key-event time of the registered scenario, not a measured capability. Written
+into a requirement without a source, both numbers become commitments nobody can justify.</p>
+<p><strong>Responsibility is left unsaid.</strong> &quot;Trucks shall be rerouted around the zone and/or held&quot; names no actor. Is it the
+AMS, the FMS, the controller, or the Pit Supervisor who decides? In SCN-FIRE-DT17 the answer matters: rerouting via
+R24 sends loaded trucks across Intersection V, a hazard-log item of its own (HZ-11 in ch-04-01). ch-04-07 answers it:
+the AMS presents the options and reroutes only on a recorded decision of the Pit Supervisor.</p>
+<p><strong>Failure behaviour is missing.</strong> A need says what should happen when things work. The hard requirements are about
+what must happen when a message is late, duplicated or lost. In SCN-POSCOM-STALE a grant reaches LV07's field terminal
+30 s after it was issued. The workshop draft says &quot;the field terminal shall reject old grants&quot; — but how old is old,
+who decides, what does the driver see, and what happens to the area lock afterwards?</p>
+<p>The scale of the problem is visible in the handbook itself. The 128 chapters of the corpus volumes define <strong>1,086
+requirements</strong>, and every one of them has an ID, an evidence label, a rationale and a verification line. That is a
+disciplined corpus. Run through an automated checker (section 4.5), it still shows warnings on most requirements:
+compound statements, passive voice without an actor, verification methods the checker does not recognise. Those
+warnings are not failures of the chapters; they show what a checker can find, what it cannot, and where a human
+reviewer must decide. A mine that starts with workshop notes instead of a reviewed corpus starts much further back.</p>
+<h2 id="s-3">3. Terminology and foundations</h2>
+<p><strong>Stakeholder need.</strong> What a person or organisation needs from the system, in their words (ch-03-01). &quot;We approach
+the burning truck only when nothing can move into us&quot; (ERT). A need is the input; it is not verified directly.</p>
+<p><strong>Requirement</strong> (glossary <code>requirement</code>). A statement of a needed capability or constraint that can be verified. In
+the handbook it has an ID, an evidence label, a statement with <em>shall</em>, a rationale and a verification line <code>[H]</code>.</p>
+<p><strong>Design solution.</strong> One way to meet a requirement. &quot;A circle of 150 m around the truck's position&quot; is a design; &quot;a
+zone of configurable geometry around the truck that closes every segment it touches&quot; is the requirement. Keeping them
+apart lets engineering change the design without reopening the need.</p>
+<p><strong>System requirement, element requirement.</strong> A system requirement applies to the AHS as a whole (Volume 01 states
+several, e.g. REQ-01-04-003: no central command moves a truck under a vehicle-side stop). An element requirement is
+allocated to one element of the architecture: FMS, AMS, ADS, VCS, independent safety functions (ISF), onboard
+safety-related systems (OSS), manned-vehicle devices (MVD), or people (ch-02-03).</p>
+<p><strong>Derived requirement</strong> <code>[H]</code>. A requirement that does not come straight from a need but follows from a higher
+requirement and a design choice. &quot;The VCS shall stop the truck without the ADS if the ADS does not respond in time&quot;
+(in REQ-04-07-002) follows from the system rule that the stop must not depend on the driving software.</p>
+<p><strong>Allocation</strong> (glossary <code>function-allocation</code>). The assignment of a requirement to the element or role that must
+satisfy it. An unallocated requirement has no owner and no test.</p>
+<p><strong>Interface requirement</strong> <code>[H]</code>. A requirement on what crosses a boundary between elements: message content, timing,
+order, versioning. REQ-02-07-002 (every message carries an idempotency key and a sequence number) is one.</p>
+<p><strong>Verification method</strong> (glossary <code>verification-method</code>). How a requirement is shown to be met. The handbook names
+five <code>[H]</code>: <strong>test</strong> (run the system under defined conditions and compare with a criterion), <strong>analysis</strong> (calculation
+or model), <strong>inspection</strong> (examine a document, code, configuration or record), <strong>demonstration</strong> (show the function in
+operation without detailed measurement, e.g. in a drill), and <strong>review</strong> (a structured reading by competent people).
+ch-03-07 and Volume 18 treat their selection and levels.</p>
+<p><strong>Acceptance criterion</strong> (glossary <code>acceptance-criterion</code>). The observable condition under which a requirement counts
+as met in a given test or check — for operations readers, best written as what someone can see.</p>
+<p><strong>Requirements baseline</strong> <code>[H]</code>. The set of requirements, each at a stated version, agreed at a point in time. Changes
+after that point go through change control (ch-03-08).</p>
+<p><strong>Evidence label.</strong> <code>[H]</code>, <code>[A]</code>, <code>[F]</code>, <code>[R]</code> and the others of master-instructions §5. In requirements the label
+says where the requirement comes from. Almost all handbook requirements are <code>[H]</code> (handbook convention); the
+recommendations are <code>[R]</code> and use <em>should</em>.</p>
+<p>Requirements-engineering standards and guidance exist that define requirement quality characteristics and
+specification content; the handbook does not state what any of them requires <code>[TBV]</code> (SRC-PUB-REQUIREMENTS-ENGINEERING).
+Safety-related development standards such as the IEC 61508 series (SRC-STD-IEC61508) and ISO 17757:2019
+(SRC-STD-ISO17757) address safety requirements as a topic; both are registered at catalogue level only, and their
+clause content is <code>[TBV]</code>. ch-04-03 maps the standards landscape. Nothing in this chapter is derived from a standard
+clause; the format, rules and examples are handbook conventions <code>[H]</code>.</p>
+<h2 id="s-4">4. Technical explanation</h2>
+<h3 id="s-4-1">4.1 The handbook requirement format</h3>
+<p>Every requirement in the handbook is a block of four parts <code>[H]</code>:</p>
+<pre><code>REQ-VV-CC-NNN [label]
+&lt;statement with &quot;shall&quot;, one or more lines&gt;
+Rationale: &lt;why — the section, scenario or decision it rests on&gt;
+Verification: &lt;method(s), with the test, lab or record that provides the evidence&gt;
+</code></pre>
+<p>FIG-03-02-02 dissects REQ-04-07-005, the exclusion-zone requirement of ch-04-07, quoted unchanged.</p>
+<figure id="FIG-03-02-02" class="fig"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 606" role="img" aria-label="Anatomy of a handbook requirement — REQ-04-07-005 (ch-04-07)">
+<style>
+text{font-family:system-ui,-apple-system,'Segoe UI','Hiragino Sans','Noto Sans CJK JP',sans-serif}
+.h{fill:var(--fg,#1d1f21);font-size:16px;font-weight:700}
+.c{fill:var(--fg,#1d1f21);font-size:13px;font-weight:700}
+.r{font-size:13px;font-weight:700;fill:var(--fg,#1d1f21)}
+.v{fill:var(--fg,#1d1f21);font-size:13px}
+.m{fill:var(--muted,#5d6166);font-size:12px}
+.mono{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:13px}
+.frame{fill:none;stroke:var(--border,#d0d0d0);stroke-width:1}
+.rule{stroke:var(--border,#d0d0d0);stroke-width:1}
+.warnbox{fill:#c98a1a;fill-opacity:0.12;stroke:#c98a1a;stroke-width:1}
+</style>
+<text class="h" x="20" y="30">Anatomy of a handbook requirement — REQ-04-07-005 (ch-04-07)</text>
+<text class="m" x="20" y="56">As written in the chapter (section 9)</text>
+<text class="mono" x="40" y="86"><tspan fill="#2a78d6" font-weight="700">REQ-04-07-005</tspan> <tspan fill="#8e5cc4" font-weight="700">[H]</tspan></text>
+<rect class="frame" x="24" y="66" width="1052" height="168" rx="6"/>
+<text class="mono" x="40" y="108"><tspan fill="#1baf7a">The AMS</tspan><tspan fill="#d0622b"> shall establish an exclusion zone of configurable geometry</tspan><tspan fill="#c98a1a"> around a truck reporting fire detection or suppression</tspan></text>
+<text class="mono" x="40" y="130"><tspan fill="#c98a1a">activation,</tspan><tspan fill="#d0622b"> close every road segment the zone touches,</tspan><tspan fill="#c0392b"> and shall not issue new routes or granted paths through the zone until</tspan></text>
+<text class="mono" x="40" y="152"><tspan fill="#c0392b">the zone is cleared by an authorised role.</tspan><tspan fill="#5d8a9e"> The controller may enlarge the zone at any time; the zone shall not be reduced</tspan></text>
+<text class="mono" x="40" y="174"><tspan fill="#5d8a9e">below its configured geometry without the clearance of REQ-04-07-009.</tspan></text>
+<text class="mono" x="40" y="196"><tspan fill="#6b6f75">Rationale: containment must be automatic and must not be undone by convenience (sections 4.4, 7.1).</tspan></text>
+<text class="mono" x="40" y="218"><tspan fill="#2a78d6">Verification: test (LAB-04-07-01: zone around SP1 closes R05; radius sweep); demonstration on the HMI.</tspan></text>
+<text class="c" x="40" y="268">Part</text>
+<text class="c" x="220" y="268">Question it answers</text>
+<text class="c" x="560" y="268">Here</text>
+<line class="rule" x1="24" y1="276" x2="1076" y2="276"/>
+<rect x="24" y="289" width="8" height="16" fill="#2a78d6"/>
+<text class="r" x="40" y="302" fill="#2a78d6">ID</text>
+<text class="v" x="220" y="302">Which requirement? Stable, never reused</text>
+<text class="v" x="560" y="302">REQ-04-07-005: volume 04, chapter 07, number 005</text>
+<rect x="24" y="315" width="8" height="16" fill="#8e5cc4"/>
+<text class="r" x="40" y="328" fill="#8e5cc4">Evidence label</text>
+<text class="v" x="220" y="328">Where does it come from?</text>
+<text class="v" x="560" y="328">[H] handbook convention; a number in it needs [A] or a source</text>
+<rect x="24" y="341" width="8" height="16" fill="#1baf7a"/>
+<text class="r" x="40" y="354" fill="#1baf7a">Actor</text>
+<text class="v" x="220" y="354">Who must do it? (allocation)</text>
+<text class="v" x="560" y="354">the AMS</text>
+<rect x="24" y="367" width="8" height="16" fill="#c98a1a"/>
+<text class="r" x="40" y="380" fill="#c98a1a">Condition</text>
+<text class="v" x="220" y="380">When does it apply?</text>
+<text class="v" x="560" y="380">a truck reports fire detection or suppression activation</text>
+<rect x="24" y="393" width="8" height="16" fill="#d0622b"/>
+<text class="r" x="40" y="406" fill="#d0622b">Response</text>
+<text class="v" x="220" y="406">What must happen?</text>
+<text class="v" x="560" y="406">zone of configurable geometry; segments closed</text>
+<rect x="24" y="419" width="8" height="16" fill="#c0392b"/>
+<text class="r" x="40" y="432" fill="#c0392b">Constraint</text>
+<text class="v" x="220" y="432">What must never happen?</text>
+<text class="v" x="560" y="432">no new route or granted path through the zone until cleared</text>
+<rect x="24" y="445" width="8" height="16" fill="#5d8a9e"/>
+<text class="r" x="40" y="458" fill="#5d8a9e">Link</text>
+<text class="v" x="220" y="458">What else does it depend on?</text>
+<text class="v" x="560" y="458">clearance only through REQ-04-07-009</text>
+<rect x="24" y="471" width="8" height="16" fill="#6b6f75"/>
+<text class="r" x="40" y="484" fill="#6b6f75">Rationale</text>
+<text class="v" x="220" y="484">Why? (lets a reviewer judge a change)</text>
+<text class="v" x="560" y="484">containment automatic, not undone by convenience</text>
+<rect x="24" y="497" width="8" height="16" fill="#2a78d6"/>
+<text class="r" x="40" y="510" fill="#2a78d6">Verification</text>
+<text class="v" x="220" y="510">How will we know? Method + evidence</text>
+<text class="v" x="560" y="510">test (LAB-04-07-01), demonstration on the HMI</text>
+<line class="rule" x1="24" y1="524" x2="1076" y2="524"/>
+<rect class="warnbox" x="24" y="534" width="1052" height="30" rx="5"/>
+<text class="r" x="40" y="554">Quality check (LAB-03-02-01): no error. Warnings: compound (3 modal verbs), passive ‘shall not be reduced’ without an actor.</text>
+<text class="m" x="20" y="588">Educational model. The colours mark the parts; the wording is quoted unchanged from ch-04-07.</text>
+</svg>
+<figcaption><span class="fig-no">Figure 1</span> Anatomy of a handbook requirement (ID, label, statement, rationale, verification) <span class="fig-id">FIG-03-02-02</span></figcaption></figure>
+<p>Each part answers one question:</p>
+<ul>
+<li><strong>ID</strong> — which requirement. <code>VV-CC</code> is the chapter that defines it, <code>NNN</code> its number. IDs are stable: a withdrawn
+requirement is deprecated, never renumbered.</li>
+<li><strong>Evidence label</strong> — where it comes from. A number inside a requirement needs a source or <code>[A]</code>.</li>
+<li><strong>Actor</strong> — who must do it. &quot;The AMS&quot; makes the allocation explicit.</li>
+<li><strong>Condition</strong> — when it applies: a truck reporting fire detection or suppression activation.</li>
+<li><strong>Response</strong> — what must happen: a zone of configurable geometry; every touched segment closed.</li>
+<li><strong>Constraint</strong> — what must never happen: no new route or granted path through the zone until it is cleared.</li>
+<li><strong>Link</strong> — what it depends on: the zone is reduced only through the clearance of REQ-04-07-009.</li>
+<li><strong>Rationale</strong> — why. A reviewer who wants to change the requirement must be able to see what it protects.</li>
+<li><strong>Verification</strong> — how we will know: the method and where the evidence comes from (LAB-04-07-01, a demonstration
+on the HMI).</li>
+</ul>
+<p>The checker of LAB-03-02-01 finds no error in REQ-04-07-005 and two warnings: three modal verbs in one statement
+(<em>compound</em>) and a passive &quot;shall not be reduced&quot; without an actor. Both are deliberate in ch-04-07 — the controller's
+freedom to enlarge and the ban on reducing belong together — and both are exactly what a reviewer should look at.</p>
+<h3 id="s-4-2">4.2 From need to system to element requirement</h3>
+<p>FIG-03-02-01 shows the hierarchy for the fire on DT17. Needs come from people; system requirements state what the AHS
+as a whole must do; element requirements are allocated to one element or role. The arrows are the trace links of
+ch-03-03: a need is <em>refined into</em> requirements; a system requirement <em>derives</em> element requirements.</p>
+<figure id="FIG-03-02-01" class="fig"><pre class="mermaid">flowchart TB
+  subgraph L0[&quot;Stakeholder needs — from people (SCN-FIRE-DT17)&quot;]
+    N1[/&quot;ERT: we approach the burning truck only when nothing can move into us&quot;/]
+    N2[/&quot;Pit Supervisor: the rest of the pit keeps producing when that is safe&quot;/]
+    N3[/&quot;AHS Controller: I see the event and every truck it holds&quot;/]
+  end
+  subgraph L1[&quot;System requirements — the AHS as a whole&quot;]
+    S1[&quot;REQ-01-04-006&lt;br/&gt;the vehicle-side reaction waits for no central message&quot;]
+    S2[&quot;REQ-01-04-003&lt;br/&gt;no central command moves a truck under a vehicle-side stop&quot;]
+    S3[&quot;contain the event: zone, hold or reroute, clearance by people&lt;br/&gt;(no system-level ID: ch-04-07 states it per element)&quot;]
+  end
+  subgraph L2[&quot;Element requirements — allocated&quot;]
+    O[&quot;OSS · REQ-04-07-001&lt;br/&gt;detect and actuate on board&quot;]
+    V[&quot;VCS · REQ-04-07-002&lt;br/&gt;stop and hold the truck&quot;]
+    D[&quot;ADS · REQ-02-03-003&lt;br/&gt;resumes are offers only&quot;]
+    F[&quot;FMS and AMS · REQ-04-07-004&lt;br/&gt;no command clears the safe state&quot;]
+    A1[&quot;AMS · REQ-04-07-005&lt;br/&gt;exclusion zone, segments closed&quot;]
+    A2[&quot;AMS · REQ-04-07-006&lt;br/&gt;hold-or-reroute options&quot;]
+    P[&quot;People · REQ-04-07-009&lt;br/&gt;clearance by the AHS Controller on the Pit Supervisor&#x27;s authorisation&quot;]
+  end
+  N1 --&gt;|refines| S1
+  N1 --&gt;|refines| S2
+  N1 --&gt;|refines| S3
+  N2 --&gt;|refines| S3
+  N3 --&gt;|refines| S3
+  S1 --&gt;|derives| O
+  S1 --&gt;|derives| V
+  S2 --&gt;|derives| D
+  S2 --&gt;|derives| F
+  S3 --&gt;|derives| A1
+  S3 --&gt;|derives| A2
+  S3 --&gt;|derives| P
+  classDef veh fill:#e3eefb,stroke:#2a78d6
+  classDef cen fill:#eef7ee,stroke:#1baf7a
+  classDef ppl fill:#fbf0e0,stroke:#c98a1a
+  class O,V,D veh
+  class F,A1,A2 cen
+  class P ppl
+</pre><figcaption><span class="fig-no">Figure 2</span> Requirement hierarchy: stakeholder need, system, element (FMS / AMS / ADS / VCS / OSS / people) <span class="fig-id">FIG-03-02-01</span></figcaption></figure>
+<p>Three points stand out.</p>
+<p><strong>Vehicle-side decisions are allocated to the vehicle.</strong> The ERT's need — nothing moves into us — is met first by
+requirements on the truck: the fire system detects and actuates on board (REQ-04-07-001), the VCS stops and holds
+the truck (REQ-04-07-002), the ADS treats a resume as an offer it can refuse (REQ-02-03-003). The central requirements
+are written as constraints on the centre: REQ-04-07-004 forbids any AMS or FMS command that clears the onboard safe
+state. This is how a principle of the handbook's reference architecture (ch-01-04 section 4.6) — central permissions never
+override vehicle-side safety decisions — appears in a requirement set: as <em>shall not</em> on central elements and <em>shall</em> on the
+vehicle, never as a central <em>shall</em> that the vehicle must obey.</p>
+<p><strong>A level can be missing.</strong> The containment of the event — zone, hold or reroute, clearance by people — has no
+system-level requirement with its own ID; ch-04-07 states it directly per element. That is a legitimate choice for a
+chapter, and it is also the kind of gap a trace review notices (ch-03-03): the ERT's need reaches the AMS
+requirements through prose, not through a link.</p>
+<p><strong>People are an element.</strong> REQ-04-07-009 — clearance by the AHS Controller on the Pit Supervisor's authorisation — is
+allocated to people. It is verified by inspection of the clearance record and by demonstration in drills, not by a
+software test. A requirement set that only contains software requirements has silently allocated these decisions to
+nobody.</p>
+<h3 id="s-4-3">4.3 Kinds of requirement</h3>
+<p>The handbook does not tag requirements by kind, but reading the corpus by kind is useful, because each kind fails in
+its own way and is verified in its own way.</p>
+<table>
+<thead>
+<tr>
+<th>Kind</th>
+<th>What it constrains</th>
+<th>Handbook example</th>
+<th>Typical verification</th>
+<th>Typical defect</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Functional</td>
+<td>What an element does</td>
+<td>REQ-04-07-005: the AMS establishes the exclusion zone</td>
+<td>Test</td>
+<td>Missing condition or missing failure case</td>
+</tr>
+<tr>
+<td>Performance</td>
+<td>How fast, how far, how often</td>
+<td>REQ-04-07-002: the VCS stops the truck if the ADS does not respond within a configurable time <code>[A]</code></td>
+<td>Test, analysis</td>
+<td>A number with no source</td>
+</tr>
+<tr>
+<td>Interface</td>
+<td>What crosses a boundary</td>
+<td>REQ-02-07-002: idempotency key and sequence number on every message</td>
+<td>Inspection of the ICD, test</td>
+<td>Meaning left to each side</td>
+</tr>
+<tr>
+<td>Safety-related</td>
+<td>A behaviour that controls a hazard</td>
+<td>REQ-10-06-008: no permission delays or cancels a remote stop</td>
+<td>Analysis, test</td>
+<td>Written as a central command the vehicle must obey</td>
+</tr>
+<tr>
+<td>Operational</td>
+<td>What people and procedures do</td>
+<td>REQ-02-07-006: radio read-back <em>and</em> a confirmed permission on the terminal before entry</td>
+<td>Inspection, demonstration</td>
+<td>Verified only on paper</td>
+</tr>
+</tbody>
+</table>
+<p>A requirement can belong to more than one kind. REQ-02-07-003 is functional (withdraw an unacknowledged grant), an
+interface requirement (the terminal returns to &quot;not granted&quot;) and safety-related (it controls HZ-03).</p>
+<p><strong>Numbers in requirements.</strong> A number in a requirement is a commitment. In the handbook it must carry a source or
+<code>[A]</code> <code>[H]</code>. The preferred pattern is <em>configurable</em>: the requirement fixes the behaviour and names the parameter
+(&quot;within a configurable time <code>[A]</code>&quot;); the value is set, justified and recorded per site. ch-02-07 and ch-10-06 follow
+this for the acknowledgement deadline and the message age limit (30 s and 15 s in the labs, both <code>[A]</code>). Three
+requirements of the corpus contain a number with a unit and no <code>[A]</code> (section 4.5). They are not careless: REQ-15-03-001
+and REQ-15-03-002 restate values of ICD-C01-STATUS 1.0, the interface control document fixed at version 1.0 in
+ch-02-06, and REQ-07-01-003 quotes the handbook's own reference cycle times — sourced inside the handbook and labelled <code>[H]</code>. The checker cannot know that;
+the reviewer can. That is why the rule is a warning, not an error.</p>
+<p><strong>Never invent a safety threshold.</strong> A stopping distance, a zone radius, a timeout or a speed limit that protects
+people is a safety parameter. If it is not derived in the handbook (as stopping distance is in ch-04-05) or in a
+verified source, it is <code>[A]</code> and illustrative, and the requirement must say that the site sets and justifies it.</p>
+<h3 id="s-4-4">4.4 Quality attributes and what a checker can find</h3>
+<p>A good requirement has a short list of properties <code>[H]</code>:</p>
+<table>
+<thead>
+<tr>
+<th>Attribute</th>
+<th>Meaning</th>
+<th>Automated rule in LAB-03-02-01</th>
+<th>What only a human can check</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Identified</td>
+<td>Unique, stable ID in the right chapter</td>
+<td><code>id-format</code>, <code>id-chapter</code></td>
+<td>Whether it duplicates another requirement in other words</td>
+</tr>
+<tr>
+<td>Labelled</td>
+<td>Evidence label present and valid</td>
+<td><code>tag</code></td>
+<td>Whether the label is true</td>
+</tr>
+<tr>
+<td>Unambiguous</td>
+<td>One reading for everyone</td>
+<td><code>vague</code> (a word list)</td>
+<td>Words outside the list: &quot;old&quot;, &quot;promptly&quot;, &quot;near&quot;</td>
+</tr>
+<tr>
+<td>Atomic</td>
+<td>One requirement, one <em>shall</em></td>
+<td><code>compound</code></td>
+<td>Whether the parts belong together</td>
+</tr>
+<tr>
+<td>Allocated</td>
+<td>An actor that must do it</td>
+<td><code>passive</code> (no &quot;by …&quot;), <code>no-shall</code></td>
+<td>Whether the actor is the right one</td>
+</tr>
+<tr>
+<td>Verifiable</td>
+<td>A method that can show it is met</td>
+<td><code>no-verification</code>, <code>unknown-method</code></td>
+<td>Whether the method can actually decide pass or fail</td>
+</tr>
+<tr>
+<td>Justified</td>
+<td>A reason a reviewer can weigh</td>
+<td><code>no-rationale</code></td>
+<td>Whether the reason is the real one</td>
+</tr>
+<tr>
+<td>Sourced</td>
+<td>Numbers traceable or <code>[A]</code></td>
+<td><code>number-untagged</code></td>
+<td>Whether the value is credible</td>
+</tr>
+<tr>
+<td>Consistent</td>
+<td>No conflict with another requirement</td>
+<td>—</td>
+<td>All of it</td>
+</tr>
+<tr>
+<td>Feasible</td>
+<td>Can be built and run at the site</td>
+<td>—</td>
+<td>All of it</td>
+</tr>
+</tbody>
+</table>
+<p>The checker has eleven rules (<code>DEFAULT_RULES</code>), six with severity <em>error</em> and five <em>warning</em> <code>[H]</code>. Errors are
+structural: no ID, no label, no <em>shall</em>, no rationale, no verification. Warnings point to something a reviewer must
+look at. Two attributes — consistency and feasibility — have no rule at all. They need people who know the system and
+the site.</p>
+<p>Every rule is switchable. LAB-03-02-01 uses this to model two stages: at a <strong>workshop</strong>, drafts have no ID yet, so the
+ID rules are off; at <strong>baseline</strong>, every rule is on and an ID is mandatory.</p>
+<h3 id="s-4-5">4.5 The checker on the handbook's own requirements</h3>
+<p>LAB-03-02-01 parses the 128 English chapter files of the corpus volumes (01, 02, 04 – 16 and 18). It finds <strong>1,086
+requirements</strong>, none unparsed and none duplicated; two lines that begin with a requirement ID are prose mentions,
+not blocks. The Japanese files give the same 1,086 IDs. 1,074 requirements are labelled <code>[H]</code> and 12 <code>[R]</code>.</p>
+<p><strong>Verification methods.</strong> Test is named 745 times, inspection 743, demonstration 125, analysis 122 and review 45.
+Most requirements name two methods (664), 403 name one, 15 name three and one names four. Three name none of the five:
+REQ-15-07-002, REQ-15-07-008 and REQ-15-07-011, whose verification lines name a lab, a figure, observation sheets and
+a drill instead.</p>
+<p><strong>Quality.</strong> No requirement has an error. 203 of 1,086 (18.7 %) have no warning at all. The warnings:</p>
+<table>
+<thead>
+<tr>
+<th>Rule</th>
+<th>Requirements</th>
+<th>What it means here</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>compound</td>
+<td>788</td>
+<td>More than one modal verb in the statement</td>
+</tr>
+<tr>
+<td>passive</td>
+<td>372</td>
+<td>&quot;shall be <em>recorded</em> / <em>reported</em> / <em>used</em> …&quot; with no &quot;by …&quot;</td>
+</tr>
+<tr>
+<td>unknown-method</td>
+<td>188</td>
+<td>A verification clause names none of the five methods</td>
+</tr>
+<tr>
+<td>vague</td>
+<td>4</td>
+<td>REQ-04-06-005 and REQ-05-02-002 &quot;sufficient&quot;, REQ-04-08-007 &quot;normally&quot;, REQ-13-02-006 &quot;robust&quot;</td>
+</tr>
+<tr>
+<td>number-untagged</td>
+<td>3</td>
+<td>REQ-07-01-003 (1564.1 s, 1800.1 s), REQ-15-03-001 (5 s), REQ-15-03-002 (15 s)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Compound (788) is mostly a choice, not a defect.</strong> The chapter template's own example has two <em>shall</em>s: establish
+the zone, and do not issue routes through it. The handbook writes a behaviour and its prohibition as one requirement,
+because they are verified together and must not drift apart. Of the 788, 180 contain a <em>shall not</em>; 515 have two
+<em>shall</em>s, 209 three, 42 four and 16 five. The ones that deserve a second look are the 66 compound requirements whose
+<em>shall</em>s have different architecture elements as subjects (for example REQ-02-03-006 and REQ-02-04-001): they are
+allocated to two owners in one sentence, and a change by one owner reopens the other's requirement. Splitting those
+is a recommendation for new work <code>[R]</code>, not a correction of the existing chapters.</p>
+<p><strong>Passive (372)</strong> is dominated by record-keeping: &quot;shall be recorded&quot; (64), &quot;reported&quot; (23), &quot;used&quot; (16). In most of
+these the recording element is obvious from the chapter — but not from the sentence. A requirement read alone, as it
+is in a test plan or a contract, must name its actor.</p>
+<p><strong>Unknown method (188)</strong> shows how the handbook verifies people requirements. The words found in the unrecognised
+clauses are &quot;exercise&quot; (70 requirements), &quot;drill&quot; (28), a bare lab ID such as &quot;LAB-15-07-01&quot; (22), &quot;audit&quot; (18),
+&quot;observation&quot; (4), &quot;replay&quot; (3) and 43 others (&quot;automated comparison&quot;, &quot;fault injection in SIL&quot;, &quot;interview of shift
+staff&quot; …). Exercises, drills and audits are real verification activities for procedures and roles; they map most
+closely to demonstration and inspection. A site requirement set should either map them explicitly or add them to its
+list of methods <code>[R]</code>; the handbook keeps its five methods — a convention of the handbook, not a rule
+for every site.</p>
+<p><strong>Allocation</strong> by a simple heuristic (the subject of each <em>shall</em>) finds the AMS in 282 requirements, the FMS in 76,
+people in 68, the ADS in 63, the VCS in 31, ISF in 22, MVD in 14 and OSS in 9; the AHS Controller is named in 43.
+593 requirements are not allocated by the heuristic at all, because their subject is &quot;the truck&quot;, &quot;the HMI&quot;, &quot;site
+procedures&quot;, &quot;every record&quot; or &quot;the interface&quot;. That number is a limit of the heuristic, not of the handbook: the
+chapters allocate in their section 5 tables. It is also a reminder: a requirement whose subject is &quot;the truck&quot; leaves
+open whether the VCS, the ADS or the onboard fire system must act.</p>
+<p>The lesson for a site is not a percentage. A carefully written corpus with zero errors still carries hundreds of
+warnings that need a person. A checker makes the review faster; it does not replace it.</p>
+<h3 id="s-4-6">4.6 Deriving requirements from a scenario timeline</h3>
+<p>A registered scenario gives a timeline of key events with actors. Each event is a place where something must be true,
+something must happen, and something must not happen. A simple method <code>[H]</code>:</p>
+<ol>
+<li>For each key event, write who acts and what they observe.</li>
+<li>Ask what must happen (response), under which condition, within which time — and whether the time is a key-event
+time of the scenario (illustrative) or a measured capability.</li>
+<li>Ask what must never happen (constraint). Most safety-related requirements live here.</li>
+<li>Ask what happens if the event is late, lost, duplicated or wrong (failure behaviour). Fail closed.</li>
+<li>Allocate each statement to an element or role. If two actors appear, split.</li>
+<li>Look for an existing requirement before writing a new one. In the handbook, LAB-03-02-01 lists the requirements
+that cite a scenario: 19 cite SCN-FIRE-DT17 and 7 cite SCN-POSCOM-STALE.</li>
+</ol>
+<p>Sections 6.2 and 6.3 apply the method to both scenarios.</p>
+<h3 id="s-4-7">4.7 From an operational report to a defect or a new requirement</h3>
+<p>Operations produces reports every shift: alarms, holds, incidents, drill findings, near misses. Each one that
+concerns the AHS's behaviour must end in one of four places <code>[H]</code>:</p>
+<table>
+<thead>
+<tr>
+<th>Question, in order</th>
+<th>If yes</th>
+<th>Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1. Did the system do something an existing requirement forbids, or fail to do something it requires?</td>
+<td>Name the requirement ID(s)</td>
+<td><strong>Defect</strong> against those requirements</td>
+</tr>
+<tr>
+<td>2. Did the system do what its requirements say, but the result is unacceptable for people or production?</td>
+<td>Name the requirement and the need it fails</td>
+<td><strong>Change</strong> of an existing requirement (ch-03-08)</td>
+</tr>
+<tr>
+<td>3. Is the behaviour not covered by any requirement?</td>
+<td>Name the scenario and the gap</td>
+<td><strong>New requirement</strong> (and possibly a new scenario)</td>
+</tr>
+<tr>
+<td>4. Did people do something the procedure does not say, or the procedure does not fit the system?</td>
+<td>Name the procedure step</td>
+<td><strong>Procedure or training</strong> finding</td>
+</tr>
+</tbody>
+</table>
+<p>Last night's report is answered by question 1 <em>no</em> and question 2 <em>perhaps</em>: the HMI refused to reduce the zone
+because REQ-04-07-005 forbids reducing it below its configured geometry without the clearance of REQ-04-07-009. The
+system was right. Whether the controller's need — let a held truck pass on the far side — deserves a change is a
+question for the next review, and it goes there with the requirement IDs attached. A report that says only &quot;zone
+could not be reduced — defect?&quot; cannot be answered without someone finding the requirement first; ch-03-03 shows how
+a trace graph makes that search a lookup.</p>
+<h3 id="s-4-8">4.8 Acceptance criteria a controller can observe</h3>
+<p>A requirement says what the system must do; an acceptance criterion says what someone will see when it does. For
+operations, the most useful criteria are written in terms of the HMI, the field terminal and the radio <code>[H]</code>:</p>
+<ul>
+<li><strong>Situation</strong> — the state before (LV07 inside the area under an active permission, PERM-LV07-0001).</li>
+<li><strong>Event</strong> — what happens (the validity window ends).</li>
+<li><strong>Observable result</strong> — what the controller and the requester see, and within which time.</li>
+<li><strong>What must not be seen</strong> — the forbidden outcome.</li>
+</ul>
+<p>For LV07's expiring grant, ch-10-06 gives the behaviour (REQ-10-06-003: the permission moves to the expired-inside
+state, the area stays locked, new entries are refused, the permission owner is alarmed; no timer releases the permission or unlocks
+the area) and the HMI
+content (REQ-10-06-009). An acceptance criterion a controller can check reads:</p>
+<p><em>With LV07 inside AA-North under PERM-LV07-0001, when its validity window ends: the HMI shows the permission as
+&quot;expired — person may be inside&quot;, raises an alarm to the permission owner, still shows the area locked and the trucks
+held; the field terminal shows that the permission has expired. At no time does the area show as unlocked or a held
+truck as released until the requester has reported out and been confirmed outside.</em></p>
+<p>Every phrase in it can be observed by a person at a console during a site acceptance test. ch-18-01 calls this an
+end-state criterion; the last sentence is an invariant.</p>
+<h3 id="s-4-9">4.9 Linking procedures and training to requirements</h3>
+<p>Many requirements are met partly by people. REQ-02-07-006 requires site procedures to demand both the radio
+read-back and a confirmed permission; REQ-04-07-009 requires the clearance to be done by the controller on the Pit
+Supervisor's authorisation. If the requirement changes and the procedure does not, the system and the people drift
+apart — the most dangerous kind of inconsistency, because both sides believe they are compliant.</p>
+<p>The remedy is a link <code>[H]</code>: every procedure step and every training item that implements a requirement names its ID
+(REQ-03-02-006). A change to the requirement then lists the procedure steps and training items to review, as a change
+to a test case lists the requirements to re-check (ch-03-03, ch-03-08). The link also works the other way: a
+procedure step with no requirement behind it is either a local practice worth writing down as a requirement, or a step
+nobody needs.</p>
+<h3 id="s-4-10">4.10 Trade-offs and limits</h3>
+<ul>
+<li><strong>Atomic versus readable.</strong> One <em>shall</em> per requirement is easier to allocate and test; a behaviour with its
+prohibition is easier to read and keep consistent. The handbook chooses readability within one owner, and atomicity
+across owners <code>[R]</code>.</li>
+<li><strong>Precise versus premature.</strong> A number makes a requirement testable; an unjustified number makes it wrong.
+Configurable parameters with <code>[A]</code> values and a site justification are the middle way.</li>
+<li><strong>Checker versus reviewer.</strong> Word lists miss words (&quot;old&quot; passes in DRAFT-03-02-05) and flag legitimate ones
+(&quot;sufficient evidence of integrity&quot; in REQ-05-02-002 is precise in context). The checker shortens a review; it never
+approves a requirement.</li>
+<li><strong>Model limits.</strong> The parser and the allocation heuristic of <code>ahs_sim.traceability</code> are educational: they read the
+handbook's own format, not natural language in general.</li>
+</ul>
+<h2 id="s-5">5. Responsibilities and interface boundaries</h2>
+<table>
+<thead>
+<tr>
+<th>Element / role</th>
+<th>Requirements it owns (examples)</th>
+<th>Must not</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>FMS</td>
+<td>Production, assignment and reporting requirements; re-plan after an event</td>
+<td>Carry a requirement that moves a truck under a vehicle-side stop</td>
+</tr>
+<tr>
+<td>AMS</td>
+<td>Missions, traffic, exclusion zones, digital access permissions (REQ-04-07-005, REQ-10-06-001)</td>
+<td>Have a <em>shall</em> that clears, delays or overrides an onboard safe state or an independent stop (REQ-04-07-004, REQ-10-06-008)</td>
+</tr>
+<tr>
+<td>ADS</td>
+<td>Perception, localisation, path following; stop-location selection within the granted path</td>
+<td>Depend on a central message for a stop it must make itself</td>
+</tr>
+<tr>
+<td>VCS</td>
+<td>Actuation, stop and hold (REQ-04-07-002)</td>
+<td>Accept motion while a safe state is latched</td>
+</tr>
+<tr>
+<td>Independent safety functions</td>
+<td>Remote and emergency stop paths</td>
+<td>Have any permission or AMS state as an input</td>
+</tr>
+<tr>
+<td>Onboard safety-related systems</td>
+<td>Fire detection and suppression on the truck (REQ-04-07-001)</td>
+<td>Wait for the AMS, the network or the control room</td>
+</tr>
+<tr>
+<td>Manned-vehicle devices</td>
+<td>Field terminal acceptance of grants; position reports (REQ-02-07-001, REQ-02-07-003)</td>
+<td>Turn a late or duplicated grant into an entry</td>
+</tr>
+<tr>
+<td>People</td>
+<td>Clearance, decisions, read-back (REQ-04-07-009, REQ-02-07-006)</td>
+<td>Be left out of the requirement set because they are &quot;procedure&quot;</td>
+</tr>
+<tr>
+<td>Systems engineer (function) <code>[A]</code></td>
+<td>Writes, allocates and maintains the requirement set; runs the quality check</td>
+<td>Approve a safety-related requirement alone</td>
+</tr>
+<tr>
+<td>Safety engineer (function) <code>[A]</code></td>
+<td>Classifies requirements as safety-related; checks hazard coverage (ch-04-01)</td>
+<td>Accept a central <em>shall</em> in place of a vehicle-side one</td>
+</tr>
+<tr>
+<td>AHS Controller, Pit Supervisor, ERT, Field Technician</td>
+<td>State needs; review operational requirements and acceptance criteria; report observations with references</td>
+<td>Be the only verification of a software behaviour</td>
+</tr>
+</tbody>
+</table>
+<p>&quot;Systems engineer&quot; and &quot;safety engineer&quot; are functions <code>[A]</code>, not roles of <code>mine.yaml</code>; ch-03-09 treats engineering
+roles.</p>
+<h2 id="s-6">6. Normal, abnormal and degraded operation</h2>
+<h3 id="s-6-1">6.1 Normal operation — the requirement life at the reference mine</h3>
+<p>In normal work a requirement moves through five steps <code>[H]</code>: a need is captured with its source (ch-03-01); a draft is
+written in the format of section 4.1; the workshop check runs (ID rules off); a review with engineering, safety and
+operations resolves every warning or records why it stays; the requirement enters the baseline with an ID, and the
+baseline check runs with every rule on. From then on it changes only through change control (ch-03-08), and every
+change raises the trace links that depend on it (ch-03-03).</p>
+<h3 id="s-6-2">6.2 Abnormal operation — SCN-FIRE-DT17 (shared timeline for sections 7 and 8)</h3>
+<p>The registered key events are at T+0, 5, 10, 15, 60 and 600 s. T+7.4 s and T+120 s are the intermediate times used in
+ch-04-07 <code>[A]</code>. For each event the table gives what the method of section 4.6 asks, the workshop drafts it produced
+(lab-local labels, <code>data/drafts.yaml</code>), and the existing requirement that states the same intent.</p>
+<table>
+<thead>
+<tr>
+<th>Time</th>
+<th>Key event (registry)</th>
+<th>Must happen / must never happen</th>
+<th>Allocated to</th>
+<th>Workshop draft</th>
+<th>Existing requirement</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>T+0 s</td>
+<td>Fire detection on DT17</td>
+<td>Detect, actuate and request the safe state on the truck, with nothing central in the chain</td>
+<td>OSS</td>
+<td>—</td>
+<td>REQ-04-07-001</td>
+</tr>
+<tr>
+<td>T+5 s</td>
+<td>Controlled stop begins; stop location evaluated</td>
+<td>Stop and hold; the stop place only within the granted path; stop without the ADS if it does not respond</td>
+<td>VCS, ADS</td>
+<td>—</td>
+<td>REQ-04-07-002, REQ-04-07-003</td>
+</tr>
+<tr>
+<td>T+7.4 s <code>[A]</code></td>
+<td>DT17 at standstill, safe state latched</td>
+<td>No central command clears it</td>
+<td>FMS, AMS (constraint)</td>
+<td>—</td>
+<td>REQ-04-07-004</td>
+</tr>
+<tr>
+<td>T+10 s</td>
+<td>AMS: zone created, R05 traffic held</td>
+<td>Zone around the truck; segments closed; no route through it until cleared</td>
+<td>AMS</td>
+<td>DRAFT-03-02-01, DRAFT-03-02-02</td>
+<td>REQ-04-07-005</td>
+</tr>
+<tr>
+<td>T+15 s</td>
+<td>Controller acknowledges; ERT and Pit Supervisor called</td>
+<td>One view of the event and the trucks held</td>
+<td>AMS (HMI), people</td>
+<td>DRAFT-03-02-03</td>
+<td>REQ-04-10-006</td>
+</tr>
+<tr>
+<td>T+60 s</td>
+<td>FMS re-plans EX02; delay coded</td>
+<td>Hold-or-reroute options reported to controller and FMS</td>
+<td>AMS, FMS</td>
+<td>DRAFT-03-02-03</td>
+<td>REQ-04-07-006</td>
+</tr>
+<tr>
+<td>T+120 s <code>[A]</code></td>
+<td>Pit Supervisor decides: run via R24</td>
+<td>Reroute only on a recorded decision</td>
+<td>AMS, Pit Supervisor</td>
+<td>DRAFT-03-02-03</td>
+<td>REQ-04-07-006</td>
+</tr>
+<tr>
+<td>T+600 s</td>
+<td>ERT at the zone boundary under positive communication</td>
+<td>No entry without a confirmed permission and recorded isolation conditions</td>
+<td>People, AMS, MVD</td>
+<td>—</td>
+<td>REQ-04-07-008</td>
+</tr>
+<tr>
+<td>after T+600 s</td>
+<td>Fire out, scene safe</td>
+<td>Clearance by the controller on the Pit Supervisor's authorisation, on recorded evidence</td>
+<td>People</td>
+<td>DRAFT-03-02-04</td>
+<td>REQ-04-07-009</td>
+</tr>
+</tbody>
+</table>
+<p>Read down the &quot;Allocated to&quot; column: the first three events belong to the truck, the middle to the AMS and the FMS,
+the last to people. A workshop that writes &quot;the system shall&quot; for all of them has hidden that structure.</p>
+<p>The four fire drafts and what LAB-03-02-01 says about them (all rules on):</p>
+<table>
+<thead>
+<tr>
+<th>Draft</th>
+<th>Statement (abridged)</th>
+<th>Rules triggered</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>DRAFT-03-02-01</td>
+<td>&quot;The system shall quickly set up an appropriate exclusion zone … and hold other trucks if possible&quot;</td>
+<td>no tag, no rationale, vague (&quot;quickly&quot;, &quot;appropriate&quot;, &quot;if possible&quot;), no ID</td>
+</tr>
+<tr>
+<td>DRAFT-03-02-02</td>
+<td>&quot;The AMS shall hold every truck within 150 m of a truck on fire within 10 s&quot;</td>
+<td>number untagged (150 m, 10 s), no ID</td>
+</tr>
+<tr>
+<td>DRAFT-03-02-03</td>
+<td>&quot;Trucks shall be rerouted around the zone and/or held, and the controller shall be informed&quot;</td>
+<td>compound, passive, vague (&quot;and/or&quot;), unknown method (&quot;drill&quot;), no ID</td>
+</tr>
+<tr>
+<td>DRAFT-03-02-04</td>
+<td>&quot;The exclusion zone shall be cleared when the fire is out&quot;</td>
+<td>passive, no verification, no ID</td>
+</tr>
+</tbody>
+</table>
+<p>DRAFT-03-02-04 is the most dangerous of the four, and the checker sees only its form. It says <em>when</em> the zone is
+cleared but not <em>who</em> clears it or <em>on what evidence</em>. A literal implementation would clear the zone when the fire
+system reports &quot;fire out&quot; — a central action releasing traffic into the former hazard area on a sensor reading. The
+rewrite makes it a people decision:</p>
+<p><em>RW-03-02-04: The AHS Controller shall clear an exclusion zone only on the authorisation of the Pit Supervisor,
+recorded in the AMS with the ERT's declaration that the scene is safe.</em></p>
+<p>The rewrites of the fire drafts (RW-03-02-01 to RW-03-02-04 in the lab) pass every workshop rule. Compared with the
+existing REQ-04-07-005, -006 and -009 they are narrower — the existing requirements also cover enlargement of the
+zone, reporting to the FMS and the staged release of held trucks — and that comparison is part of the exercise: a
+rewrite that is cleaner than the existing requirement may also say less.</p>
+<h3 id="s-6-3">6.3 Abnormal operation — SCN-POSCOM-STALE: fail-closed permission requirements</h3>
+<p>The registry gives three key events: at T+0 s the AMS issues a grant; at T+30 s the field terminal receives it after
+its expiry window and rejects it as stale; at T+31 s the area remains locked and the controller is alerted to
+re-issue. In ch-10-06's timeline of SCN-POSCOM-LV07 these are T+90 s, T+120 s and T+121 s.</p>
+<table>
+<thead>
+<tr>
+<th>Time</th>
+<th>Key event</th>
+<th>Must happen / must never happen</th>
+<th>Allocated to</th>
+<th>Draft</th>
+<th>Rewrite (lab)</th>
+<th>Existing requirement</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>T+0 s</td>
+<td>Grant issued</td>
+<td>The grant carries issue time, validity and sequence number; it becomes usable only after a valid acknowledgement within the deadline, measured on the AMS clock</td>
+<td>AMS</td>
+<td>DRAFT-03-02-07</td>
+<td>RW-03-02-07</td>
+<td>REQ-01-04-004, REQ-02-07-003, REQ-10-06-001</td>
+</tr>
+<tr>
+<td>T+30 s</td>
+<td>Terminal rejects the stale grant</td>
+<td>A grant older than the age limit is shown as <em>not granted</em>; no entry without a CONFIRM</td>
+<td>MVD (field terminal)</td>
+<td>DRAFT-03-02-05</td>
+<td>RW-03-02-05</td>
+<td>REQ-02-07-001, REQ-02-07-003, REQ-16-03-005</td>
+</tr>
+<tr>
+<td>T+30 s</td>
+<td>Driver hears a grant on the radio</td>
+<td>Radio alone never authorises entry; both read-back and terminal confirmation</td>
+<td>People</td>
+<td>DRAFT-03-02-06</td>
+<td>RW-03-02-06</td>
+<td>REQ-02-07-006</td>
+</tr>
+<tr>
+<td>T+31 s</td>
+<td>Area remains locked; controller alerted</td>
+<td>Keep the lock until the controller has confirmed the requester outside; alarm the permission owner</td>
+<td>AMS, AHS Controller</td>
+<td>DRAFT-03-02-07, DRAFT-03-02-08</td>
+<td>RW-03-02-08, RW-03-02-09</td>
+<td>REQ-10-06-007</td>
+</tr>
+</tbody>
+</table>
+<p>The checker on the permission drafts:</p>
+<ul>
+<li>DRAFT-03-02-05, &quot;The field terminal shall reject old grants&quot;, carries the malformed ID &quot;REQ-10-6-12&quot; — the only
+rule it triggers is <code>id-format</code>. &quot;Old&quot; is not in the vague-word list. The checker passes a requirement that no one
+could test: how old is old? The rewrite names the configured message age limit <code>[A]</code> and the observable result,
+<em>not granted</em>.</li>
+<li>DRAFT-03-02-06, &quot;Grants shall be acknowledged as soon as possible by the driver&quot;, is flagged as vague but not as
+passive, because it has an actor (&quot;by the driver&quot;). It is still the wrong requirement: the safety lies not in a
+fast acknowledgement but in never entering on the radio alone.</li>
+<li>DRAFT-03-02-07 bundles two owners' behaviours and an untagged 30 s; the rewrite splits it into the AMS's withdrawal
+of an unacknowledged grant (RW-03-02-07) and the AMS's lock kept until the controller confirms (RW-03-02-08).</li>
+<li>DRAFT-03-02-08 uses <em>should</em> in an <code>[H]</code> requirement (an error, <code>no-shall</code>), &quot;normally&quot; (vague) and &quot;observation in
+operation&quot; as its verification (unknown method).</li>
+</ul>
+<p><strong>Allocation.</strong> The method of section 4.6 allocates each rewrite by hand; the lab compares this with the heuristic.
+They agree for four of the nine rewrites (RW-03-02-01, -05, -07, -09). For RW-03-02-02, -03, -04 and -08 the
+heuristic finds the element but misses a role named in an object position (&quot;on a decision of the Pit Supervisor&quot;).
+For RW-03-02-06, &quot;The requester shall enter … only after both the radio read-back and a confirmed permission&quot;, it
+finds nothing, because &quot;requester&quot; is neither an element nor a <code>mine.yaml</code> role. The manual allocation is people.
+That is the point of the exercise: fail-closed permissions are a chain across three owners — the AMS, the field
+terminal and the person in LV07 — and each link needs its own requirement and its own verification.</p>
+<h3 id="s-6-4">6.4 Degraded operation — the same fire with the link lost</h3>
+<p>ch-04-07 section 6.3 runs SCN-FIRE-DT17 with DT17's link down when the fire starts. The truck still detects, actuates
+and stops at T+5 s; the AMS sees only <em>communication lost</em> and creates no zone until the event reaches it, at T+90 s in
+LAB-04-07-02 <code>[A]</code>. For requirements this is the test of allocation. Every requirement allocated to the truck still
+holds; every central requirement is late. Two requirements exist only because of this case: the vehicle-side reaction
+waits for no central message (REQ-01-04-006), and safety-related events raised while the link is down are stored and
+forwarded with their original time (REQ-02-01-006). A requirement set written only from the nominal timeline would
+contain neither.</p>
+<h2 id="s-7">7. Engineering view</h2>
+<h3 id="s-7-1">7.1 Design decisions and trade-offs</h3>
+<p><strong>Behaviour fixed, value configurable.</strong> Write the behaviour and name the parameter; keep values out of the statement
+unless they are sourced. RW-03-02-01 says &quot;within the configured time <code>[A]</code> of receiving the fire event&quot;; the site's
+parameter record gives the value and its justification. A test then checks two things: that the parameter exists and
+is honoured, and that the site's value is within what the analysis supports.</p>
+<p><strong>One owner per requirement.</strong> Split where the <em>shall</em>s have different subjects (DRAFT-03-02-07). Keep together where
+a behaviour and its prohibition belong to one owner (REQ-04-07-005). The 66 compound requirements of the corpus that
+span two elements are the pattern to avoid in new work.</p>
+<p><strong>Constraints on the centre, duties on the vehicle.</strong> Where a requirement touches a vehicle-side safety decision, write
+it as <em>shall not</em> for central elements (REQ-04-07-004) and as <em>shall</em> for the vehicle (REQ-04-07-002). Never as a
+central command the truck must follow.</p>
+<p><strong>Failure behaviour in the requirement, not in the design notes.</strong> For every message, timer and person in a chain,
+write what happens when it is late, lost, duplicated or wrong. SCN-POSCOM-STALE exists because this was once left
+to the implementation.</p>
+<p><strong>Name people as actors.</strong> &quot;The AHS Controller shall clear …&quot; can be inspected, trained and drilled. &quot;The zone shall be
+cleared&quot; cannot.</p>
+<h3 id="s-7-2">7.2 Failure modes and mitigations</h3>
+<table>
+<thead>
+<tr>
+<th>Failure of the requirement set</th>
+<th>Effect at the mine</th>
+<th>Mitigation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Vague term (&quot;quickly&quot;, &quot;appropriate&quot;, &quot;old&quot;)</td>
+<td>Each side implements its own reading; tests pass on both</td>
+<td>Word-list check plus review; replace with a configurable parameter or an observable criterion</td>
+</tr>
+<tr>
+<td>No actor (passive)</td>
+<td>Nobody builds it, or two elements both do</td>
+<td>Name the actor; check allocation against the section 5 table of the chapter</td>
+</tr>
+<tr>
+<td>Compound across owners</td>
+<td>A change by one owner silently changes another's requirement</td>
+<td>Split; one owner per requirement</td>
+</tr>
+<tr>
+<td>Invented number</td>
+<td>A safety parameter nobody can justify</td>
+<td><code>[A]</code> plus a site parameter record; source register for any claim</td>
+</tr>
+<tr>
+<td>Central <em>shall</em> over a vehicle-side decision</td>
+<td>A permission or command defeats an onboard stop</td>
+<td>Review rule: no requirement allocated to the FMS or AMS conditions a vehicle-side decision (REQ-03-02-004)</td>
+</tr>
+<tr>
+<td>Missing failure behaviour</td>
+<td>Late or duplicated messages are handled by accident</td>
+<td>Derive from the scenario's failure variants (SCN-POSCOM-STALE)</td>
+</tr>
+<tr>
+<td>People requirement verified &quot;on paper&quot;</td>
+<td>Procedure says one thing, practice another</td>
+<td>Demonstration in drills; link to procedure steps and training (REQ-03-02-006)</td>
+</tr>
+<tr>
+<td>Requirement in a procedure only</td>
+<td>A system change breaks it unnoticed</td>
+<td>Write it as a requirement with an ID; link the procedure to it</td>
+</tr>
+<tr>
+<td>Contradiction between chapters or documents</td>
+<td>Two compliant behaviours that cannot both happen</td>
+<td>Review by scenario, not by document; trace review (ch-03-03)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="s-7-3">7.3 Interface and timing considerations</h3>
+<p>The SCN-FIRE-DT17 timeline sets the AMS's containment at T+10 s. That time is a key event of a registered scenario,
+not a measured capability. If engineering adopts a time limit, it must decompose it across the chain: the fire
+system's report to the VCS and ADS, the truck's message to the AMS over the site network, and the AMS's processing,
+each with its own budget, each <code>[A]</code> until measured (section 12, example 2). The decomposition is itself a set of
+interface requirements, and each belongs to a different owner.</p>
+<p>Clocks matter in requirements as much as in code. ch-02-07 requires expiry and acknowledgement deadlines to be
+evaluated on the issuer's clock, with the receiver's age check as additional protection (REQ-02-07-004). A requirement
+that says &quot;a grant older than 15 s&quot; without saying <em>whose</em> clock measures the age is ambiguous in exactly the case it
+was written for: a terminal whose clock has drifted.</p>
+<p>Interface requirements carry versions. An ICD value restated in a requirement (REQ-15-03-001 restates the 5 s
+heartbeat of ICD-C01-STATUS 1.0) must change when the ICD's major version changes; the requirement should name the
+ICD version it depends on, as that one does.</p>
+<h2 id="s-8">8. Operations view</h2>
+<h3 id="s-8-1">8.1 What the control room sees</h3>
+<p>Requirements are invisible in the control room until they are written as acceptance criteria. Then they become things
+a controller can check:</p>
+<ul>
+<li><strong>Fire on DT17 (T+15 s):</strong> one view with the truck, its stop and suppression state, the zone, the closed segments and
+the trucks held (REQ-04-10-006); the zone cannot be reduced without clearance (REQ-04-07-005) — which is what the
+controller met in last night's drill.</li>
+<li><strong>Stale grant for LV07 (T+31 s):</strong> the permission shows as <em>not acknowledged</em>, the area as <em>locked until checked</em>,
+and an alarm asks the permission owner to resolve it (REQ-10-06-007, REQ-10-06-009). The field terminal shows <em>not
+granted</em>.</li>
+<li><strong>Logs:</strong> every refusal the HMI gives should name the rule behind it. &quot;Zone cannot be reduced: clearance required
+(REQ-04-07-009)&quot; turns a suspected defect into an explained behaviour <code>[R]</code>.</li>
+</ul>
+<h3 id="s-8-2">8.2 Who decides what</h3>
+<table>
+<thead>
+<tr>
+<th>Decision</th>
+<th>Responsible</th>
+<th>Accountable</th>
+<th>Consulted</th>
+<th>Informed</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Record an operational need</td>
+<td>AHS Controller, Pit Supervisor, ERT, Field Technician</td>
+<td>Pit Supervisor</td>
+<td>Systems engineer (function) <code>[A]</code></td>
+<td>—</td>
+</tr>
+<tr>
+<td>Write, allocate and check a requirement</td>
+<td>Systems engineer (function) <code>[A]</code></td>
+<td>Engineering lead (function) <code>[A]</code></td>
+<td>Safety engineer (function) <code>[A]</code>, operations representatives</td>
+<td>Vendor teams</td>
+</tr>
+<tr>
+<td>Classify a requirement as safety-related</td>
+<td>Safety engineer (function) <code>[A]</code></td>
+<td>Engineering lead (function) <code>[A]</code></td>
+<td>Pit Supervisor</td>
+<td>Maintenance Planner</td>
+</tr>
+<tr>
+<td>Acceptance criteria for an operational requirement</td>
+<td>Systems engineer (function) <code>[A]</code></td>
+<td>Pit Supervisor</td>
+<td>AHS Controller</td>
+<td>ERT where relevant</td>
+</tr>
+<tr>
+<td>Triage of an operational report (section 4.7)</td>
+<td>Systems engineer (function) <code>[A]</code></td>
+<td>Engineering lead (function) <code>[A]</code></td>
+<td>AHS Controller who reported, Pit Supervisor</td>
+<td>Maintenance Planner</td>
+</tr>
+<tr>
+<td>Accept a requirement into the baseline</td>
+<td>Change control board (function) <code>[A]</code> (ch-03-08)</td>
+<td>Engineering lead (function) <code>[A]</code></td>
+<td>Safety engineer, Pit Supervisor</td>
+<td>Shift crews via handover</td>
+</tr>
+</tbody>
+</table>
+<h3 id="s-8-3">8.3 Procedure excerpt — reporting an AHS observation so that it can be triaged</h3>
+<p>Keyed to the drill on the timeline of section 6.2 <code>[H]</code>.</p>
+<ol>
+<li><strong>AHS Controller (during the event, T+140 s <code>[A]</code>):</strong> when the HMI refuses an action or does something unexpected,
+note the time, the truck and area IDs, the action tried and the exact HMI text. Do not repeat the action to &quot;test&quot;
+it.</li>
+<li><strong>AHS Controller (before the end of shift):</strong> write the observation with the scenario ID if one fits (here
+SCN-FIRE-DT17), the requirement ID if the HMI or the procedure names one, the AMS version on the HMI's about page,
+and the log extract (event, time, source). Hand it over at shift handover as an open item.</li>
+<li><strong>Pit Supervisor (next working day):</strong> check the report is complete; add the production effect (trucks held,
+delay codes).</li>
+<li><strong>Systems engineer (function) <code>[A]</code>:</strong> apply the four questions of section 4.7. Record the result — defect, change,
+new requirement, or procedure / training finding — with the requirement IDs.</li>
+<li><strong>Systems engineer and Pit Supervisor:</strong> for a <em>change</em> or <em>new requirement</em>, write the operational need in the
+controller's words, then the draft requirement; run the workshop check.</li>
+<li><strong>AHS Controller who reported:</strong> receive the outcome. Last night's report closes as <em>no defect: REQ-04-07-005 and
+REQ-04-07-009</em>, with the controller's need (pass a held truck on the far side of a zone) logged for the next review.</li>
+</ol>
+<h3 id="s-8-4">8.4 KPIs and delay codes affected</h3>
+<p>Requirements decide how time is coded, because they decide what holds a truck. During SCN-FIRE-DT17, DT17 is
+DLY-DN-01 from T+0 s and trucks held by the zone are DLY-OD-14 (ch-04-07 section 8.4). In last night's drill the same
+holds are DLY-OD-04: by the handbook's rule, trucks held for a planned drill are DLY-OD-04, and DLY-OD-14 is only for
+the exclusion zone of a real incident (<code>delay-codes.yml</code>, coding rules). During SCN-POSCOM-STALE,
+trucks held because the area stays locked until checked are DLY-OD-04 (held for access permission or work zone). That
+time is the price of REQ-10-06-007: a fail-closed requirement costs production minutes every time it acts, and the
+delay record is how the site sees that cost. A proposal to &quot;release the lock automatically after 5 minutes&quot; is a
+proposal to change a safety-related requirement, and goes through change control with the delay data attached.</p>
+<p>Requirement-set indicators worth reporting at the site review <code>[R]</code>: requirements without acceptance criteria an
+operator can observe; operational reports triaged within the agreed time; reports closed as &quot;no defect&quot; (a high share
+means the HMI does not explain its refusals).</p>
+<h3 id="s-8-5">8.5 Training and competency implications</h3>
+<p>Controllers and supervisors learn to read a requirement in the handbook format and to find it from an HMI refusal.
+Training items are linked to the requirements they teach (REQ-03-02-006), so that a requirement change appears in
+the training plan. Engineers learn to write needs back in the operators' words before writing <em>shall</em>.</p>
+<h2 id="s-9">9. Requirements and acceptance criteria</h2>
+<p>REQ-03-02-001 [H]
+Every requirement of the AHS programme shall carry a unique identifier of the form REQ-VV-CC-NNN, an evidence label,
+a statement with one actor, a rationale, and a verification line that names at least one of the methods test,
+analysis, inspection, demonstration or review together with the source of its evidence.
+Rationale: an unidentified, unlabelled or unverifiable requirement cannot be traced, allocated or accepted (sections
+4.1, 4.4).
+Verification: test (LAB-03-02-01 baseline check of every rule on the requirement set); inspection of the baseline.</p>
+<p>REQ-03-02-002 [H]
+A numeric value in a requirement statement shall name its source or carry the label <code>[A]</code> and refer to a site
+parameter record that states the value and its justification.
+Rationale: an unsourced number is an unjustified commitment; safety parameters are site matters (sections 4.3, 7.1).
+Verification: test (LAB-03-02-01 rule <code>number-untagged</code>); inspection of the parameter record.</p>
+<p>REQ-03-02-003 [H]
+The systems engineer function <code>[A]</code> shall allocate every system requirement to at least one of the FMS, the AMS, the
+ADS, the VCS, the independent safety functions, the onboard safety-related systems, the manned-vehicle devices or a
+named role of the site.
+Rationale: an unallocated requirement has no owner and no test; people are an element (sections 4.2, 6.3).
+Verification: inspection of the allocation table against the requirement set; review with operations.</p>
+<p>REQ-03-02-004 [H]
+The requirements review shall reject any requirement allocated to the FMS or the AMS that clears, delays, conditions
+or overrides a vehicle-side safety decision or an independent safety function.
+Rationale: central permissions never override vehicle-side safety decisions (ch-01-04 section 4.6, principle 1;
+section 4.2).
+Verification: review of every requirement allocated to the FMS or the AMS; inspection of the review record.</p>
+<p>REQ-03-02-005 [H]
+The systems engineer function <code>[A]</code> shall classify every operational report about AHS behaviour as a defect against
+named requirement IDs, a change of a named requirement, a new requirement, or a procedure or training finding,
+recorded with the scenario ID and the log reference.
+Rationale: a report without a classification and references cannot be acted on (sections 4.7, 8.3).
+Verification: inspection of the report register; demonstration with the drill report of section 1.1.</p>
+<p>REQ-03-02-006 [H]
+Every procedure step and every training item that implements a requirement shall name the requirement ID.
+Rationale: a requirement change must reach the procedures and training that carry it out (section 4.9).
+Verification: inspection of procedures and training material; analysis of the trace links (LAB-03-03-01).</p>
+<p>REQ-03-02-007 [H]
+Every requirement allocated to people or to the HMI shall have an acceptance criterion stating what the AHS
+Controller or the requester observes and what they must not observe.
+Rationale: operations accepts what it can see; a criterion in the operators' terms is testable at site acceptance
+(section 4.8).
+Verification: inspection of the acceptance criteria; demonstration at site acceptance.</p>
+<p>REQ-03-02-008 [H]
+The change control board function <code>[A]</code> shall admit a requirement to the requirements baseline only when the quality
+check reports no error-severity issue for it and every warning carries a recorded disposition.
+Rationale: errors are structural; warnings need a reviewer's decision, not silence (sections 4.4, 4.5).
+Verification: test (LAB-03-02-01 error rules on the baseline); inspection of the dispositions.</p>
+<p>These eight requirements pass every rule of the checker (<code>tests/test_requirement_quality_lab.py</code>).</p>
+<h2 id="s-10">10. Verification and validation</h2>
+<p><strong>Verification</strong> (<code>make test CH=ch-03-02</code>, 12 tests): every number in sections 4.5, 6.2 and 6.3 comes from
+LAB-03-02-01 and is asserted — the corpus by volume and label on the corpus volumes, the JA corpus with the same IDs,
+the methods, every rule count with the named examples, the compound, unknown-method and allocation breakdowns, the
+drafts' rules, the nine clean rewrites with their allocations, the existing targets' warnings, and that this chapter's
+own eight requirements are clean and parse without duplicates. A test selects the corpus volumes from the whole
+handbook and checks that the result equals the corpus the lab reads, so that new volumes do not break the counts.</p>
+<p><strong>Validation</strong> of a requirement set is done with people, not code: a review by scenario with operations, engineering
+and safety; a walkthrough of each acceptance criterion at a console; and, after go-live, the share of operational
+reports that find a requirement behind them.</p>
+<h2 id="s-11">11. Common mistakes</h2>
+<h3 id="s-11-1">11.1 Design mistakes</h3>
+<ul>
+<li><strong>&quot;The system shall&quot;</strong> — an actor that allocates nothing.</li>
+<li><strong>Numbers copied from a drill or a scenario</strong> into a requirement without <code>[A]</code> or a source.</li>
+<li><strong>A central requirement that the vehicle must obey</strong> instead of a constraint on the centre.</li>
+<li><strong>Requirements only for the nominal timeline</strong>: nothing on late, lost or duplicated messages.</li>
+<li><strong>Splitting a behaviour from its prohibition across owners</strong>, or bundling two owners in one sentence.</li>
+<li><strong>Trusting the checker's clean result</strong>: &quot;reject old grants&quot; passes the word list.</li>
+</ul>
+<h3 id="s-11-2">11.2 Operational mistakes</h3>
+<ul>
+<li><strong>Reporting &quot;defect&quot; without the scenario, the requirement or the log extract</strong>, so that nobody can triage it.</li>
+<li><strong>Treating a fail-closed refusal as a fault</strong> and pushing for a workaround (section 1.1).</li>
+<li><strong>Changing a procedure without asking which requirement it carries out.</strong></li>
+<li><strong>Accepting a requirement in a review without an acceptance criterion you could check at the console.</strong></li>
+</ul>
+<h2 id="s-12">12. Worked examples</h2>
+<p><strong>Example 1 — the corpus in proportions.</strong> 203 of 1,086 requirements have no warning: 203 / 1086 = 18.7 %. 788 are
+compound: 788 / 1086 = 72.6 %. Of the compound ones, 66 span two or more elements: 66 / 788 = 8.4 % — the share worth
+splitting in new work. 593 are unallocated by the heuristic: 593 / 1086 = 54.6 %, a measure of the heuristic, not of
+the handbook.</p>
+<p><strong>Example 2 — decomposing T+10 s.</strong> Suppose the site adopts the scenario's 10 s as a limit for the zone to be
+established after fire detection <code>[A]</code>. With a fire-system report to the VCS and ADS of 1 s <code>[A]</code>, a truck-to-AMS
+message over the site network of 2 s <code>[A]</code> (including one retry), and AMS processing including zone geometry and
+segment closure of 2 s <code>[A]</code>, the chain takes 1 + 2 + 2 = 5 s, leaving 5 s of margin. Each term is an interface
+requirement for a different owner, and each is <code>[A]</code> until measured. If the link is down (section 6.4), the chain is
+broken and no time limit holds: that case needs REQ-01-04-006 and REQ-02-01-006, not a faster AMS.</p>
+<p><strong>Example 3 — rewriting DRAFT-03-02-07.</strong> &quot;The AMS shall treat a grant that is not acknowledged within 30 s as not
+granted and shall keep the area locked.&quot; Two <em>shall</em>s, an untagged 30 s, and an ambiguity about whose clock measures
+30 s. Rewrite as two requirements: RW-03-02-07 (withdraw a grant with no accepted acknowledgement within the configured
+deadline <code>[A]</code>, measured on the AMS clock) and RW-03-02-08 (keep the lock of a permission that ended without becoming
+active until the AHS Controller has confirmed the requester outside). Both pass the workshop check; the existing
+REQ-02-07-003 and REQ-10-06-007 state the same intent.</p>
+<h2 id="s-13">13. Hands-on labs</h2>
+<p><strong>LAB-03-02-01 — Requirement quality checker.</strong> Parses the handbook's requirement corpus, reports methods, quality
+issues by rule with real examples, compound and allocation breakdowns, and the requirements that cite each scenario;
+checks the workshop drafts of SCN-FIRE-DT17 and SCN-POSCOM-STALE and their rewrites. Instructions, expected results
+and the operations interpretation are in labs/README.md. No browser widget is planned.</p>
+<h2 id="s-14">14. Discussion questions and assignments</h2>
+<h3 id="s-14-1">14.1 Engineering assignments</h3>
+<ol>
+<li>Write the requirement set for SCN-POSCOM-EXPIRY-LV07 (expiry while LV07 is inside) from its registry timeline,
+allocate each requirement, and run it through LAB-03-02-01. Compare with REQ-10-06-003 and REQ-10-06-009.</li>
+<li>Pick three of the 66 compound requirements that span two elements (<code>compound_summary()</code> in the lab). Split each into
+one requirement per owner. What did the split make explicit, and what did it lose?</li>
+<li>Add &quot;exercise&quot;, &quot;drill&quot; and &quot;audit&quot; to the method list and re-run the corpus. How many unknown-method warnings
+remain, and what are they?</li>
+<li>Decompose the T+10 s of SCN-FIRE-DT17 for the case in which DT17's report reaches the AMS through one retry over a
+degraded link. Which terms change, and whose requirement is affected?</li>
+</ol>
+<h3 id="s-14-2">14.2 Operations assignments</h3>
+<ol>
+<li>Rewrite last night's drill report (section 1.1) so that it can be triaged without a phone call.</li>
+<li>Write the acceptance criterion for LV07's stale grant (SCN-POSCOM-STALE) as the controller and the driver would
+check it at site acceptance, including what must not be seen.</li>
+<li>Take the procedure of ch-04-07 section 8.3 and mark each step with the requirement it carries out. Which steps have
+none?</li>
+<li>Review DRAFT-03-02-03 with a Pit Supervisor's eyes: who decides to reroute, and what would you need to see before
+deciding?</li>
+</ol>
+<h2 id="s-15">15. Key takeaways</h2>
+<ul>
+<li>A need is in people's words; a requirement has an ID, a label, one actor, a <em>shall</em>, a rationale and a verification
+method; a design is one way to meet it.</li>
+<li>Allocate every requirement — to the FMS, AMS, ADS, VCS, ISF, OSS, MVD or a named role. Vehicle-side decisions are
+duties of the vehicle and constraints on the centre.</li>
+<li>Every number needs a source or <code>[A]</code>; write behaviour with a configurable parameter and keep values in a site record.</li>
+<li>The handbook's 1,086 requirements have no structural error, and 883 carry at least one warning; a checker speeds a
+review and never replaces it.</li>
+<li>Derive requirements from scenario timelines, including what happens when a message is late, lost or duplicated.</li>
+<li>An operational report becomes a defect, a change, a new requirement or a procedure finding — and it needs the
+scenario, the requirement and the log to get there.</li>
+</ul>
+<h2 id="s-16">16. Glossary terms introduced</h2>
+<p><code>derived-requirement</code>, <code>interface-requirement</code>, <code>requirements-baseline</code>, <code>compound-requirement</code></p>
+<p>Used from the glossary: <code>requirement</code>, <code>stakeholder</code>, <code>concept-of-operations</code>, <code>acceptance-criterion</code>,
+<code>verification-method</code>, <code>verification</code>, <code>validation</code>, <code>traceability</code>, <code>function-allocation</code>, <code>evidence-label</code>,
+<code>hazard-log</code>, <code>exclusion-zone</code>, <code>exclusion-zone-clearance</code>, <code>digital-access-permission</code>, <code>fail-closed</code>, <code>staleness</code>,
+<code>positive-communication</code>, <code>safe-state</code>, <code>vehicle-side-safety-decision</code>, <code>independent-safety-function</code>,
+<code>onboard-safety-related-system</code>, <code>interface-control-document</code>, <code>procedure</code>, <code>change-management</code>.</p>
+<nav aria-label="Introductory chapters"><p><a href="ch-03-01.en.html">Previous chapter</a> · <a href="../handbook.html">Handbook contents</a></p></nav>
+</main>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.1/dist/mermaid.min.js"></script>
+<script>if(window.ahsRenderMermaid){window.ahsRenderMermaid();}</script>
+</body>
+</html>

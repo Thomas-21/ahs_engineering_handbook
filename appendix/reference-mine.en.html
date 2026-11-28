@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="generator" content="ahs-handbook build_index">
+<meta name="ahs:page" content="appendix">
+<title>Appendix C — Reference mine</title>
+<style>
+:root {
+  --bg: #fbfaf7;
+  --fg: #1d1f21;
+  --muted: #5d6166;
+  --accent: #1f6f8b;
+  --accent-soft: #e3f0f4;
+  --border: #d9d6cf;
+  --code-bg: #f1efea;
+  --warn-bg: #fff6e0;
+  --warn-border: #e2b54a;
+  --watermark: rgba(200, 60, 60, 0.07);
+  --font-body: system-ui, -apple-system, "Segoe UI", "Hiragino Sans", "Hiragino Kaku Gothic ProN",
+    "Noto Sans JP", "Yu Gothic", Meiryo, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #15171a;
+    --fg: #e6e4df;
+    --muted: #a3a7ad;
+    --accent: #6cc3de;
+    --accent-soft: #1d3440;
+    --border: #33373d;
+    --code-bg: #1f2226;
+    --warn-bg: #2e2716;
+    --warn-border: #8c7330;
+    --watermark: rgba(255, 120, 120, 0.06);
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #15171a;
+  --fg: #e6e4df;
+  --muted: #a3a7ad;
+  --accent: #6cc3de;
+  --accent-soft: #1d3440;
+  --border: #33373d;
+  --code-bg: #1f2226;
+  --warn-bg: #2e2716;
+  --warn-border: #8c7330;
+  --watermark: rgba(255, 120, 120, 0.06);
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0 auto;
+  max-width: 52rem;
+  padding: 1.25rem 16px 3rem;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-body);
+  font-size: 1.0625rem;
+  line-height: 1.7;
+  overflow-wrap: anywhere;
+}
+h1 { font-size: 1.9rem; line-height: 1.3; margin: 0.6rem 0 1rem; }
+h2 { font-size: 1.4rem; margin-top: 2.4rem; border-bottom: 1px solid var(--border); padding-bottom: 0.2rem; }
+h3 { font-size: 1.15rem; margin-top: 1.8rem; }
+a { color: var(--accent); }
+code { font-family: var(--font-mono); background: var(--code-bg); padding: 0.05rem 0.3rem; border-radius: 3px; font-size: 0.92em; }
+pre { background: var(--code-bg); padding: 0.8rem 1rem; overflow-x: auto; border-radius: 6px; line-height: 1.45; }
+pre code { background: none; padding: 0; }
+table { border-collapse: collapse; width: 100%; display: block; overflow-x: auto; margin: 1rem 0; }
+th, td { border: 1px solid var(--border); padding: 0.35rem 0.6rem; text-align: left; vertical-align: top; }
+/* Never break inside numbers or IDs in table cells; wide tables scroll horizontally instead. */
+th, td { overflow-wrap: normal; word-break: normal; }
+th { background: var(--accent-soft); }
+blockquote { margin: 1rem 0; padding: 0.2rem 1rem; border-left: 4px solid var(--accent); color: var(--muted); }
+.article-header .meta-row { display: flex; flex-wrap: wrap; gap: 0.4rem 0.9rem; align-items: center; font-size: 0.85rem; color: var(--muted); }
+.chapter-id { font-family: var(--font-mono); font-weight: 600; color: var(--fg); }
+.status { padding: 0.05rem 0.5rem; border: 1px solid var(--border); border-radius: 999px; }
+.status-draft, .status-revision, .status-in-review { border-color: var(--warn-border); background: var(--warn-bg); }
+.theme-toggle { font: inherit; font-size: 0.8rem; color: var(--fg); background: transparent; border: 1px solid var(--border); border-radius: 4px; padding: 0.1rem 0.5rem; cursor: pointer; }
+.disclaimer { background: var(--warn-bg); border: 1px solid var(--warn-border); border-radius: 6px; padding: 0.6rem 0.9rem; font-size: 0.9rem; }
+.disclaimer p { margin: 0.25rem 0; }
+.toc { border: 1px solid var(--border); border-radius: 6px; padding: 0.6rem 1rem; margin: 1.2rem 0; font-size: 0.92rem; }
+.toc ol { margin: 0.3rem 0 0; padding-left: 1.2rem; }
+.fig { margin: 1.6rem 0; text-align: center; }
+.fig img, .fig svg { max-width: 100%; height: auto; }
+.fig pre.mermaid { background: transparent; text-align: center; }
+figcaption { font-size: 0.9rem; color: var(--muted); margin-top: 0.5rem; }
+.fig-no { font-weight: 600; color: var(--fg); }
+.fig-id { font-family: var(--font-mono); font-size: 0.75rem; opacity: 0.7; }
+.math-block { overflow-x: auto; margin: 1rem 0; }
+math { font-size: 1.1em; }
+.widget { border: 1px solid var(--border); border-radius: 8px; padding: 1rem; margin: 1.5rem 0; background: var(--accent-soft); }
+.widget label { display: block; margin: 0.4rem 0; font-size: 0.95rem; }
+.widget select, .widget input { font: inherit; color: var(--fg); background: var(--bg); border: 1px solid var(--border); border-radius: 4px; padding: 0.15rem 0.3rem; max-width: 100%; }
+.widget .result { font-size: 1.05rem; margin-top: 0.7rem; }
+.widget table { font-size: 0.88rem; }
+.watermark { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; pointer-events: none; font-size: 22vw; font-weight: 800; color: var(--watermark); transform: rotate(-24deg); z-index: 0; }
+.article-header, .toc, .article-body, .article-footer { position: relative; z-index: 1; }
+.article-footer { margin-top: 3rem; font-size: 0.8rem; color: var(--muted); border-top: 1px solid var(--border); padding-top: 0.6rem; }
+@media (max-width: 600px) {
+  body { font-size: 1rem; }
+  h1 { font-size: 1.55rem; }
+}
+@media print { .watermark { color: rgba(0, 0, 0, 0.06); } .theme-toggle { display: none; } }
+
+body { max-width: 72rem; }
+.lead { color: var(--muted); }
+.controls { display: flex; flex-wrap: wrap; gap: 0.6rem 1rem; align-items: center; margin: 1rem 0; font-size: 0.9rem; }
+.controls input[type=search], .controls select { font: inherit; padding: 0.3rem 0.6rem; border: 1px solid var(--border);
+  border-radius: 6px; background: var(--bg); color: var(--fg); }
+.controls input[type=search] { min-width: 14rem; flex: 1 1 16rem; }
+.letters { display: flex; flex-wrap: wrap; gap: 0.25rem 0.5rem; font-family: var(--font-mono); margin: 0.5rem 0 1rem; }
+table.data { display: table; width: 100%; font-size: 0.9rem; }
+table.data td, table.data th { overflow-wrap: anywhere; }
+table.data tbody th.group { background: transparent; border: none; font-size: 1.05rem; padding-top: 1rem; }
+.muted { color: var(--muted); font-size: 0.85em; }
+.badge { display: inline-block; padding: 0 0.45rem; border: 1px solid var(--border); border-radius: 999px;
+  font-size: 0.8rem; white-space: nowrap; }
+.badge-verified { border-color: var(--accent); background: var(--accent-soft); }
+.badge-TBV { border-color: var(--warn-border); background: var(--warn-bg); }
+.hidden { display: none; }
+table.data td.id { white-space: nowrap; overflow-wrap: normal; }
+@media (max-width: 40rem) {
+  table.data, table.data tbody, table.data tr, table.data td { display: block; width: auto; }
+  table.data thead { display: none; }
+  table.data tr { border-top: 1px solid var(--border); padding: 0.3rem 0; }
+  table.data td { border: none; padding: 0.1rem 0.2rem; }
+}
+
+</style>
+<script>
+(function () {
+  var root = document.documentElement;
+  try {
+    var saved = localStorage.getItem("ahs-theme");
+    if (saved === "dark" || saved === "light") root.dataset.theme = saved;
+  } catch (e) {}
+  var mq = window.matchMedia ? window.matchMedia("(prefers-color-scheme: dark)") : null;
+  // No explicit choice: follow the system theme (CSS does the same through prefers-color-scheme).
+  function isDark() {
+    return root.dataset.theme ? root.dataset.theme === "dark" : !!(mq && mq.matches);
+  }
+  // Mermaid diagrams keep their original definition in data-source and are re-rendered with the theme that
+  // matches the page whenever the theme changes (review 2026-11-14, R22).
+  window.ahsRenderMermaid = function () {
+    if (!window.mermaid) return;
+    var nodes = Array.prototype.slice.call(document.querySelectorAll("pre.mermaid"));
+    if (!nodes.length) return;
+    nodes.forEach(function (el) {
+      if (el.getAttribute("data-source") === null) {
+        el.setAttribute("data-source", el.textContent);
+      } else {
+        el.removeAttribute("data-processed");
+        el.textContent = el.getAttribute("data-source");
+      }
+    });
+    window.mermaid.initialize({ startOnLoad: false, securityLevel: "strict", theme: isDark() ? "dark" : "default" });
+    var done = window.mermaid.run({ nodes: nodes });
+    if (done && done.catch) done.catch(function (err) { if (window.console) console.error(err); });
+  };
+  function syncButton(btn) {
+    btn.setAttribute("aria-pressed", isDark() ? "true" : "false");
+  }
+  document.addEventListener("DOMContentLoaded", function () {
+    var btn = document.querySelector(".theme-toggle");
+    if (btn) syncButton(btn);
+    if (mq) {
+      var onSystemChange = function () {
+        if (root.dataset.theme) return;
+        if (btn) syncButton(btn);
+        window.ahsRenderMermaid();
+      };
+      if (mq.addEventListener) mq.addEventListener("change", onSystemChange);
+      else if (mq.addListener) mq.addListener(onSystemChange);
+    }
+    if (!btn) return;
+    btn.addEventListener("click", function () {
+      root.dataset.theme = isDark() ? "light" : "dark";
+      try { localStorage.setItem("ahs-theme", root.dataset.theme); } catch (e) {}
+      syncButton(btn);
+      window.ahsRenderMermaid();
+    });
+  });
+})();
+
+</script>
+<link rel="canonical" href="https://thomas-21.github.io/ahs_engineering_handbook/appendix/reference-mine.en.html">
+</head>
+<body>
+<header class="article-header">
+  <div class="meta-row">
+    <a class="home-link" href="../handbook.html">Contents</a>
+    <span class="chapter-id">Appendix C</span>
+    <button type="button" class="theme-toggle" aria-label="Theme">Theme</button>
+  </div>
+  <h1>Appendix C — Reference mine</h1>
+  <p class="lead">Reference Mine (fictional)</p>
+</header>
+<main class="article-body">
+<h2 id="about">About this mine</h2><p>Brownfield open-pit mine in a fictional Australian setting. One pit (North Pit), one primary crusher (C01) and one waste dump (D01). Mixed autonomous and manned equipment. Central control room at the mine infrastructure area (MIA).</p><p>Operating pattern: 24/7, two 12 h shifts [A]. Control room: CR1 at MIA (single central control room) [H]. Numerical values are illustrative engineering assumptions <code>[A]</code> unless tagged otherwise; the mine is not an actual mine and does not describe any vendor's system. Coordinates use a local grid (REFMINE-GRID), deliberately not a geodetic system, so the mine cannot be mistaken for a real place.</p><p class="muted">Single source: <code>handbook/shared/reference-mine/mine.yaml</code> (mine_version 0.3.0) and <code>equipment.yaml</code>. Segment lengths and grades are computed from node coordinates (ahs_sim).</p><h2 id="omits">What the reference mine leaves out</h2><p>Every chapter uses one reference mine: a fictional brownfield open-pit mine in a fictional Australian setting, with one pit, one primary crusher (C01) and one waste dump (D01). It leaves out ore grade control and blending, more than one crusher or dump, other climates, the rules of other jurisdictions and any vendor&#x27;s system. Lab results describe this mine only.</p><h2 id="areas">Areas</h2><table class="data"><thead><tr><th>ID</th><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody><tr><td>AA-North</td><td>Autonomous area North (North Pit)</td><td>autonomous_area</td><td>Pit ramp, pit floor, loading areas EX01–EX04 and the RL 330 bench.</td></tr><tr><td>AA-Central</td><td>Autonomous area Central</td><td>autonomous_area</td><td>Main haul roads, Intersection X, crusher C01, autonomous park-up, fuel bay, water fill.</td></tr><tr><td>AA-South</td><td>Autonomous area South (waste dump)</td><td>autonomous_area</td><td>Dump access road and waste dump D01.</td></tr><tr><td>MIA</td><td>Mine infrastructure area</td><td>manned_area</td><td>Workshop, offices, control room. Autonomous trucks enter only under manual/maintenance mode.</td></tr></tbody></table><h2 id="flow">Loading units and destinations</h2><table class="data"><thead><tr><th>Loading unit</th><th>Material</th><th>Destination</th><th>Destination kind, tipping positions</th></tr></thead><tbody><tr><td>EX01</td><td>ore</td><td>C01</td><td>crusher, 1</td></tr><tr><td>EX02</td><td>ore</td><td>C01</td><td>crusher, 1</td></tr><tr><td>EX03</td><td>waste</td><td>D01</td><td>waste_dump, 3</td></tr><tr><td>EX04</td><td>waste</td><td>D01</td><td>waste_dump, 3</td></tr></tbody></table><h2 id="fleet">Fleet</h2><table class="data"><thead><tr><th>Group</th><th>Class</th><th>Count</th><th>ID</th></tr></thead><tbody><tr><td>trucks</td><td>220 t class rigid-frame haul truck (generic)</td><td>40</td><td>DT01 … DT40</td></tr><tr><td>shovels</td><td>Hydraulic face shovel (generic)</td><td>4</td><td>EX01, EX02, EX03, EX04</td></tr><tr><td>dozers</td><td>Track-type dozer (generic)</td><td>4</td><td>DZ01, DZ02, DZ03, DZ04</td></tr><tr><td>water_trucks</td><td>Water truck, ~100 kL (generic)</td><td>3</td><td>WT01, WT02, WT03</td></tr><tr><td>light_vehicles</td><td>Light vehicle / pit patrol vehicle</td><td>12</td><td>LV01 … LV12</td></tr><tr><td>graders</td><td>Motor grader (generic)</td><td>1</td><td>GR01</td></tr></tbody></table><h2 id="trucks">Haul truck classes (assumed values)</h2><table class="data"><thead><tr><th>Item</th><th>HT220</th><th>HT220-BEV</th></tr></thead><tbody><tr><td>Empty mass t</td><td>165</td><td>165</td></tr><tr><td>Rated payload t</td><td>220</td><td>220</td></tr><tr><td>Net power kW</td><td>1800</td><td>1800</td></tr><tr><td>Drivetrain efficiency</td><td>0.8</td><td>0.85</td></tr><tr><td>Max speed km/h</td><td>55</td><td>55</td></tr><tr><td>Powertrain</td><td>diesel-electric</td><td>battery-electric</td></tr></tbody></table><h2 id="roads">Roads</h2><table class="data"><thead><tr><th>ID</th><th>From → to</th><th>Area</th><th>Speed limit km/h</th><th>Name</th><th>Comms</th><th>GNSS multipath</th><th>Rolling resistance</th></tr></thead><tbody><tr><td>R01</td><td>X → P1</td><td>AA-Central</td><td>50</td><td>Pit access road</td><td>good</td><td>low</td><td>0.025</td></tr><tr><td>R02</td><td>X → C01-Q</td><td>AA-Central</td><td>40</td><td>Crusher road</td><td>good</td><td>low</td><td>0.025</td></tr><tr><td>R03</td><td>X → Y</td><td>AA-Central</td><td>50</td><td>Dump haul road</td><td>good</td><td>low</td><td>0.025</td></tr><tr><td>R04</td><td>Y → D01-Q</td><td>AA-South</td><td>45</td><td>Dump access road</td><td>marginal</td><td>low</td><td>0.025</td></tr><tr><td>R05</td><td>P1 → P2</td><td>AA-North</td><td>40</td><td>Main pit ramp</td><td>marginal</td><td>high</td><td>0.03</td></tr><tr><td>R06</td><td>P2 → Z</td><td>AA-North</td><td>40</td><td>Pit floor road</td><td>good</td><td>low</td><td>0.025</td></tr><tr><td>R07</td><td>Z → EX01-Q</td><td>AA-North</td><td>30</td><td>EX01 approach</td><td>good</td><td>medium</td><td>0.025</td></tr><tr><td>R08</td><td>Z → EX02-Q</td><td>AA-North</td><td>30</td><td>EX02 approach</td><td>good</td><td>medium</td><td>0.025</td></tr><tr><td>R09</td><td>Z → W</td><td>AA-North</td><td>30</td><td>Bench ramp RL 300–330</td><td>marginal</td><td>low</td><td>0.025</td></tr><tr><td>R10</td><td>W → EX03-Q</td><td>AA-North</td><td>30</td><td>EX03 approach</td><td>marginal</td><td>low</td><td>0.025</td></tr><tr><td>R11</td><td>W → EX04-Q</td><td>AA-North</td><td>30</td><td>EX04 approach</td><td>marginal</td><td>low</td><td>0.025</td></tr><tr><td>R12</td><td>V → X</td><td>AA-Central</td><td>50</td><td>Central road</td><td>good</td><td>low</td><td>0.025</td></tr><tr><td>R13</td><td>G01 → V</td><td>AA-Central</td><td>30</td><td>MIA gate road</td><td>good</td><td>low</td><td>0.025</td></tr><tr><td>R14</td><td>V → PK1</td><td>AA-Central</td><td>20</td><td>Park-up access</td><td>good</td><td>low</td><td>0.025</td></tr><tr><td>R15</td><td>V → FB1</td><td>AA-Central</td><td>20</td><td>Fuel bay access</td><td>good</td><td>low</td><td>0.025</td></tr><tr><td>R16</td><td>MIA-WS → G01</td><td>MIA</td><td>25</td><td>MIA road (manned area)</td><td>good</td><td>low</td><td>0.025</td></tr><tr><td>R17</td><td>EX01-Q → EX01-L</td><td>AA-North</td><td>15</td><td>EX01 loading area link</td><td>good</td><td>medium</td><td>0.04</td></tr><tr><td>R18</td><td>EX02-Q → EX02-L</td><td>AA-North</td><td>15</td><td>EX02 loading area link</td><td>good</td><td>medium</td><td>0.04</td></tr><tr><td>R19</td><td>EX03-Q → EX03-L</td><td>AA-North</td><td>15</td><td>EX03 loading area link</td><td>marginal</td><td>low</td><td>0.04</td></tr><tr><td>R20</td><td>EX04-Q → EX04-L</td><td>AA-North</td><td>15</td><td>EX04 loading area link</td><td>marginal</td><td>low</td><td>0.04</td></tr><tr><td>R21</td><td>C01-Q → C01</td><td>AA-Central</td><td>15</td><td>Crusher pad link</td><td>good</td><td>low</td><td>0.025</td></tr><tr><td>R22</td><td>D01-Q → D01</td><td>AA-South</td><td>15</td><td>Dump tip area link</td><td>poor</td><td>low</td><td>0.04</td></tr><tr><td>R23</td><td>Y → WF1</td><td>AA-Central</td><td>20</td><td>Water fill spur</td><td>good</td><td>low</td><td>0.025</td></tr><tr><td>R24</td><td>W → P3</td><td>AA-North</td><td>40</td><td>West ramp (secondary)</td><td>marginal</td><td>medium</td><td>0.03</td></tr><tr><td>R25</td><td>P3 → V</td><td>AA-Central</td><td>40</td><td>West ramp access road</td><td>good</td><td>low</td><td>0.025</td></tr></tbody></table><h2 id="roles">Roles</h2><table class="data"><thead><tr><th>ID</th><th>Name</th></tr></thead><tbody><tr><td>AHS-CTRL</td><td>AHS Controller</td></tr><tr><td>PIT-SUP</td><td>Pit Supervisor</td></tr><tr><td>SHV-OP</td><td>Shovel Operator</td></tr><tr><td>FIELD-TECH</td><td>Field Technician</td></tr><tr><td>MAINT-PLN</td><td>Maintenance Planner</td></tr><tr><td>SURVEY</td><td>Survey</td></tr><tr><td>ERT</td><td>Emergency Response Team</td></tr></tbody></table><h2 id="recurring">Recurring identifiers</h2><table class="data"><thead><tr><th>Kind</th><th>ID</th></tr></thead><tbody><tr><td>trucks</td><td>DT17</td></tr><tr><td>shovels</td><td>EX02</td></tr><tr><td>destinations</td><td>C01, D01</td></tr><tr><td>roads</td><td>R05</td></tr><tr><td>intersections</td><td>X</td></tr><tr><td>missions</td><td>M-20481</td></tr><tr><td>light_vehicles</td><td>LV07</td></tr><tr><td>dozers</td><td>DZ03</td></tr><tr><td>water_trucks</td><td>WT02</td></tr><tr><td>areas</td><td>AA-North</td></tr></tbody></table><ul><li><code>M-20481</code> — Mission for DT17 — load at EX02, haul ore to C01 via R08, R06, R05, R01, R02 [H].</li></ul>
+</main>
+</body>
+</html>

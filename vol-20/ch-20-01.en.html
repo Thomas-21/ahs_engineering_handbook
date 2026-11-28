@@ -1,0 +1,1761 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="generator" content="ahs-handbook build_articles 2.0.0">
+<meta name="ahs:id" content="ch-20-01">
+<meta name="ahs:version" content="0.1.0">
+<meta name="ahs:status" content="approved">
+<meta name="ahs:source-sha256" content="06c2ff9c4a326da6">
+<title>Market structure</title>
+<style>
+:root {
+  --bg: #fbfaf7;
+  --fg: #1d1f21;
+  --muted: #5d6166;
+  --accent: #1f6f8b;
+  --accent-soft: #e3f0f4;
+  --border: #d9d6cf;
+  --code-bg: #f1efea;
+  --warn-bg: #fff6e0;
+  --warn-border: #e2b54a;
+  --watermark: rgba(200, 60, 60, 0.07);
+  --font-body: system-ui, -apple-system, "Segoe UI", "Hiragino Sans", "Hiragino Kaku Gothic ProN",
+    "Noto Sans JP", "Yu Gothic", Meiryo, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #15171a;
+    --fg: #e6e4df;
+    --muted: #a3a7ad;
+    --accent: #6cc3de;
+    --accent-soft: #1d3440;
+    --border: #33373d;
+    --code-bg: #1f2226;
+    --warn-bg: #2e2716;
+    --warn-border: #8c7330;
+    --watermark: rgba(255, 120, 120, 0.06);
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #15171a;
+  --fg: #e6e4df;
+  --muted: #a3a7ad;
+  --accent: #6cc3de;
+  --accent-soft: #1d3440;
+  --border: #33373d;
+  --code-bg: #1f2226;
+  --warn-bg: #2e2716;
+  --warn-border: #8c7330;
+  --watermark: rgba(255, 120, 120, 0.06);
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0 auto;
+  max-width: 52rem;
+  padding: 1.25rem 16px 3rem;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-body);
+  font-size: 1.0625rem;
+  line-height: 1.7;
+  overflow-wrap: anywhere;
+}
+h1 { font-size: 1.9rem; line-height: 1.3; margin: 0.6rem 0 1rem; }
+h2 { font-size: 1.4rem; margin-top: 2.4rem; border-bottom: 1px solid var(--border); padding-bottom: 0.2rem; }
+h3 { font-size: 1.15rem; margin-top: 1.8rem; }
+a { color: var(--accent); }
+code { font-family: var(--font-mono); background: var(--code-bg); padding: 0.05rem 0.3rem; border-radius: 3px; font-size: 0.92em; }
+pre { background: var(--code-bg); padding: 0.8rem 1rem; overflow-x: auto; border-radius: 6px; line-height: 1.45; }
+pre code { background: none; padding: 0; }
+table { border-collapse: collapse; width: 100%; display: block; overflow-x: auto; margin: 1rem 0; }
+th, td { border: 1px solid var(--border); padding: 0.35rem 0.6rem; text-align: left; vertical-align: top; }
+/* Never break inside numbers or IDs in table cells; wide tables scroll horizontally instead. */
+th, td { overflow-wrap: normal; word-break: normal; }
+th { background: var(--accent-soft); }
+blockquote { margin: 1rem 0; padding: 0.2rem 1rem; border-left: 4px solid var(--accent); color: var(--muted); }
+.article-header .meta-row { display: flex; flex-wrap: wrap; gap: 0.4rem 0.9rem; align-items: center; font-size: 0.85rem; color: var(--muted); }
+.chapter-id { font-family: var(--font-mono); font-weight: 600; color: var(--fg); }
+.status { padding: 0.05rem 0.5rem; border: 1px solid var(--border); border-radius: 999px; }
+.status-draft, .status-revision, .status-in-review { border-color: var(--warn-border); background: var(--warn-bg); }
+.theme-toggle { font: inherit; font-size: 0.8rem; color: var(--fg); background: transparent; border: 1px solid var(--border); border-radius: 4px; padding: 0.1rem 0.5rem; cursor: pointer; }
+.disclaimer { background: var(--warn-bg); border: 1px solid var(--warn-border); border-radius: 6px; padding: 0.6rem 0.9rem; font-size: 0.9rem; }
+.disclaimer p { margin: 0.25rem 0; }
+.toc { border: 1px solid var(--border); border-radius: 6px; padding: 0.6rem 1rem; margin: 1.2rem 0; font-size: 0.92rem; }
+.toc ol { margin: 0.3rem 0 0; padding-left: 1.2rem; }
+.fig { margin: 1.6rem 0; text-align: center; }
+.fig img, .fig svg { max-width: 100%; height: auto; }
+.fig pre.mermaid { background: transparent; text-align: center; }
+figcaption { font-size: 0.9rem; color: var(--muted); margin-top: 0.5rem; }
+.fig-no { font-weight: 600; color: var(--fg); }
+.fig-id { font-family: var(--font-mono); font-size: 0.75rem; opacity: 0.7; }
+.math-block { overflow-x: auto; margin: 1rem 0; }
+math { font-size: 1.1em; }
+.widget { border: 1px solid var(--border); border-radius: 8px; padding: 1rem; margin: 1.5rem 0; background: var(--accent-soft); }
+.widget label { display: block; margin: 0.4rem 0; font-size: 0.95rem; }
+.widget select, .widget input { font: inherit; color: var(--fg); background: var(--bg); border: 1px solid var(--border); border-radius: 4px; padding: 0.15rem 0.3rem; max-width: 100%; }
+.widget .result { font-size: 1.05rem; margin-top: 0.7rem; }
+.widget table { font-size: 0.88rem; }
+.watermark { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; pointer-events: none; font-size: 22vw; font-weight: 800; color: var(--watermark); transform: rotate(-24deg); z-index: 0; }
+.article-header, .toc, .article-body, .article-footer { position: relative; z-index: 1; }
+.article-footer { margin-top: 3rem; font-size: 0.8rem; color: var(--muted); border-top: 1px solid var(--border); padding-top: 0.6rem; }
+@media (max-width: 600px) {
+  body { font-size: 1rem; }
+  h1 { font-size: 1.55rem; }
+}
+@media print { .watermark { color: rgba(0, 0, 0, 0.06); } .theme-toggle { display: none; } }
+
+</style>
+<script>
+(function () {
+  var root = document.documentElement;
+  try {
+    var saved = localStorage.getItem("ahs-theme");
+    if (saved === "dark" || saved === "light") root.dataset.theme = saved;
+  } catch (e) {}
+  var mq = window.matchMedia ? window.matchMedia("(prefers-color-scheme: dark)") : null;
+  // No explicit choice: follow the system theme (CSS does the same through prefers-color-scheme).
+  function isDark() {
+    return root.dataset.theme ? root.dataset.theme === "dark" : !!(mq && mq.matches);
+  }
+  // Mermaid diagrams keep their original definition in data-source and are re-rendered with the theme that
+  // matches the page whenever the theme changes (review 2026-11-14, R22).
+  window.ahsRenderMermaid = function () {
+    if (!window.mermaid) return;
+    var nodes = Array.prototype.slice.call(document.querySelectorAll("pre.mermaid"));
+    if (!nodes.length) return;
+    nodes.forEach(function (el) {
+      if (el.getAttribute("data-source") === null) {
+        el.setAttribute("data-source", el.textContent);
+      } else {
+        el.removeAttribute("data-processed");
+        el.textContent = el.getAttribute("data-source");
+      }
+    });
+    window.mermaid.initialize({ startOnLoad: false, securityLevel: "strict", theme: isDark() ? "dark" : "default" });
+    var done = window.mermaid.run({ nodes: nodes });
+    if (done && done.catch) done.catch(function (err) { if (window.console) console.error(err); });
+  };
+  function syncButton(btn) {
+    btn.setAttribute("aria-pressed", isDark() ? "true" : "false");
+  }
+  document.addEventListener("DOMContentLoaded", function () {
+    var btn = document.querySelector(".theme-toggle");
+    if (btn) syncButton(btn);
+    if (mq) {
+      var onSystemChange = function () {
+        if (root.dataset.theme) return;
+        if (btn) syncButton(btn);
+        window.ahsRenderMermaid();
+      };
+      if (mq.addEventListener) mq.addEventListener("change", onSystemChange);
+      else if (mq.addListener) mq.addListener(onSystemChange);
+    }
+    if (!btn) return;
+    btn.addEventListener("click", function () {
+      root.dataset.theme = isDark() ? "light" : "dark";
+      try { localStorage.setItem("ahs-theme", root.dataset.theme); } catch (e) {}
+      syncButton(btn);
+      window.ahsRenderMermaid();
+    });
+  });
+})();
+
+</script>
+<link rel="canonical" href="https://thomas-21.github.io/ahs_engineering_handbook/vol-20/ch-20-01.en.html">
+</head>
+<body data-chapter-id="ch-20-01" data-status="approved">
+<header class="article-header">
+  <div class="meta-row">
+    <a class="home-link" href="../handbook.html">All chapters</a>
+    <span class="chapter-id">ch-20-01</span>
+    <span class="lab-link">No lab in this chapter</span>
+    <button type="button" class="theme-toggle" aria-label="Theme">Theme</button>
+  </div>
+  <h1>Market structure</h1>
+</header>
+<nav class="toc" aria-label="Contents"><strong>Contents</strong><ol><li><a href="#s-1">1. Overview</a></li><li><a href="#s-2">2. Operational motivation: the problem at the reference mine</a></li><li><a href="#s-3">3. Terminology and foundations</a></li><li><a href="#s-4">4. Technical explanation</a></li><li><a href="#s-5">5. Responsibilities and interface boundaries</a></li><li><a href="#s-6">6. Normal, abnormal and degraded operation</a></li><li><a href="#s-7">7. Engineering view</a></li><li><a href="#s-8">8. Operations view</a></li><li><a href="#s-9">9. Requirements and acceptance criteria</a></li><li><a href="#s-10">10. Verification and validation</a></li><li><a href="#s-11">11. Common mistakes</a></li><li><a href="#s-12">12. Worked examples</a></li><li><a href="#s-13">13. Hands-on labs</a></li><li><a href="#s-14">14. Discussion questions and assignments</a></li><li><a href="#s-15">15. Key takeaways</a></li><li><a href="#s-16">16. Glossary terms introduced</a></li></ol></nav>
+<main class="article-body">
+<h2 id="s-1">1. Overview</h2>
+<h3 id="s-1-1">1.1 Why this chapter matters</h3>
+<p>It is 10:00 on a DAY shift at the reference mine. Crusher C01 trips on a blocked chute (SCN-CRUSHER-C01-DOWN). At T+0 s
+the plant sends <em>not ready</em>. At T+5 s the AMS withholds the tipping bay and holds the ore trucks at C01-Q. At T+300 s
+the FMS puts a reassignment proposal on the AHS Controller's screen, and the controller approves it. Every step works,
+and every step crosses an organisational boundary. The crusher belongs to the plant. The AMS that held the trucks
+comes from one supplier. The FMS that proposed the reassignment comes from another, bought years before anyone spoke
+of autonomy. The controller who approved it is a site employee.</p>
+<p>An hour later, at EX02, the Shovel Operator calls dozer DZ03 to clean up the loading floor (SCN-DOZER-DZ03-EX02). The
+dozer is manned and carries a position reporting unit, a radio and a field terminal. The AMS reserves a work zone and
+holds the trucks at EX02-Q until DZ03 has left. Again the job works only because devices on a manned machine, the
+AMS and the people on the radio agree on what each message means.</p>
+<p>Both events are routine, and both show that an autonomous haulage system is never bought as one thing. It is a stack
+of layers joined by interfaces. Each layer can come from a different party, and each interface is a place where parties
+compete, cooperate or blame each other. That is what this chapter calls market structure.</p>
+<p>The questions this chapter addresses are:</p>
+<ul>
+<li>Into which layers does an AHS offering decompose, and how do the layers map onto the handbook's reference
+architecture (FMS–AMS–ADS–VCS)?</li>
+<li>Where can suppliers compete for one layer, and where must they partner? What role do interface openness and the
+safety argument play?</li>
+<li>For a brownfield mine with an FMS already in service, how does an offering's FMS–AMS boundary change the integration
+work and what the site must replace?</li>
+<li>What ties a mine to its supplier after deployment, and how does that shape the market?</li>
+<li>Which mines find autonomy attractive, which people in a mining company shape the purchase, and where can reliable
+market information be found?</li>
+</ul>
+<p>This chapter covers:</p>
+<ul>
+<li>the <strong>value chain</strong> of an AHS offering in eight layers and ten interfaces, mapped onto the architecture
+(FIG-20-01-01);</li>
+<li>a <strong>qualitative model</strong> of how interface openness, the safety argument and switching costs decide where suppliers
+compete or partner;</li>
+<li>four illustrative <strong>offering archetypes</strong> evaluated against the reference mine's existing FMS, trucks and plant;</li>
+<li><strong>technical switching costs</strong>, counted for the reference mine from the shared data;</li>
+<li>a <strong>qualitative customer-segment map</strong> (FIG-20-01-02), the <strong>buying organisation</strong> and the rules for recording
+<strong>market information</strong> with evidence labels.</li>
+</ul>
+<p>No market size, growth rate, market share, price, supplier name or supplier capability is stated in this chapter.
+Where a market figure would be needed, the chapter says so and marks it <code>[TBV]</code>. Commercial models belong to ch-20-06,
+and fleet sizing, total cost of ownership and return on investment to Volume 21.</p>
+<h3 id="s-1-2">1.2 Learning objectives — Engineering</h3>
+<p>After this chapter an engineering reader will be able to:</p>
+<ol>
+<li>Decompose an AHS offering into value-chain layers (vehicle platform, retrofit kit, ADS, AMS, FMS, mine network,
+survey and mapping, services) and explain how architecture boundaries determine where suppliers compete or partner.</li>
+<li>Explain, as a qualitative model, how interoperability and interface openness change market structure, without
+asserting any supplier's position or capability.</li>
+<li>Analyse how the FMS–AMS boundary of an offering determines integration effort with a brownfield mine's existing FMS,
+using the reference mine as the example.</li>
+<li>Explain the technical switching costs a mine faces after deployment (AHS map data, configuration, interfaces,
+safety-case evidence, trained staff) and how they shape competition.</li>
+</ol>
+<h3 id="s-1-3">1.3 Learning objectives — Operations</h3>
+<p>After this chapter an operations reader will be able to:</p>
+<ol>
+<li>Classify mine operators by the drivers that make autonomy attractive (commodity, mine life, brownfield or
+greenfield, labour availability, remoteness, mixed-fleet composition) and relate each driver to an operational
+problem at a mine like the reference mine.</li>
+<li>Identify the stakeholders inside a mining company who shape an AHS purchase (site operations, mine planning,
+maintenance, safety, IT/OT, procurement, executive) and what evidence each needs.</li>
+<li>Locate public sources of market information and record each figure with an evidence label, leaving unverified
+figures <code>[TBV]</code>.</li>
+<li>Describe how the site's existing manned and ancillary fleet and its plant (the C01 control system) constrain the
+realistic choice among supplier offerings.</li>
+</ol>
+<h2 id="s-2">2. Operational motivation: the problem at the reference mine</h2>
+<p>The reference mine is a brownfield site (<code>mine.yaml</code>). Before autonomy it already had an FMS, a fleet of manned trucks,
+a crusher with its own control system, a wireless network and a survey team. In this volume it is the customer <code>[A]</code>.
+It is deciding, or has decided, how to buy autonomy, and every option it can choose is shaped by what it already has.</p>
+<p>Three kinds of operational problem make market structure a site topic rather than a head-office topic.</p>
+<ul>
+<li><strong>The production chain does not stop at the haul road.</strong> Haulage feeds C01, and C01 can stop the haulage. The
+plant–fleet interface (ICD-C01-STATUS, ch-02-06) is needed whichever party supplies the AMS and the FMS: an absent
+plant state is <em>not ready</em> (REQ-02-06-004), so without it no truck tips at C01.</li>
+<li><strong>The fleet is mixed.</strong> Four dozers, three water trucks, twelve light vehicles and a grader enter the autonomous
+areas with position reporting units, radios and field terminals (<code>equipment.yaml</code>). Four manned shovels load the
+trucks. Whichever autonomy offering the mine buys must work with these machines and the people in them every shift.</li>
+<li><strong>What the mine already owns has value and inertia.</strong> The FMS holds years of dispatch rules, delay coding and
+reporting, and the trucks are paid for. An offering that replaces them has fewer interfaces and more to change.</li>
+</ul>
+<p>The people who live with these problems — the AHS Controller, the Pit Supervisor, the Maintenance Planner — are often
+not asked when offerings are compared. This chapter gives them a way to read an offering as layers and interfaces.</p>
+<h2 id="s-3">3. Terminology and foundations</h2>
+<p><strong>Value chain</strong> <code>[H]</code>. The sequence of layers that together deliver autonomous haulage at a mine, from the vehicle
+platform to services. Each layer can be supplied by a different party. The handbook uses eight layers (section 4.1).</p>
+<p><strong>Offering</strong> and <strong>offering archetype</strong> <code>[H]</code>. An offering is the set of layers one supplier proposes to supply. An
+offering archetype is an illustrative pattern of offerings <code>[A]</code> used in this chapter to reason about market structure.
+It describes no real product.</p>
+<p><strong>Interoperability</strong> keeps its meaning from ch-02-05: the ability of systems from different suppliers to work together
+through agreed interfaces. <strong>Conformance</strong> is a product's meeting the specification it claims to implement. Conformance
+is necessary, not sufficient, for interoperability (ch-02-05).</p>
+<p><strong>Interface openness</strong> <code>[H]</code>. How far an interface is documented and available to parties other than its supplier.
+The handbook distinguishes four levels (section 4.3).</p>
+<p><strong>Switching cost</strong> <code>[H]</code>. The cost and effort of replacing a supplier's layer with another's: re-creating data,
+re-integrating interfaces, rebuilding safety-case evidence, retraining people. Section 4.5 treats the technical part; no
+money value is estimated.</p>
+<p><strong>Customer segment</strong> <code>[H]</code>. A group of mines that share the characteristics that make autonomy attractive or difficult,
+defined by operational drivers (section 4.6).</p>
+<p><strong>Brownfield site</strong> keeps its glossary meaning: an operating site into which a new system is introduced. A <strong>greenfield
+site</strong> is one built from the start with the new system in mind.</p>
+<p><strong>Party.</strong> In this chapter the parties are the <strong>site</strong>, a <strong>primary AHS supplier</strong> P, a <strong>second technology supplier</strong>
+K, a <strong>base-truck manufacturer</strong> M and the <strong>incumbent FMS supplier</strong> F. All are functions <code>[A]</code>. None stands for a real
+company.</p>
+<p><strong>Supply scope</strong> and <strong>interface owner</strong> keep their meanings from ch-19-04 and ch-02-06. Every element has one supplying
+party, and every interface has one accountable party.</p>
+<h2 id="s-4">4. Technical explanation</h2>
+<h3 id="s-4-1">4.1 The value chain of an AHS offering</h3>
+<p>FIG-20-01-01 stacks the eight layers of the handbook's value chain and maps each one onto the reference architecture of
+ch-01-04.</p>
+<figure id="FIG-20-01-01" class="fig"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 700" role="img" aria-label="Eight value-chain layers from vehicle platform to FMS, with interfaces I-01 to I-10 between them">
+<style>
+text{font-family:system-ui,-apple-system,"Segoe UI","Hiragino Sans","Noto Sans CJK JP",sans-serif}
+.fg{fill:var(--fg,#1d1f21)} .mu{fill:var(--muted,#5d6166)}
+.ttl{font-size:16px;font-weight:700} .t{font-size:13px;font-weight:600} .s{font-size:11.5px} .xs{font-size:10.5px}
+.it{font-size:10.5px;font-style:italic}
+.box{fill:var(--bg,#ffffff);stroke:#1f6f8b;stroke-width:2}
+.sup{fill:var(--bg,#ffffff);stroke:#2e8b57;stroke-width:2}
+.out{fill:var(--bg,#ffffff);stroke:var(--muted,#5d6166);stroke-width:1.4;stroke-dasharray:6 4}
+.svc{fill:var(--bg,#ffffff);stroke:#d97a1e;stroke-width:2}
+.ln{stroke:var(--muted,#5d6166);stroke-width:1.6}
+.chip{fill:var(--bg,#ffffff);stroke:var(--muted,#5d6166);stroke-width:1}
+.chs{fill:#8e44ad} .chn{fill:var(--muted,#5d6166)}
+.grid{stroke:var(--muted,#5d6166);stroke-width:0.6;opacity:0.5}
+.pos{fill:#2e8b57} .neg{fill:var(--bg,#ffffff);stroke:#c0392b;stroke-width:2.2} .dep{fill:#d97a1e}
+.tag{fill:var(--muted,#5d6166);opacity:0.12}
+</style>
+<text class="fg ttl" x="20" y="28">AHS value-chain layers mapped to the FMS–AMS–ADS–VCS architecture [H]</text>
+<line class="ln" x1="600.0" y1="134" x2="600.0" y2="180"/>
+<line class="ln" x1="600.0" y1="244" x2="600.0" y2="290"/>
+<line class="ln" x1="600.0" y1="354" x2="600.0" y2="400"/>
+<line class="ln" x1="600.0" y1="464" x2="600.0" y2="510"/>
+<polyline class="ln" fill="none" points="320.0,143.0 340.0,143.0 340.0,102.0 420.0,102.0"/>
+<polyline class="ln" fill="none" points="320.0,143.0 340.0,143.0 340.0,202.4 420.0,202.4"/>
+<polyline class="ln" fill="none" points="320.0,253.0 340.0,253.0 340.0,228.0 420.0,228.0"/>
+<polyline class="ln" fill="none" points="320.0,539.0 340.0,539.0 340.0,542.0 420.0,542.0"/>
+<polyline class="ln" fill="none" points="890.0,177.0 870.0,177.0 870.0,199.2 780.0,199.2"/>
+<polyline class="ln" fill="none" points="890.0,263.0 870.0,263.0 870.0,228.0 780.0,228.0"/>
+<rect class="box" x="420" y="70" width="360" height="64" rx="8"/>
+<rect class="tag" x="420" y="70" width="34" height="64" rx="8"/>
+<text class="fg s" x="437" y="106.0" text-anchor="middle">L5</text>
+<text class="fg t" x="466" y="96">FMS</text>
+<text class="mu s" x="466" y="117">architecture: FMS</text>
+<rect class="box" x="420" y="180" width="360" height="64" rx="8"/>
+<rect class="tag" x="420" y="180" width="34" height="64" rx="8"/>
+<text class="fg s" x="437" y="216.0" text-anchor="middle">L4</text>
+<text class="fg t" x="466" y="206">AMS</text>
+<text class="mu s" x="466" y="227">architecture: AMS, manned-vehicle devices, remote stop</text>
+<rect class="box" x="420" y="290" width="360" height="64" rx="8"/>
+<rect class="tag" x="420" y="290" width="34" height="64" rx="8"/>
+<text class="fg s" x="437" y="326.0" text-anchor="middle">L3</text>
+<text class="fg t" x="466" y="316">ADS software</text>
+<text class="mu s" x="466" y="337">architecture: ADS</text>
+<rect class="box" x="420" y="400" width="360" height="64" rx="8"/>
+<rect class="tag" x="420" y="400" width="34" height="64" rx="8"/>
+<text class="fg s" x="437" y="436.0" text-anchor="middle">L2</text>
+<text class="fg t" x="466" y="426">Retrofit / autonomy kit</text>
+<text class="mu s" x="466" y="447">architecture: hardware on which the ADS runs</text>
+<rect class="box" x="420" y="510" width="360" height="64" rx="8"/>
+<rect class="tag" x="420" y="510" width="34" height="64" rx="8"/>
+<text class="fg s" x="437" y="546.0" text-anchor="middle">L1</text>
+<text class="fg t" x="466" y="536">Vehicle platform</text>
+<text class="mu s" x="466" y="557">architecture: VCS and onboard safety-related systems</text>
+<rect class="out" x="30" y="116" width="290" height="54" rx="8"/>
+<text class="fg s" x="42" y="138">C01 plant control</text>
+<text class="fg s" x="42" y="154">(site; outside the AHS value chain)</text>
+<rect class="box" x="30" y="226" width="290" height="54" rx="8"/>
+<text class="fg s" x="42" y="248">Manned and ancillary vehicle devices (PRU, radio, FT)</text>
+<text class="mu xs" x="42" y="267">part of layer L4</text>
+<rect class="box" x="30" y="512" width="290" height="54" rx="8"/>
+<text class="fg s" x="42" y="534">Independent safety function (remote stop)</text>
+<text class="mu xs" x="42" y="553">part of layer L4</text>
+<rect class="sup" x="890" y="150" width="280" height="54" rx="8"/>
+<text class="fg s" x="902" y="172">L6  Mine network</text>
+<text class="mu xs" x="902" y="191">carriage for all elements</text>
+<rect class="sup" x="890" y="236" width="280" height="54" rx="8"/>
+<text class="fg s" x="902" y="258">L7  Survey and mapping</text>
+<text class="mu xs" x="902" y="277">AHS map data</text>
+<rect class="svc" x="40" y="605" width="1120" height="40" rx="8"/>
+<text class="fg s" x="56" y="630">L8  Services: deployment, support, training, safety-case and data services</text>
+<rect class="chip" x="570.0" y="147.0" width="60" height="20" rx="10"/>
+<circle class="chn" cx="581.0" cy="157.0" r="4.5"/>
+<text class="fg xs" x="605.0" y="160.8" text-anchor="middle">I-01</text>
+<rect class="chip" x="570.0" y="257.0" width="60" height="20" rx="10"/>
+<circle class="chs" cx="581.0" cy="267.0" r="4.5"/>
+<text class="fg xs" x="605.0" y="270.8" text-anchor="middle">I-02</text>
+<rect class="chip" x="570.0" y="367.0" width="60" height="20" rx="10"/>
+<circle class="chs" cx="581.0" cy="377.0" r="4.5"/>
+<text class="fg xs" x="605.0" y="380.8" text-anchor="middle">I-03</text>
+<rect class="chip" x="570.0" y="477.0" width="60" height="20" rx="10"/>
+<circle class="chs" cx="581.0" cy="487.0" r="4.5"/>
+<text class="fg xs" x="605.0" y="490.8" text-anchor="middle">I-04</text>
+<rect class="chip" x="350.0" y="92.0" width="60" height="20" rx="10"/>
+<circle class="chn" cx="361.0" cy="102.0" r="4.5"/>
+<text class="fg xs" x="385.0" y="105.8" text-anchor="middle">I-07</text>
+<rect class="chip" x="350.0" y="192.4" width="60" height="20" rx="10"/>
+<circle class="chn" cx="361.0" cy="202.4" r="4.5"/>
+<text class="fg xs" x="385.0" y="206.2" text-anchor="middle">I-06</text>
+<rect class="chip" x="350.0" y="218.0" width="60" height="20" rx="10"/>
+<circle class="chs" cx="361.0" cy="228.0" r="4.5"/>
+<text class="fg xs" x="385.0" y="231.8" text-anchor="middle">I-05</text>
+<rect class="chip" x="350.0" y="532.0" width="60" height="20" rx="10"/>
+<circle class="chs" cx="361.0" cy="542.0" r="4.5"/>
+<text class="fg xs" x="385.0" y="545.8" text-anchor="middle">I-10</text>
+<rect class="chip" x="795.0" y="189.2" width="60" height="20" rx="10"/>
+<circle class="chn" cx="806.0" cy="199.2" r="4.5"/>
+<text class="fg xs" x="830.0" y="203.0" text-anchor="middle">I-08</text>
+<rect class="chip" x="795.0" y="218.0" width="60" height="20" rx="10"/>
+<circle class="chn" cx="806.0" cy="228.0" r="4.5"/>
+<text class="fg xs" x="830.0" y="231.8" text-anchor="middle">I-09</text>
+<circle class="chs" cx="872" cy="400" r="5"/>
+<text class="fg s" x="884" y="404">interface inside the safety argument</text>
+<circle class="chn" cx="872" cy="426" r="5"/>
+<text class="fg s" x="884" y="430">other interface</text>
+<text class="mu it" x="20" y="670">Conceptual teaching figure. Layers and interfaces are the handbook&#x27;s model [H]; no product or supplier is implied.</text>
+</svg>
+<figcaption><span class="fig-no">Figure 1</span> AHS value-chain layers mapped to the FMS–AMS–ADS–VCS architecture <span class="fig-id">FIG-20-01-01</span></figcaption></figure>
+<table>
+<thead>
+<tr>
+<th>Layer</th>
+<th>Content</th>
+<th>Architecture element</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>L1 Vehicle platform</td>
+<td>Base truck: chassis, drivetrain, VCS, onboard safety-related systems (fire detection and suppression, payload, tyre monitoring)</td>
+<td>VCS and onboard systems</td>
+</tr>
+<tr>
+<td>L2 Retrofit / autonomy kit</td>
+<td>Perception sensors, onboard computer, radios, positioning; added actuation where needed (ch-08-07)</td>
+<td>Hardware on which the ADS runs</td>
+</tr>
+<tr>
+<td>L3 ADS software</td>
+<td>Perception, localisation, planning, motion control</td>
+<td>ADS</td>
+</tr>
+<tr>
+<td>L4 AMS</td>
+<td>Missions, traffic coordination, permissions, exceptions; the manned-vehicle devices and the remote stop are supplied with it in this model</td>
+<td>AMS; manned-vehicle devices; independent safety function</td>
+</tr>
+<tr>
+<td>L5 FMS</td>
+<td>Production planning, dispatch, assignments, reporting</td>
+<td>FMS</td>
+</tr>
+<tr>
+<td>L6 Mine network</td>
+<td>Wireless coverage and backhaul (CT1, CT2, CT3)</td>
+<td>Carriage for all elements</td>
+</tr>
+<tr>
+<td>L7 Survey and mapping</td>
+<td>Surveys, road design, the AHS map data</td>
+<td>AHS map</td>
+</tr>
+<tr>
+<td>L8 Services</td>
+<td>Deployment, support, training, safety-case support, data services</td>
+<td>Across all layers</td>
+</tr>
+</tbody>
+</table>
+<p>Three features of the mapping matter for market structure.</p>
+<p><strong>The layers are not the architecture.</strong> The architecture says what each element decides; the value chain says what
+each party sells. They coincide for the FMS and the AMS, not below them: the ADS runs on the kit's hardware, and the kit
+is fixed to someone else's truck. The remote stop is drawn in L4 because it is supplied with the AMS in this model.
+Architecturally it is independent of the AMS and the ADS (master-instructions §3), and I-10 runs directly to the truck.</p>
+<p><strong>Ten interfaces join the layers.</strong> I-01 joins FMS and AMS; I-02 to I-04 run down the stack to the truck; I-05 joins
+the AMS to the devices on manned vehicles; I-06 and I-07 bring the C01 status to the AMS and the FMS; I-08 and I-09 join
+the network and the map data to the AMS; I-10 joins the remote stop to the truck. They are interfaces of the market
+model <code>[H]</code>, coarser than the ICDs of ch-02-06.</p>
+<p><strong>Five interfaces lie inside the safety argument.</strong> I-02, I-03, I-04, I-05 and I-10 carry path grants, motion
+commands, access permissions and stop commands. Hazard analysis and verification must cover both sides of each together
+(Volume 04). The other five carry production, carriage or data, and the receiving element treats their failure
+fail-closed (for example REQ-02-06-004 at the plant interface).</p>
+<p>The plant is drawn outside the value chain. C01's control system belongs to the processing plant and its control room,
+not to any AHS layer. Its interfaces I-06 and I-07 are needed in every offering.</p>
+<h3 id="s-4-2">4.2 Where suppliers compete and where they partner</h3>
+<p>A supplier can compete for one layer only if a customer can buy that layer alone and join it to the layers it has from
+others. Whether that is possible depends less on the supplier's intentions than on the interfaces at the layer's
+boundary. The handbook's qualitative model <code>[H]</code> names four factors.</p>
+<ol>
+<li><strong>Interface openness.</strong> A layer can be bought separately only at a boundary whose interface is documented and
+available to the other parties (section 4.3). At a closed boundary, the layers on both sides are sold together or
+not at all.</li>
+<li><strong>Safety coupling.</strong> Where the safety argument of the autonomous truck crosses a boundary, the parties on both sides
+must share hazard analyses, design information and verification evidence. A purchase across such a boundary is
+therefore a partnership with defined joint responsibilities, not a purchase against a specification alone. ch-08-07
+shows the same effect at I-04: the integration pattern decides who carries which evidence.</li>
+<li><strong>Site integration effort.</strong> Some interfaces need site-specific work whatever the product — the plant interface,
+the network, the survey and map data. They stay with the site or its integrator. They are not a place where
+suppliers of AHS products compete.</li>
+<li><strong>Switching costs.</strong> Once data, configuration, evidence and skills have accumulated around one supplier's layer, the
+mine's next purchase is no longer a free choice (section 4.5).</li>
+</ol>
+<p>From these factors the model draws five statements <code>[H]</code>. They are reasoning, not observations of any market.
+Published analyses of how interface standards affect competition in mining technology have not been read for this
+chapter <code>[TBV]</code> (SRC-PUB-MINING-TECH-INTEROP-MARKET).</p>
+<ul>
+<li><strong>M1.</strong> Separate purchase is most practical at open interfaces outside the safety argument (I-01, I-08, I-09).</li>
+<li><strong>M2.</strong> Across interfaces inside the safety argument (I-02 to I-05, I-10), layers are supplied together or by parties
+who agree to share evidence. A buyer who splits them must plan that agreement as part of the purchase.</li>
+<li><strong>M3.</strong> The plant, network and survey interfaces stay cross-party in every arrangement, so the site needs its own
+integration capability (the integration authority of ch-02-01) whatever it buys.</li>
+<li><strong>M4.</strong> Covering more layers reduces cross-party interfaces. It does not remove the interfaces. It moves them inside
+one supplier, where the site sees less of them.</li>
+<li><strong>M5.</strong> Switching costs collect where site-specific data and evidence live — the AMS, its map and configuration, and
+the safety case — more than in any hardware.</li>
+</ul>
+<h3 id="s-4-3">4.3 Interoperability and interface openness</h3>
+<p>Interface openness is a property of each interface, not of a supplier. The handbook uses four levels <code>[H]</code>:</p>
+<table>
+<thead>
+<tr>
+<th>Level</th>
+<th>Description</th>
+<th>What the site can do</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>O0 Closed</td>
+<td>Not documented outside the supplier</td>
+<td>Connect only the supplier's own products</td>
+</tr>
+<tr>
+<td>O1 Documented to the customer</td>
+<td>ICD under contract to the site; not shareable</td>
+<td>Integrate its own systems; not invite a third party</td>
+</tr>
+<tr>
+<td>O2 Documented and licensable</td>
+<td>ICD available to third parties the site names, under agreed terms</td>
+<td>Buy the other side from a different party</td>
+</tr>
+<tr>
+<td>O3 Published standard</td>
+<td>Implements a published interface standard with a conformance statement naming parts and options</td>
+<td>Compare offerings on the same basis; still test the combination</td>
+</tr>
+</tbody>
+</table>
+<p>Higher openness widens the choice at a boundary, because more parties can supply the other side. It also lowers
+switching cost there, because a replacement need not be integrated from nothing. Neither effect removes integration
+work at the site. Interoperability has technical, syntactic, semantic and operational levels (ch-02-05). A published
+standard can fix the lower levels, but the meaning of a field in the mine's own procedures is agreed at the mine.</p>
+<p>For the FMS–AMS boundary there is a published standard. The handbook's source register records, at catalogue level,
+that ISO 23725:2024 is titled <em>Autonomous system and fleet management system interoperability</em>, that its published scope
+defines the interfaces between fleet management systems and autonomous haulage systems for dispatching haul trucks and
+coordinating production information in surface mining, and that it excludes authentication, authorization and
+cybersecurity and leaves safe machine operation to agreement between the FMS and AHS suppliers <code>[F]</code>
+(SRC-STD-ISO23725, catalogue level). Its clause content is not verified. This chapter does not say what the standard
+requires or whether any product conforms to it.</p>
+<p>Three consequences follow. First, the boundary with a published standard is I-01, outside the safety argument.
+Second, the standard's published scope covers no other interface of the model — not I-05, I-06, I-07 or I-04. There,
+openness depends on what each party documents and agrees. Third, a conformance statement is evidence of conformance
+only. Two conformant products can differ where the standard leaves options open, and the site must test the
+combination (ch-02-05, REQ-20-01-005).</p>
+<p>Inside the safety chain, openness has a limit that commercial wishes cannot move. An interface that carries motion
+commands, path grants or stop commands is only as trustworthy as the evidence behind both sides. Opening it to a third
+party moves part of the safety argument to that party. That needs the joint hazard analysis and verification of
+statement M2. Declaring the interface open does not provide them.</p>
+<h3 id="s-4-4">4.4 Offering archetypes and the FMS–AMS boundary at a brownfield mine</h3>
+<p>To see how offerings interact with what a brownfield mine already owns, the figure script holds four archetypes <code>[A]</code>.
+None of them describes a real product. In all four the site keeps the plant, the network and the survey function. The
+site also keeps its trucks (from M) and its FMS (from F) unless the archetype replaces them.</p>
+<ul>
+<li><strong>OA-1 — Integrated stack.</strong> P supplies new autonomy-ready trucks, the kit, the ADS, the AMS with its devices and
+remote stop, and its own FMS. The site's FMS and its manned trucks are replaced.</li>
+<li><strong>OA-2 — Autonomy for the existing fleet, site keeps its FMS.</strong> P supplies the kit, the ADS, the AMS, the devices and
+the remote stop. The existing trucks are converted, and the existing FMS stays. This is the split assumed in ch-02-05
+and in option OPT-1 of ch-19-04 <code>[A]</code>.</li>
+<li><strong>OA-3 — Autonomy for the existing fleet with the supplier's FMS.</strong> As OA-2, but P also replaces the FMS.</li>
+<li><strong>OA-4 — Layered.</strong> P supplies the AMS, the devices and the remote stop. K supplies the kit and the ADS. The existing
+trucks and the existing FMS stay.</li>
+</ul>
+<p>For each archetype, <code>figures/make_figures.py</code> assigns every element a supplying party and counts the interfaces whose
+two ends are supplied by different parties:</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>OA-1</th>
+<th>OA-2</th>
+<th>OA-3</th>
+<th>OA-4</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Parties</td>
+<td>P, site</td>
+<td>P, F, M, site</td>
+<td>P, M, site</td>
+<td>P, K, F, M, site</td>
+</tr>
+<tr>
+<td>Cross-party interfaces</td>
+<td>4</td>
+<td>7</td>
+<td>6</td>
+<td>8</td>
+</tr>
+<tr>
+<td>New or changed cross-party interfaces</td>
+<td>4</td>
+<td>6</td>
+<td>6</td>
+<td>7</td>
+</tr>
+<tr>
+<td>Cross-party interfaces inside the safety argument</td>
+<td>0</td>
+<td>2 (I-04, I-10)</td>
+<td>2 (I-04, I-10)</td>
+<td>3 (I-02, I-04, I-10)</td>
+</tr>
+<tr>
+<td>Site-side cross-party interfaces</td>
+<td>I-06, I-07, I-08, I-09</td>
+<td>same</td>
+<td>same</td>
+<td>same</td>
+</tr>
+<tr>
+<td>Incumbent elements replaced</td>
+<td>FMS, trucks</td>
+<td>none</td>
+<td>FMS</td>
+<td>none</td>
+</tr>
+</tbody>
+</table>
+<p>&quot;New or changed&quot; excludes the plant–FMS interface I-07 where the site's existing FMS stays: that interface already
+works in the manned operation. Four conclusions follow, and none depends on the particular counts.</p>
+<p><strong>The FMS–AMS boundary is the main brownfield choice.</strong> In OA-2 and OA-4 the existing FMS must speak to a new AMS
+across I-01: assignments, cancellations, held trucks and their reasons, cycle events, delay codes. In OA-3 the boundary
+moves inside P. The price is a new FMS, with new dispatch rules, delay coding and reports for every shift. The site
+trades cross-party integration for internal change.</p>
+<p><strong>Fewest interfaces means most replacement.</strong> OA-1 has only the four site-side interfaces because it replaces both the
+FMS and the 40 manned trucks. At a brownfield mine that is a fleet decision, not an integration decision.</p>
+<p><strong>The site-side interfaces never go away.</strong> An offering that is silent about the plant, network and survey interfaces
+has left them to the site (statement M3).</p>
+<p><strong>Splitting the safety chain adds parties to the safety argument.</strong> In OA-4, I-02 crosses between P and K, so every
+path-grant and vehicle-state message needs their joint verification. OA-2 and OA-3 have two such interfaces: I-04, where
+the kit meets the base truck (ch-08-07), and I-10, where the stop receiver is fitted to it.</p>
+<p>The table counts interfaces, not effort. A cross-party interface that conforms to a published standard and has been
+tested elsewhere can be cheap. One whose meaning differs between the parties can dominate a project. The counts show
+where to look.</p>
+<h3 id="s-4-5">4.5 Technical switching costs</h3>
+<p>After deployment a mine accumulates assets that are specific to the layers it bought. The figure script counts them
+for the reference mine from the shared data:</p>
+<table>
+<thead>
+<tr>
+<th>Asset</th>
+<th>Reference mine (shared data)</th>
+<th>What a change of AMS supplier would require</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>AHS map data</td>
+<td>25 nodes, 25 road segments, 15.27 km of road; 3 autonomous areas; 4 access points (<code>mine.yaml</code>)</td>
+<td>Map converted or rebuilt, then validated against the as-built roads (ch-12-07)</td>
+</tr>
+<tr>
+<td>Configuration</td>
+<td>Areas, permissions, speed limits, delay codes, device registry (ch-03-08 configuration register)</td>
+<td>Rebuilt in the new system; every item re-verified</td>
+</tr>
+<tr>
+<td>Interfaces</td>
+<td>10 interfaces of the market model, each with one or more ICDs</td>
+<td>I-01, I-02, I-05, I-06, I-08 and I-09 re-integrated; ICDs rewritten at O0 or O1</td>
+</tr>
+<tr>
+<td>Equipment</td>
+<td>40 trucks with kits and stop receivers; 20 manned and ancillary vehicles with PRU, radio and field terminal; 4 shovels with SOT and SPS; 3 remote-stop transmitters (<code>equipment.yaml</code>)</td>
+<td>Kits, receivers and devices replaced or re-integrated, truck by truck and vehicle by vehicle</td>
+</tr>
+<tr>
+<td>Safety-case evidence</td>
+<td>Hazard analyses, verification results, site acceptance records (Volume 04, ch-18-04)</td>
+<td>Largely rebuilt: evidence is bound to the system it was produced for</td>
+</tr>
+<tr>
+<td>Trained staff</td>
+<td>7 roles (<code>mine.yaml</code>), each with procedures and HMI skills</td>
+<td>Retrained on the new HMI and any changed procedures</td>
+</tr>
+<tr>
+<td>Operating history</td>
+<td>Event logs, delay-coded history, KPI series</td>
+<td>Kept only if exportable in a documented format (ch-19-04 data-access provision)</td>
+</tr>
+</tbody>
+</table>
+<p>Two assets deserve emphasis.</p>
+<p><strong>Safety-case evidence does not transfer.</strong> Hazard analyses and verification results are produced for one system in
+one configuration at one site. A new AMS needs new evidence even when it is functionally similar. No contract removes
+that switching cost.</p>
+<p><strong>Training in handbook terms lowers the cost of change.</strong> ch-01-04 recommends neutral terms in requirements, procedures
+and training. A controller who has learned &quot;permission&quot;, &quot;work zone&quot; and &quot;remote stop&quot; as functions retrains on a new
+screen. A controller who has learned only one product's names relearns the job.</p>
+<p>High switching costs protect an incumbent supplier and weaken the mine's position at renewal, the effect usually called
+lock-in. A mine reduces it by agreeing openness at I-01, I-05, I-06 and I-09 and data access to the map, configuration
+and logs before it buys (REQ-20-01-006). How far switching costs shape competition in the AHS market is not verified
+<code>[TBV]</code> (SRC-PUB-MINING-TECH-INTEROP-MARKET).</p>
+<h3 id="s-4-6">4.6 Customer segments: what makes autonomy attractive</h3>
+<p>Mines differ in why autonomy would help them and in what makes it hard. FIG-20-01-02 is the handbook's qualitative map
+<code>[H]</code>. It sets six characteristics of a mine against five operational drivers. A filled circle means the described pole
+of a characteristic strengthens the operational case through that driver. An open circle means it weakens it, and a
+square means it depends on the site.</p>
+<figure id="FIG-20-01-02" class="fig"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 578" role="img" aria-label="Matrix of six mine characteristics against five operational drivers with qualitative effects">
+<style>
+text{font-family:system-ui,-apple-system,"Segoe UI","Hiragino Sans","Noto Sans CJK JP",sans-serif}
+.fg{fill:var(--fg,#1d1f21)} .mu{fill:var(--muted,#5d6166)}
+.ttl{font-size:16px;font-weight:700} .t{font-size:13px;font-weight:600} .s{font-size:11.5px} .xs{font-size:10.5px}
+.it{font-size:10.5px;font-style:italic}
+.box{fill:var(--bg,#ffffff);stroke:#1f6f8b;stroke-width:2}
+.sup{fill:var(--bg,#ffffff);stroke:#2e8b57;stroke-width:2}
+.out{fill:var(--bg,#ffffff);stroke:var(--muted,#5d6166);stroke-width:1.4;stroke-dasharray:6 4}
+.svc{fill:var(--bg,#ffffff);stroke:#d97a1e;stroke-width:2}
+.ln{stroke:var(--muted,#5d6166);stroke-width:1.6}
+.chip{fill:var(--bg,#ffffff);stroke:var(--muted,#5d6166);stroke-width:1}
+.chs{fill:#8e44ad} .chn{fill:var(--muted,#5d6166)}
+.grid{stroke:var(--muted,#5d6166);stroke-width:0.6;opacity:0.5}
+.pos{fill:#2e8b57} .neg{fill:var(--bg,#ffffff);stroke:#c0392b;stroke-width:2.2} .dep{fill:#d97a1e}
+.tag{fill:var(--muted,#5d6166);opacity:0.12}
+</style>
+<text class="fg ttl" x="20" y="28">Qualitative customer-segment map: mine characteristics × operational drivers [H]</text>
+<text class="mu s" x="20" y="108">Mine characteristic (pole described)</text>
+<text class="mu s" x="856" y="108">Reference mine (shared data)</text>
+<text class="fg s" x="354.0" y="58" text-anchor="middle">D1</text>
+<text class="fg xs" x="354.0" y="74" text-anchor="middle">Staffing 24/7</text>
+<text class="fg xs" x="354.0" y="87" text-anchor="middle">haul rosters</text>
+<text class="fg s" x="462.0" y="58" text-anchor="middle">D2</text>
+<text class="fg xs" x="462.0" y="74" text-anchor="middle">Exposure of</text>
+<text class="fg xs" x="462.0" y="87" text-anchor="middle">people in</text>
+<text class="fg xs" x="462.0" y="100" text-anchor="middle">haul areas</text>
+<text class="fg s" x="570.0" y="58" text-anchor="middle">D3</text>
+<text class="fg xs" x="570.0" y="74" text-anchor="middle">Predictable</text>
+<text class="fg xs" x="570.0" y="87" text-anchor="middle">cycles and</text>
+<text class="fg xs" x="570.0" y="100" text-anchor="middle">plant feed</text>
+<text class="fg s" x="678.0" y="58" text-anchor="middle">D4</text>
+<text class="fg xs" x="678.0" y="74" text-anchor="middle">Integration</text>
+<text class="fg xs" x="678.0" y="87" text-anchor="middle">and change</text>
+<text class="fg xs" x="678.0" y="100" text-anchor="middle">burden</text>
+<text class="fg s" x="786.0" y="58" text-anchor="middle">D5</text>
+<text class="fg xs" x="786.0" y="74" text-anchor="middle">Time to</text>
+<text class="fg xs" x="786.0" y="87" text-anchor="middle">recover the</text>
+<text class="fg xs" x="786.0" y="100" text-anchor="middle">investment</text>
+<line class="grid" x1="20" y1="120" x2="1180" y2="120"/>
+<text class="fg t" x="20" y="144">C1  Commodity and plant</text>
+<text class="mu xs" x="48" y="162">bulk ore to a fixed plant</text>
+<circle class="pos" cx="570.0" cy="149.0" r="9"/>
+<circle class="neg" cx="678.0" cy="149.0" r="8"/>
+<rect class="dep" x="778.0" y="141.0" width="16" height="16" rx="3"/>
+<text class="fg xs" x="856" y="144">ore to crusher C01; commodity not specified</text>
+<line class="grid" x1="20" y1="178" x2="1180" y2="178"/>
+<text class="fg t" x="20" y="202">C2  Mine life remaining</text>
+<text class="mu xs" x="48" y="220">long</text>
+<circle class="pos" cx="786.0" cy="207.0" r="9"/>
+<text class="fg xs" x="856" y="202">not specified</text>
+<line class="grid" x1="20" y1="236" x2="1180" y2="236"/>
+<text class="fg t" x="20" y="260">C3  Site type</text>
+<text class="mu xs" x="48" y="278">brownfield</text>
+<circle class="neg" cx="678.0" cy="265.0" r="8"/>
+<rect class="dep" x="778.0" y="257.0" width="16" height="16" rx="3"/>
+<text class="fg xs" x="856" y="260">brownfield (mine.yaml)</text>
+<line class="grid" x1="20" y1="294" x2="1180" y2="294"/>
+<text class="fg t" x="20" y="318">C4  Labour availability</text>
+<text class="mu xs" x="48" y="336">scarce</text>
+<circle class="pos" cx="354.0" cy="323.0" r="9"/>
+<text class="fg xs" x="856" y="318">not specified</text>
+<line class="grid" x1="20" y1="352" x2="1180" y2="352"/>
+<text class="fg t" x="20" y="376">C5  Remoteness</text>
+<text class="mu xs" x="48" y="394">remote</text>
+<circle class="pos" cx="354.0" cy="381.0" r="9"/>
+<circle class="neg" cx="678.0" cy="381.0" r="8"/>
+<text class="fg xs" x="856" y="376">Australian setting; remoteness not specified</text>
+<line class="grid" x1="20" y1="410" x2="1180" y2="410"/>
+<text class="fg t" x="20" y="434">C6  Mixed-fleet composition</text>
+<text class="mu xs" x="48" y="452">much manned ancillary work in haul areas</text>
+<rect class="dep" x="454.0" y="431.0" width="16" height="16" rx="3"/>
+<circle class="neg" cx="570.0" cy="439.0" r="8"/>
+<circle class="neg" cx="678.0" cy="439.0" r="8"/>
+<text class="fg xs" x="856" y="434">20 manned and ancillary vehicles with</text>
+<text class="fg xs" x="856" y="448">devices; 4 manned shovels</text>
+<line class="grid" x1="20" y1="468" x2="1180" y2="468"/>
+<line class="grid" x1="300" y1="120" x2="300" y2="468"/>
+<line class="grid" x1="408" y1="120" x2="408" y2="468"/>
+<line class="grid" x1="516" y1="120" x2="516" y2="468"/>
+<line class="grid" x1="624" y1="120" x2="624" y2="468"/>
+<line class="grid" x1="732" y1="120" x2="732" y2="468"/>
+<line class="grid" x1="840" y1="120" x2="840" y2="468"/>
+<circle class="pos" cx="40" cy="502" r="8"/>
+<text class="fg s" x="56" y="506">strengthens the case</text>
+<circle class="neg" cx="320" cy="502" r="7"/>
+<text class="fg s" x="336" y="506">weakens the case</text>
+<rect class="dep" x="593" y="495" width="14" height="14" rx="3"/>
+<text class="fg s" x="616" y="506">depends on the site</text>
+<text class="fg s" x="896" y="506">blank: no direct effect</text>
+<text class="mu it" x="20" y="562">Qualitative teaching model [H]; not market data. Published analyses of adoption drivers are [TBV].</text>
+</svg>
+<figcaption><span class="fig-no">Figure 2</span> Qualitative customer segment map (mine characteristics × operational drivers) <span class="fig-id">FIG-20-01-02</span></figcaption></figure>
+<p>The drivers are operational problems, not slogans:</p>
+<ul>
+<li><strong>D1 Staffing 24/7 haul rosters.</strong> Two 12-hour shifts (<code>mine.yaml</code>) need an operator in every truck on every shift.
+Where operators are hard to recruit or retain, autonomy addresses a staffing problem.</li>
+<li><strong>D2 Exposure of people in haul areas.</strong> Autonomy removes the truck operator from the haul road, but manned ancillary
+work continues inside the autonomous areas. The net change depends on the mixed fleet.</li>
+<li><strong>D3 Predictable cycles and plant feed.</strong> Where a fixed plant such as C01 must be fed steadily, consistent cycles
+matter. Whether autonomy changes them at a given mine must be measured in the site baseline. The handbook uses no
+published productivity figure <code>[TBV]</code> (SRC-PUB-AHS-PRODUCTIVITY-UPLIFT).</li>
+<li><strong>D4 Integration and change burden.</strong> Existing systems, roads, workforce and mixed fleet must be integrated or changed.</li>
+<li><strong>D5 Time to recover the investment.</strong> Mine life, commodity cycles and the length of the conversion decide whether
+benefits have time to accumulate. Volume 21 quantifies it.</li>
+</ul>
+<p>Combinations of characteristics define segments. Four illustrative segments <code>[A]</code> show how the drivers combine:</p>
+<table>
+<thead>
+<tr>
+<th>Segment <code>[A]</code></th>
+<th>Characteristics</th>
+<th>Strong drivers</th>
+<th>Main burden</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SEG-1 Remote, long-life, bulk brownfield</td>
+<td>Remote, scarce labour, long life, fixed plant, existing systems</td>
+<td>D1, D3, D5</td>
+<td>D4 (FMS, trucks, plant interface)</td>
+</tr>
+<tr>
+<td>SEG-2 Greenfield designed for autonomy</td>
+<td>Roads, network and procedures designed for autonomy from the start</td>
+<td>D1, D3 depending on location</td>
+<td>Lower D4; the whole system is new</td>
+</tr>
+<tr>
+<td>SEG-3 Short remaining life or small fleet</td>
+<td>Few years left or few trucks</td>
+<td>Possibly D1</td>
+<td>D5: little time to recover the investment</td>
+</tr>
+<tr>
+<td>SEG-4 Brownfield with heavy mixed-fleet work</td>
+<td>Much manned ancillary work in haul areas, labour available</td>
+<td>D2 partly</td>
+<td>D3 and D4: work-zone holds, devices on every manned vehicle</td>
+</tr>
+</tbody>
+</table>
+<p>The shared data cannot place the reference mine in a segment. <code>mine.yaml</code> says it is brownfield, in an Australian
+setting, and <code>equipment.yaml</code> lists 20 manned and ancillary vehicles with devices and 4 manned shovels. The commodity,
+mine life, labour availability and remoteness are not specified, so the mine is SEG-1 or SEG-4 depending on facts the
+handbook has not set. A segment assigned without those facts would be a guess presented as analysis. Published analyses
+of why mines adopt autonomous haulage have not been read for this chapter <code>[TBV]</code> (SRC-PUB-AHS-ADOPTION-DRIVERS).</p>
+<p>Each driver points to a problem that can be checked at the site: D1 against rosters and vacancies, D2 against manned
+work in autonomous areas, D3 against delay-coded losses at C01, D4 against the interface inventory of ch-19-01, D5
+against the mine plan. ch-20-02 turns these drivers into measurable customer needs.</p>
+<h3 id="s-4-7">4.7 The buying organisation</h3>
+<p>An AHS purchase is decided by several functions in the mining company, each with its own question. The seven roles of
+<code>mine.yaml</code> are part of it. The other functions are <code>[A]</code>.</p>
+<table>
+<thead>
+<tr>
+<th>Function</th>
+<th>Who (reference mine)</th>
+<th>Main question</th>
+<th>Evidence they need</th>
+<th>Operational test</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Site operations</td>
+<td>Pit Supervisor; AHS Controller (future); production superintendent <code>[A]</code></td>
+<td>Will the shift run, and will the trucks stop for good reasons?</td>
+<td>Delay-coded data from comparable operations; the offering's behaviour in the site's scenarios</td>
+<td>SCN-CRUSHER-C01-DOWN, SCN-DOZER-DZ03-EX02</td>
+</tr>
+<tr>
+<td>Mine planning</td>
+<td>Planner <code>[A]</code> (ch-03-01)</td>
+<td>Can the plan be met with the fleet, roads and plant constraints?</td>
+<td>Cycle and availability assumptions with their sources; fleet sizing (Volume 21)</td>
+<td>C01 window, R05 ramp</td>
+</tr>
+<tr>
+<td>Maintenance</td>
+<td>Maintenance Planner; Field Technician</td>
+<td>Who maintains kits, devices and trucks, and how fast does a stopped truck return?</td>
+<td>Maintenance concept, spares, support terms (ch-19-04)</td>
+<td>SCN-RECOVER-DT17</td>
+</tr>
+<tr>
+<td>Safety</td>
+<td>Site safety function <code>[A]</code>; Emergency Response Team</td>
+<td>What hazards change, who carries the safety case, how is the site regulated?</td>
+<td>Hazard analysis approach, independent safety functions, regulatory position <code>[TBV]</code> (ch-19-03)</td>
+<td>SCN-FIRE-DT17, SCN-RSTOP-AANORTH</td>
+</tr>
+<tr>
+<td>IT/OT</td>
+<td>Site IT <code>[A]</code>; plant control and OT engineers <code>[A]</code></td>
+<td>Which networks, interfaces and security boundaries change?</td>
+<td>Interface list with openness level; network design (Volume 11); security (ch-04-09)</td>
+<td>I-01, I-06, I-08</td>
+</tr>
+<tr>
+<td>Procurement</td>
+<td>Procurement <code>[A]</code></td>
+<td>Is the contract fair, enforceable and comparable across offers?</td>
+<td>Supply-scope matrix (ch-19-04), commercial model (ch-20-06)</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Executive</td>
+<td>Site management; corporate executive <code>[A]</code></td>
+<td>Does it pay, and is the risk acceptable?</td>
+<td>Business case with sourced inputs (ch-19-01, Volume 21)</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<p>Much of the evidence is site data — delay-coded history, the interface inventory, the road network. Operations
+evidence arrives late unless someone asks for it: a purchase driven by executive and procurement questions can be well
+advanced before the Pit Supervisor sees what the trucks will do when C01 stops. And safety is not a scoring function.
+The safety function judges whether every offering meets the site's safety requirements. It does not trade safety
+against price (REQ-20-01-008; ch-20-05).</p>
+<h3 id="s-4-8">4.8 Market information and evidence labels</h3>
+<p>People in every function will meet market figures: numbers of autonomous trucks in operation, growth forecasts,
+supplier shares, typical prices. The handbook's rule is simple. A figure without a verified source, used within the
+scope of that verification, does not enter a document as fact. It is <code>[TBV]</code>.</p>
+<p>Public sources differ in what they can support:</p>
+<table>
+<thead>
+<tr>
+<th>Source type</th>
+<th>Can support</th>
+<th>Typical limit</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Mining-company reports and media releases</td>
+<td>Statements by a company about its own operations</td>
+<td>Baselines and methods rarely given; not representative of other mines</td>
+</tr>
+<tr>
+<td>Supplier publications</td>
+<td>What a supplier says about its own product</td>
+<td>Claims, not verification; the handbook does not use them except as labelled <code>[V]</code> examples</td>
+</tr>
+<tr>
+<td>Regulator publications (incident reports, safety bulletins, guidance)</td>
+<td>What the regulator published about an event or a topic</td>
+<td>About incidents and expectations, not about markets</td>
+</tr>
+<tr>
+<td>Standards bodies' catalogues</td>
+<td>Designation, title, edition, published scope</td>
+<td>Clause content not verified at catalogue level</td>
+</tr>
+<tr>
+<td>Industry guidelines (for example GMG)</td>
+<td>Definitions and methods</td>
+<td>Not market data</td>
+</tr>
+<tr>
+<td>Peer-reviewed studies and government statistics</td>
+<td>Measured results with methods</td>
+<td>May be dated or about other settings</td>
+</tr>
+<tr>
+<td>Commercial market-research reports</td>
+<td>Market estimates</td>
+<td>Methods often not stated; access often restricted</td>
+</tr>
+</tbody>
+</table>
+<p>The handbook's source register already holds two entries that show how scope limits use. A large mining company's
+2018 media release stated that trucks fitted with autonomous haulage technology had moved more than one billion tonnes
+across five of its sites since trial operations began in 2008 <code>[F]</code> (SRC-PUB-MINING-CO-AHS-RELEASE-2018). That is the
+company's statement about its own operations, verified as published. It supports no figure for the market as a whole,
+no share and no comparison with other mines. The same release contains estimates of operating hours and unit costs
+whose baseline and method it does not give. The handbook does not use them as inputs. The second entry is ISO 23725 at
+catalogue level (section 4.3). It supports what the standard is called and what its published scope covers, and nothing
+about any product.</p>
+<p>No source for AHS market size, growth, deployment counts or supplier shares has been verified for this handbook
+<code>[TBV]</code> (SRC-PUB-AHS-MARKET-DATA). Section 12.4 works through the recording of one figure.</p>
+<h3 id="s-4-9">4.9 The site's existing fleet and plant as constraints</h3>
+<p>Four things the reference mine already has narrow its realistic choice among offerings.</p>
+<p><strong>Manned and ancillary vehicles.</strong> Every manned vehicle that enters an autonomous area carries a position reporting
+unit, a radio and a field terminal (master-instructions §4) — 20 vehicles at the reference mine. An offering must supply
+these devices or integrate another party's across I-05. ch-02-05 shows what happens when a device supplier changes its
+message version without the AMS supplier knowing. A mine with many such vehicles gains most from openness at I-05.</p>
+<p><strong>Manned shovels.</strong> EX01 to EX04 carry a shovel operator terminal and a shovel position source (<code>equipment.yaml</code>). An
+offering must name who supplies them.</p>
+<p><strong>The plant.</strong> C01's control system speaks ICD-C01-STATUS to the AMS and the FMS (ch-02-06, ch-15-03). The plant is not
+a market the AHS supplier competes in, but its interface is a precondition of ore haulage and needs a named owner.</p>
+<p><strong>The existing FMS and trucks.</strong> Keeping them (OA-2, OA-4) makes the incumbent FMS supplier a party at I-01 and the
+base-truck manufacturer a party at I-04 (ch-08-07). Replacing them (OA-1, OA-3) is a fleet and dispatch decision.</p>
+<p>The real choice is therefore narrower than the offerings on paper. Whatever it buys, the mine must own or integrate the
+four site-side interfaces and represent 20 manned vehicles and 4 manned shovels in the AMS.</p>
+<h3 id="s-4-10">4.10 Trade-offs and limits of the model</h3>
+<ul>
+<li><strong>More layers from one supplier or fewer.</strong> More layers reduce cross-party interfaces, raise switching costs and
+replace more of what the site owns. Fewer layers keep choice and existing systems, with integration the site must lead.</li>
+<li><strong>Openness or integration.</strong> An open interface widens choice. A closed one may be simpler to verify inside one
+supplier. The handbook prefers openness outside the safety argument and explicit joint evidence inside it <code>[R]</code>.</li>
+<li><strong>Counts are not costs.</strong> Prices, fees and integration costs belong to ch-20-06 and Volume 21.</li>
+<li><strong>Archetypes are not products.</strong> Real offerings mix the archetypes and change between product generations. The
+handbook maps no product onto them.</li>
+</ul>
+<h2 id="s-5">5. Responsibilities and interface boundaries</h2>
+<p>The table reads the reference architecture as a market: who supplies each element in the archetypes and what the site
+must hold regardless.</p>
+<table>
+<thead>
+<tr>
+<th>Element</th>
+<th>Layer</th>
+<th>Supplied by (OA-1 / OA-2 / OA-3 / OA-4)</th>
+<th>Market boundary</th>
+<th>What the site keeps regardless</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>FMS</td>
+<td>L5</td>
+<td>P / F / P / F</td>
+<td>I-01 to the AMS; I-07 to the plant</td>
+<td>Dispatch rules, delay codes, production reporting</td>
+</tr>
+<tr>
+<td>AMS</td>
+<td>L4</td>
+<td>P in all</td>
+<td>I-01, I-02, I-05, I-06, I-08, I-09</td>
+<td>Configuration register, access-control procedures, interface owners</td>
+</tr>
+<tr>
+<td>ADS</td>
+<td>L3</td>
+<td>P / P / P / K</td>
+<td>I-02, I-03</td>
+<td>Site acceptance of every release (ch-18-04)</td>
+</tr>
+<tr>
+<td>VCS (vehicle platform)</td>
+<td>L1</td>
+<td>P / M / M / M</td>
+<td>I-04, I-10</td>
+<td>Maintenance of the base truck; vehicle-side safety decisions are never overridden by any central element</td>
+</tr>
+<tr>
+<td>Independent safety functions</td>
+<td>L4 (supply)</td>
+<td>P in all</td>
+<td>I-10 to every truck</td>
+<td>Issuers are the Pit Supervisor and the AHS Controller (<code>equipment.yaml</code>); acts regardless of AMS and ADS state</td>
+</tr>
+<tr>
+<td>Onboard safety-related systems</td>
+<td>L1</td>
+<td>with the vehicle platform</td>
+<td>inside the truck</td>
+<td>Inspection and test regimes (Volume 04)</td>
+</tr>
+<tr>
+<td>Manned-vehicle devices</td>
+<td>L4 (supply)</td>
+<td>P in all (another party in ch-02-05)</td>
+<td>I-05</td>
+<td>Fitting to every manned vehicle that enters an autonomous area</td>
+</tr>
+<tr>
+<td>Mine network</td>
+<td>L6</td>
+<td>site</td>
+<td>I-08</td>
+<td>Coverage, backhaul, time</td>
+</tr>
+<tr>
+<td>Survey and mapping</td>
+<td>L7</td>
+<td>site</td>
+<td>I-09</td>
+<td>As-built surveys; map validation</td>
+</tr>
+<tr>
+<td>Plant (C01)</td>
+<td>outside</td>
+<td>site and plant</td>
+<td>I-06, I-07</td>
+<td>ICD-C01-STATUS; the plant control room</td>
+</tr>
+<tr>
+<td>People</td>
+<td>—</td>
+<td>site employees; supplier staff under contract</td>
+<td>procedures, HMI, radio</td>
+<td>Decisions on shift; safety decisions at the site</td>
+</tr>
+</tbody>
+</table>
+<p>The boundary that matters most is between <strong>supply</strong> and <strong>accountability</strong>. Suppliers supply layers. The site, as
+integration authority (ch-02-01), is accountable for the combination, because no supplier controls the plant, the
+network, the survey data and the people on shift.</p>
+<h2 id="s-6">6. Normal, abnormal and degraded operation</h2>
+<p>The shared scenario for sections 6, 7 and 8 is SCN-CRUSHER-C01-DOWN. Its registered key events are: T+0 s C01
+not-ready signal; T+5 s tipping-bay reservation withheld and trucks held at C01-Q; T+300 s FMS reassignment proposal,
+which the controller approves. The times T+30 s and T+60 s are taken from ch-15-06, which uses the same scenario. T+0 s
+is 10:00 on a DAY shift. The installed arrangement is OA-2 <code>[A]</code>: the AMS comes from supplier P, the FMS from the
+incumbent supplier F, and the plant and the controller belong to the site. Other intermediate times are <code>[A]</code> and
+marked so.</p>
+<h3 id="s-6-1">6.1 Normal operation — every interface has an owner</h3>
+<table>
+<thead>
+<tr>
+<th>Time</th>
+<th>Event</th>
+<th>Interface</th>
+<th>Parties</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>T+0 s</td>
+<td>C01 sends <code>NOT_READY</code>, reason <code>CHUTE_BLOCKED</code>, to the AMS and the FMS</td>
+<td>I-06, I-07</td>
+<td>site → P; site → F</td>
+</tr>
+<tr>
+<td>T+5 s</td>
+<td>AMS withholds the tipping-bay reservation; ore trucks held at C01-Q; AMS reports the held trucks with DLY-OD-10 to the FMS (ch-15-06)</td>
+<td>I-01</td>
+<td>P → F</td>
+</tr>
+<tr>
+<td>T+30 s</td>
+<td>Alarm &quot;C01 not ready - chute blocked&quot; on the AMS HMI; the controller acknowledges</td>
+<td>AMS HMI</td>
+<td>P's screen, site's controller</td>
+</tr>
+<tr>
+<td>T+60 s</td>
+<td>Controller calls the plant control room; estimate recorded (ch-15-06)</td>
+<td>voice</td>
+<td>site</td>
+</tr>
+<tr>
+<td>T+300 s</td>
+<td>FMS reassignment proposal on the FMS HMI; controller approves</td>
+<td>FMS HMI</td>
+<td>F's screen, site's controller</td>
+</tr>
+</tbody>
+</table>
+<p>Three parties take part in five minutes, across three interfaces. The event works because each interface was tested
+with its meaning agreed: <em>not ready</em> means the same at both receivers (REQ-02-06-004), and a held truck reported on I-01
+carries its reason and is shown by the FMS as held, not available.</p>
+<h3 id="s-6-2">6.2 Abnormal operation — a meaning that two suppliers read differently</h3>
+<p>Replay the event with one difference <code>[A]</code>: when the AMS was integrated with the incumbent FMS, the held state on I-01
+was mapped to the FMS's own state &quot;waiting&quot;. In this FMS, a waiting truck can be reassigned.</p>
+<table>
+<thead>
+<tr>
+<th>Time</th>
+<th>Event</th>
+<th>Interface</th>
+<th>Parties</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>T+0 s to T+30 s</td>
+<td>As in 6.1</td>
+<td>I-06, I-07, I-01</td>
+<td>site, P, F</td>
+</tr>
+<tr>
+<td>T+300 s</td>
+<td>FMS proposal lists loaded ore trucks held at C01-Q as available for reassignment; its estimate of tonnes saved by reassigning is overstated</td>
+<td>I-01 (semantic)</td>
+<td>F's logic, P's data</td>
+</tr>
+<tr>
+<td>T+330 s <code>[A]</code></td>
+<td>Controller checks the proposal against the AMS view, as the procedure of ch-15-06 requires, and sees that the listed trucks are held and loaded</td>
+<td>AMS and FMS HMIs</td>
+<td>site</td>
+</tr>
+<tr>
+<td>T+420 s <code>[A]</code></td>
+<td>Controller rejects the reassign option and, with the Pit Supervisor, approves hold; defect raised against I-01 in the site–supplier issue log (ch-19-04)</td>
+<td>—</td>
+<td>site</td>
+</tr>
+</tbody>
+</table>
+<p>The protective behaviour is unchanged: the AMS held the trucks at T+5 s whatever the FMS proposed, and it grants the
+C01 tipping bay only while the state is ready. What went wrong is a production decision proposed on wrong information
+and caught by a person. The fault sits between two suppliers, each of whom can show that its product meets its own
+specification — the semantic failure of ch-02-05 and the characteristic cost of a two-supplier FMS–AMS boundary. The
+remedy is an owner for I-01 who writes down what &quot;held&quot; means and tests it with this scenario (REQ-20-01-003).</p>
+<h3 id="s-6-3">6.3 Degraded operation — the plant interface without an owner</h3>
+<p>Replay the normal event with a different defect <code>[A]</code>: during the stoppage, the C01 status link fails. The AMS's plant
+gateway expects a message every 5 s and treats a state older than 15 s as lost (ch-15-03).</p>
+<table>
+<thead>
+<tr>
+<th>Time</th>
+<th>Event</th>
+<th>Interface</th>
+<th>Parties</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>T+0 s to T+300 s</td>
+<td>As in 6.1</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<td>T+600 s <code>[A]</code></td>
+<td>Last <code>C01_STATUS</code> message reaches the AMS; then nothing</td>
+<td>I-06</td>
+<td>site, P</td>
+</tr>
+<tr>
+<td>T+616 s <code>[A]</code></td>
+<td>Gateway marks the status lost; HMI &quot;C01 status lost - treated as not ready&quot; (ch-15-03); trucks already held, so nothing changes on the road</td>
+<td>I-06</td>
+<td>P</td>
+</tr>
+<tr>
+<td>T+2700 s</td>
+<td>Plant is ready again (ch-15-06)</td>
+<td>—</td>
+<td>plant</td>
+</tr>
+<tr>
+<td>T+2710 s</td>
+<td>In 6.1 the gateway would have confirmed <code>READY</code> here (ch-15-06); now nothing arrives</td>
+<td>I-06</td>
+<td>—</td>
+</tr>
+<tr>
+<td>T+3600 s <code>[A]</code></td>
+<td>Link repaired; <code>READY</code> confirmed; staged release begins</td>
+<td>I-06</td>
+<td>site, P</td>
+</tr>
+</tbody>
+</table>
+<p>Only the plant's own messages make C01 ready; a phone call does not (ch-15-03). That is the fail-closed design
+working. The cost lies between T+2710 s and T+3600 s, when all 19 ore trucks are held (ch-15-06; DT01 to DT19 in
+<code>baseline_allocation</code>): 4.7 truck-hours <code>[A]</code> (section 12.2). In this replay the time went not on the repair but on
+finding whose interface it was — the plant network, the AMS supplier's gateway, or site IT between them. I-06 is
+cross-party in every archetype, so its owner is a question for the purchase (REQ-20-01-004).</p>
+<h3 id="s-6-4">6.4 The same pattern at EX02 — SCN-DOZER-DZ03-EX02</h3>
+<p>The second scenario shows the same structure at I-05. Its registered key events are: T+0 s the Shovel Operator
+requests DZ03; T+120 s the AMS reserves the work zone and holds the trucks; T+900 s DZ03 leaves, the work-zone
+reservation is released and loading resumes (ch-02-05 walks through it in detail). The path runs from the Shovel
+Operator (site) through DZ03's devices (P in OA-2, another party in ch-02-05's split) to the AMS (P). If the device
+supplier changes a message version without telling the AMS supplier, the AMS rejects DZ03's reports and the job
+continues under voice contact (ch-02-05, section 6.2). The trucks held from T+120 s to T+900 s are coded DLY-OD-04.</p>
+<h2 id="s-7">7. Engineering view</h2>
+<h3 id="s-7-1">7.1 Design decisions and trade-offs</h3>
+<p>These decisions are taken early, often before any supplier is chosen.</p>
+<ul>
+<li><strong>Where to draw the FMS–AMS boundary.</strong> Keeping the existing FMS (OA-2, OA-4) needs a site ICD for I-01 that fixes
+the meaning of every state the scenarios use — assigned, held with reason, cancelled, complete — and an integration
+test that runs SCN-CRUSHER-C01-DOWN across it. Replacing the FMS (OA-1, OA-3) needs new dispatch logic and a new
+delay-code mapping, and breaks the KPI history unless the mapping is rebuilt.</li>
+<li><strong>Which interfaces to require open.</strong> The handbook's recommendation <code>[R]</code> is to require level O2 or O3 at I-01, I-05,
+I-06 and I-09. These are where the site has other parties (the FMS, device suppliers, the plant, Survey) and where
+switching costs collect. Inside the safety chain (I-02 to I-04, I-10), require instead a written allocation of
+evidence between the parties.</li>
+<li><strong>What data the site must be able to export.</strong> The AHS map, the configuration register, the event logs and the
+delay-coded history, in documented formats (ch-19-04 data-access provision). These are the assets that make the next
+decision a real choice.</li>
+<li><strong>What the comparison scores.</strong> Offerings may be compared on integration effort, openness, switching cost and fit with
+the site's fleet. They are not compared on whether they meet safety requirements. Every offering must meet them
+(REQ-20-01-008).</li>
+</ul>
+<h3 id="s-7-2">7.2 Failure modes and mitigations</h3>
+<table>
+<thead>
+<tr>
+<th>Failure mode</th>
+<th>Market-structure cause</th>
+<th>Effect at the reference mine</th>
+<th>Mitigation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Interface without an owner</td>
+<td>Cross-party interface not assigned in any contract</td>
+<td>6.3: 4.7 truck-hours lost waiting for a repair</td>
+<td>Supply-scope matrix (ch-19-04); REQ-20-01-004</td>
+</tr>
+<tr>
+<td>Semantic mismatch across a party boundary</td>
+<td>Two conformant products read one state differently</td>
+<td>6.2: wrong reassignment proposal</td>
+<td>Site ICD with meanings; scenario-based integration test (REQ-20-01-003, -005)</td>
+</tr>
+<tr>
+<td>FMS–AMS link lost between suppliers</td>
+<td>I-01 cross-party; recovery needs P, F and the site network</td>
+<td>No FMS proposal; the AMS still holds trucks fail-closed; decisions taken by people on shift</td>
+<td>Joint recovery procedure; tested in commissioning</td>
+</tr>
+<tr>
+<td>Device version change at I-05</td>
+<td>Device supplier releases independently of the AMS supplier</td>
+<td>DZ03 not visible; work continues under voice contact (ch-02-05)</td>
+<td>Change notification across parties; first-entry check after any change</td>
+</tr>
+<tr>
+<td>Evidence gap at a split safety chain</td>
+<td>I-02 or I-04 between parties without agreed evidence allocation</td>
+<td>Release cannot be accepted at the site (ch-18-04)</td>
+<td>Joint hazard analysis and verification agreement before purchase</td>
+</tr>
+<tr>
+<td>Lock-in</td>
+<td>Map, configuration and logs only in closed formats</td>
+<td>Next purchase not a real choice; renewal on the incumbent's terms</td>
+<td>Data-access provisions; switching register (REQ-20-01-006)</td>
+</tr>
+<tr>
+<td>Market claim used as input</td>
+<td>Unverified market figure used in a business case</td>
+<td>Decision based on a number nobody can check</td>
+<td>Market-fact register; <code>[TBV]</code> (REQ-20-01-001)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="s-7-3">7.3 Interface and timing considerations</h3>
+<p>For SCN-CRUSHER-C01-DOWN, the script traces the registered events through each archetype and counts the steps whose two
+ends belong to different parties:</p>
+<table>
+<thead>
+<tr>
+<th>Step</th>
+<th>Time</th>
+<th>OA-1</th>
+<th>OA-2</th>
+<th>OA-3</th>
+<th>OA-4</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>C01 <em>not ready</em> to the AMS (I-06)</td>
+<td>T+0 s</td>
+<td>site → P</td>
+<td>site → P</td>
+<td>site → P</td>
+<td>site → P</td>
+</tr>
+<tr>
+<td>C01 <em>not ready</em> to the FMS (I-07)</td>
+<td>T+0 s</td>
+<td>site → P</td>
+<td>site → F</td>
+<td>site → P</td>
+<td>site → F</td>
+</tr>
+<tr>
+<td>Held trucks and DLY-OD-10 to the FMS (I-01)</td>
+<td>T+5 s</td>
+<td>inside P</td>
+<td>P → F</td>
+<td>inside P</td>
+<td>P → F</td>
+</tr>
+<tr>
+<td>Reassignment proposal</td>
+<td>T+300 s</td>
+<td>inside P</td>
+<td>inside F</td>
+<td>inside P</td>
+<td>inside F</td>
+</tr>
+<tr>
+<td>Party boundaries crossed</td>
+<td></td>
+<td>2</td>
+<td>3</td>
+<td>2</td>
+<td>3</td>
+</tr>
+</tbody>
+</table>
+<p>The plant boundary is crossed twice at T+0 s in every archetype; the FMS–AMS boundary is crossed at T+5 s only where
+the site keeps its FMS. The proposal at T+300 s is only as good as the held-truck information that crossed I-01 at
+T+5 s. When F and P are different parties, its meaning and latency belong in a site ICD, not in a design detail inside
+one product.</p>
+<p>Two timing rules hold whatever the market structure. The AMS fails closed at the plant boundary: a missing, invalid or
+stale C01 state is <em>not ready</em>, and no truck is granted the tipping bay (REQ-02-06-004). The FMS proposes and the
+controller decides. No archetype gives the FMS authority to grant a reservation or to override a vehicle-side safety
+decision (ch-01-04). Commercial arrangements change who supplies each element. They do not change which element decides.</p>
+<h2 id="s-8">8. Operations view</h2>
+<h3 id="s-8-1">8.1 What the control room sees</h3>
+<p>In OA-2 the AHS Controller works with two suppliers' screens. The AMS HMI shows the alarm &quot;C01 not ready - chute
+blocked&quot; at T+30 s and the trucks held at C01-Q. The FMS HMI shows the proposal at T+300 s. In 6.2 the screens disagree:
+the FMS lists as reassignable the trucks the AMS shows held and loaded. In 6.3 the AMS HMI shows &quot;C01 status lost -
+treated as not ready&quot;.</p>
+<p>Three things help the controller whichever suppliers are involved:</p>
+<ul>
+<li><strong>One source per fact.</strong> The procedure states that the AMS view is the source of truth for where a truck is and
+whether it is held, and the FMS view for assignments and proposals.</li>
+<li><strong>Interface alarms that name the interface.</strong> &quot;C01 status lost&quot; names I-06. A controller who knows which interface
+failed knows whom to call.</li>
+<li><strong>A support card by interface, not by product.</strong> For I-01, I-06, I-08 and the other cross-party interfaces, the card
+names the accountable party and the number that answers on DAY and NIGHT shifts (ch-19-04).</li>
+</ul>
+<h3 id="s-8-2">8.2 Who decides what</h3>
+<p>Two decision sets matter here: the purchase, and the event on shift. The purchase is decided in the buying organisation
+of section 4.7.</p>
+<table>
+<thead>
+<tr>
+<th>Decision</th>
+<th>Responsible</th>
+<th>Accountable</th>
+<th>Consulted</th>
+<th>Informed</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Which layers to buy from whom (archetype)</td>
+<td>Project manager <code>[A]</code></td>
+<td>Site management</td>
+<td>Operations, maintenance, safety, IT/OT, planning, procurement</td>
+<td>Workforce <code>[A]</code></td>
+</tr>
+<tr>
+<td>FMS kept or replaced</td>
+<td>Integration authority (ch-02-01)</td>
+<td>Site management</td>
+<td>AHS Controller, Pit Supervisor, Planner, incumbent FMS supplier</td>
+<td>All shifts</td>
+</tr>
+<tr>
+<td>Openness and data-access terms</td>
+<td>Integration authority</td>
+<td>Site management</td>
+<td>Procurement, IT/OT, Survey</td>
+<td>Suppliers</td>
+</tr>
+<tr>
+<td>Owner of each cross-party interface</td>
+<td>Integration authority</td>
+<td>Site management</td>
+<td>Suppliers, plant</td>
+<td>Control room</td>
+</tr>
+<tr>
+<td>Safety requirements every offering must meet</td>
+<td>Site safety function <code>[A]</code></td>
+<td>Site management</td>
+<td>Safety-case owner (ch-03-09), Emergency Response Team</td>
+<td>Procurement</td>
+</tr>
+<tr>
+<td>Market figures in the business case</td>
+<td>Author of the business case <code>[A]</code></td>
+<td>Site management</td>
+<td>Integration authority</td>
+<td>Steering committee (ch-19-04)</td>
+</tr>
+</tbody>
+</table>
+<p>On shift, the decisions of SCN-CRUSHER-C01-DOWN stay where ch-15-06 puts them. The AMS holds the trucks. The FMS
+proposes. The AHS Controller approves or rejects, with the Pit Supervisor. Supplier staff diagnose interface faults,
+and the site's people decide (ch-19-04). No market arrangement moves a decision on shift to a supplier.</p>
+<h3 id="s-8-3">8.3 Procedure excerpt — operations review of an offering</h3>
+<p>The operations readiness lead (ch-19-04) runs these steps with the roles named, before an offering is chosen <code>[H]</code>.</p>
+<ol>
+<li><strong>Integration authority:</strong> draw the offering on FIG-20-01-01. Mark each layer with its supplying party and each
+interface with its accountable party and openness level. Any interface without an owner is a finding.</li>
+<li><strong>AHS Controller and Pit Supervisor:</strong> walk SCN-CRUSHER-C01-DOWN on the drawing (T+0, 5, 300 s). For each step,
+name the screen that shows it, the party that supplies the screen and whom to call when it fails, on DAY and on
+NIGHT shifts.</li>
+<li><strong>Shovel Operator and Pit Supervisor:</strong> walk SCN-DOZER-DZ03-EX02 (T+0, 120, 900 s). Confirm how DZ03, the water
+trucks, the light vehicles and the grader are represented in the AMS and who supplies their devices.</li>
+<li><strong>Maintenance Planner and Field Technician:</strong> list who maintains the kit, the devices and the base truck, and who
+decides on-site priorities (ch-19-04).</li>
+<li><strong>Survey:</strong> confirm how the AHS map is built from site surveys and in which format the site receives it back.</li>
+<li><strong>All:</strong> record each gap as a finding in the issue log with an owner. A gap in a safety requirement is a pass/fail
+finding for the offering, not a weighting (REQ-20-01-008).</li>
+<li><strong>Operations readiness lead:</strong> report the findings to the decision of section 8.2 before the archetype is chosen.</li>
+</ol>
+<h3 id="s-8-4">8.4 KPIs and delay codes affected</h3>
+<ul>
+<li><strong>DLY-OD-10</strong> (destination down) records the trucks held at C01-Q in SCN-CRUSHER-C01-DOWN, including the 890 s of
+6.3. The code classifies the time. Whether the time is attributed to the plant, the site or a supplier is a contract
+term (ch-19-07; <code>delay-codes.yml</code> <code>coding_rules</code>). In 6.3 the cause is an interface without an owner.</li>
+<li><strong>DLY-OD-04</strong> (held for access permission or work zone) records the trucks held at EX02-Q in SCN-DOZER-DZ03-EX02.</li>
+<li><strong>KPI continuity.</strong> The time categories (Operating Delay, Downtime and so on) follow the GMG time usage model <code>[F]</code>
+(SRC-PUB-GMG-TUM-2020), and the codes are handbook conventions <code>[H]</code>. If the FMS is replaced (OA-1, OA-3), the mapping
+from the new FMS's records to the site's delay codes must be rebuilt. Without it, Physical Availability, Use of
+Availability and the delay history break at the go-live date.</li>
+</ul>
+<h3 id="s-8-5">8.5 Training and competency implications</h3>
+<ul>
+<li><strong>Operations leaders</strong> learn to read an offering as layers and interfaces and to ask, for every interface, who owns
+it and whom the control room calls at 03:00.</li>
+<li><strong>AHS Controllers</strong> learn which screen is the source of truth for which fact, and how interface alarms name the
+interface.</li>
+<li><strong>Everyone involved in the purchase</strong> learns the evidence-label rule for market figures (section 4.8).</li>
+<li><strong>Training is written in handbook terms</strong>, so that a change of supplier changes the screens, not the job.</li>
+</ul>
+<h2 id="s-9">9. Requirements and acceptance criteria</h2>
+<p>REQ-20-01-001 [H]
+Every market figure in a product, pre-sales or purchase document (market size, growth, deployment count, share, price)
+shall carry a source-register ID and an evidence label. A figure without a verified source used within its verification
+scope shall be labelled <code>[TBV]</code> and shall not be used as an input to a decision model.
+Rationale: a decision must not rest on a number nobody can check (section 4.8).
+Verification: inspection of the market-fact register against <code>source-register.yml</code>.</p>
+<p>REQ-20-01-002 [H]
+An offering assessment shall map every supplied element to a value-chain layer and an architecture element, name the
+supplying party of each element, and list every cross-party interface with its accountable party, its ICD reference and
+its openness level.
+Rationale: interfaces between parties are where integration effort, defects and switching costs arise (sections 4.1 to
+4.4).
+Verification: analysis by script (as <code>figures/make_figures.py</code>); inspection.</p>
+<p>REQ-20-01-003 [H]
+For a brownfield site, an offering assessment shall state (a) whether the site's existing FMS is kept or replaced,
+(b) the ICD and integration test of the FMS–AMS interface with that FMS, including the meaning of held trucks and their
+reasons, and (c) the changes to dispatch, delay-code mapping and reporting if the FMS is replaced.
+Rationale: the FMS–AMS boundary is the main brownfield choice (sections 4.4, 6.2).
+Verification: inspection; integration test with the SCN-CRUSHER-C01-DOWN timeline (T+0, 5, 300 s).</p>
+<p>REQ-20-01-004 [H]
+An offering assessment shall name the supplying party and the accountable party of the plant status interface
+(ICD-C01-STATUS) at both the AMS and the FMS, and shall not assume any tipping at C01 without that interface in service.
+Rationale: an absent plant state is <em>not ready</em> (REQ-02-06-004); an interface without an owner costs production time
+(section 6.3).
+Verification: inspection of the supply-scope matrix; test with the status link interrupted.</p>
+<p>REQ-20-01-005 [H]
+A statement of conformance to an interface standard shall name the parts and options implemented. It shall be accepted
+as evidence of conformance only. Interoperability at the site shall be verified by an integration test of the
+combination, and the statement shall not be used as evidence of safe machine operation.
+Rationale: conformance is necessary, not sufficient, for interoperability (ch-02-05); the published scope of
+ISO 23725:2024 leaves safe machine operation to agreement between suppliers <code>[F]</code> (section 4.3).
+Verification: inspection; integration test record.</p>
+<p>REQ-20-01-006 [H]
+The site shall keep a switching register that lists its AHS map data, configuration items, ICDs, safety-case evidence,
+event logs and training records. For each it shall state the format, the data-access provision under which the site can
+obtain it, and what would have to be redone if the supplier changed.
+Rationale: switching costs decide whether the next purchase is a real choice (section 4.5).
+Verification: inspection; trial export of the AHS map and one day of event logs in the stated formats.</p>
+<p>REQ-20-01-007 [H]
+An offering assessment shall list every class of manned and ancillary vehicle that enters the autonomous areas, with the
+devices it needs, the party that supplies them and the accountable party of the interface to the AMS. A class without a
+supplier for its devices shall be recorded as a gap.
+Rationale: every manned vehicle in an autonomous area carries a position reporting unit, a radio and a field terminal
+(master-instructions §4); the mixed fleet constrains the choice (section 4.9).
+Verification: inspection against <code>equipment.yaml</code>; walk-through of SCN-DOZER-DZ03-EX02.</p>
+<p>REQ-20-01-008 [H]
+In any comparison of offerings, the site's safety requirements — including the independent remote stop, digital access
+permissions, fail-closed permissions and the response to fire detection and suppression — shall be pass/fail conditions
+that every offering must meet. They shall not be weighted criteria traded against price, productivity or any other
+criterion.
+Rationale: commercial or market choices never relax a safety function (sections 4.7, 7.1; ch-20-05).
+Verification: inspection of the comparison template and of each completed comparison.</p>
+<h2 id="s-10">10. Verification and validation</h2>
+<p>Most requirements apply to documents and decisions and are verified by inspection and analysis. The operational ones
+are validated by running the site's scenarios across the interfaces between parties.</p>
+<table>
+<thead>
+<tr>
+<th>Requirement</th>
+<th>Method</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>REQ-20-01-001</td>
+<td>Inspection</td>
+<td>Market-fact register; every figure has a source ID and a label; <code>[TBV]</code> figures absent from decision models</td>
+</tr>
+<tr>
+<td>REQ-20-01-002</td>
+<td>Analysis, inspection</td>
+<td>Script output: every element has one supplying party; every cross-party interface has an owner</td>
+</tr>
+<tr>
+<td>REQ-20-01-003</td>
+<td>Inspection, test</td>
+<td>Site ICD for I-01 with state meanings; integration test record for SCN-CRUSHER-C01-DOWN, including the 6.2 variant</td>
+</tr>
+<tr>
+<td>REQ-20-01-004</td>
+<td>Inspection, test</td>
+<td>Supply-scope matrix naming I-06 and I-07; test with the status link interrupted (ch-15-03 pattern)</td>
+</tr>
+<tr>
+<td>REQ-20-01-005</td>
+<td>Inspection, test</td>
+<td>Conformance statement naming parts and options; integration test of the combination</td>
+</tr>
+<tr>
+<td>REQ-20-01-006</td>
+<td>Inspection, demonstration</td>
+<td>Switching register; trial export of the map and one day of logs</td>
+</tr>
+<tr>
+<td>REQ-20-01-007</td>
+<td>Inspection, walk-through</td>
+<td>Vehicle-class list against <code>equipment.yaml</code>; SCN-DOZER-DZ03-EX02 walk-through</td>
+</tr>
+<tr>
+<td>REQ-20-01-008</td>
+<td>Inspection</td>
+<td>Comparison template with safety requirements as pass/fail conditions</td>
+</tr>
+</tbody>
+</table>
+<p>The figure script checks the model's consistency, not the realism of the archetypes. The segment map is validated by
+asking whether its drivers point to problems the site can check (section 4.6), not against market data, which the
+handbook does not hold.</p>
+<h2 id="s-11">11. Common mistakes</h2>
+<h3 id="s-11-1">11.1 Design mistakes</h3>
+<ul>
+<li><strong>Comparing offerings by feature lists.</strong> Offerings with the same features can differ in which interfaces cross a
+party boundary, and that decides integration effort and switching costs.</li>
+<li><strong>Taking conformance for interoperability.</strong> A conformance statement says what a product implements. Only a test of
+the combination at the site shows that it works with the mine's FMS, devices and plant.</li>
+<li><strong>Leaving the site-side interfaces out of scope.</strong> The plant, the network and the survey data are needed in every
+arrangement. An offering that is silent about them has left them to the site.</li>
+<li><strong>Opening a safety-chain interface by declaration.</strong> A published message format for I-02 or I-04 is not the joint
+hazard analysis and verification that opening it requires.</li>
+<li><strong>Ignoring switching costs until renewal.</strong> Data formats and access rights are cheapest to agree before the first
+contract.</li>
+</ul>
+<h3 id="s-11-2">11.2 Operational mistakes</h3>
+<ul>
+<li><strong>Leaving operations out of the purchase.</strong> The questions in sections 4.7 and 8.3 are answered best by the people who
+will run the shift.</li>
+<li><strong>Quoting a market figure because everyone quotes it.</strong> A figure repeated often is still unverified until its source
+has been read within scope.</li>
+<li><strong>Assigning the mine a segment without its facts.</strong> Segments follow from drivers that can be checked at the site, not
+from the impression a site makes.</li>
+<li><strong>Calling the supplier for every fault.</strong> The first question is which interface failed; the support card should
+answer it.</li>
+<li><strong>Letting delay history break at a system change.</strong> If the FMS changes, the delay-code mapping must be rebuilt before
+go-live.</li>
+</ul>
+<h2 id="s-12">12. Worked examples</h2>
+<p>All numbers come from <code>figures/make_figures.py</code> or from the shared data. Archetypes, parties and the repair time in 12.2
+are <code>[A]</code>.</p>
+<p><strong>12.1 Cross-party interfaces by archetype.</strong> For the reference mine the script counts 4, 7, 6 and 8 cross-party
+interfaces for OA-1 to OA-4, of which 4, 6, 6 and 7 are new or changed. OA-1 is lowest because it replaces the FMS and
+the 40 manned trucks. OA-4 is highest because I-02 crosses between two suppliers inside the safety argument. Reading for
+a purchase: OA-2 and OA-4 put the integration work at I-01 and I-04, OA-1 and OA-3 put the change work in the FMS, and
+all four leave I-06 to I-09 to the site.</p>
+<p><strong>12.2 The cost of an interface without an owner.</strong> In the degraded case of 6.3, the plant is ready at T+2700 s and the
+gateway would have confirmed it at T+2710 s (ch-15-06). The link is repaired at T+3600 s <code>[A]</code>. All ore trucks are
+held by then: the baseline allocation assigns DT01 to DT10 to EX01 and DT11 to DT19 to EX02, 19 trucks (<code>equipment.yaml</code>),
+which matches the 19 held in ch-15-06. The extra stop is</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>&#x00394;</mi><mo>&#x0003D;</mo><mi>n</mi><mspace width="0.167em" /><mo stretchy="false">&#x00028;</mo><msub><mi>t</mi><mrow><mtext>repair</mtext></mrow></msub><mo>&#x02212;</mo><msub><mi>t</mi><mrow><mtext>confirm</mtext></mrow></msub><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>19</mn><mi>&#x000D7;</mi><mo stretchy="false">&#x00028;</mo><mn>3600</mn><mo>&#x02212;</mo><mn>2710</mn><mo stretchy="false">&#x00029;</mo><mtext>&#x000A0;</mtext><mtext>s</mtext><mo>&#x0003D;</mo><mn>16</mn><mrow><mo>&#x0002C;</mo></mrow><mn>910</mn><mtext>&#x000A0;</mtext><mtext>truck-s</mtext><mo>&#x02248;</mo><mn>4.7</mn><mtext>&#x000A0;</mtext><mtext>truck-h</mtext></mrow></math></div>
+<p>The staged release after the repair is not included. The number is small for one event. Its point is the cause: the
+890 s were spent finding the owner of I-06, a question the purchase could have answered.</p>
+<p><strong>12.3 The switching inventory of the reference mine.</strong> From <code>mine.yaml</code> and <code>equipment.yaml</code>, the script counts 25 map
+nodes, 25 road segments with 15.27 km of road, 3 autonomous areas, 4 access points, 40 trucks with kits and stop
+receivers, 20 manned and ancillary vehicles with devices, 4 shovels with operator terminals and position sources, 3
+remote-stop transmitters and 7 trained roles. A change of AMS supplier would touch all of them. The inventory does not price the change. It shows that the mine's
+dependence lies mostly in data, evidence and devices, not in the central software alone.</p>
+<p><strong>12.4 Recording a market figure.</strong> A draft business case states: &quot;autonomous trucks have moved more than a billion
+tonnes&quot;. Recording it:</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Entry</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Claim</td>
+<td>Trucks fitted with autonomous haulage technology moved more than one billion tonnes across five of one company's sites since trials began in 2008</td>
+</tr>
+<tr>
+<td>Source</td>
+<td>SRC-PUB-MINING-CO-AHS-RELEASE-2018 (a large mining company's 2018 media release)</td>
+</tr>
+<tr>
+<td>Verification scope</td>
+<td>Full release read; company's statements as published</td>
+</tr>
+<tr>
+<td>Label</td>
+<td><code>[F]</code> for the company's statement about its own operations</td>
+</tr>
+<tr>
+<td>Permitted use</td>
+<td>As one company's published statement, with its date</td>
+</tr>
+<tr>
+<td>Not permitted</td>
+<td>As a market total, a share, a growth rate or a productivity input for another mine</td>
+</tr>
+</tbody>
+</table>
+<p>The draft's wording &quot;autonomous trucks have moved…&quot; implies an industry total, and the source does not support that.
+The corrected sentence names the source as one company's statement. A figure for the whole market would need its own
+verified source. None is held, so any such figure is <code>[TBV]</code> (SRC-PUB-AHS-MARKET-DATA).</p>
+<h2 id="s-13">13. Hands-on labs</h2>
+<p>This chapter has no lab. Market size and share cannot be stated without verified sources, and the handbook does not
+fabricate market data. The value-chain model, the four archetypes, the scenario trace, the switching inventory and the
+segment matrix are in the figure script <code>figures/make_figures.py</code>. Readers can change the archetypes or the incumbent
+elements and see how the interface counts change. Its tests are in <code>tests/test_ch_20_01_figures.py</code>.</p>
+<h2 id="s-14">14. Discussion questions and assignments</h2>
+<h3 id="s-14-1">14.1 Engineering assignments</h3>
+<ol>
+<li>Add an archetype in which M supplies the kit and the ADS and P the AMS. Recompute the cross-party and safety-chain
+interfaces. Who should be accountable for I-02?</li>
+<li>Write the meaning of the states &quot;assigned&quot;, &quot;held with reason&quot;, &quot;cancelled&quot; and &quot;complete&quot; for a site ICD of I-01, so
+that the 6.2 variant cannot occur. Test it against the SCN-CRUSHER-C01-DOWN timeline.</li>
+<li>Assign an openness level (O0 to O3) to each of the ten interfaces for an offering you know. Where would you require a
+higher level, and why?</li>
+<li>List the safety-case evidence that would need to be rebuilt if the reference mine changed only its ADS supplier, and
+explain why it would not transfer.</li>
+</ol>
+<h3 id="s-14-2">14.2 Operations assignments</h3>
+<ol>
+<li>Place your own mine on FIG-20-01-02. Which characteristics are known, and which must be checked? Which drivers point
+to problems you can see on shift?</li>
+<li>Run the procedure of section 8.3 for an offering your site has considered. Which interface had no owner?</li>
+<li>Take three market figures from documents at your site. Record each in the form of section 12.4 and label it.</li>
+<li>Fill the buying-organisation table of section 4.7 for your company. Whose evidence arrives last?</li>
+</ol>
+<h2 id="s-15">15. Key takeaways</h2>
+<ul>
+<li>An AHS offering is eight layers joined by ten interfaces. Market structure is decided at the interfaces.</li>
+<li>Suppliers compete where interfaces are open and outside the safety argument. Inside it, split supply needs agreed
+joint evidence.</li>
+<li>At a brownfield mine the FMS–AMS boundary is the main choice: integrate the existing FMS across a party boundary, or
+replace it and change how every shift dispatches and codes delays.</li>
+<li>The plant, network and survey interfaces stay with the site in every arrangement. Each needs a named owner.</li>
+<li>Switching costs collect in map data, configuration, safety-case evidence, devices and skills. Agree data access and
+openness before the first contract.</li>
+<li>Segments follow from operational drivers that can be checked at the site. The shared data does not place the
+reference mine in one.</li>
+<li>No market figure enters a document as fact without a verified source used within scope. Otherwise it is <code>[TBV]</code>.</li>
+<li>Safety requirements are pass/fail conditions for every offering, never weighted criteria.</li>
+</ul>
+<h2 id="s-16">16. Glossary terms introduced</h2>
+<p><code>value-chain</code>, <code>offering-archetype</code>, <code>interface-openness</code>, <code>switching-cost</code>, <code>customer-segment</code>, <code>greenfield-site</code>,
+<code>brownfield-site</code>, <code>interoperability</code>, <code>conformance</code>, <code>mixed-vendor-site</code>, <code>mixed-fleet</code>, <code>ancillary-equipment</code>,
+<code>retrofit</code>, <code>autonomy-kit</code>, <code>supplier</code>, <code>supply-scope</code>, <code>interface-control-document</code>, <code>interface-owner</code>,
+<code>integration-authority</code>, <code>ahs-map</code>, <code>safety-case</code>, <code>safety-evidence</code>, <code>stakeholder</code>, <code>data-access-provision</code>,
+<code>delay-code</code>, <code>work-zone-reservation</code>, <code>plant-control-room</code>, <code>key-performance-indicator</code>, <code>total-cost-of-ownership</code></p>
+<nav aria-label="Introductory chapters"><p><a href="../handbook.html">Handbook contents</a> · <a href="ch-20-02.en.html">Next chapter</a></p></nav>
+</main>
+</body>
+</html>

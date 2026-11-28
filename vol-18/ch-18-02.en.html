@@ -1,0 +1,1391 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="generator" content="ahs-handbook build_articles 2.0.0">
+<meta name="ahs:id" content="ch-18-02">
+<meta name="ahs:version" content="0.1.3">
+<meta name="ahs:status" content="approved">
+<meta name="ahs:source-sha256" content="09f7bf0dc395fe06">
+<title>SIL and HIL</title>
+<style>
+:root {
+  --bg: #fbfaf7;
+  --fg: #1d1f21;
+  --muted: #5d6166;
+  --accent: #1f6f8b;
+  --accent-soft: #e3f0f4;
+  --border: #d9d6cf;
+  --code-bg: #f1efea;
+  --warn-bg: #fff6e0;
+  --warn-border: #e2b54a;
+  --watermark: rgba(200, 60, 60, 0.07);
+  --font-body: system-ui, -apple-system, "Segoe UI", "Hiragino Sans", "Hiragino Kaku Gothic ProN",
+    "Noto Sans JP", "Yu Gothic", Meiryo, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #15171a;
+    --fg: #e6e4df;
+    --muted: #a3a7ad;
+    --accent: #6cc3de;
+    --accent-soft: #1d3440;
+    --border: #33373d;
+    --code-bg: #1f2226;
+    --warn-bg: #2e2716;
+    --warn-border: #8c7330;
+    --watermark: rgba(255, 120, 120, 0.06);
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #15171a;
+  --fg: #e6e4df;
+  --muted: #a3a7ad;
+  --accent: #6cc3de;
+  --accent-soft: #1d3440;
+  --border: #33373d;
+  --code-bg: #1f2226;
+  --warn-bg: #2e2716;
+  --warn-border: #8c7330;
+  --watermark: rgba(255, 120, 120, 0.06);
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0 auto;
+  max-width: 52rem;
+  padding: 1.25rem 16px 3rem;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-body);
+  font-size: 1.0625rem;
+  line-height: 1.7;
+  overflow-wrap: anywhere;
+}
+h1 { font-size: 1.9rem; line-height: 1.3; margin: 0.6rem 0 1rem; }
+h2 { font-size: 1.4rem; margin-top: 2.4rem; border-bottom: 1px solid var(--border); padding-bottom: 0.2rem; }
+h3 { font-size: 1.15rem; margin-top: 1.8rem; }
+a { color: var(--accent); }
+code { font-family: var(--font-mono); background: var(--code-bg); padding: 0.05rem 0.3rem; border-radius: 3px; font-size: 0.92em; }
+pre { background: var(--code-bg); padding: 0.8rem 1rem; overflow-x: auto; border-radius: 6px; line-height: 1.45; }
+pre code { background: none; padding: 0; }
+table { border-collapse: collapse; width: 100%; display: block; overflow-x: auto; margin: 1rem 0; }
+th, td { border: 1px solid var(--border); padding: 0.35rem 0.6rem; text-align: left; vertical-align: top; }
+/* Never break inside numbers or IDs in table cells; wide tables scroll horizontally instead. */
+th, td { overflow-wrap: normal; word-break: normal; }
+th { background: var(--accent-soft); }
+blockquote { margin: 1rem 0; padding: 0.2rem 1rem; border-left: 4px solid var(--accent); color: var(--muted); }
+.article-header .meta-row { display: flex; flex-wrap: wrap; gap: 0.4rem 0.9rem; align-items: center; font-size: 0.85rem; color: var(--muted); }
+.chapter-id { font-family: var(--font-mono); font-weight: 600; color: var(--fg); }
+.status { padding: 0.05rem 0.5rem; border: 1px solid var(--border); border-radius: 999px; }
+.status-draft, .status-revision, .status-in-review { border-color: var(--warn-border); background: var(--warn-bg); }
+.theme-toggle { font: inherit; font-size: 0.8rem; color: var(--fg); background: transparent; border: 1px solid var(--border); border-radius: 4px; padding: 0.1rem 0.5rem; cursor: pointer; }
+.disclaimer { background: var(--warn-bg); border: 1px solid var(--warn-border); border-radius: 6px; padding: 0.6rem 0.9rem; font-size: 0.9rem; }
+.disclaimer p { margin: 0.25rem 0; }
+.toc { border: 1px solid var(--border); border-radius: 6px; padding: 0.6rem 1rem; margin: 1.2rem 0; font-size: 0.92rem; }
+.toc ol { margin: 0.3rem 0 0; padding-left: 1.2rem; }
+.fig { margin: 1.6rem 0; text-align: center; }
+.fig img, .fig svg { max-width: 100%; height: auto; }
+.fig pre.mermaid { background: transparent; text-align: center; }
+figcaption { font-size: 0.9rem; color: var(--muted); margin-top: 0.5rem; }
+.fig-no { font-weight: 600; color: var(--fg); }
+.fig-id { font-family: var(--font-mono); font-size: 0.75rem; opacity: 0.7; }
+.math-block { overflow-x: auto; margin: 1rem 0; }
+math { font-size: 1.1em; }
+.widget { border: 1px solid var(--border); border-radius: 8px; padding: 1rem; margin: 1.5rem 0; background: var(--accent-soft); }
+.widget label { display: block; margin: 0.4rem 0; font-size: 0.95rem; }
+.widget select, .widget input { font: inherit; color: var(--fg); background: var(--bg); border: 1px solid var(--border); border-radius: 4px; padding: 0.15rem 0.3rem; max-width: 100%; }
+.widget .result { font-size: 1.05rem; margin-top: 0.7rem; }
+.widget table { font-size: 0.88rem; }
+.watermark { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; pointer-events: none; font-size: 22vw; font-weight: 800; color: var(--watermark); transform: rotate(-24deg); z-index: 0; }
+.article-header, .toc, .article-body, .article-footer { position: relative; z-index: 1; }
+.article-footer { margin-top: 3rem; font-size: 0.8rem; color: var(--muted); border-top: 1px solid var(--border); padding-top: 0.6rem; }
+@media (max-width: 600px) {
+  body { font-size: 1rem; }
+  h1 { font-size: 1.55rem; }
+}
+@media print { .watermark { color: rgba(0, 0, 0, 0.06); } .theme-toggle { display: none; } }
+
+</style>
+<script>
+(function () {
+  var root = document.documentElement;
+  try {
+    var saved = localStorage.getItem("ahs-theme");
+    if (saved === "dark" || saved === "light") root.dataset.theme = saved;
+  } catch (e) {}
+  var mq = window.matchMedia ? window.matchMedia("(prefers-color-scheme: dark)") : null;
+  // No explicit choice: follow the system theme (CSS does the same through prefers-color-scheme).
+  function isDark() {
+    return root.dataset.theme ? root.dataset.theme === "dark" : !!(mq && mq.matches);
+  }
+  // Mermaid diagrams keep their original definition in data-source and are re-rendered with the theme that
+  // matches the page whenever the theme changes (review 2026-11-14, R22).
+  window.ahsRenderMermaid = function () {
+    if (!window.mermaid) return;
+    var nodes = Array.prototype.slice.call(document.querySelectorAll("pre.mermaid"));
+    if (!nodes.length) return;
+    nodes.forEach(function (el) {
+      if (el.getAttribute("data-source") === null) {
+        el.setAttribute("data-source", el.textContent);
+      } else {
+        el.removeAttribute("data-processed");
+        el.textContent = el.getAttribute("data-source");
+      }
+    });
+    window.mermaid.initialize({ startOnLoad: false, securityLevel: "strict", theme: isDark() ? "dark" : "default" });
+    var done = window.mermaid.run({ nodes: nodes });
+    if (done && done.catch) done.catch(function (err) { if (window.console) console.error(err); });
+  };
+  function syncButton(btn) {
+    btn.setAttribute("aria-pressed", isDark() ? "true" : "false");
+  }
+  document.addEventListener("DOMContentLoaded", function () {
+    var btn = document.querySelector(".theme-toggle");
+    if (btn) syncButton(btn);
+    if (mq) {
+      var onSystemChange = function () {
+        if (root.dataset.theme) return;
+        if (btn) syncButton(btn);
+        window.ahsRenderMermaid();
+      };
+      if (mq.addEventListener) mq.addEventListener("change", onSystemChange);
+      else if (mq.addListener) mq.addListener(onSystemChange);
+    }
+    if (!btn) return;
+    btn.addEventListener("click", function () {
+      root.dataset.theme = isDark() ? "light" : "dark";
+      try { localStorage.setItem("ahs-theme", root.dataset.theme); } catch (e) {}
+      syncButton(btn);
+      window.ahsRenderMermaid();
+    });
+  });
+})();
+
+</script>
+<link rel="canonical" href="https://thomas-21.github.io/ahs_engineering_handbook/vol-18/ch-18-02.en.html">
+</head>
+<body data-chapter-id="ch-18-02" data-status="approved">
+<header class="article-header">
+  <div class="meta-row">
+    <a class="home-link" href="../handbook.html">All chapters</a>
+    <span class="chapter-id">ch-18-02</span>
+    <button type="button" class="theme-toggle" aria-label="Theme">Theme</button>
+  </div>
+  <h1>SIL and HIL</h1>
+</header>
+<nav class="toc" aria-label="Contents"><strong>Contents</strong><ol><li><a href="#s-1">1. Overview</a></li><li><a href="#s-2">2. Operational motivation: the problem at the reference mine</a></li><li><a href="#s-3">3. Terminology and foundations</a></li><li><a href="#s-4">4. Technical explanation</a></li><li><a href="#s-5">5. Responsibilities and interface boundaries</a></li><li><a href="#s-6">6. Normal, abnormal and degraded operation</a></li><li><a href="#s-7">7. Engineering view</a></li><li><a href="#s-8">8. Operations view</a></li><li><a href="#s-9">9. Requirements and acceptance criteria</a></li><li><a href="#s-10">10. Verification and validation</a></li><li><a href="#s-11">11. Common mistakes</a></li><li><a href="#s-12">12. Worked examples</a></li><li><a href="#s-13">13. Hands-on labs</a></li><li><a href="#s-14">14. Discussion questions and assignments</a></li><li><a href="#s-15">15. Key takeaways</a></li><li><a href="#s-16">16. Glossary terms introduced</a></li></ol></nav>
+<main class="article-body">
+<h2 id="s-1">1. Overview</h2>
+<h3 id="s-1-1">1.1 Why this chapter matters</h3>
+<p>Wednesday evening, the day before the release described in ch-18-01. Site engineering runs the software-in-the-loop
+testing (SIL testing) suite of the reference mine against the release candidate: 18 test cases, each a registered scenario with an injected
+fault, a seed and an expected end state. All 18 pass. One of them is new. Last week the night-shift controller reported
+that a grant for LV07 at AP-02 had appeared late and twice on the field terminal; the area stayed locked and LV07 asked
+again. The event became case TC-16 — a delayed and duplicated grant — and it passes too.</p>
+<p>The Pit Supervisor has one more question: &quot;If the terminal software had a bug and accepted old grants, would your suite
+notice?&quot; The engineer seeds exactly that defect into the model and runs the suite again. One case fails: TC-18, a grant
+20 s late. TC-17, the case built on the registry's own timing of a grant 30 s late, still passes — the old grant had also
+expired, so a second check rejected it and hid the defect.</p>
+<p>The questions this raises:</p>
+<ul>
+<li>What does a passed SIL-testing suite show, and which conclusions does it not support?</li>
+<li>Which faults can be injected in software, and which must be injected on real controllers with HIL testing?</li>
+<li>How does a suite know that it would catch a defect, and how does a field event become a test case?</li>
+<li>How can controllers use the same replay to review the CT3 comms-loss procedure, or to rehearse rerouting over R24
+before it is used in production?</li>
+</ul>
+<p>This chapter covers:</p>
+<ul>
+<li>the architecture of a SIL-testing harness, and how hardware-in-the-loop testing (HIL testing) differs from it;</li>
+<li>fault-injection points along the FMS–AMS–ADS–VCS chain, and which require HIL testing;</li>
+<li>requirement oracles, regression oracles and invariants, and a mutation check that measures what a suite can catch;</li>
+<li>seeded fault injection, determinism and the regression rule for adding a case after a field event;</li>
+<li>the limits of simulation fidelity;</li>
+<li>replay of SCN-COMMS-R05 for controllers and rehearsal of a playbook in SIL testing.</li>
+</ul>
+<p>&quot;SIL testing&quot; and &quot;HIL testing&quot; are always written in full; SIL alone means safety integrity
+level. The verification levels and the coverage matrix are those of ch-18-01; this chapter does not repeat them. The
+harness, its cases, seeds and seeded defects are educational <code>[H]</code>/<code>[A]</code>; they do not describe any vendor's test system.</p>
+<h3 id="s-1-2">1.2 Learning objectives — Engineering</h3>
+<p>After this chapter an engineering reader will be able to:</p>
+<ol>
+<li>Design a SIL-testing harness that runs the AMS model against registered scenarios with injected network and
+positioning faults and compares outcomes with expected results.</li>
+<li>Explain what HIL testing adds over SIL testing (real controllers, timing, I/O) and specify which faults must be tested
+on HIL rather than in software alone.</li>
+<li>Analyse the limits of simulation fidelity and state which conclusions a SIL-testing or HIL-testing result does not
+support.</li>
+<li>Specify a regression suite for SIL testing built from the scenario registry with deterministic seeds, and the rule
+for adding a new case after a field event.</li>
+</ol>
+<h3 id="s-1-3">1.3 Learning objectives — Operations</h3>
+<p>After this chapter an operations reader will be able to:</p>
+<ol>
+<li>Use SIL-testing replay of SCN-COMMS-R05 to review the comms-loss procedure with controllers before a release.</li>
+<li>Specify the operational scenarios that must pass in SIL testing before a software release is accepted at the
+reference mine.</li>
+<li>Rehearse a new playbook in SIL testing — for example rerouting pit traffic via the west ramp R24 when R05 is closed —
+before it is used in production.</li>
+<li>Report field events with the data needed to turn them into new SIL-testing cases.</li>
+</ol>
+<h2 id="s-2">2. Operational motivation: the problem at the reference mine</h2>
+<p>ch-18-01 showed that the system column of the coverage matrix is the strongest at the reference mine and that most of
+it is filled by SIL testing. That is no accident. SIL testing is the only method that can place a fault exactly — a
+grant delayed by 20.0 s, a re-registration report lost on its 20th copy, three trucks stopped inside Intersection X at
+the same restart — and run the same case again tomorrow with the same result. It is cheap enough to run before every
+release and fast enough to run hundreds of seeds.</p>
+<p>The same properties make SIL testing easy to over-trust. A SIL-testing case exercises models: of the network, of the
+vehicle, of the field terminal. Where the model is the specification, a passed case says the software follows the
+specification under the injected faults. It does not say that the real radio behaves like the model, that the real ADS
+detects degraded GNSS integrity, or that the VCS reacts to a lost bus frame within its watchdog. Those questions need
+real controllers on a simulated plant — HIL testing — and in the end real trucks and real sites (ch-18-03).</p>
+<p>Three problems show up at the reference mine:</p>
+<ul>
+<li><strong>A suite that cannot fail.</strong> Cases are added from the supplier's experience and pass every release. Nobody knows
+whether they would detect anything. A suite has value only if it fails when the software is wrong, and that can be
+measured.</li>
+<li><strong>Field events that stay in the shift log.</strong> A controller sees a grant shown twice on a terminal; the report says
+&quot;terminal glitch, area stayed locked, LV07 asked again&quot;. Without the scenario, the times and the configuration, the
+event cannot become a case, and the next release is tested without it.</li>
+<li><strong>Procedures rehearsed on production.</strong> A new playbook — the R05 closure with all circuits over R24 — is used for the
+first time on a real closure. The same replay engine that tests the AMS could show controllers the routes, cycle times
+and alarm stream first.</li>
+</ul>
+<p>Published practice for SIL testing and HIL testing of vehicle and mining automation — test-rig architectures, GNSS
+signal simulation, real-time plant models, fidelity criteria — is not in the source register; nothing here is taken from
+it <code>[TBV]</code> (SRC-PUB-INTHELOOP-TESTING). Methods for judging the strength of a test suite by seeding defects are described
+in the software-testing literature, which is not in the register either <code>[TBV]</code> (SRC-PUB-MUTATION-TESTING). What
+ISO 17757:2019 (SRC-STD-ISO17757, verified at catalogue level only) or other standards expect of simulation-based
+verification is not stated <code>[TBV]</code> (SRC-PUB-AHS-VERIFICATION-EXPECTATIONS). The harness, its oracles and rules are the
+handbook's <code>[H]</code>.</p>
+<h2 id="s-3">3. Terminology and foundations</h2>
+<p><strong>SIL testing.</strong> Testing software against simulated environment and plant models (glossary
+<code>software-in-the-loop</code>). Everything runs as software, usually on one computer, on a simulated clock.</p>
+<p><strong>HIL testing.</strong> Testing real controller hardware connected to a simulated plant and environment (glossary
+<code>hardware-in-the-loop</code>). The simulator runs in real time and exchanges real signals with the controllers.</p>
+<p><strong>Test harness.</strong> The software that runs test cases: it builds the scenario state, injects faults, runs the system
+under test and its models, applies the oracles and writes the test record.</p>
+<p><strong>Fault injection and injection point.</strong> Deliberately introducing a fault to test how the system detects and handles it
+(glossary <code>fault-injection</code>); the injection point is where in the chain the fault enters — at a message link, at the
+output of a function, at a sensor input or at an electrical interface.</p>
+<p><strong>Oracle.</strong> The part of a test case that decides the verdict (a pass/fail criterion, ch-18-01). A <em>requirement oracle</em>
+checks a property stated by a requirement and must hold for every seed. A <em>regression oracle</em> compares an observed value
+with a golden value published earlier, so that any change of behaviour is noticed. An <em>invariant</em> is a requirement oracle
+checked over the whole trace, not only at the end.</p>
+<p><strong>Seed and determinism.</strong> Every stochastic run takes an explicit seed; the same case with the same seed on the same
+model version gives the same result. A suite is deterministic when its complete result can be reproduced bit for bit.</p>
+<p><strong>Regression suite.</strong> The set of cases run before every release. Cases are added, never removed; a case is changed only
+with a record.</p>
+<p><strong>Mutation check.</strong> Running the suite against deliberately seeded defects (<em>mutants</em>) of the software under test to see
+which cases fail. A mutant that no case detects shows a hole in the suite.</p>
+<p><strong>Simulation fidelity.</strong> How closely a model reproduces the behaviour of the real element for the question asked. A
+model can be faithful for one question (does the AMS keep the area locked?) and useless for another (how long does the
+radio take to recover?).</p>
+<p><strong>Replay.</strong> Running a recorded or registered event through the models to show what happened, step by step, without the
+real system — for analysis, for controller review or for rehearsal.</p>
+<h2 id="s-4">4. Technical explanation</h2>
+<h3 id="s-4-1">4.1 The harness and the two architectures</h3>
+<p>FIG-18-02-01 compares the two architectures. Both are driven by the same scenarios, the same fault injector and the same
+oracle; what changes is the platform under test.</p>
+<figure id="FIG-18-02-01" class="fig"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 560" role="img" aria-label="SIL testing and HIL testing compared (conceptual)">
+<style>
+text{font-family:system-ui,-apple-system,"Segoe UI","Hiragino Sans","Noto Sans CJK JP",sans-serif}
+.fg{fill:var(--fg,#1d1f21)} .mu{fill:var(--muted,#5d6166)}
+.t{font-size:13px} .tb{font-size:14px;font-weight:700} .ttl{font-size:15px;font-weight:700}
+.sm{font-size:12px} .xs{font-size:11px}
+.sw{fill:var(--accent-soft,#e3f0f4);stroke:var(--accent,#1f6f8b);stroke-width:1.4}
+.hw{fill:var(--warn-bg,#fff6e0);stroke:var(--warn-border,#e2b54a);stroke-width:1.8}
+.frame{fill:none;stroke:var(--muted,#5d6166);stroke-width:1;stroke-dasharray:6 4}
+.arr{stroke:var(--fg,#1d1f21);stroke-width:1.6;fill:none}
+.io{stroke:var(--warn-border,#e2b54a);stroke-width:3;fill:none}
+.ahd{fill:var(--fg,#1d1f21)}
+</style>
+<defs><marker id="f180201ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ahd" d="M0,0 L10,5 L0,10 z"/></marker><marker id="f180201as" viewBox="0 0 10 10" refX="1" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ahd" d="M10,0 L0,5 L10,10 z"/></marker></defs>
+<text class="ttl fg" x="500.0" y="24" text-anchor="middle">SIL testing and HIL testing compared (conceptual)</text>
+<rect class="sw" x="280" y="36" width="210" height="64" rx="7"/>
+<text class="t fg" font-weight="700" x="385.0" y="56" text-anchor="middle">Scenario and fault injector</text>
+<text class="xs fg" x="385.0" y="74" text-anchor="middle">registry scenario, seed,</text>
+<text class="xs fg" x="385.0" y="89" text-anchor="middle">fault at a chosen point</text>
+<rect class="sw" x="510" y="36" width="210" height="64" rx="7"/>
+<text class="t fg" font-weight="700" x="615.0" y="56" text-anchor="middle">Oracle and test record</text>
+<text class="xs fg" x="615.0" y="74" text-anchor="middle">expected end state, invariants,</text>
+<text class="xs fg" x="615.0" y="89" text-anchor="middle">versions, seed, verdict</text>
+<rect class="frame" x="20" y="124" width="470" height="320" rx="10"/>
+<text class="tb fg" x="36" y="146">SIL testing: everything is software on one computer</text>
+<rect class="sw" x="40" y="166" width="200" height="64" rx="7"/>
+<text class="t fg" font-weight="700" x="140.0" y="186" text-anchor="middle">AMS software under test</text>
+<text class="xs fg" x="140.0" y="204" text-anchor="middle">reservations, permissions,</text>
+<text class="xs fg" x="140.0" y="219" text-anchor="middle">reconciliation</text>
+<rect class="sw" x="270" y="166" width="200" height="52" rx="7"/>
+<text class="t fg" font-weight="700" x="370.0" y="186" text-anchor="middle">Network model</text>
+<text class="xs fg" x="370.0" y="204" text-anchor="middle">loss, delay, duplication</text>
+<rect class="sw" x="270" y="250" width="200" height="64" rx="7"/>
+<text class="t fg" font-weight="700" x="370.0" y="270" text-anchor="middle">Vehicle and terminal models</text>
+<text class="xs fg" x="370.0" y="288" text-anchor="middle">ADS / VCS behaviour,</text>
+<text class="xs fg" x="370.0" y="303" text-anchor="middle">field terminal</text>
+<line class="arr" x1="240" y1="192" x2="270" y2="192" marker-end="url(#f180201ah)" marker-start="url(#f180201as)"/>
+<line class="arr" x1="370" y1="218" x2="370" y2="250" marker-end="url(#f180201ah)" marker-start="url(#f180201as)"/>
+<text class="xs mu" x="36" y="352">Simulated clock: faster than real time, thousands of seeded runs</text>
+<text class="xs fg" x="36" y="376">Supports: logic, protocol and state handling under injected faults</text>
+<rect class="frame" x="510" y="124" width="470" height="320" rx="10"/>
+<text class="tb fg" x="526" y="146">HIL testing: real controllers, simulated plant</text>
+<rect class="sw" x="526" y="166" width="190" height="64" rx="7"/>
+<text class="t fg" font-weight="700" x="621.0" y="186" text-anchor="middle">AMS (model or real)</text>
+<text class="xs fg" x="621.0" y="204" text-anchor="middle">over a network emulator</text>
+<rect class="sw" x="742" y="166" width="228" height="64" rx="7"/>
+<text class="t fg" font-weight="700" x="856.0" y="186" text-anchor="middle">Plant and environment simulator</text>
+<text class="xs fg" x="856.0" y="204" text-anchor="middle">truck dynamics, sensors, GNSS,</text>
+<text class="xs fg" x="856.0" y="219" text-anchor="middle">runs in real time</text>
+<rect class="hw" x="756" y="280" width="214" height="64" rx="7"/>
+<text class="t fg" font-weight="700" x="863.0" y="300" text-anchor="middle">Real controllers</text>
+<text class="xs fg" x="863.0" y="318" text-anchor="middle">ADS compute, VCS ECU,</text>
+<text class="xs fg" x="863.0" y="333" text-anchor="middle">OSS controller, stop receiver</text>
+<line class="arr" x1="716" y1="198" x2="742" y2="198" marker-end="url(#f180201ah)" marker-start="url(#f180201as)"/>
+<line class="io" x1="860" y1="230" x2="860" y2="280"/>
+<text class="xs fg" x="852" y="262" text-anchor="end">real I/O: bus frames, discrete signals, RF</text>
+<text class="xs mu" x="526" y="376">Real-time clock: real timing and I/O, fewer runs, rig hours</text>
+<text class="xs fg" x="526" y="400">Adds: timing, watchdogs, electrical interfaces, controller firmware</text>
+<text class="xs mu" x="500.0" y="118" text-anchor="middle">The same scenarios, injector and oracle drive both architectures; only the platform under test changes</text>
+<line class="arr" x1="490" y1="68" x2="510" y2="68" marker-end="url(#f180201ah)"/>
+<text class="xs mu" x="500.0" y="500" text-anchor="middle">Handbook reference test architecture [H]. Neither result shows behaviour on real roads, radio or with people: that needs vehicle and site tests.</text>
+</svg>
+<figcaption><span class="fig-no">Figure 1</span> SIL-testing and HIL-testing architectures compared <span class="fig-id">FIG-18-02-01</span></figcaption></figure>
+<p>In <strong>SIL testing</strong> the AMS software, a network model and models of the vehicles and terminals run together on a
+simulated clock. A case at the reference mine takes a fraction of a second, so hundreds of seeds are affordable. In
+<strong>HIL testing</strong> the real ADS computer, VCS ECU, OSS controller or remote-stop receiver is wired to a plant and environment
+simulator that runs in real time and exchanges bus frames, discrete signals and, for GNSS, radio-frequency signals with
+the controller. A run takes as long as the event; rig hours limit the number of runs.</p>
+<p>LAB-18-02-01 is a minimal SIL-testing harness <code>[H]</code>. A test case is a record:</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Meaning</th>
+<th>Example (TC-10)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ID, scenario</td>
+<td>Case ID and registered scenario</td>
+<td>TC-10, SCN-COMMS-R05</td>
+</tr>
+<tr>
+<td>Injection</td>
+<td>Fault and where it enters</td>
+<td>Re-registration reports lost with probability 0.0 / 0.5 / 0.8 after CT3 returns</td>
+</tr>
+<tr>
+<td>Seeds</td>
+<td>Seeds of every run</td>
+<td>1 to 200</td>
+</tr>
+<tr>
+<td>Requirement oracle</td>
+<td>Properties that must hold in every run</td>
+<td>Grants blocked if and only if a truck is unknown; every unknown truck escalated</td>
+</tr>
+<tr>
+<td>Regression oracle</td>
+<td>Golden values published by other chapters</td>
+<td>(none for this case: the statistics are reported, not asserted as requirements)</td>
+</tr>
+<tr>
+<td>Requirements</td>
+<td>Where the oracle comes from</td>
+<td>REQ-02-08-005, REQ-10-08-003</td>
+</tr>
+<tr>
+<td>Origin</td>
+<td>Registry, value published by another chapter, or field event</td>
+<td>registry</td>
+</tr>
+</tbody>
+</table>
+<p>The harness runs each case through existing models: <code>ahs_sim.control_room</code> (voice and digital positive communication,
+alarm streams, event clusters), <code>ahs_sim.messaging</code> (link faults, access exchanges), <code>ahs_sim.reconciliation</code>,
+<code>ahs_sim.recovery</code> (retransmission with a retry budget, restart gates), <code>ahs_sim.ams</code> (reservations, wait-for cycles,
+victim choice) and <code>ahs_sim.haul_cycle</code> with <code>ahs_sim.mine</code> (routes). The states of SCN-COMMS-R05, SCN-AMS-RESTART and
+SCN-DEADLOCK-X are read directly from LAB-02-08-01, so that the harness reproduces the values ch-02-08 published.
+The lab does not use <code>ahs_sim.network</code> (Volume 11) or <code>ahs_sim.localisation</code> (Volume 05). Network faults
+come from <code>messaging.Faults</code> and <code>recovery.deliver_with_retry</code>; positioning faults are lab-local seeded integrity
+reports injected at the output of the localisation function <code>[A]</code>.</p>
+<p>Each result records the case, the seeds, the injection, the model version (<code>ahs_sim</code> 0.9.0) and both oracles' verdicts,
+and the whole suite result has a digest. Two runs give the same digest; a test of the lab checks it.</p>
+<h3 id="s-4-2">4.2 Fault-injection points along the chain</h3>
+<p>FIG-18-02-02 marks eleven injection points along the FMS–AMS–ADS–VCS chain, with the onboard safety-related systems,
+the remote-stop path, the field terminal and the controller.</p>
+<figure id="FIG-18-02-02" class="fig"><pre class="mermaid">flowchart TB
+  FMS[&quot;FMS&lt;br/&gt;FP1 late or duplicated assignment&quot;] --&gt;|&quot;assignments&quot;| AMS[&quot;AMS&lt;br/&gt;FP2 failover, lost log tail&quot;]
+  CR1[&quot;AHS Controller in CR1&lt;br/&gt;FP11 replayed event for a decision&quot;] &lt;--&gt; AMS
+  AMS &lt;--&gt;|&quot;permissions&quot;| MVD[&quot;Field terminal&lt;br/&gt;FP4 stale or duplicated grant&quot;]
+  AMS &lt;--&gt;|&quot;grants, holds, reports&quot;| NET([&quot;Wireless network&lt;br/&gt;FP3 loss, delay, duplication, coverage loss&quot;])
+  NET &lt;--&gt; ADS[&quot;ADS&quot;]
+  GNSS[&quot;GNSS receiver and GB1 corrections&lt;br/&gt;FP6 satellite loss, multipath, lost corrections&quot;] --&gt; LOC[&quot;Localisation output&lt;br/&gt;FP5 integrity flag, position jump&quot;]
+  LOC --&gt; ADS
+  SEN[&quot;Perception sensors&lt;br/&gt;FP7 dropped frames, blinded sensor&quot;] --&gt; ADS
+  ADS --&gt;|&quot;motion commands&quot;| VCS[&quot;VCS interface&lt;br/&gt;FP8 bus loss, late frames, watchdog&quot;]
+  OSS[&quot;Onboard safety-related systems&lt;br/&gt;FP9 fire detection, suppression signal&quot;] --&gt; VCS
+  ISF[&quot;Remote-stop receiver&lt;br/&gt;FP10 stop command, loss of stop link&quot;] --&gt; VCS
+  KS[&quot;SIL testing can inject here&quot;] ~~~ KH[&quot;HIL testing needed: real controller, timing or I/O&quot;]
+  classDef sil fill:#e3f0f4,stroke:#1f6f8b,color:#1d1f21
+  classDef hil fill:#fff6e0,stroke:#e2b54a,stroke-width:2px,color:#1d1f21
+  class FMS,AMS,CR1,MVD,NET,LOC,KS sil
+  class GNSS,SEN,VCS,OSS,ISF,KH hil
+</pre><figcaption><span class="fig-no">Figure 2</span> Fault-injection points in the FMS–AMS–ADS–VCS chain <span class="fig-id">FIG-18-02-02</span></figcaption></figure>
+<table>
+<thead>
+<tr>
+<th>Point</th>
+<th>Where</th>
+<th>Faults</th>
+<th>Minimum platform <code>[H]</code></th>
+<th>Cases in LAB-18-02-01</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>FP1</td>
+<td>FMS to AMS</td>
+<td>Late, duplicated or cancelled assignment</td>
+<td>SIL testing</td>
+<td>—</td>
+</tr>
+<tr>
+<td>FP2</td>
+<td>AMS process</td>
+<td>Failover, restart, lost log tail</td>
+<td>SIL testing</td>
+<td>TC-15</td>
+</tr>
+<tr>
+<td>FP3</td>
+<td>AMS–vehicle link</td>
+<td>Loss, delay, duplication, reorder, coverage loss</td>
+<td>SIL testing</td>
+<td>TC-09 to TC-12</td>
+</tr>
+<tr>
+<td>FP4</td>
+<td>AMS–field terminal</td>
+<td>Stale, duplicated or unacknowledged grant</td>
+<td>SIL testing</td>
+<td>TC-01 to TC-08, TC-16 to TC-18</td>
+</tr>
+<tr>
+<td>FP5</td>
+<td>Localisation output</td>
+<td>Integrity flag, position jump</td>
+<td>SIL testing</td>
+<td>TC-13</td>
+</tr>
+<tr>
+<td>FP6</td>
+<td>GNSS receiver input</td>
+<td>Satellite loss, multipath, lost corrections from GB1</td>
+<td>HIL testing</td>
+<td>—</td>
+</tr>
+<tr>
+<td>FP7</td>
+<td>Perception sensor input</td>
+<td>Dropped frames, blinded sensor, recorded scenes</td>
+<td>HIL testing</td>
+<td>—</td>
+</tr>
+<tr>
+<td>FP8</td>
+<td>ADS–VCS interface</td>
+<td>Bus loss, late frames, watchdog expiry</td>
+<td>HIL testing</td>
+<td>—</td>
+</tr>
+<tr>
+<td>FP9</td>
+<td>Onboard safety-related systems</td>
+<td>Fire detection, suppression signal</td>
+<td>HIL testing</td>
+<td>—</td>
+</tr>
+<tr>
+<td>FP10</td>
+<td>Remote-stop path</td>
+<td>Stop command, loss of the stop link</td>
+<td>HIL testing</td>
+<td>—</td>
+</tr>
+<tr>
+<td>FP11</td>
+<td>People in CR1</td>
+<td>A replayed event that needs a decision</td>
+<td>SIL testing</td>
+<td>TC-14</td>
+</tr>
+</tbody>
+</table>
+<p>The rule behind the &quot;minimum platform&quot; column is short <code>[H]</code>. <strong>SIL testing</strong> suffices when both the fault and the
+response live in software logic and the response does not depend on the timing of real hardware — message acceptance,
+reservations, reconciliation, permission states. <strong>HIL testing</strong> is required when the response depends on a real
+controller's timing, its I/O or its electrical interface, or when the element is a safety-related controller (ISF, OSS,
+VCS) whose own firmware is the thing to verify. <strong>Vehicle and site tests</strong> are required when the response depends on
+physics or on the real environment — stopping distance on a real grade, radio coverage at the RL 330 bench.</p>
+<p>The injection point decides what a test can show. TC-13 injects degraded integrity at FP5, as a report from the
+localisation function. It verifies that the AMS recognises the pattern of SCN-GNSS-R05 — DT17 at T+0 s and DT13 at
+T+40 s at R05 point to an infrastructure cause by T+60 s — and nothing about whether a real ADS would have flagged
+DT17's integrity in the first place. That second question starts at FP6, at the receiver input, and needs HIL testing
+with a GNSS signal simulator or recorded signals <code>[TBV]</code>. A SIL-testing pass at FP5 and a HIL-testing pass at FP6 verify
+different links of the same chain; neither substitutes for the other.</p>
+<h3 id="s-4-3">4.3 The suite</h3>
+<table>
+<thead>
+<tr>
+<th>Case</th>
+<th>Scenario</th>
+<th>Injection</th>
+<th>Oracles (requirement / regression)</th>
+<th>Origin</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>TC-01 to TC-07</td>
+<td>SCN-POSCOM-LV07, SCN-POSCOM-STALE</td>
+<td>One fault each: none, stale grant, duplicate grant, missed read-back, wrong read-back, comms loss before ACK, comms loss while active</td>
+<td>Entry only with an active permission and a complete voice exchange / the fault matrix of ch-16-03</td>
+<td>ch-16-03</td>
+</tr>
+<tr>
+<td>TC-08</td>
+<td>SCN-POSCOM-STALE</td>
+<td>Loss 0.10, duplication 0.2 on both links, 500 seeds</td>
+<td>0 invariant breaches / 330 entered, 103 refused, 67 expired</td>
+<td>ch-02-07</td>
+</tr>
+<tr>
+<td>TC-09</td>
+<td>SCN-COMMS-R05</td>
+<td>CT3 down at T+0 s, restored at T+900 s</td>
+<td>Stopped within the granted path; no grant while unknown / reconciled T+932 s, last resume T+1172 s, 0 conflicts</td>
+<td>ch-02-08</td>
+</tr>
+<tr>
+<td>TC-10</td>
+<td>SCN-COMMS-R05</td>
+<td>Re-registration reports lost (0.0, 0.5, 0.8), 200 seeds each</td>
+<td>Grants blocked iff a truck is unknown; unknown trucks escalated</td>
+<td>registry</td>
+</tr>
+<tr>
+<td>TC-11</td>
+<td>SCN-DEADLOCK-X</td>
+<td>Restart state of ch-02-08</td>
+<td>Gate closed while a cycle exists, open after resolution / cycle DT05, DT22, DT17; victim DT05; DT30 outside</td>
+<td>ch-02-08, ch-10-05</td>
+</tr>
+<tr>
+<td>TC-12</td>
+<td>SCN-DEADLOCK-X</td>
+<td>Each truck inside X with probability 0.5 <code>[A]</code>, 200 seeds</td>
+<td>Gate closed iff a cycle; cycle iff all three inside</td>
+<td>registry</td>
+</tr>
+<tr>
+<td>TC-13</td>
+<td>SCN-GNSS-R05</td>
+<td>Degraded integrity reports, DT17 T+0 s, DT13 T+40 s</td>
+<td>Pattern points to infrastructure / trucks DT13, DT17</td>
+<td>registry, ch-16-07</td>
+</tr>
+<tr>
+<td>TC-14</td>
+<td>SCN-MAP-R05</td>
+<td>R05 closed</td>
+<td>Route avoids R05; no loading unit held / route and cycle times of ch-16-07</td>
+<td>ch-16-07</td>
+</tr>
+<tr>
+<td>TC-15</td>
+<td>SCN-AMS-RESTART</td>
+<td>Primary lost at T+0 s</td>
+<td>No grant while unknown or in conflict / unknown trucks 37, 25, 22, 9, 1, 0 at T+30, 35, 40, 45, 50, 95 s</td>
+<td>ch-02-08</td>
+</tr>
+<tr>
+<td>TC-16</td>
+<td>SCN-POSCOM-STALE</td>
+<td>Stale and duplicated grant together</td>
+<td>As TC-01 / NOT_ACKNOWLEDGED, area locked</td>
+<td>field event FE-2026-10-27 <code>[A]</code></td>
+</tr>
+<tr>
+<td>TC-17</td>
+<td>SCN-POSCOM-STALE</td>
+<td>GRANT delayed 30.3 s on the downlink</td>
+<td>No entry; no stale grant ever shown / outcome expired</td>
+<td>registry</td>
+</tr>
+<tr>
+<td>TC-18</td>
+<td>SCN-POSCOM-STALE</td>
+<td>GRANT delayed 20 s on the downlink</td>
+<td>as TC-17</td>
+<td>boundary value <code>[A]</code></td>
+</tr>
+</tbody>
+</table>
+<p>Most regression values are values published by other chapters, reproduced by the harness: the fault matrix of ch-16-03, the sweep
+row of ch-02-07, the CT3 timeline and the restart curve of ch-02-08, the deadlock of ch-02-08 and ch-10-05, the R24
+reroute of ch-16-07. That reproduction is itself evidence: if a new <code>ahs_sim</code> version or a new AMS release changes any of
+them, the suite says so before anyone reads a chapter that is now wrong.</p>
+<h3 id="s-4-4">4.4 Oracles, invariants and the mutation check</h3>
+<p>A case that checks only end states can pass while the system goes through a wrong state on the way. TC-17 and TC-18
+show it. Both delay a GRANT on its way to LV07's terminal; the terminal must reject a message older than 15 s <code>[A]</code>, and
+the GRANT itself is valid for 30 s <code>[A]</code>. In TC-17 the delay is 30.3 s, the registry's timing: the GRANT is both too old
+and expired, and two separate checks in the terminal reject it. In TC-18 the delay is 20 s: the GRANT is too old but not
+expired, and only the age check stands between the driver and an entry on an old grant.</p>
+<p>The mutation check makes this measurable <code>[H]</code>. LAB-18-02-01 runs the suite against three seeded defects:</p>
+<table>
+<thead>
+<tr>
+<th>Mutant</th>
+<th>Defect seeded</th>
+<th>Cases that fail</th>
+<th>Through which oracle</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>M1</td>
+<td>The terminal accepts grants of any age</td>
+<td>TC-18 only</td>
+<td>Requirement (no entry; no stale grant shown) and regression</td>
+</tr>
+<tr>
+<td>M2</td>
+<td>Reconciliation takes its list of expected trucks from the trucks that reported</td>
+<td>TC-09, TC-10, TC-15</td>
+<td>Requirement (no grant while a truck is unknown); TC-15 also regression</td>
+</tr>
+<tr>
+<td>M3</td>
+<td>The restart gate checks reconciliation only, not wait-for cycles</td>
+<td>TC-11, TC-12</td>
+<td>Requirement (gate closed while a cycle exists)</td>
+</tr>
+</tbody>
+</table>
+<p>Under M1, TC-18 ends with LV07 entered and the AMS permission ACTIVE: the area was locked, so the fail-closed invariant
+of the AMS holds, but the driver entered on a grant that had arrived 20.0 s after issue. TC-17 passes under M1, because
+the expiry check rejects the 30.3 s GRANT anyway. Without TC-18, a suite built only on the registry's timing would have
+no case that detects M1. The lesson for case design is the boundary value: wherever two defences overlap, place one case
+between their limits.</p>
+<p>M2 shows the other dependency: a defect is found only if the injected faults reach it. If TC-10 ran only with loss 0.0
+and 0.5, no re-registration would ever be lost in the 200 seeds, every truck would report, and M2 would pass TC-10. Only
+at 0.8 are reports lost (24 reports missing over 20 of the 200 runs), and only then does the defective reconciliation
+grant with a truck unknown.</p>
+<p>The mutants are not a proof of adequacy. They are three defects someone thought of. What the check shows is that each of
+the suite's requirement oracles can fail, and which case is responsible for which kind of defect; that is more than a
+suite of always-passing cases can say about itself.</p>
+<h3 id="s-4-5">4.5 Seeded injection, determinism and statistics</h3>
+<p>Seeds turn a probabilistic fault into a reproducible test. TC-10 injects loss on the re-registration reports after CT3
+returns; each report is retransmitted under the <code>RetryPolicy</code> defaults of <code>ahs_sim.recovery</code> — 5 copies 2 s apart, up to
+3 re-issues 20 s after the copies, then escalation to the AHS Controller <code>[A]</code>:</p>
+<table>
+<thead>
+<tr>
+<th>Report loss</th>
+<th>Runs complete</th>
+<th>Runs with grants blocked</th>
+<th>Latest completion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0.0</td>
+<td>200</td>
+<td>0</td>
+<td>T+932.3 s</td>
+</tr>
+<tr>
+<td>0.5</td>
+<td>200</td>
+<td>0</td>
+<td>T+968.3 s</td>
+</tr>
+<tr>
+<td>0.8</td>
+<td>180</td>
+<td>20</td>
+<td>T+1022.3 s</td>
+</tr>
+</tbody>
+</table>
+<p>The requirement oracle holds in all 600 runs: grants stay blocked exactly when a truck is unknown, and every unknown truck
+is escalated. The statistics are not requirements; they describe the model under an assumed loss. Two observations are
+useful nonetheless. At loss 0.5 four runs escalate a truck whose report the AMS has in fact received — the AMS's
+acknowledgements were lost, not the reports. At loss 0.8 that happens in 179 of the 200 runs. An escalation therefore
+says &quot;this truck never heard back&quot;, not &quot;the AMS does not know this truck&quot;; section 8.1 turns that into a controller
+check.</p>
+<p>TC-12 places the three deadlocked trucks of SCN-DEADLOCK-X inside or short of their conflict cells at random. A cycle
+appears in 21 of 200 seeds — when all three stopped inside — and the restart gate is closed in exactly those runs. A site
+restart would meet this configuration rarely and could not repeat it on demand; the seed list can.</p>
+<p>Determinism has a price that must be paid deliberately: the golden values depend on the model version. When <code>ahs_sim</code> or
+the AMS release changes, the suite's regression oracles may fail without any defect. The rule <code>[H]</code> is that a regression
+value is changed only with a record of why it changed and who accepted the new value — never by re-running until the
+suite is green.</p>
+<h3 id="s-4-6">4.6 What HIL testing adds</h3>
+<p>HIL testing adds the controller itself. Three classes of behaviour appear only there:</p>
+<ul>
+<li><strong>Timing.</strong> A watchdog in the VCS that must bring the truck to a stop when ADS frames stop arriving, the time between
+a fire-detection signal and the safe-state request on the bus, the scheduling of the ADS computer under load. A SIL-testing
+model has whatever timing the modeller wrote.</li>
+<li><strong>I/O and electrical interfaces.</strong> Bus frames with real identifiers and rates, discrete signals of the remote-stop
+receiver, a GNSS receiver fed with simulated satellite signals and GB1 corrections. Faults such as a lost bus, a stuck
+input or a corrupted frame exist only at this level.</li>
+<li><strong>Firmware.</strong> The software actually loaded on the controller, built with its real toolchain, with its configuration
+and calibration data.</li>
+</ul>
+<p>Which faults must be tested on HIL, then? Those at FP6 to FP10 of FIG-18-02-02 <code>[H]</code>:</p>
+<table>
+<thead>
+<tr>
+<th>Scenario</th>
+<th>Fault that needs HIL testing</th>
+<th>Why SIL testing is not enough</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SCN-GNSS-R05</td>
+<td>Degraded satellite geometry and multipath at the receiver input; loss of GB1 corrections</td>
+<td>Whether the real ADS computes reduced integrity and derates in time depends on the receiver and its firmware</td>
+</tr>
+<tr>
+<td>SCN-FIRE-DT17</td>
+<td>Fire-detection and suppression signals from the OSS controller</td>
+<td>The safe-state request crosses a real interface with its own timing (REQ-02-04-006)</td>
+</tr>
+<tr>
+<td>SCN-RSTOP-AANORTH</td>
+<td>Stop command and loss of the stop link at the receiver</td>
+<td>The independent stop path must act regardless of AMS and ADS (REQ-02-04-001); only the real receiver and VCS show it</td>
+</tr>
+<tr>
+<td>SCN-COMMS-R05</td>
+<td>Loss of the ADS–VCS frames during a link loss</td>
+<td>The truck's stop within its grant relies on the vehicle side, not on the AMS model</td>
+</tr>
+</tbody>
+</table>
+<p>The ch-18-01 matrix shows the consequence: SCN-GNSS-R05 has a HIL-testing item at component level (EV-25) and a
+planned one at vehicle level (VI-06); SCN-FIRE-DT17 a planned HIL-testing item (VI-07); SCN-RSTOP-AANORTH a done one
+(VI-18). The SIL-testing harness of this chapter has no case at FP6 to FP10, and the lab's test of the figure checks
+that it claims none.</p>
+<h3 id="s-4-7">4.7 Limits of simulation fidelity</h3>
+<p>A SIL-testing result supports a conclusion only within the fidelity of its models for that question. Four limits recur:</p>
+<ol>
+<li><strong>The model is the specification.</strong> TC-09 checks that trucks stop within their granted path; the stop times
+(3.0 s to 14.1 s) come from <code>reconciliation.link_loss_timeline</code>, which brakes at 1.0 m/s² <code>[A]</code> by construction. The
+case verifies that the AMS logic keeps reservations frozen around trucks that behave as the model says. It does not
+verify that a loaded truck on lower R05 can stop that way.</li>
+<li><strong>Timing is simplified.</strong> Detection at T+3 s, re-registration every 4 s, a 0.3 s link delay: all model parameters
+<code>[A]</code>. A SIL-testing case can show that the logic is correct for those times, and with a sweep that it stays correct
+over a range; not that the real radio produces them.</li>
+<li><strong>Shared assumptions.</strong> When the harness models and the software under test come from the same specification, an
+error in the specification passes both. A case written from the requirement, by someone other than the author of the
+model, reduces that risk; it does not remove it.</li>
+<li><strong>Exploration finds questions, not answers.</strong> The lab's exploratory injection for SCN-GNSS-R05 places degraded
+reports from six trucks at random over 30 minutes <code>[A]</code> and compares <code>control_room.clusters</code>, which groups events in a
+window anchored at the first event of a group, with an independent oracle written from the registry's wording — two
+trucks degraded within 60 s at the same place. In 200 seeds they agree 199 times. In seed 139 they do not: DT32
+reports at 488.6 s and 535.0 s, DT36 at 568.8 s; DT32 and DT36 are 33.8 s apart, but the anchored window starting at
+488.6 s ends before 568.8 s, so <code>clusters</code> sees two single-truck groups. Whether the AMS should use a sliding window
+is a design question for the engineer (from <code>ahs_sim</code> 0.9.1, <code>clusters(…, sliding=True)</code> offers one); once decided,
+the seed becomes a regression case. It is reported here, and the default of <code>clusters</code> is not changed:
+<code>ahs_sim.control_room</code> is shared, and changing the default would change the results of the chapters that use it.</li>
+</ol>
+<p>A HIL-testing result has its own limits: the plant simulator replaces the truck, the GNSS simulator replaces the sky
+over the RL 330 bench, and the rig runs one truck. Neither SIL testing nor HIL testing shows behaviour on real roads,
+under real radio coverage or with people; those belong to vehicle and site tests (ch-18-03, ch-18-04).</p>
+<h3 id="s-4-8">4.8 The regression suite and the field-event rule</h3>
+<p>The SIL-testing regression suite of the reference mine follows six rules <code>[H]</code>:</p>
+<ol>
+<li>Every case names a registered scenario; a case for a behaviour that has no scenario starts with a registry proposal
+(REQ-18-01-008).</li>
+<li>Every stochastic case lists its seeds; the suite result is reproducible and carries the model and software versions.</li>
+<li>Every case has a requirement oracle; regression oracles are added where another chapter or an accepted earlier run
+published a value.</li>
+<li>Cases are added, never removed; a case is changed only with a record of the reason.</li>
+<li>The suite is run against the mutants before it is used to accept a release; a requirement oracle that no mutant can
+make fail is reviewed.</li>
+<li>A field event that the suite did not reproduce becomes a case before the next release.</li>
+</ol>
+<p>The last rule needs data from the field. The lab's helper <code>new_case_from_field_event</code> shows the minimum: an event ID, the
+scenario, the injection that reproduces the event and the expected end state from the requirement. TC-16 was made that
+way from FE-2026-10-27 <code>[A]</code>: the scenario SCN-POSCOM-STALE, the faults stale grant and duplicate grant together, the
+expectation from REQ-16-03-004 that any disagreement is treated as not granted. Section 8.3 lists what the controller's
+report must contain for the engineer to build it.</p>
+<h2 id="s-5">5. Responsibilities and interface boundaries</h2>
+<table>
+<thead>
+<tr>
+<th>Element</th>
+<th>In SIL testing</th>
+<th>In HIL testing</th>
+<th>Evidence produced <code>[H]</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>FMS</td>
+<td>Assignment model; reroute and cycle times (TC-14)</td>
+<td>Not usually</td>
+<td>Suite results</td>
+</tr>
+<tr>
+<td>AMS</td>
+<td>Software under test: reservations, permissions, reconciliation, gates</td>
+<td>Model or real AMS over a network emulator</td>
+<td>Suite results, digest, mutation check</td>
+</tr>
+<tr>
+<td>ADS</td>
+<td>Behaviour model (stop within grant, integrity reports at FP5)</td>
+<td>Real computer with sensor and GNSS inputs (FP6, FP7)</td>
+<td>HIL test records</td>
+</tr>
+<tr>
+<td>VCS</td>
+<td>Not modelled beyond stopping</td>
+<td>Real ECU on the plant simulator (FP8)</td>
+<td>HIL test records</td>
+</tr>
+<tr>
+<td>Independent safety function</td>
+<td>Not in the SIL-testing harness</td>
+<td>Real receiver and VCS (FP10)</td>
+<td>HIL test records (VI-18)</td>
+</tr>
+<tr>
+<td>Onboard safety-related systems</td>
+<td>Not in the SIL-testing harness</td>
+<td>Real OSS controller (FP9)</td>
+<td>HIL test records (VI-07 planned)</td>
+</tr>
+<tr>
+<td>Manned-vehicle devices</td>
+<td>Terminal acceptance rules (FP4)</td>
+<td>Terminal hardware with radio emulation, if needed</td>
+<td>Suite results</td>
+</tr>
+<tr>
+<td>People</td>
+<td>Replay sessions and playbook rehearsal (FP11)</td>
+<td>—</td>
+<td>Session records; field-event reports</td>
+</tr>
+</tbody>
+</table>
+<p>Two boundaries matter. <strong>The harness owner is not the author of the software under test.</strong> Site engineering owns the
+suite at the reference mine <code>[A]</code>; the supplier's own tests are evidence the site uses, and the mutation check is the
+site's way of knowing what its own suite catches. <strong>A replay for controllers is not a test of controllers.</strong> It shows
+what the system does; the controller's decisions are recorded as training (ch-16-09) or, with a test record, as a site
+item (ch-18-01).</p>
+<h2 id="s-6">6. Normal, abnormal and degraded operation</h2>
+<p>The three walkthroughs follow SCN-COMMS-R05 through the harness. The registry gives T+0 s (CT3 down), T+3 s (trucks
+detect link loss and stop within their granted path), T+10 s (trucks marked communication-lost; surrounding reservations
+frozen) and T+900 s (CT3 restored; reconciliation). The per-truck times are those published by ch-02-08 (LAB-02-08-01),
+reproduced by TC-09; the alarm counts are those published by ch-16-07 (seed 1607). Sections 7 and 8 use the same timeline.</p>
+<h3 id="s-6-1">6.1 Normal operation — the nominal CT3 case (TC-09)</h3>
+<table>
+<thead>
+<tr>
+<th>Time</th>
+<th>Event</th>
+<th>Element</th>
+<th>What the harness checks</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>T+0 s</td>
+<td>CT3 loses power (injected)</td>
+<td>network</td>
+<td>Injection at FP3 for the eight trucks in CT3's coverage</td>
+</tr>
+<tr>
+<td>T+3 s</td>
+<td>Trucks detect link loss; DT37, already stopped at EX04-Q, holds</td>
+<td>ADS model</td>
+<td>—</td>
+</tr>
+<tr>
+<td>T+4.8 s</td>
+<td>DT26 stops at the end of its grant</td>
+<td>ADS model</td>
+<td>Its stopping block is one it held at the loss</td>
+</tr>
+<tr>
+<td>T+6.2 s to T+14.1 s</td>
+<td>DT21 stops at 6.2 s; DT20, DT24, DT33, DT35 at 11.3 s; DT32 at 14.1 s</td>
+<td>ADS model</td>
+<td>Every stopping block was held at the loss (REQ-02-08-003)</td>
+</tr>
+<tr>
+<td>T+10 s</td>
+<td>AMS marks the trucks communication-lost; reservations frozen</td>
+<td>AMS</td>
+<td>—</td>
+</tr>
+<tr>
+<td>T+0 s to T+60 s</td>
+<td>22 alarms raised in the first minute; 3 shown when grouped by area</td>
+<td>HMI model</td>
+<td>Replay only (section 8.1)</td>
+</tr>
+<tr>
+<td>T+900 s</td>
+<td>CT3 restored</td>
+<td>network</td>
+<td>—</td>
+</tr>
+<tr>
+<td>T+904 s to T+932 s</td>
+<td>Trucks re-register every 4 s, DT21 first, DT37 last</td>
+<td>AMS</td>
+<td>At every report before the last, grants blocked (REQ-02-08-005)</td>
+</tr>
+<tr>
+<td>T+932 s</td>
+<td>Reconciliation complete, no conflict</td>
+<td>AMS</td>
+<td>Regression: 932 s, 0 conflicts</td>
+</tr>
+<tr>
+<td>T+962 s to T+1172 s</td>
+<td>Staged resume, one truck every 30 s, in report order</td>
+<td>AMS</td>
+<td>Regression: last resume 1172 s</td>
+</tr>
+</tbody>
+</table>
+<p>The case passes. What it verifies is the AMS logic of SCN-COMMS-R05 under the model's truck behaviour: frozen
+reservations, no grant before the last report, a complete reconciliation and a staged resume. It does not verify the
+eight stops; those are the model's.</p>
+<h3 id="s-6-2">6.2 Abnormal operation — a re-registration that never arrives (TC-10, loss 0.8, seed 1)</h3>
+<p>The same outage, but after CT3 returns the link is poor and reports are lost with probability 0.8 <code>[A]</code>. The timeline
+until T+900 s is that of section 6.1. After it:</p>
+<table>
+<thead>
+<tr>
+<th>Time</th>
+<th>Event (seed 1)</th>
+<th>What the harness checks</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>T+904 s</td>
+<td>DT21 sends its report; the first copy to arrive does so at T+906.3 s; no acknowledgement returns</td>
+<td>DT21 known to the AMS</td>
+</tr>
+<tr>
+<td>T+916.3 s</td>
+<td>DT35 and DT32 reported (DT35 acknowledged at T+920.6 s)</td>
+<td>—</td>
+</tr>
+<tr>
+<td>T+920.3 s</td>
+<td>DT26 reported</td>
+<td>—</td>
+</tr>
+<tr>
+<td>T+924 s</td>
+<td>DT20 starts sending; no copy arrives</td>
+<td>DT20 unknown</td>
+</tr>
+<tr>
+<td>T+934.3 s, T+940.3 s</td>
+<td>DT33 and DT37 reported</td>
+<td>—</td>
+</tr>
+<tr>
+<td>T+968.3 s</td>
+<td>DT24 reported (its first copy to arrive; 13 copies sent before the acknowledgement)</td>
+<td>—</td>
+</tr>
+<tr>
+<td>T+996 s, T+1000 s</td>
+<td>DT21 and DT32 give up after 20 copies without an acknowledgement: escalated, although the AMS has their reports</td>
+<td>Escalation recorded</td>
+</tr>
+<tr>
+<td>T+1016 s</td>
+<td>DT20 gives up after 20 copies: escalated</td>
+<td>Every unknown truck escalated (REQ-10-08-003)</td>
+</tr>
+<tr>
+<td>after T+1016 s</td>
+<td>Seven trucks known, DT20 unknown; no grant to any truck</td>
+<td>Grants blocked because a truck is unknown (REQ-02-08-005)</td>
+</tr>
+</tbody>
+</table>
+<p>The case passes: the AMS fails closed. For the controller the run carries a message the nominal run hid. Three
+escalations arrive, but only one truck is unknown to the AMS. The controller must read the AMS's list of unknown trucks,
+not the escalations, before deciding to send a Field Technician (section 8.3).</p>
+<h3 id="s-6-3">6.3 Degraded operation — restoration on a lossy link (TC-10, loss 0.5)</h3>
+<p>CT3 returns but the link to the pit floor stays marginal; reports are lost with probability 0.5 <code>[A]</code>. In all 200 seeds
+every truck eventually reports and reconciliation completes; the latest completion is T+968.3 s instead of T+932 s. The
+staged resume starts later accordingly, and in 4 of the 200 seeds a truck is escalated although the AMS has its report.</p>
+<p>For the strategy this run answers a narrow question: under a lossy return link, does the AMS still wait for every truck
+and still resume in stages? Yes, in the model. It does not say how often CT3 comes back marginal, how long the trucks
+on lower R05 actually stand, or what the real radio does; those belong to the network volume and to the CT3 coverage
+test planned for commissioning (VI-13 in ch-18-01).</p>
+<h2 id="s-7">7. Engineering view</h2>
+<h3 id="s-7-1">7.1 Design decisions and trade-offs</h3>
+<ul>
+<li><strong>Cases are scenarios plus injections.</strong> Every case names a registered scenario, so the suite and the coverage matrix
+of ch-18-01 speak the same language. The price is a registry that must grow with the suite.</li>
+<li><strong>Two kinds of oracle.</strong> Requirement oracles carry the safety argument; regression oracles catch any change. Keeping
+them separate lets a deliberate model change update golden values without weakening a requirement.</li>
+<li><strong>States of other chapters read in place.</strong> The CT3, restart and deadlock states come from LAB-02-08-01, not from copies, so the
+harness cannot drift from the chapter that published them.</li>
+<li><strong>A mutation check as part of the suite.</strong> Three seeded defects cost little and show which cases carry which
+requirement. The price is maintaining the mutants with the software.</li>
+<li><strong>No fault point that the platform cannot reach.</strong> FP6 to FP10 are marked HIL testing and have no SIL-testing case; a
+SIL-testing case at those points would test a model of a controller, not the controller.</li>
+</ul>
+<h3 id="s-7-2">7.2 Failure modes and mitigations</h3>
+<table>
+<thead>
+<tr>
+<th>Failure mode of a test harness</th>
+<th>Example</th>
+<th>Mitigation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Suite that cannot fail</td>
+<td>Cases only at the registry's timing; M1 escapes without TC-18</td>
+<td>Mutation check before release acceptance (REQ-18-02-004); boundary-value cases</td>
+</tr>
+<tr>
+<td>Fault that does not reach the defect</td>
+<td>TC-10 at loss 0.0 and 0.5 only: M2 passes</td>
+<td>Injection ranges chosen to provoke the requirement (REQ-18-02-003)</td>
+</tr>
+<tr>
+<td>Golden values re-run until green</td>
+<td>Regression value changed after a model update without review</td>
+<td>Recorded acceptance of every changed golden value (REQ-18-02-005)</td>
+</tr>
+<tr>
+<td>Model mistaken for reality</td>
+<td>TC-09's stop times read as truck stopping performance</td>
+<td>Fidelity statement per case (REQ-18-02-006)</td>
+</tr>
+<tr>
+<td>Wrong injection point</td>
+<td>GNSS degradation injected at FP5 and reported as verification of ADS integrity monitoring</td>
+<td>Fault-point allocation; HIL testing for FP6 to FP10 (REQ-18-02-002)</td>
+</tr>
+<tr>
+<td>Irreproducible run</td>
+<td>Seed not recorded, model version unknown</td>
+<td>Seeds and versions in every result; suite digest (REQ-18-02-001)</td>
+</tr>
+<tr>
+<td>Field event lost</td>
+<td>&quot;Terminal glitch&quot; in the shift log only</td>
+<td>Field-event rule and report content (REQ-18-02-007)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="s-7-3">7.3 Interface and timing considerations</h3>
+<p>On the shared timeline the harness depends on its clocks:</p>
+<ul>
+<li><strong>Simulated clock.</strong> T+0 s to T+1172 s of TC-09 run in a fraction of a second. Any behaviour that depends on real
+elapsed time — a watchdog, a radio retry timer in firmware — is not exercised.</li>
+<li><strong>T+3 s and T+10 s.</strong> Detection and marking are model parameters; a sweep over them shows sensitivity, not the real
+values. The harness reports which parameters a case depends on.</li>
+<li><strong>T+904 s to T+1016 s.</strong> Retry intervals, copies and re-issues are those of <code>RetryPolicy</code> <code>[A]</code>. The escalation at
+T+1016 s is the end of DT20's retry budget, 92 s after its first copy; a different budget moves it.</li>
+<li><strong>One time base.</strong> All times in the harness are AMS true time. When a case mixes clocks — the terminal's offset in
+ch-02-07 — the record says which clock each time comes from (ch-18-01, section 7.3).</li>
+<li><strong>HIL rigs run in real time.</strong> A case that takes 1172 s of scenario time takes 1172 s on a HIL rig; the suite for HIL
+testing is therefore shorter and chosen from the SIL-testing results.</li>
+</ul>
+<h2 id="s-8">8. Operations view</h2>
+<h3 id="s-8-1">8.1 What the control room sees — a replay of SCN-COMMS-R05 before the release</h3>
+<p>Before the release, the controllers on both shifts sit with Site engineering for a replay of SCN-COMMS-R05 (TC-09, and
+seed 1 of TC-10). The replay script of LAB-18-02-01 merges the registry events, the per-truck times and the alarm counts
+of section 6.1 into one timeline. What the controllers see:</p>
+<ul>
+<li>in the first minute 22 alarms raised, 3 when grouped by area — and they practise reading the truck list instead of the
+alarm list;</li>
+<li>eight trucks stopped between T+3.0 s and T+14.1 s, and no truck moving until T+962 s;</li>
+<li>the reconciliation progress from T+904 s to T+932 s, and the staged resume to T+1172 s;</li>
+<li>in the abnormal run, three escalations and one unknown truck, DT20, and the rule that the AMS's unknown list, not the
+escalation list, decides who goes to the pit floor.</li>
+</ul>
+<p>The replay is not the release. It shows the controllers what the release does in a registered scenario, in the model;
+anything that looks different on the real HMI after the release is a field event.</p>
+<h3 id="s-8-2">8.2 Who decides what</h3>
+<table>
+<thead>
+<tr>
+<th>Decision</th>
+<th>Responsible</th>
+<th>Accountable</th>
+<th>Consulted</th>
+<th>Informed</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Maintain the SIL-testing suite and its mutants</td>
+<td>Site engineering <code>[A]</code></td>
+<td>Safety-case owner <code>[A]</code></td>
+<td>System supplier</td>
+<td>Pit Supervisor</td>
+</tr>
+<tr>
+<td>Define the operational scenarios that must pass before a release</td>
+<td>Pit Supervisor</td>
+<td>Safety-case owner <code>[A]</code></td>
+<td>AHS Controllers, Site engineering</td>
+<td>Maintenance Planner</td>
+</tr>
+<tr>
+<td>Report a field event for a new case</td>
+<td>AHS Controller</td>
+<td>Pit Supervisor</td>
+<td>Field Technician</td>
+<td>Site engineering</td>
+</tr>
+<tr>
+<td>Build the case from a field event</td>
+<td>Site engineering <code>[A]</code></td>
+<td>Safety-case owner <code>[A]</code></td>
+<td>AHS Controller who reported it</td>
+<td>Pit Supervisor</td>
+</tr>
+<tr>
+<td>Accept a changed golden value</td>
+<td>Site engineering <code>[A]</code></td>
+<td>Safety-case owner <code>[A]</code></td>
+<td>System supplier</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Run a replay or playbook rehearsal with controllers</td>
+<td>Site engineering <code>[A]</code> with the Pit Supervisor</td>
+<td>Pit Supervisor</td>
+<td>AHS Controllers</td>
+<td>Training</td>
+</tr>
+</tbody>
+</table>
+<p>The operational scenarios that must pass in SIL testing before a release is accepted at the reference mine are, in this
+plan <code>[A]</code>: SCN-POSCOM-LV07 and SCN-POSCOM-STALE (TC-01 to TC-08, TC-16 to TC-18), SCN-COMMS-R05 (TC-09, TC-10),
+SCN-DEADLOCK-X (TC-11, TC-12), SCN-GNSS-R05 (TC-13), SCN-MAP-R05 (TC-14) and SCN-AMS-RESTART (TC-15). The Pit Supervisor
+proposes additions; the list is part of the release acceptance record of ch-18-01.</p>
+<h3 id="s-8-3">8.3 Procedure excerpt — from a field event to a SIL-testing case</h3>
+<p><code>[H]</code>, times illustrative <code>[A]</code>.</p>
+<ol>
+<li><strong>AHS Controller (during the event):</strong> note the time on the AMS clock, the scenario if one fits (for example
+SCN-POSCOM-STALE), the trucks, people and devices involved, and what the HMI, the terminal and the radio showed.</li>
+<li><strong>AHS Controller (before the end of the shift):</strong> file a field-event report with: event ID, AMS time, scenario or
+&quot;no scenario&quot;, equipment IDs, what was expected, what happened, the state at the end (for example &quot;area locked, LV07
+asked again&quot;), the AMS release and map version shown in CR1, and the event-log extract from T−60 s to T+60 s around the
+event.</li>
+<li><strong>Pit Supervisor (next day):</strong> confirm the report and its scenario; if no scenario fits, propose one for the registry
+(REQ-18-01-008).</li>
+<li><strong>Site engineering:</strong> reproduce the event in the harness with an injection and a seed; write the expected end state
+from the requirement, not from the event; add the case to the suite.</li>
+<li><strong>Site engineering:</strong> if the case fails on the current release, the event has found a defect: raise it with the
+supplier and in the hazard-log review triggers of ch-04-01. If it passes, record that the suite now covers it.</li>
+<li><strong>AHS Controller who reported it:</strong> review the replay of the new case and confirm that it shows what they saw.</li>
+</ol>
+<p>For a playbook rehearsal — the R05 closure with all circuits over R24 — the Pit Supervisor and the controllers review
+TC-14 before the playbook is used: EX02's loaded route becomes R18, R08, R09, R24, R25, R12, R02, R21; its cycle grows
+from 1564.1 s to 1800.1 s in the steady-state model; no loading unit is held. EX01 also loses 236.0 s per cycle, while
+EX03 and EX04 gain 39.4 s, because in the model the climb on the 6.3 % west ramp is faster than on the main ramp. The
+rehearsal shows what the playbook asks of the fleet before a real closure does.</p>
+<h3 id="s-8-4">8.4 KPIs and delay codes affected</h3>
+<p>SIL testing and HIL testing produce no delay for the fleet. The scenarios they replay do: trucks stopped inside the CT3
+dead zone are coded DLY-OD-05 (stopped on communication loss), trucks held short of it DLY-OD-04, trucks held in the
+deadlock at X DLY-OD-17, and trucks stopped by an AMS failover DLY-OD-12, under the coding rules of <code>delay-codes.yml</code>
+(schema 2); all are Operating Delay in the GMG Time Usage Model <code>[F]</code> (SRC-PUB-GMG-TUM-2020). A replay that shows how
+long each code runs in the model helps controllers code the real event; it does not predict the real duration.</p>
+<p>The suite has its own indicators <code>[H]</code>: cases passing (18 of 18), mutants detected (3 of 3), cases added from field
+events since the last release (1, TC-16), and regression values changed with a record. No target is set.</p>
+<h3 id="s-8-5">8.5 Training and competency implications</h3>
+<p>Controllers learn to read a replay as a model of the system, not as a recording of the mine, and to report field events
+with the data of section 8.3. Pit Supervisors learn to specify the operational scenarios that gate a release, and to run
+a playbook rehearsal before first use. Site engineers learn to build cases from requirements, to run the mutation check
+and to explain to controllers what a SIL-testing pass does not cover. Replay sessions are simulator-based training in the
+sense of ch-16-09; they count as verification only with a test record and a released configuration.</p>
+<h2 id="s-9">9. Requirements and acceptance criteria</h2>
+<p>REQ-18-02-001 [H]
+Every SIL-testing case shall name a registered scenario, the injection and its point in the chain, the seeds of every run,
+a requirement oracle and the requirement IDs it comes from; every suite result shall record the model and software
+versions and be reproducible from them.
+Rationale: an irreproducible or untraceable result cannot be compared after a change (sections 4.1 and 4.5).
+Verification: test (LAB-18-02-01 suite digest equal on repeated runs); inspection of the suite.</p>
+<p>REQ-18-02-002 [H]
+Faults at the GNSS receiver input, perception sensor inputs, the ADS–VCS interface, onboard safety-related system
+signals and the remote-stop path shall be verified by HIL testing or on the vehicle; a SIL-testing case shall not be
+counted as verification of the response of those controllers.
+Rationale: their responses depend on real controller timing, I/O and firmware (sections 4.2 and 4.6).
+Verification: inspection of the fault-point allocation; test (LAB-18-02-01 has no case at FP6 to FP10).</p>
+<p>REQ-18-02-003 [H]
+For every requirement oracle, the injected faults shall include a value or range that would violate the requirement if
+the software were defective, and wherever two defences overlap, at least one case shall lie between their limits.
+Rationale: a fault that never reaches a defect cannot reveal it (section 4.4: TC-18, TC-10).
+Verification: mutation check; review of case design.</p>
+<p>REQ-18-02-004 [H]
+Before the SIL-testing suite is used to accept a release, it shall be run against a maintained set of seeded defects,
+and every requirement oracle that no seeded defect makes fail shall be reviewed.
+Rationale: a suite that cannot fail shows nothing (section 4.4).
+Verification: test (LAB-18-02-01 mutation check: M1 by TC-18, M2 by TC-09, TC-10, TC-15, M3 by TC-11, TC-12).</p>
+<p>REQ-18-02-005 [H]
+A regression (golden) value shall be changed only with a record of the cause of the change and the person who accepted
+the new value; cases shall be added to the suite, never removed.
+Rationale: re-running until the suite passes turns a regression into a new baseline (section 4.5).
+Verification: inspection of the suite change log.</p>
+<p>REQ-18-02-006 [H]
+Every SIL-testing and HIL-testing result used as evidence shall state the model parameters it depends on and the
+conclusions it does not support, including behaviour that the platform does not contain.
+Rationale: a model can be faithful for one question and silent on another (section 4.7).
+Verification: inspection of test records.</p>
+<p>REQ-18-02-007 [H]
+A field event that the SIL-testing suite does not reproduce shall be reported with the AMS time, scenario, equipment, the
+expected and observed behaviour, the end state, the AMS release and map version, and the event-log extract around the
+event, and shall become a SIL-testing case before the next release is accepted.
+Rationale: an event that stays in the shift log is not tested in the next release (sections 4.8 and 8.3).
+Verification: inspection of field-event reports and of the suite against them.</p>
+<p>REQ-18-02-008 [H]
+Before a new abnormal-operations playbook is used in production, it shall be rehearsed with the controllers in SIL
+testing, showing the routes, cycle times and loading units held or rerouted for the registered scenario it serves.
+Rationale: the first use of a playbook should not be its first test (sections 2 and 8.3).
+Verification: inspection of rehearsal records; test (LAB-18-02-01 TC-14).</p>
+<h2 id="s-10">10. Verification and validation</h2>
+<p><strong>Verification.</strong> <code>make test CH=ch-18-02</code> checks that the suite passes and is deterministic; that every case uses a
+registered scenario and the registry times; that the harness reproduces the values published by ch-16-03 (fault matrix),
+ch-02-07 (sweep row), ch-02-08 (CT3 timeline, restart curve, deadlock), ch-10-05 (victim) and ch-16-07 (GNSS pattern,
+alarm counts, R24 reroute); the report-loss statistics and the seed-1 timeline; the seeded deadlock; the mutation check;
+the exploratory GNSS result; the field-event rule; that the fault points agree with FIG-18-02-02 in both languages and
+no HIL-testing point has a SIL-testing case; and that the script runs.</p>
+<p><strong>Validation.</strong> Whether a SIL-testing suite is good enough is decided by how it behaves when the system is wrong: the
+mutation check is a first measure; field events the suite did not reproduce are the second, and the stronger one. For
+HIL testing, validation of the rig itself — that the plant simulator and the GNSS simulator are faithful for the question
+asked — is a separate task <code>[TBV]</code>. The reference mine is fictional, so neither the check against field events nor the validation of a HIL
+rig is possible here; ch-18-03 continues with
+vehicle and site testing.</p>
+<h2 id="s-11">11. Common mistakes</h2>
+<h3 id="s-11-1">11.1 Design mistakes</h3>
+<ul>
+<li><strong>Testing the model with the model.</strong> Oracles that restate the model's own rules pass by construction; write them from
+the requirement.</li>
+<li><strong>Cases only at nominal timing.</strong> The registry's 30 s delay exercises two defences at once; TC-18 is the case that
+separates them.</li>
+<li><strong>Injecting where it is convenient.</strong> A positioning fault at the output of localisation is easy; it does not test the
+receiver.</li>
+<li><strong>Golden values updated silently.</strong> The suite stays green and the behaviour changed.</li>
+<li><strong>HIL rigs used for logic.</strong> Rig hours spent on cases that SIL testing could run in seconds leave no time for timing
+and I/O faults.</li>
+</ul>
+<h3 id="s-11-2">11.2 Operational mistakes</h3>
+<ul>
+<li><strong>Treating a replay as a recording.</strong> The replay shows the model; the real event may differ, and the difference is a
+field event.</li>
+<li><strong>Field reports without times and versions.</strong> &quot;Glitch at AP-02&quot; cannot become a case.</li>
+<li><strong>Reading escalations as unknown trucks.</strong> Three escalations, one unknown truck in seed 1: send the Field Technician
+for DT20, not for DT21 and DT32.</li>
+<li><strong>First use of a playbook on a real closure.</strong> The R24 rehearsal costs an hour; a surprise during a real R05 closure
+costs more.</li>
+</ul>
+<h2 id="s-12">12. Worked examples</h2>
+<p>All values are computed by LAB-18-02-01 with <code>ahs_sim</code> 0.9.0; every probability, interval and seed is <code>[A]</code>.</p>
+<p><strong>Example 1 — the suite.</strong> 18 cases, 18 pass. Seeds: 1 to 500 for TC-08, 1 to 200 for TC-10 (at each of three loss
+values) and TC-12, 2808 for TC-15. Two runs give the same digest.</p>
+<p><strong>Example 2 — reproduction of values published by other chapters.</strong> TC-08 at loss 0.10 and duplication 0.2 over 500 seeds: 330 entered, 103
+refused, 67 expired, 0 breaches (ch-02-07). TC-15: unknown trucks 37, 25, 22, 9, 1, 0 at T+30, 35, 40, 45, 50, 95 s; the
+last truck to report is DT25 (ch-02-08).</p>
+<p><strong>Example 3 — the boundary case.</strong> Terminal age limit 15 s, grant validity 30 s <code>[A]</code>. TC-17 (delay 30.3 s): both checks
+reject. TC-18 (delay 20 s): only the age check rejects. Under mutant M1, TC-18 ends with LV07 entered on a grant that
+arrived 20.0 s after issue; TC-17 still passes.</p>
+<p><strong>Example 4 — report loss.</strong> At loss 0.8, 180 of 200 runs complete and 20 stay blocked; 24 reports are missing in those
+20 runs (16 runs with one missing truck, 4 with two). In seed 1, DT20 gives up at T+1016 s, 924 s + 4 × 4 × 2 s + 3 × 20 s
+= 924 + 32 + 60, after 20 copies.</p>
+<p><strong>Example 5 — the seeded deadlock.</strong> Each of DT17, DT05, DT22 stops inside its conflict cell with probability 0.5; a
+cycle needs all three: expected share 0.5³ = 0.125, observed 21 of 200 = 0.105. The gate is closed in exactly those 21
+runs.</p>
+<p><strong>Example 6 — the R24 rehearsal.</strong> EX02 loaded route over R24: R18, R08, R09, R24, R25, R12, R02, R21; cycle 1564.1 s →
+1800.1 s (+236.0 s); EX03 and EX04 −39.4 s; no loading unit held (ch-16-07).</p>
+<p><strong>Example 7 — exploration.</strong> 200 seeds, 1207 degraded reports in total: the registry oracle finds a pattern in 112 runs,
+<code>clusters</code> in 111; the one disagreement is seed 139.</p>
+<h2 id="s-13">13. Hands-on labs</h2>
+<p>One lab reproduces every number in this chapter; instructions, expected results and the operations interpretation are
+in labs/README.md.</p>
+<ul>
+<li><strong>LAB-18-02-01 — Minimal SIL-testing harness.</strong> 18 cases on six registered scenarios, run through <code>ahs_sim.ams</code>,
+<code>ahs_sim.messaging</code> (<code>Faults</code>), <code>ahs_sim.reconciliation</code>, <code>ahs_sim.recovery</code> and <code>ahs_sim.control_room</code>, with seeded
+fault injection, requirement and regression oracles, a mutation check with three seeded defects, an exploratory GNSS
+injection, the field-event rule and the SCN-COMMS-R05 replay script. States of SCN-COMMS-R05, SCN-AMS-RESTART and
+SCN-DEADLOCK-X come from LAB-02-08-01 (<code>depends_on</code>). The lab does not use <code>ahs_sim.network</code> or <code>ahs_sim.localisation</code>: network faults
+use <code>messaging.Faults</code> and <code>recovery.deliver_with_retry</code>, positioning faults are lab-local seeded reports <code>[A]</code>.</li>
+</ul>
+<p>No browser widget is planned for this chapter.</p>
+<h2 id="s-14">14. Discussion questions and assignments</h2>
+<h3 id="s-14-1">14.1 Engineering assignments</h3>
+<ol>
+<li>Add a fourth mutant: the AMS releases the reservations of a communication-lost truck after 600 s. Which case detects
+it? If none does, write the case.</li>
+<li>Write a SIL-testing case for SCN-MISSION-CANCEL-M20481 at FP1 with a requirement oracle from REQ-10-08-001 and a seed
+list.</li>
+<li>Replace the anchored window of <code>clusters</code> with a sliding window in a lab-local function and re-run the exploration.
+Does seed 139 agree now? What does the change cost in alarm grouping?</li>
+<li>Specify the HIL-testing case for SCN-GNSS-R05 at FP6: inputs, what is measured on the ADS, the end-state criterion and
+one invariant. Which values are <code>[A]</code>?</li>
+<li>Sweep the <code>RetryPolicy</code> budget in TC-10 at loss 0.8. How does the share of blocked runs change, and what does the
+controller gain or lose?</li>
+</ol>
+<h3 id="s-14-2">14.2 Operations assignments</h3>
+<ol>
+<li>Plan a 45-minute replay session of SCN-COMMS-R05 for the night shift. What do you show first, and what decision do
+you ask the controllers to make?</li>
+<li>Write the field-event report for FE-2026-10-27 with every field of section 8.3.</li>
+<li>List the operational scenarios you would add to the release gate of section 8.2, and why.</li>
+<li>Run the R24 rehearsal with a Shovel Operator from EX03. What does the operator need to know about the 39.4 s?</li>
+</ol>
+<h2 id="s-15">15. Key takeaways</h2>
+<ul>
+<li>SIL testing places faults exactly and repeats them for free; HIL testing adds real controllers, timing and I/O; neither
+shows real roads, radio or people.</li>
+<li>A test case is a registered scenario, an injection at a named point, seeds and oracles; the suite result is
+reproducible from the versions.</li>
+<li>Faults at the GNSS receiver, sensors, the ADS–VCS interface, onboard safety-related systems and the remote-stop path
+need HIL testing.</li>
+<li>Requirement oracles carry the argument, regression oracles catch change, invariants catch transient wrong states.</li>
+<li>A mutation check shows what a suite can catch: M1 only by the boundary case TC-18; M2 only when reports are really
+lost.</li>
+<li>Fidelity limits: the model is the specification; timing is assumed; exploration finds questions such as seed 139.</li>
+<li>Field events become cases before the next release; controllers review replays and rehearse playbooks in SIL testing
+before first use.</li>
+</ul>
+<h2 id="s-16">16. Glossary terms introduced</h2>
+<p><code>test-harness</code>, <code>fault-injection-point</code>, <code>requirement-oracle</code>, <code>regression-oracle</code>, <code>regression-suite</code>, <code>mutation-check</code>,
+<code>simulation-fidelity</code>, <code>scenario-replay</code>, <code>field-event-report</code></p>
+<nav aria-label="Introductory chapters"><p><a href="ch-18-01.en.html">Previous chapter</a> · <a href="../handbook.html">Handbook contents</a></p></nav>
+</main>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.1/dist/mermaid.min.js"></script>
+<script>if(window.ahsRenderMermaid){window.ahsRenderMermaid();}</script>
+</body>
+</html>

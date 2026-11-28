@@ -1,0 +1,1547 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="generator" content="ahs-handbook build_articles 2.0.0">
+<meta name="ahs:id" content="ch-01-02">
+<meta name="ahs:version" content="0.2.5">
+<meta name="ahs:status" content="in-review">
+<meta name="ahs:source-sha256" content="80b4edf4d84d4b96">
+<title>What autonomy changes: from manned to autonomous haulage</title>
+<style>
+:root {
+  --bg: #fbfaf7;
+  --fg: #1d1f21;
+  --muted: #5d6166;
+  --accent: #1f6f8b;
+  --accent-soft: #e3f0f4;
+  --border: #d9d6cf;
+  --code-bg: #f1efea;
+  --warn-bg: #fff6e0;
+  --warn-border: #e2b54a;
+  --watermark: rgba(200, 60, 60, 0.07);
+  --font-body: system-ui, -apple-system, "Segoe UI", "Hiragino Sans", "Hiragino Kaku Gothic ProN",
+    "Noto Sans JP", "Yu Gothic", Meiryo, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #15171a;
+    --fg: #e6e4df;
+    --muted: #a3a7ad;
+    --accent: #6cc3de;
+    --accent-soft: #1d3440;
+    --border: #33373d;
+    --code-bg: #1f2226;
+    --warn-bg: #2e2716;
+    --warn-border: #8c7330;
+    --watermark: rgba(255, 120, 120, 0.06);
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #15171a;
+  --fg: #e6e4df;
+  --muted: #a3a7ad;
+  --accent: #6cc3de;
+  --accent-soft: #1d3440;
+  --border: #33373d;
+  --code-bg: #1f2226;
+  --warn-bg: #2e2716;
+  --warn-border: #8c7330;
+  --watermark: rgba(255, 120, 120, 0.06);
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0 auto;
+  max-width: 52rem;
+  padding: 1.25rem 16px 3rem;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-body);
+  font-size: 1.0625rem;
+  line-height: 1.7;
+  overflow-wrap: anywhere;
+}
+h1 { font-size: 1.9rem; line-height: 1.3; margin: 0.6rem 0 1rem; }
+h2 { font-size: 1.4rem; margin-top: 2.4rem; border-bottom: 1px solid var(--border); padding-bottom: 0.2rem; }
+h3 { font-size: 1.15rem; margin-top: 1.8rem; }
+a { color: var(--accent); }
+code { font-family: var(--font-mono); background: var(--code-bg); padding: 0.05rem 0.3rem; border-radius: 3px; font-size: 0.92em; }
+pre { background: var(--code-bg); padding: 0.8rem 1rem; overflow-x: auto; border-radius: 6px; line-height: 1.45; }
+pre code { background: none; padding: 0; }
+table { border-collapse: collapse; width: 100%; display: block; overflow-x: auto; margin: 1rem 0; }
+th, td { border: 1px solid var(--border); padding: 0.35rem 0.6rem; text-align: left; vertical-align: top; }
+/* Never break inside numbers or IDs in table cells; wide tables scroll horizontally instead. */
+th, td { overflow-wrap: normal; word-break: normal; }
+th { background: var(--accent-soft); }
+blockquote { margin: 1rem 0; padding: 0.2rem 1rem; border-left: 4px solid var(--accent); color: var(--muted); }
+.article-header .meta-row { display: flex; flex-wrap: wrap; gap: 0.4rem 0.9rem; align-items: center; font-size: 0.85rem; color: var(--muted); }
+.chapter-id { font-family: var(--font-mono); font-weight: 600; color: var(--fg); }
+.status { padding: 0.05rem 0.5rem; border: 1px solid var(--border); border-radius: 999px; }
+.status-draft, .status-revision, .status-in-review { border-color: var(--warn-border); background: var(--warn-bg); }
+.theme-toggle { font: inherit; font-size: 0.8rem; color: var(--fg); background: transparent; border: 1px solid var(--border); border-radius: 4px; padding: 0.1rem 0.5rem; cursor: pointer; }
+.disclaimer { background: var(--warn-bg); border: 1px solid var(--warn-border); border-radius: 6px; padding: 0.6rem 0.9rem; font-size: 0.9rem; }
+.disclaimer p { margin: 0.25rem 0; }
+.toc { border: 1px solid var(--border); border-radius: 6px; padding: 0.6rem 1rem; margin: 1.2rem 0; font-size: 0.92rem; }
+.toc ol { margin: 0.3rem 0 0; padding-left: 1.2rem; }
+.fig { margin: 1.6rem 0; text-align: center; }
+.fig img, .fig svg { max-width: 100%; height: auto; }
+.fig pre.mermaid { background: transparent; text-align: center; }
+figcaption { font-size: 0.9rem; color: var(--muted); margin-top: 0.5rem; }
+.fig-no { font-weight: 600; color: var(--fg); }
+.fig-id { font-family: var(--font-mono); font-size: 0.75rem; opacity: 0.7; }
+.math-block { overflow-x: auto; margin: 1rem 0; }
+math { font-size: 1.1em; }
+.widget { border: 1px solid var(--border); border-radius: 8px; padding: 1rem; margin: 1.5rem 0; background: var(--accent-soft); }
+.widget label { display: block; margin: 0.4rem 0; font-size: 0.95rem; }
+.widget select, .widget input { font: inherit; color: var(--fg); background: var(--bg); border: 1px solid var(--border); border-radius: 4px; padding: 0.15rem 0.3rem; max-width: 100%; }
+.widget .result { font-size: 1.05rem; margin-top: 0.7rem; }
+.widget table { font-size: 0.88rem; }
+.watermark { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; pointer-events: none; font-size: 22vw; font-weight: 800; color: var(--watermark); transform: rotate(-24deg); z-index: 0; }
+.article-header, .toc, .article-body, .article-footer { position: relative; z-index: 1; }
+.article-footer { margin-top: 3rem; font-size: 0.8rem; color: var(--muted); border-top: 1px solid var(--border); padding-top: 0.6rem; }
+@media (max-width: 600px) {
+  body { font-size: 1rem; }
+  h1 { font-size: 1.55rem; }
+}
+@media print { .watermark { color: rgba(0, 0, 0, 0.06); } .theme-toggle { display: none; } }
+
+</style>
+<script>
+(function () {
+  var root = document.documentElement;
+  try {
+    var saved = localStorage.getItem("ahs-theme");
+    if (saved === "dark" || saved === "light") root.dataset.theme = saved;
+  } catch (e) {}
+  var mq = window.matchMedia ? window.matchMedia("(prefers-color-scheme: dark)") : null;
+  // No explicit choice: follow the system theme (CSS does the same through prefers-color-scheme).
+  function isDark() {
+    return root.dataset.theme ? root.dataset.theme === "dark" : !!(mq && mq.matches);
+  }
+  // Mermaid diagrams keep their original definition in data-source and are re-rendered with the theme that
+  // matches the page whenever the theme changes (review 2026-11-14, R22).
+  window.ahsRenderMermaid = function () {
+    if (!window.mermaid) return;
+    var nodes = Array.prototype.slice.call(document.querySelectorAll("pre.mermaid"));
+    if (!nodes.length) return;
+    nodes.forEach(function (el) {
+      if (el.getAttribute("data-source") === null) {
+        el.setAttribute("data-source", el.textContent);
+      } else {
+        el.removeAttribute("data-processed");
+        el.textContent = el.getAttribute("data-source");
+      }
+    });
+    window.mermaid.initialize({ startOnLoad: false, securityLevel: "strict", theme: isDark() ? "dark" : "default" });
+    var done = window.mermaid.run({ nodes: nodes });
+    if (done && done.catch) done.catch(function (err) { if (window.console) console.error(err); });
+  };
+  function syncButton(btn) {
+    btn.setAttribute("aria-pressed", isDark() ? "true" : "false");
+  }
+  document.addEventListener("DOMContentLoaded", function () {
+    var btn = document.querySelector(".theme-toggle");
+    if (btn) syncButton(btn);
+    if (mq) {
+      var onSystemChange = function () {
+        if (root.dataset.theme) return;
+        if (btn) syncButton(btn);
+        window.ahsRenderMermaid();
+      };
+      if (mq.addEventListener) mq.addEventListener("change", onSystemChange);
+      else if (mq.addListener) mq.addListener(onSystemChange);
+    }
+    if (!btn) return;
+    btn.addEventListener("click", function () {
+      root.dataset.theme = isDark() ? "light" : "dark";
+      try { localStorage.setItem("ahs-theme", root.dataset.theme); } catch (e) {}
+      syncButton(btn);
+      window.ahsRenderMermaid();
+    });
+  });
+})();
+
+</script>
+<link rel="canonical" href="https://thomas-21.github.io/ahs_engineering_handbook/vol-01/ch-01-02.en.html">
+</head>
+<body data-chapter-id="ch-01-02" data-status="in-review">
+<header class="article-header">
+  <div class="meta-row">
+    <a class="home-link" href="../handbook.html">All chapters</a>
+    <span class="chapter-id">ch-01-02</span>
+    <button type="button" class="theme-toggle" aria-label="Theme">Theme</button>
+  </div>
+  <h1>What autonomy changes: from manned to autonomous haulage</h1>
+</header>
+<nav class="toc" aria-label="Contents"><strong>Contents</strong><ol><li><a href="#s-1">1. Overview</a></li><li><a href="#s-2">2. Operational motivation: the problem at the reference mine</a></li><li><a href="#s-3">3. Terminology and foundations</a></li><li><a href="#s-4">4. Technical explanation</a></li><li><a href="#s-5">5. Responsibilities and interface boundaries</a></li><li><a href="#s-6">6. Normal, abnormal and degraded operation</a></li><li><a href="#s-7">7. Engineering view</a></li><li><a href="#s-8">8. Operations view</a></li><li><a href="#s-9">9. Requirements and acceptance criteria</a></li><li><a href="#s-10">10. Verification and validation</a></li><li><a href="#s-11">11. Common mistakes</a></li><li><a href="#s-12">12. Worked examples</a></li><li><a href="#s-13">13. Hands-on labs</a></li><li><a href="#s-14">14. Discussion questions and assignments</a></li><li><a href="#s-15">15. Key takeaways</a></li><li><a href="#s-16">16. Glossary terms introduced</a></li></ol></nav>
+<main class="article-body">
+<h2 id="s-1">1. Overview</h2>
+<h3 id="s-1-1">1.1 Why this chapter matters</h3>
+<p>It is 13:20 on a DAY shift. DT17, running empty along the dump haul road R03, has a drivetrain fault and stops in
+its lane <code>[A]</code>.</p>
+<p>A driver could report the truck's location and symptoms by radio. In this case, nobody is in the cab.
+The AHS Controller sees the stop on screen five seconds later. The Field Technician is in the workshop,
+2.8 km away by road, and can enter the autonomous area once the required permissions are granted and
+confirmed. DT17 returns to work 44.7 minutes after the stop.</p>
+<p>The drivetrain fault illustrates how autonomy redistributes the driver's tasks. Systems detect and report
+the stop. People outside the truck coordinate access, diagnose the fault and organise recovery.</p>
+<p>This chapter answers three questions:</p>
+<ul>
+<li>Which of the driver's tasks go to which system or role?</li>
+<li>What does the move cost, and gain, in hours spent hauling?</li>
+<li>Which new procedures and skills does it require?</li>
+</ul>
+<h3 id="s-1-2">1.2 Learning objectives — Engineering</h3>
+<p>After this chapter an engineering reader will be able to:</p>
+<ol>
+<li>Explain which functions of a human haul-truck driver are reallocated to ADS, AMS, independent safety functions
+and onboard safety-related systems, and which remain with people.</li>
+<li>Analyse why an autonomous truck that stops is not &quot;safe and finished&quot;: identify the system states and permissions
+that must persist until DT17 is recovered.</li>
+<li>Explain why manned vehicles in an autonomous area need position reporting units and digital access permissions,
+using LV07 entering AA-North as the example.</li>
+<li>Identify the failure modes that autonomy brings to the reference mine (localisation degradation on R05, loss of
+wireless link, nuisance stops) that a human driver would previously have absorbed.</li>
+<li>Describe how rules a driver applied by judgement (giving way at Intersection X, slowing on a wet R05) become
+explicit system rules, reservations and map attributes.</li>
+</ol>
+<h3 id="s-1-3">1.3 Learning objectives — Operations</h3>
+<p>After this chapter an operations reader will be able to:</p>
+<ol>
+<li>Compare a manned and an autonomous shift at the reference mine and list the changes to time usage (shift change,
+crib breaks, whether an operator is present) that affect productivity.</li>
+<li>Describe how entering AA-North changes for LV07's driver once trucks are autonomous: positive communication,
+access permission and radio protocol.</li>
+<li>Explain who responds, and how, when there is no driver in the cab — for a stopped truck (DT17 on R03) and for a
+fire on DT17.</li>
+<li>Identify the tasks that remain manual after autonomy (dozing at EX02 with DZ03, watering with WT02, recovering
+stopped trucks, inspections) and how each now interacts with autonomous traffic.</li>
+<li>Describe the new competencies that controllers and field crews need compared with a manned operation (positive
+communication, permission handling, remote supervision).</li>
+</ol>
+<h2 id="s-2">2. Operational motivation: the problem at the reference mine</h2>
+<p>The reference mine is a brownfield site: the same pit, roads and much of the same workforce once ran a manned truck
+fleet, and autonomy was introduced into that operation <code>[A]</code>. Three conversations from one week show what the change
+means.</p>
+<ul>
+<li><strong>The Pit Supervisor</strong> has heard that autonomous trucks &quot;do not take crib breaks&quot;. She asks the AHS Controller why
+EX02 is not loading noticeably more trucks per shift than in the manned days.</li>
+<li><strong>The driver of LV07</strong>, a pit patrol vehicle, used to call &quot;LV07 entering the pit via the main ramp&quot; and drive
+down. Now the driver waits at access point AP-02 until a permission appears on the field terminal, while ore trucks take the
+longer west ramp. Why does a short job now need a procedure?</li>
+<li><strong>The AHS Controller</strong> has DT17 stopped on R03. The driver used to handle the first ten minutes. Who goes now, how
+do they get there, and when can the truck move again?</li>
+</ul>
+<p>The questions are about time, access and response, and each has a quantitative side and a side about who decides.
+Both come from one fact: the driver carried many tasks, most never written down, and autonomy forces every one of them
+to be reassigned explicitly. This chapter makes the reassignment visible, quantifies it with <code>ahs_sim</code>, and introduces
+procedures developed later (access in ch-10-06 and ch-16-03, recovery in ch-16-05, fire in ch-04-07).</p>
+<p>Productivity gains from autonomy at real operations are not quantified here. Every number comes from the
+illustrative reference-mine model <code>[A]</code>; the point is the mechanism, not a claim about any site.</p>
+<h2 id="s-3">3. Terminology and foundations</h2>
+<p><strong>Manned and autonomous operation.</strong> In a manned operation each haul truck has a driver on board. In an autonomous
+operation the trucks run without one, under the handbook's reference architecture FMS → AMS → ADS → VCS (ch-01-04) <code>[H]</code>. The
+reference mine is a <strong>mixed fleet</strong>: shovels, dozers, water trucks and light vehicles remain manned and share roads
+and loading areas with the autonomous trucks.</p>
+<p><strong>Function allocation.</strong> The assignment of each task in an operation to a system element or a human role. The move
+to autonomy is a re-allocation: every task the driver performed must end up somewhere.</p>
+<p><strong>Autonomous area and access point.</strong> An area in which autonomous machines operate and entry is controlled: AA-North
+(the pit), AA-Central (main roads, X, C01) and AA-South (D01). People and manned vehicles request entry at access
+points AP-01 (MIA gate G01), AP-02 (pit crest P1), AP-03 (Intersection Y) and AP-04 (west ramp crest P3) <code>[H]</code>.</p>
+<p><strong>Positive communication and digital access permission.</strong> Positive communication is the human protocol of request,
+permission, read-back and confirmation before entering a controlled area, carried by radio and field terminal. The
+digital access permission is its machine side: a record held by AMS that authorises a named person or vehicle to
+occupy a defined area for a defined time, and that keeps autonomous traffic out of that area while it is active <code>[H]</code>.</p>
+<p><strong>Fail closed.</strong> A permission that is lost, stale, duplicated, ambiguous or unacknowledged counts as not granted
+(master-instructions §3). A truck without a valid permission does not move; a person without one does not enter.</p>
+<p><strong>Position reporting unit (PRU) and field terminal.</strong> Every manned vehicle entering an autonomous area carries a PRU,
+which reports its position to the system, a two-way radio and a field terminal for requests and acknowledgements
+(<code>equipment.yaml</code>).</p>
+<p><strong>Controlled stop, isolation and stand-off point.</strong> A controlled stop brakes the truck to standstill along its path.
+Isolation secures a machine against unexpected movement or energy release before a person works on it. A stand-off
+point is where an attending person stops, short of a stopped truck, to confirm isolation before approaching on foot
+(50 m at the reference mine <code>[A]</code>).</p>
+<p><strong>Exclusion zone and work zone.</strong> An exclusion zone is closed to everyone while a hazard persists (a truck on fire);
+a work zone is reserved for manned work, with autonomous traffic excluded (DZ03 at EX02).</p>
+<p><strong>Remote supervision.</strong> Directing the fleet from the control room through the HMI, without seeing the trucks.</p>
+<p><strong>Time usage terms.</strong> The handbook follows the GMG Time Usage Model (2020) for its time categories and KPIs <code>[F]</code>;
+the delay codes and the reference-mine examples are the handbook's own <code>[H]</code> (<code>delay-codes.yml</code>, <code>ahs_sim.kpi</code>,
+ch-01-05). Scheduled time is split into downtime and available time, and available time into <strong>standby</strong> (available
+but not operating) and operating time. Standby is either <strong>operating standby</strong>, by management decision (shift change,
+operator breaks), or external standby, outside management's control (site-wide weather). Operating time is
+<strong>operating delay</strong> (operating, but stopped or prevented from working: fuelling, waiting while the loading unit
+moves or is down) plus working time. Working time is non-productive time (travel empty, queues at a working loading unit or
+crusher) plus productive time (spot, load, haul loaded, dump) <code>[F]</code>. An <strong>operator break</strong> (crib break, DLY-SO-02)
+exists only for manned equipment. A <strong>hot-seat change</strong> hands a machine to the next operator without stopping it.
+<strong>Use of availability</strong> is operating time over available time, <strong>operating efficiency</strong> working time over operating
+time, <strong>production effectiveness</strong> productive time over operating time, and <strong>effective utilisation</strong> working time
+over scheduled time <code>[F]</code>. In this chapter <strong>in-cycle time</strong> is the time a truck spends cycling over a shift:
+productive time plus travel empty, which is the time not covered by any delay event <code>[H]</code>.</p>
+<p><strong>Nuisance stop.</strong> A stop triggered by a detection that, on review, was not a genuine hazard.</p>
+<h2 id="s-4">4. Technical explanation</h2>
+<h3 id="s-4-1">4.1 What a driver actually does</h3>
+<p>Ask drivers what the job is and they say &quot;drive the truck&quot;. Write down what they do over a shift and the list is
+longer, and much of it is in no procedure. FIG-01-02-01 lists fourteen such tasks and shows where each goes in the
+autonomous operation of the reference mine <code>[H]</code>.</p>
+<figure id="FIG-01-02-01" class="fig"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1036 596" role="img" aria-label="Matrix showing which architecture element or role takes over each task of a manned haul-truck driver">
+<style>
+.fg{fill:var(--fg,#1d1f21)} .mu{fill:var(--muted,#5d6166)}
+.t{font-size:13px} .th{font-size:12px;font-weight:700} .hd{font-size:13px;font-weight:700}
+.ti{font-size:11px;font-style:italic}
+.band{fill:var(--muted,#5d6166);fill-opacity:0.08}
+.ppl{fill:var(--accent-soft,#e3f0f4)}
+.grid{stroke:var(--muted,#5d6166);stroke-opacity:0.35;stroke-width:1}
+.p{fill:var(--accent,#1f6f8b)}
+.c{fill:none;stroke:var(--accent,#1f6f8b);stroke-width:2}
+</style>
+<rect class="ppl" x="940" y="46" width="84" height="494"/>
+<text class="hd fg" x="12" y="80">Task of the manned driver</text>
+<text class="hd fg" x="688" y="22" text-anchor="middle">Who does it in the autonomous operation</text>
+<text class="th fg" x="394" y="80" text-anchor="middle">FMS</text>
+<text class="th fg" x="478" y="80" text-anchor="middle">AMS</text>
+<text class="th fg" x="562" y="80" text-anchor="middle">ADS</text>
+<text class="th fg" x="646" y="80" text-anchor="middle">VCS</text>
+<text class="th fg" x="730" y="65" text-anchor="middle">Independent</text>
+<text class="th fg" x="730" y="80" text-anchor="middle">safety fns</text>
+<text class="th fg" x="814" y="65" text-anchor="middle">Onboard</text>
+<text class="th fg" x="814" y="80" text-anchor="middle">safety sys.</text>
+<text class="th fg" x="898" y="65" text-anchor="middle">Manned-veh.</text>
+<text class="th fg" x="898" y="80" text-anchor="middle">devices</text>
+<text class="th fg" x="982" y="65" text-anchor="middle">People</text>
+<text class="th fg" x="982" y="80" text-anchor="middle">(roles)</text>
+<rect class="band" x="12" y="92" width="1012" height="32"/>
+<text class="t fg" x="20" y="113">Know where to go next</text>
+<circle class="p" cx="394" cy="108" r="8"/>
+<circle class="c" cx="478" cy="108" r="7"/>
+<text class="t fg" x="20" y="145">Follow the route and keep to the lane</text>
+<circle class="p" cx="478" cy="140" r="8"/>
+<circle class="p" cx="562" cy="140" r="8"/>
+<rect class="band" x="12" y="156" width="1012" height="32"/>
+<text class="t fg" x="20" y="177">Steer, accelerate, brake and retard</text>
+<circle class="c" cx="562" cy="172" r="7"/>
+<circle class="p" cx="646" cy="172" r="8"/>
+<text class="t fg" x="20" y="209">Keep distance; give way at Intersection X</text>
+<circle class="p" cx="478" cy="204" r="8"/>
+<circle class="c" cx="562" cy="204" r="7"/>
+<rect class="band" x="12" y="220" width="1012" height="32"/>
+<text class="t fg" x="20" y="241">Slow down on a wet or rough R05</text>
+<circle class="p" cx="478" cy="236" r="8"/>
+<circle class="c" cx="562" cy="236" r="7"/>
+<circle class="p" cx="982" cy="236" r="8"/>
+<text class="t fg" x="20" y="273">See and avoid people and vehicles</text>
+<circle class="p" cx="478" cy="268" r="8"/>
+<circle class="p" cx="562" cy="268" r="8"/>
+<circle class="c" cx="898" cy="268" r="7"/>
+<circle class="c" cx="982" cy="268" r="7"/>
+<rect class="band" x="12" y="284" width="1012" height="32"/>
+<text class="t fg" x="20" y="305">Spot at EX02 and C01</text>
+<circle class="p" cx="562" cy="300" r="8"/>
+<circle class="c" cx="646" cy="300" r="7"/>
+<circle class="c" cx="982" cy="300" r="7"/>
+<text class="t fg" x="20" y="337">Notice a fault; decide whether to carry on</text>
+<circle class="c" cx="478" cy="332" r="7"/>
+<circle class="p" cx="562" cy="332" r="8"/>
+<circle class="p" cx="646" cy="332" r="8"/>
+<circle class="c" cx="814" cy="332" r="7"/>
+<circle class="c" cx="982" cy="332" r="7"/>
+<rect class="band" x="12" y="348" width="1012" height="32"/>
+<text class="t fg" x="20" y="369">Stop at once in an emergency</text>
+<circle class="c" cx="562" cy="364" r="7"/>
+<circle class="c" cx="646" cy="364" r="7"/>
+<circle class="p" cx="730" cy="364" r="8"/>
+<text class="t fg" x="20" y="401">React to a fire: stop, suppress, get out</text>
+<circle class="c" cx="478" cy="396" r="7"/>
+<circle class="c" cx="562" cy="396" r="7"/>
+<circle class="p" cx="814" cy="396" r="8"/>
+<circle class="p" cx="982" cy="396" r="8"/>
+<rect class="band" x="12" y="412" width="1012" height="32"/>
+<text class="t fg" x="20" y="433">Talk by radio; let others pass or enter</text>
+<circle class="p" cx="478" cy="428" r="8"/>
+<circle class="p" cx="898" cy="428" r="8"/>
+<circle class="p" cx="982" cy="428" r="8"/>
+<text class="t fg" x="20" y="465">Pre-start check and walk-around</text>
+<circle class="c" cx="646" cy="460" r="7"/>
+<circle class="c" cx="814" cy="460" r="7"/>
+<circle class="p" cx="982" cy="460" r="8"/>
+<rect class="band" x="12" y="476" width="1012" height="32"/>
+<text class="t fg" x="20" y="497">Recover the truck after a breakdown</text>
+<circle class="c" cx="478" cy="492" r="7"/>
+<circle class="c" cx="898" cy="492" r="7"/>
+<circle class="p" cx="982" cy="492" r="8"/>
+<text class="t fg" x="20" y="529">Report loads, delays and events</text>
+<circle class="p" cx="394" cy="524" r="8"/>
+<circle class="c" cx="982" cy="524" r="7"/>
+<line class="grid" x1="352" y1="92" x2="352" y2="540"/>
+<line class="grid" x1="436" y1="92" x2="436" y2="540"/>
+<line class="grid" x1="520" y1="92" x2="520" y2="540"/>
+<line class="grid" x1="604" y1="92" x2="604" y2="540"/>
+<line class="grid" x1="688" y1="92" x2="688" y2="540"/>
+<line class="grid" x1="772" y1="92" x2="772" y2="540"/>
+<line class="grid" x1="856" y1="92" x2="856" y2="540"/>
+<line class="grid" x1="940" y1="92" x2="940" y2="540"/>
+<line class="grid" x1="1024" y1="92" x2="1024" y2="540"/>
+<line class="grid" x1="12" y1="92" x2="1024" y2="92"/>
+<line class="grid" x1="12" y1="540" x2="1024" y2="540"/>
+<circle class="p" cx="28" cy="568" r="8"/><text class="t fg" x="44" y="572">main responsibility</text>
+<circle class="c" cx="208" cy="568" r="7"/><text class="t fg" x="224" y="572">contributes</text>
+<text class="ti mu" x="1020" y="572" text-anchor="end">Handbook allocation [H]; conceptual</text>
+</svg>
+<figcaption><span class="fig-no">Figure 1</span> Function reallocation: manned driver tasks mapped to FMS, AMS, ADS, VCS, safety functions and people <span class="fig-id">FIG-01-02-01</span></figcaption></figure>
+<table>
+<thead>
+<tr>
+<th>Driver task (manned)</th>
+<th>Who does it now <code>[H]</code></th>
+<th>What is new</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Know where to go next</td>
+<td>FMS assigns; AMS turns it into a mission</td>
+<td>A message, not a radio call</td>
+</tr>
+<tr>
+<td>Follow the route, keep to the lane</td>
+<td>AMS grants the path; ADS drives it</td>
+<td>The path is a reservation</td>
+</tr>
+<tr>
+<td>Steer, accelerate, brake, retard</td>
+<td>VCS on ADS commands</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Keep distance; give way at X</td>
+<td>AMS reservations; ADS keeps to them</td>
+<td>Priority is a configured rule</td>
+</tr>
+<tr>
+<td>Slow down on a wet R05</td>
+<td>People decide; AMS applies a speed restriction</td>
+<td>The truck cannot judge the road</td>
+</tr>
+<tr>
+<td>See and avoid people and vehicles</td>
+<td>AMS keeps trucks out of permitted areas; PRUs; ADS perception</td>
+<td>Separation is planned (4.4)</td>
+</tr>
+<tr>
+<td>Spot at EX02 and C01</td>
+<td>ADS; Shovel Operator signals the truck away</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Notice a fault, decide whether to go on</td>
+<td>VCS and onboard systems detect; ADS stops; controller supervises</td>
+<td>Default is to stop</td>
+</tr>
+<tr>
+<td>Stop at once in an emergency</td>
+<td>Independent safety functions</td>
+<td>Independent of AMS and ADS state</td>
+</tr>
+<tr>
+<td>React to a fire</td>
+<td>Onboard detection and suppression; AMS exclusion zone; ERT</td>
+<td>Nobody to act early</td>
+</tr>
+<tr>
+<td>Talk by radio; let others enter</td>
+<td>AMS permissions; controller runs positive communication</td>
+<td>The truck does not hear radio</td>
+</tr>
+<tr>
+<td>Pre-start check and walk-around</td>
+<td>Field Technician; onboard self-tests</td>
+<td>Scheduled, not every shift</td>
+</tr>
+<tr>
+<td>Recover the truck after a breakdown</td>
+<td>Field Technician under permission and isolation</td>
+<td>A planned field task (6.2)</td>
+</tr>
+<tr>
+<td>Report loads, delays and events</td>
+<td>FMS records; controller codes delays</td>
+<td>Uncoded delays are invisible</td>
+</tr>
+</tbody>
+</table>
+<p>Three patterns run through the table. <strong>Sensing and acting</strong> move to ADS, VCS and the safety functions.
+<strong>Coordination</strong> moves to AMS and becomes explicit: a reservation, a permission, a rule. <strong>Judgement and response</strong>
+stay with people who are no longer in the truck — in CR1, at an access point, in the workshop — and who reach the
+truck only through the system.</p>
+<h3 id="s-4-2">4.2 From judgement to explicit rules</h3>
+<p>A driver applies dozens of unwritten rules every shift and adapts each to circumstances. The autonomous system cannot apply a rule it has not been given, and it applies the rules it has as written. Every rule the site still needs must be written down, given an owner and
+put where the system can read it <code>[H]</code>:</p>
+<table>
+<thead>
+<tr>
+<th>Driver's judgement (manned)</th>
+<th>Explicit system rule (autonomous)</th>
+<th>Where it lives</th>
+<th>Owner</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>&quot;Loaded trucks go first at X&quot;</td>
+<td>Intersection reservation at X with a priority rule (loaded before empty <code>[A]</code>)</td>
+<td>AMS traffic configuration</td>
+<td>Engineering, through change management</td>
+</tr>
+<tr>
+<td>&quot;R05 is wet — take it slow&quot;</td>
+<td>Temporary speed restriction on R05, both directions</td>
+<td>AMS road state, published to FMS (REQ-01-01-003)</td>
+<td>Controller applies; Pit Supervisor accountable</td>
+</tr>
+<tr>
+<td>&quot;The windrow on the lower ramp is low — keep inside&quot;</td>
+<td>Map attribute or lane restriction</td>
+<td>AHS map (Volume 12)</td>
+<td>Survey</td>
+</tr>
+<tr>
+<td>&quot;The dozer is at EX02 — wait until the operator waves me in&quot;</td>
+<td>Work zone at EX02; trucks held at EX02-Q (SCN-DOZER-DZ03-EX02)</td>
+<td>AMS work zones</td>
+<td>Shovel Operator requests; controller grants</td>
+</tr>
+<tr>
+<td>&quot;The crusher light is red — hold&quot;</td>
+<td>Tipping-bay reservation withheld while C01 is not ready</td>
+<td>AMS, from the plant signal</td>
+<td>Plant and controller</td>
+</tr>
+<tr>
+<td>&quot;GPS is playing up, but I can see the road&quot;</td>
+<td>Localisation integrity check; derate or stop</td>
+<td>ADS</td>
+<td>Engineering (Volume 05)</td>
+</tr>
+</tbody>
+</table>
+<p>The rule is <strong>consistent</strong>: applied the same way at 03:00 as at 13:00, by every truck, testable and auditable. It
+is also <strong>rigid</strong>: it does what it says even when a driver would have seen that the situation needed something else.
+A driver who noticed a low windrow simply kept further from the edge, and nobody else ever knew. An autonomous truck
+keeps to its mapped path until someone updates the map — so the low windrow must now be noticed, reported and turned
+into a map change by named people. The hazard did not change; the organisation that handles it did.</p>
+<h3 id="s-4-3">4.3 A stopped truck is not finished</h3>
+<p>A stopped manned truck has its driver with it: the driver knows why it stopped, will not drive off while someone is
+underneath, and tells everyone else. When an autonomous truck stops, its safety is not yet established: that takes its
+stop position being held, the traffic around it being controlled and its state being known. Even then it is not &quot;safe
+and finished&quot;: until it is recovered, the system must hold, on the absent driver's behalf, the information the driver
+used to keep and pass on. For DT17 on R03 <code>[H]</code>:</p>
+<table>
+<thead>
+<tr>
+<th>State</th>
+<th>Held by</th>
+<th>Why it must persist</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Stopped, with position and heading</td>
+<td>ADS reports; AMS holds</td>
+<td>Other trucks are planned around it</td>
+</tr>
+<tr>
+<td>Stop reason (drivetrain fault code)</td>
+<td>VCS reports; AMS and FMS record</td>
+<td>Triage, delay coding, decision to send someone</td>
+</tr>
+<tr>
+<td>Road space occupied (its lane on R03)</td>
+<td>AMS reservation</td>
+<td>No path may be granted through a stationary truck</td>
+</tr>
+<tr>
+<td>No path granted to DT17</td>
+<td>AMS</td>
+<td>DT17 must not move until an authorised role releases it from recovery (recovery state <em>released</em>)</td>
+</tr>
+<tr>
+<td>Withdrawn from the EX02 assignment</td>
+<td>FMS</td>
+<td>FMS must not count on DT17's loads</td>
+</tr>
+<tr>
+<td>Field Technician's permission (route, work area)</td>
+<td>AMS, field terminal, PRU</td>
+<td>Keeps autonomous traffic away from the person</td>
+</tr>
+<tr>
+<td>DT17 isolated while a person is at it</td>
+<td>Truck and AMS state</td>
+<td>DT17 must not move even if a path were granted by mistake</td>
+</tr>
+<tr>
+<td>Delay record (DLY-DN-01)</td>
+<td>FMS</td>
+<td>The shift report must show where the time went</td>
+</tr>
+</tbody>
+</table>
+<p>Two principles govern the list (master-instructions §3). Permissions <strong>fail closed</strong>: if AMS loses DT17's state, after
+a restart for example, DT17 is treated as stopped and without a path until the state is re-established
+(SCN-AMS-RESTART, ch-02-08). And <strong>central permissions never override vehicle-side safety decisions</strong>: AMS can
+withhold a path, but it cannot release a stop the truck itself has decided on.</p>
+<p>Persistence also has an end, and the order of ending matters: fault cleared, person clear of the truck, isolation
+removed, the person's permission released, DT17's state reset, and only then a new path (section 6.2). Granting DT17 a
+path while the technician's permission is still active is the most direct way to put a person and a moving truck in
+the same place.</p>
+<h3 id="s-4-4">4.4 Manned vehicles in an autonomous area</h3>
+<p>In the manned pit LV07's safety rested on three things: drivers could see it, hear it on the radio and negotiate with
+it (&quot;LV07, I'm behind you, pull in at the bay&quot;). An autonomous truck does none of these in the same way. It does not
+hear voice radio and it cannot negotiate. Its perception detects objects in its path and stops, which protects
+against surprises but does not organise traffic: a truck that stops whenever it meets LV07 is unproductive, and a sign
+that separation was left to chance <code>[H]</code>.</p>
+<p>The autonomous operation therefore separates manned vehicles from trucks <strong>by plan</strong> <code>[H]</code>. The PRU tells the system
+where LV07 is. The digital access permission tells AMS which area LV07 may occupy, so that AMS clears trucks out of it
+<em>before</em> LV07 enters. Positive communication makes the driver, the controller and the system agree on the same area at
+the same time. The devices also check each other: the permission says where LV07 should be, the PRU where it is. If
+the PRU stops reporting inside AA-North, the system can no longer confirm LV07 is in its area and the procedure
+restores awareness by radio (SCN-PRU-FAIL-LV07). A permission that is lost or late is not granted (SCN-POSCOM-STALE).</p>
+<p>The price is time. In SCN-POSCOM-LV07 the permitted area covers R05 and R06 <code>[A]</code>, so from T+25 s, when AMS locks it,
+to T+1320 s, when release is confirmed, the main ramp is closed to autonomous trucks: 1295 s, or 21.6 minutes. Trucks
+from EX01 and EX02 take the west ramp R24; the M-20481 cycle grows from 1564.1 s to 1800.1 s (+236 s) and the loaded
+haul from 4.50 km to 5.87 km (waste trucks from EX03 and EX04 are barely affected). In the manned pit the same
+inspection cost no truck time — and relied entirely on everyone hearing one radio call.</p>
+<h3 id="s-4-5">4.5 What the driver used to absorb</h3>
+<p>A driver silently absorbs a class of disturbances — poor satellite positioning near the highwall, a patchy radio on
+the lower ramp, dust behind the water truck — by driving on sight. In an autonomous operation each becomes a system
+condition with a defined reaction <code>[H]</code>:</p>
+<table>
+<thead>
+<tr>
+<th>Condition at the reference mine</th>
+<th>Driver (manned)</th>
+<th>Autonomous truck</th>
+<th>Delay code</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Localisation integrity degraded on R05 (SCN-GNSS-R05)</td>
+<td>Not noticed</td>
+<td>ADS derates or stops</td>
+<td>DLY-OD-06</td>
+</tr>
+<tr>
+<td>Wireless link lost on lower R05 or the RL 330 bench (SCN-COMMS-R05)</td>
+<td>Calls in later</td>
+<td>Stops within its granted path; AMS freezes reservations</td>
+<td>DLY-OD-05</td>
+</tr>
+<tr>
+<td>Dust or spray behind WT02 on R03 (SCN-WATER-WT02)</td>
+<td>Slows, drives through</td>
+<td>May stop; controller reviews, authorises resume</td>
+<td>DLY-OD-03</td>
+</tr>
+<tr>
+<td>Light vehicle entering the pit (SCN-POSCOM-LV07)</td>
+<td>Gives way on sight</td>
+<td>Held or rerouted while the area is permitted</td>
+<td>DLY-OD-04</td>
+</tr>
+</tbody>
+</table>
+<p>These conditions are not spread evenly. <code>mine.yaml</code> records wireless coverage and GNSS multipath risk for every
+segment, and LAB-01-02-01 lists the exposed ones: marginal coverage on R04, R05, R09, R10, R11, R19, R20 and R24,
+poor coverage on the D01 tip link R22, high multipath risk on R05 and medium risk on R07, R08, R17, R18 and R24. R05
+is the only segment with both marginal coverage and high multipath risk — and it is the main ramp, the segment that
+dominates the cycle (ch-01-01). Each stop is short; together they form a delay category the manned fleet did not
+have, and section 4.6 shows that it decides whether autonomy gains any hauling time at all.</p>
+<h3 id="s-4-6">4.6 Time usage: manned versus autonomous</h3>
+<p>In the GMG time usage model <code>[F]</code> a truck's travel empty is non-productive time, so productive time is not the time
+the truck spends cycling. What counts for loads is the <strong>in-cycle time</strong> <code>[H]</code>, productive time plus travel empty,
+which for one truck in one shift is</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mi>T</mi><mrow><mtext>hc</mtext></mrow></msub><mo>&#x0003D;</mo><msub><mi>T</mi><mrow><mtext>sched</mtext></mrow></msub><mo>&#x02212;</mo><msub><mi>T</mi><mrow><mtext>down</mtext></mrow></msub><mo>&#x02212;</mo><msub><mi>T</mi><mrow><mtext>SB</mtext></mrow></msub><mo>&#x02212;</mo><msub><mi>T</mi><mrow><mtext>OD</mtext></mrow></msub><mo>&#x02212;</mo><msub><mi>T</mi><mrow><mtext>Q</mtext></mrow></msub></mrow></math></div>
+<p>with standby <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>T</mi><mrow><mtext>SB</mtext></mrow></msub></mrow></math>, operating delay <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>T</mi><mrow><mtext>OD</mtext></mrow></msub></mrow></math> and queues <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>T</mi><mrow><mtext>Q</mtext></mrow></msub></mrow></math> (non-productive time spent
+waiting at a working shovel or crusher). Complete loads are <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>n</mi><mo>&#x0003D;</mo><mi>&#x0230A;</mi><msub><mi>T</mi><mrow><mtext>hc</mtext></mrow></msub><mo>&#x0002F;</mo><msub><mi>t</mi><mrow><mtext>cycle</mtext></mrow></msub><mi>&#x0230B;</mi></mrow></math>, with
+<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>t</mi><mrow><mtext>cycle</mtext></mrow></msub></mrow></math> = 1564.1 s for M-20481 (ch-01-01), of which travel empty <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>t</mi><mrow><mtext>empty</mtext></mrow></msub></mrow></math> takes 503.1 s; productive
+time is <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>T</mi><mrow><mtext>prod</mtext></mrow></msub><mo>&#x0003D;</mo><msub><mi>T</mi><mrow><mtext>hc</mtext></mrow></msub><mspace width="0.167em" /><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo>&#x02212;</mo><msub><mi>t</mi><mrow><mtext>empty</mtext></mrow></msub><mo>&#x0002F;</mo><msub><mi>t</mi><mrow><mtext>cycle</mtext></mrow></msub><mo stretchy="false">&#x00029;</mo></mrow></math> <code>[H]</code>. With operating time
+<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>T</mi><mrow><mtext>op</mtext></mrow></msub><mo>&#x0003D;</mo><msub><mi>T</mi><mrow><mtext>sched</mtext></mrow></msub><mo>&#x02212;</mo><msub><mi>T</mi><mrow><mtext>down</mtext></mrow></msub><mo>&#x02212;</mo><msub><mi>T</mi><mrow><mtext>SB</mtext></mrow></msub></mrow></math>, use of availability <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>U</mi></mrow></math>, operating efficiency <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>E</mi></mrow></math>
+and production effectiveness <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>P</mi></mrow></math> are <code>[F]</code></p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>U</mi><mo>&#x0003D;</mo><mfrac><mrow><msub><mi>T</mi><mrow><mtext>op</mtext></mrow></msub></mrow><mrow><msub><mi>T</mi><mrow><mtext>sched</mtext></mrow></msub><mo>&#x02212;</mo><msub><mi>T</mi><mrow><mtext>down</mtext></mrow></msub></mrow></mfrac><mo>&#x0002C;</mo><mspace width="2em" /><mi>E</mi><mo>&#x0003D;</mo><mfrac><mrow><msub><mi>T</mi><mrow><mtext>op</mtext></mrow></msub><mo>&#x02212;</mo><msub><mi>T</mi><mrow><mtext>OD</mtext></mrow></msub></mrow><mrow><msub><mi>T</mi><mrow><mtext>op</mtext></mrow></msub></mrow></mfrac><mo>&#x0002C;</mo><mspace width="2em" /><mi>P</mi><mo>&#x0003D;</mo><mfrac><mrow><msub><mi>T</mi><mrow><mtext>prod</mtext></mrow></msub></mrow><mrow><msub><mi>T</mi><mrow><mtext>op</mtext></mrow></msub></mrow></mfrac></mrow></math></div>
+<p>LAB-01-02-01 builds an event log for one truck on M-20481 over the 12 h DAY shift and classifies it with
+<code>ahs_sim.kpi</code> <code>[A]</code>. The <strong>manned</strong> truck stops for a driver changeover at each end of the shift (2 × 15 min,
+DLY-SO-01) and two crib breaks (2 × 30 min, DLY-SO-02), all operating standby. The autonomous truck has neither, but
+EX02 is still manned: its operator changeover leaves the truck waiting 10 min for a loading unit that is not loading
+(DLY-OD-11, an operating delay), and with <strong>unchanged</strong> shovel practice the shovel also stops for two crib breaks, which
+the truck waits through in the same way (2 × 30 min, DLY-OD-11; treating the shovel operator's break like a shovel
+that is down is the handbook's extension <code>[H]</code>). In the <strong>hot-seat</strong> case a relief operator keeps EX02
+loading through them. Every case stops 15 min for fuelling (DLY-OD-09, an operating delay) and queues for 20 min at the
+working shovel and crusher (DLY-NP-01, DLY-NP-02, non-productive time). The autonomous cases add 30 min of
+autonomy-specific stops, all operating delay: four 3-min nuisance stops, two 5-min holds for access permissions, one
+5-min stop on link loss and one 3-min stop on localisation degradation.</p>
+<table>
+<thead>
+<tr>
+<th>Per truck, DAY shift <code>[A]</code></th>
+<th>Manned</th>
+<th>Autonomous, shovel breaks unchanged</th>
+<th>Autonomous, shovel hot-seated</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Operating standby (min)</td>
+<td>90</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr>
+<td>Operating delay (min)</td>
+<td>15</td>
+<td>115</td>
+<td>55</td>
+</tr>
+<tr>
+<td>Queues, non-productive time (min)</td>
+<td>20</td>
+<td>20</td>
+<td>20</td>
+</tr>
+<tr>
+<td>In-cycle time (h)</td>
+<td>9.92</td>
+<td>9.75</td>
+<td>10.75</td>
+</tr>
+<tr>
+<td>Productive time (h)</td>
+<td>6.73</td>
+<td>6.61</td>
+<td>7.29</td>
+</tr>
+<tr>
+<td>Cycles of M-20481</td>
+<td>22.8</td>
+<td>22.4</td>
+<td>24.7</td>
+</tr>
+<tr>
+<td>Complete loads</td>
+<td>22</td>
+<td>22</td>
+<td>24</td>
+</tr>
+<tr>
+<td>Use of availability</td>
+<td>87.5 %</td>
+<td>100 %</td>
+<td>100 %</td>
+</tr>
+<tr>
+<td>Operating efficiency</td>
+<td>97.6 %</td>
+<td>84.0 %</td>
+<td>92.4 %</td>
+</tr>
+<tr>
+<td>Production effectiveness</td>
+<td>64.1 %</td>
+<td>55.1 %</td>
+<td>60.8 %</td>
+</tr>
+<tr>
+<td>Effective utilisation</td>
+<td>85.4 %</td>
+<td>84.0 %</td>
+<td>92.4 %</td>
+</tr>
+</tbody>
+</table>
+<p>FIG-01-02-02 shows the three shifts on a clock, with a fourth row for the hot-seated case on the afternoon of
+SCN-RECOVER-DT17. The light background of each row is in-cycle time; the figure at the right of each row gives the
+hours in the cycle and the complete loads.</p>
+<figure id="FIG-01-02-02" class="fig"><img alt="Shift timeline, manned versus autonomous (illustrative)" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAABicAAAKyCAYAAAC+Ig2vAAAACXBIWXMAABcSAAAXEgFnn9JSAAEAAElEQVR4nOzdCbiM5RvH8VsprUIIiSQKrRTKHrLLvksqe6IiZC0qRZYoa8i+b2ULkaUQSasSWhEKrUL5X7/n/N/TrOecOcs49P1c11yHmXfeefd35rmf577TnDp18rQBAAAAAAAAAABEyXnR+iAAAAAAAAAAAAAhOAEAAAAAAAAAAKKK4AQAAAAAAAAAAIgqghMAAAAAAAAAACCqCE4AAAAAAAAAAICoIjgBAAAAAAAAAACiiuAEAAAAAAAAAACIKoITAAAAAAAAAAAgqghOAAAAAAAAAACAqCI4AQAAAAAAAAAAoorgBAAAAAAAAAAAiCqCEwAAAAAAAAAAIKoITgAAAAAAAAAAgKgiOIEgzz//vF1xRQZr164dWwfAWW39+vXuenbzzTdH/F5dA/XeadOmBb32zz//2MiRI61YseKWNetVbrpcuXIl01LjTNKxov35zTffsCOAc9DChYvcOT5o0OCQ94tq1aoFvUfP6xFI0+p5vRfhnQ3byVtG30dy0/cE3/kHfjfZt2+f+05RvXqNZP9sAACA1CpVBif0xbV9+/Z26623WfbsOezqq3NakSJ32GOPPW4ffvihnW0N/XocPXr0TC8KQjQ+6fHggw/FuW12797j90MiVENlXP7++297++011r17dytX7h73wyRz5iyWP/8N1rhxY1uxYkW88zh06JB169bNbrnlVvejJV++/PbAAy3to48+imhZxo0bH7seoX58+5ozZ47dd18tu+66vHbllZndcleqVNnGjh1rJ0+eDPkeNeZNnjzZOnd+zEqXLuPWk0DXmaXjNfDHtvbntdfmscKFi9j997ewV155xR1jCfXLL7+4a7PmpeNYx7ivbdu2WaZMV1qGDBnt3XffjXNeel3TaZm2bz97ru8vvPCC9ezZy7788kvLmzevFS9e3O68s2jsNtd1P9LzE8CZwXe1/46//vrL+vbta5kyZbK2bdvYueBMH79vvvmm+/zUHHiIRMGCBd09XY/4vP765NjvVr169Y53en1P0Hz1GaHkyJHDHnighduWy5YtS9TyAwAAnG1SVXDijz/+sBYtHnC9RaZNm26HDx92jT65c+eyH374wSZMmGBly5azrl27BjWGpVYDB77gHseOHTvTi4Iwli5d6hpbw5kxY3qStp0aKmvXrm2jRo12wbUsWbK6HyV//vmnLV26zBo0aGidOnW206dPhw2O3H13CRs9eow7J2688UY37YIFC6x8+Qpu+RNCvbGeeeaZeKfTvBX4ePjhVrZ27Vr3XKFCheyyyy63TZs2WdeuT1q1atXt999/D3rvqFGjrGPHR23ixIm2Y8eOsEEMRF+6dOlif2wXKVLEsmfPbj/99JMtWrTInnqqpxUoUND69u1nJ06ciHdeCxYsdNdr+fHHH23VqlV+r2v+HTp0cMfSI490dMd6KHper2u6Tp062e2332apyVVXZbN8+fJZ+vTp/Z7X8irQJ5MmTbT33nvXVqxYbvPmzXXPTZ8+3V33P/744zOy3AAiw3e1/47x48fb119/be3bt7PLL7/c77VLLrnEXfNz5sxpZ5MzffwuWbLEff6GDRvCTqNtqm2rbZzavfjiC+6erkd8dL/3zJ49O97fp/qeoPnqM8J57LHH7IILLrA+ffq6UZoAAADnulQTnDh16pTVq1fPFi5caFdccYWNGPGy7dmz2zZsWO961u7e/ZUNGNDfLrzwQhs7dpy1adP2TC8yzgH58+d3DaRqbA1FjZCzZs1yx13u3LkT9RmKOdx0UyF3TH/99V7btm2rrVv3ju3du8f69+9vadKksUmTJtlrr00I+fktWrSwgwcPWoUKFezzzz9z792583N78smuriG5VavWduDAgXiX44knnnABhcqVK8U5ndZXgQ8t18svv+zOPX3mZ5996hqy9WN+8+bNNnz48KD3XnnllVapUiXr0aO7zZkz25o3bx7h1kJKueqqrLE/tt96a4VrUNfxqL8PPviguwYPGzbMmjRpGu+Pa+/HuK7VMf+fETRNz55PufNr9+7dNmDAgJDzGTDgWfe6Am7duj1pqU2/fn1t69b3rUYN//QKChIqsCP33nvvGVo6AEAk1NA7ZsxYO++886xp06ZBryuwrmv+mDFj2LDJTNtU21bb+FyhzkPqtKPjSd+N1Vlj9erVSZ6vOo9UqFDejcxMjvkBAACkdqkmODFo0CDbuPFdu+iii1wD6P333+96+nouvfRS69ixo73++iTXaKqUM769VYDEaNSokfs7c2Zw46poWPW3335nlStXtowZMybqM9Swqd5kOqa9xlxJmzatPfpoR/e81wM7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iyu6cu21edxyFC9+l6tFcPp08pTomDt3rt11191u3jfffIsNHTrM/vnnn6B6Flo2FegZN268FS1azDJnzuKej3Q5VVOhb99+brvmypXbrroqm/v8kSNHBn1uOH/++afVq1ffMmbMZBMnTvJbhgYNGtoNN9zo9kP+/DfYfffVcts2Plo3raPqcQTSc976B06vbfDuu+9apUqV3TGVL19+69mzp508eTJoPqdOnXLFiMqWLWc5clxt11yTy0qWLOW3HX19/vnnVrt2HTetjtkOHTrYr7/+6jfNH3/8YS+/PMKqVq3qPts7/p588km/48+3loOW+/jx49arV2+3rbS/KlSo6LZfKCoC5B0jOmcGDhxoe/bsjV3/QJEcszovGjdubFdfndMVA1Lxoa+//jrkcgAAAAAAAPyXqBbn4cOHbN26d+zOO+8804sDnLNSfOTE6NGjrVu37pY3b15r2LCBXXTRxfbDDz/YO++8Yx9//IndcMMNQYGJNWvWusZcFWRetmy5PfPMM3bppZdY27Zt/QITCnhoXlWrVnGNvR988IG9+uoo9/6VK9+yyy+/3PLmvc4KFy5sy5Ytc43rF198sd/nzZ07z/2tV69e7HPz5s23Vq1aWYYMGdy89XfdunXWvXsP+/LLXa56fFLMn7/AFdGpW7euVahQwRWd7tevn+3fv89efPHFoOmHDBlq27ZttSpVqlilSpXs2muvjXg5V61abRMnTrDSpctY6dKlXCP+u+++Zz179nIN1fGtkxrnGzZsaJs3b7GxY8dY/fr13fMffLDdqlat5irYa59lzZrVDh780d5/f6stX77CKleubClh69ZtNmzYcLf9HnroQXc8jRz5imuIf+6552Kn+/vvv61Ro8a2cuVKu/766+3++5vbeeedZzt3fmGDB7/kglmBQRwFPIoUKWItW7a0rVu32tSp0+zo0WM2bdrU2Om+//57d1yWLFnSatas6Y6rzz77zMaOHee26+rVqyxdunRBy6156rNr1qxhv/32mzv+FAh5//0tliPHv8UDFYzq0qWL254PPNDCLbMCQtu2fRBye0RyLGjZdRwpZ2KNGjXsuuuus02bNlmVKlUtY8YMSd43AAAAAAAAAHDGgxPTpk13ja4bN27wCwyoN/vvv/8eNL0a0RVYuO2229z/u3XrZrffXthGjx7jF5zo06evC0wMGvSi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kOT3qPewfv07sf/2fiLZ3q+//tq6dbvfSpW62n3OBQoUtJtuutmefPKpOPfVflE5siJFrnD75ZprrnWf6V9//RVwv0OHDtnIkSOtWrXqVrBgIXff0qXL2NChQ91x5dHxre386qt97se/7f4SZb///rt7vuuuK++2MX/+Am7/ffrpp3G28cSJEzZ58mS79trS7r5lypS1qVOnJrgfAAAAAAAAAOBky2SpYPXq1Xb48GG755677YILLrBatWrZ0qVLbe/ez6xQoYJJft6WLVu63wpOt2zZwgW8xV/D/777utmcOXOsSJEi1rFjR/vpp59s8eLFVqfOLS5BUr16tTjP27ZtW/v440+sfv169uuvv7rESqNGt9nmzZvskksuib3fvHnz7J57utqFF15ozZo1s7POOtOWLVtmnTt3sc8++8x69+4d57knTJhgmzdvcQkDBd4XLFjgAvSrV6+yBx980DJmzGTNmjW1jz762NasWeMC4mvWrA54jqS8p0gTB0rEKDGg7cubN6/98MMPtmPHDlu8eIndcccdlhzaTiU68uTJY3fddZd98sluW758ue3bt8/eeON1V/Irse/x0Ud7us9BAX7925PQOg6//fab1apV2w4ePGh16tSx2267zZUa+/jjj9zrdut2X+x9169fb02bNnPbp/2SM2dOlyRRYmzbtu22YMH82G1/7733bOzYcXbjjTdY2bJlLGPGjLZ16zYbNeoJe++9Hfbiiwvd/bJmzeq2V8kE8SeJvONYiQkl3bZu3WqVK1eyGjWq2/fff28vvbTU3njjDVu79lW74oorYh83ePAQGzNmjF1++eVun+nxSooosQEAAAAAAAAAp11ywpsloZHv0rRpE5eceOGF561Pnz5Jfl4Fy7/66qt/kxMtrUqVKgF/f/31N1yguXz58rZ8+TI788wz3e2dO3eyqlWr2X333Wc7d+6wzJkzBzzu559/tnfeWW/nnHOO+/9NN91knTp1dqPxH374YXebguUPP/yIS0y89dabsQHlnj17uudWMLpRo0ZWrFixgOdWoPrtt9+ySy+91P1fAec77rjTGjdubLVr17YpU6bYGWfETHDRe1qxYqV7TJkypZP1niKhRMEvv/xizz8/z2655ZaAvym5lFwffLDLunXrZkOGDI69TTNFZs+ebRs3brSKFSsm+j1qJo6SB0pO6N+RevPN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9AWe9ZmNGDHcJQfuuquVbd/+Xpz7aMHxfv3626JFi2IfM2TIYPeYNm3a2CeffBJwf82euf/+++2DD3ZZzZo1rXr16nGes3bt2pY9e3Z78cVF9vzzL9jZZ59tjRo1tJMtJfaZR7M+mjRp6o4hLQifGiWVlGg5dOiQNWzYwCXCAAAAAAAAACBdLogthQoVsty5c7vZAMWLX+WCzB6VeNIC096/I1GlSmVbtmyZtW7dxqpWvdktXFynTh23lkVKeeqpp2z48BGuxNDVV5ey88+/wK1JsGbNK272x0033WSNGjUKWJti4cKF1rLlHda5cxcbN268WyhZpar0OM0O+frrr+3ee+9N8LXPPPNMFxTX+hOSNWvWFHlP2ldKBr3++utuBoP+7aeZGuHWQVDCJFeuXO7fmiUyevRo69mzp918883uc7v66qstU6bM9vnnn9sbb7xuP//8iz3//LyAdSP27fvaBg8ebJUrV3FJiCJFirjFyV955RW3b66/vqJb2yMUfcZNmjSOnU3SpEkTt2/jE+n7Sc4+C2fUqCfcGifHj//tSkNt377dtm3b5pJzXbp0tkGDBlpy7N6928aOHev+ffDgd+639uN33x10/65QoaK1bt0qzuPmzfPW6ji5s04AAAAAAAAAINWTE97sCY2k92ZR+G8XlXfS2g2RaNu2re3du9deemmpPfHEaDcr4ZJLLknR5ITq8q9atdqtraDX0XoZKoVTrFgx69nzETcDILgElcpSKYCtmRV67IIF8+333/+wHDlyWJkypW3kyMciLuWj9QDGjx/v3mdKeuSRh61Zs9vdTICFCxcE/G3atPBlpG699daAYH6HDu3tpptutEmTJrvk0tatM9xC45deeqk1aNDQ2rdvF2dNhYceetAldVS+SftVwXTNgChZsoRLxtx55x3xlvXS4tdeciKS4Hpi3k9S91k4WjPES6pocfaCBQvavfd2deWpihcvbsl18ODB2ESD58MPP3Q/nuDkxOHDP9qaNWvs8ssvj/M9BAAAAAAAAICTLcPx48dOnPRXAZDuHJmbOdGPOXHLySu/hpR39foJYf+2o3LCM7/SshP96gf8P8OQZXa6Ct4X6WW/pNf3FU3p9RyQXr//69auSfHnrFa9lqXlY/FUPg6lU6cudjqZOnVKam/CKSOtX8PS63k0PV8v0/pnlta3L6kuzHZxam8C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r7+sffsOlj17drvyyqJ29dVXu4TNpk2brEePHrZt21abPHly7P3btm1j06ZNs+eee879O9j69evt008/tZtuuskKFMgf0f4BAAAAkDaRnAAAAAASoLUUlIDYtm2b5ciRw9321ltvWb169W3IkKEuSD9v3lyrVauW+9vPP/9sNWvWsg0bNrhkww033BD7XH379nO3KdA/btxYy5o1q7v9l19+sXbt2tvKlavczIH27dsl+Lls3brNhg4dauedd54tXfqSS3R4SYFOnTrbSy+9ZN2797DZs2e524cNG+pmhig5ccUVRQISAwmZOHGSS0yUKlXKvZYSDrJ372du1sn+/fvjPEYJk7lz57j94l/H49ChQ9akSVO3Dsidd97pkipSvHhxK1++vEuuKOGh1/J77rmY99G6deuItxsAAABA2kRZJwAAACACI0aMiE1MiBIOCp4fOHDAatSoHpuYkAsuuMDatIkJoGuGhef77793swLy5s1rkyZNjE1MyPnnn28TJjxlWbJksenTn43oM5k2baorjdSpU6fYxISceeaZ9sQTo+zss892sye+/vrrZH/Gzz77TGyCw0tMSKFCBe3hhx8O+RglJ1TqKniBce3HAQMGuH+vXLky4G/t2rUNSER4fvzxJ5dU0WPr1r012e8HAAAAQOoiOQEAAAAkQMH1KlUqx7k9f/6Y0kIq5RTubwcOHIy97e2319uxY8esWrVqLnEQLFeuXFaoUCHbtetDV/4pIZrJIM2aNY3zt4svvtiqVr3ZJS82bnw3WZ/xvn37bN++r91z+meBeJo0aRzv4zULYty48W4Wxz333GN33323PftsTAJm7969Afdt2LChS34sXLjAfv/999jbFyyYb3/++ae1aNHCJXAAAAAAnNoo6wQAAAAkQEmDjBkzxrn9vPPOdb/z5MkT52/nnhvzt6NH/4q9Tes9iGZP6Cc+P/74Y8gEhp9mbUi+fPlC/t27ff/+by05vNe57LLLQv5dM0D0c+TIkYDbVe7q7rvvcYtih/Prr78G/P+ss86yli1b2IQJE11ZqpYtW7rbZ83ySjq1StZ7AQAAAJA2kJwAAAAAEnDGGRkS+HtkE5I1i0FKlixpJUuWiPe+Ks2UXP6FuFODEgxKTBQvfpVbtFsLYmsxbc1E0cLWZcqUDbmQdtu2bd0aFyrtpOTE1q1b7YMPdlmlStdb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n116ofen93mq4vgI9PXXX1vOnLls48aNlp61bdvOWrduk9qbgXSiSZOmdt993VJ7M5AMH3/8sWXPfpF9+OGH7MfThHf9f+mlpSnWxjsVjBs33sqWLWf//POPpVdc4wEgEMmJICdOnLDfj/6TZn60PUm1a9cuu+uuVlaiRAnXkb/yymLWoEFDe/rppy2lrFv3mvXv398qVChvkyZNdP/ev3+/awzt3LkzxV7ndDJ48BBr0qSx5cuXL/Y2Nc6ef/55q1q1ml1+eX679NK8Vrp0GevcubNt3rw5znPs27fPHnjgQRdkvPjinFaoUGFr2bJlkoI57777rtWqVdty585jRYpcYY888oj9+uuvAffR/4cPH2633dbYbZ8awkoohfLAA/fbM888YwcPHrS0QN+xE8d/Szs/SfjOL168xO3z5cuXx/lbpUqV3N/eeuutOH8rXryE1ahR05IjrX7fQ52bAO+cpmP2p59+SpUd8vvvv7vXT41kVHowcuTjVrZsGatQoUKcv61evdpdh/LnL+DaPbpO9unT1w4fPhznvkrA6dzo/VxyyaUumal209KlSxMVFNH5pmvXe61ChYouGRpfUnbUqCesefPmVrhwkXgTZ7pWLlu2zN5//31LM+3j40fT1E9y2sgfffSRdezYybWN1U4qWvRK938FgNMbtf1ee+01e+CBB+IEPfWzfft7Ib8f+k74aWCC/zuj9t5NN91ss2fPjvj7MmvWLCtX7jr3/bz22tIh+yR79uyxXr16ufaJ7hdqYFRSBznp+b799ts4f9d70/fXT99j//tVW7p27Toh21qhaJ8oyFqyZCn3utdff729+OKLce6jbdM54aqriluePJe47Rg1apT9+eefAfe98sorrVatmjZs2HBLK/Qd1HamlZ+knhO84yP4865bt669+uqrKb7fEN7PP/9s48aNc9fAM874L1Tl/2yUpNP554YbbrSePXuGPG/rnOHdX9f0cImbH374IaKP45NPPnHtC50X9dqdOnWyQ4cOpZtrPACktkypvQFpzR/HTliFwXstrdjYv5CdkyVDkoIvdevWs7x581rr1q1do/ibb762zZu32OTJU1xQO7F0oW3cuLGdeeaZsbcp4KmGw4QJEyxLlizuNs1ueOyxkS64XqpUqUS/zulMAd433njDXn31lYDbH3mkp02bNs1uvfUWa9asqWXMmMk+/XSPvfrqWsufP7+VK1cuoBPatGkz9+9Wre6yokWL2sGD39m8efNcp2rkyMci/vy1PfXrN7ArrrjChg0b5jp0Tz31lO3d+5ktWvRfB0sNOwWMLrssr5UsWcLefnt92OdUB/D88893CYo+ffpYqvv7d/t5ftoZVXTB7T+ZZTo3UY+pWLFC7Gdfr169gAb+hx9+ZJkyZXLnhBtuuCFg9LF+brvttkS91pIlSwL+v3//gbDf9yeffDLVRj2FOjchMlu2bAnoEJ7qDh484L4Dnnff3eSOWSVsL7ww+t/9P/74w73+o4+aValSxU41qXl8KBCgRP2UKZPj/E1JCH3fdQ1SEDZbtmy2Y8cOd+1cvHixLVu21IoUKRLwGLVnnnrqSffvP/740yX2V69eZa1atbYqVSq76+YFF1yQ4Ha9+OJClyS++uqrLU+ePPHed+jQoZYrVy53vly3bl3Y++m5rr32WveeUnJQSVL98fcxK7ZqmKUlH9XpY+dkSvz5XQGh9u07uGPkrrvusssvz+dmq86ePccFsWbMmB7xDMFTga7FN954oxUqVDDk3x97bITNnz8/oue69NJLbcCA/r7v4wt277332aef7rVBgwbG+9jp02fYgw8+aPXr17euXbvahg3/c+3b33//wx588L/EyaZNm2zKlKddMF7tz5QM3v311182duxYF/yPhBIU9913b2x7Z8aMGXbnnXfZmDFjrH37dgkONtJrqR9WunRpW7lypTvuzDK4QUhesvqee7q6dnzbtm3t4osvts2bN9nw4SPszTffdImQDBn+6we2a9fOzYL57LPPrWDBApbatD9b3XWHpRWzZs+1s846K8mP79Ont11++eUuyfHdd9+7a4D29/z5L1jt2rVTdFsR2pw5c+zvv/+2Jk2axPnbzTffbC1aNHefj/o477//gWsTPPPMs+78c++9Md/VYI8//rg77/i/S4nxzTffWJ06t7j2QP/+/ezXX39z/WHNYlLi19/POFWv8QCQ2khOpFNPPDHaXUBff/21OMGX77//PknPmTFjRvfjd+jQ93b22WcT/EshGrmjAL8/2fDdd9+5QL46N08+OT7g/o89diJg1MaPP/7kgipqmK9Zsyag43LvvV1dIPrRR3vZNddcY+XLl09we9Sx0vGzYsXLsQEaBaG7devmRopWq1bV3ZY7d27bvfsT1xhT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najGvu6v0V9ahFSjzDT6MTmlN9q2bWtTp05zDR9Nt9b0TgV/vSmc3kg2JQmeeupJa9KkqWvQaB/nyXOJK+2iEegayaFOR3w0ikOdXf8sjW+++daqVq3qOnYK7uTKldO+//6QLVr0oltLRB1JrzySpu/PmvWcG92pxRLvuquVXXml9ud3Nm/ePDfbQ/XH/Z2i+PTr19d1GFUqS+VB1GieMGGC257q1avHCTAp2LZ/f0yDXAknr5HdqVOngE6URuFoFKyC5Ug56jypHqxmx+j4DB7NpGSQPj/xN7r1eeqxWoBax/uvv/7mpnJffHGOBBeLTOz3PVL9+/ezFi1aupHO+i4puKLvoQKMiV2k1KPRTS1btnCjEnWsKli8bdtWV6qlbt1b3XcsKdRh1X7QQvXffrvfLrjgfDdSNam1dRXQGDRooCvBp+9ekyaN7bvvvnfJDp2/77nnHnc/BdAqVbrexo9/0o4dO+6SOq+//lrI2VcqFbB27To3AlvnMi9orgBHQiVOIpUzZ053jtQxpmOpWrXqLpi3du1ad45KaNSvjiN18rTAqu6bP38B1xkMXishubzvxZAhQ61x49ssU6bMVqdObTcCMDl0jlSQSyMbFRC//PJ8rvOumUyPPTYidjSfAk8KdC9evMQKFSrsAnZXXVXMHduROF2PDy/gp89NJZr0/vy1pDWyU6U31NnX/7Vu1o4dO23OnDmx10btOz+9T++6rNrRmqWzatUq9541qnX8+MhGVOt96HGi66wC2aNGjXL/1+hP/8wHJV0VQPr995gFNN9553+x99WoTn2G/mulArcqlYOUobrsmuWm47xixevtrrvudGVANFti9uw57rw9ffqzAdcwlUEbMGCg3XHHndalS2f32SlAqMSVvwSSgt1an0CLJev51K7VdVHfOa37pnOESqxJq1at3PnhttsauwV0FezTYBBvFq5H3xUFLVV6SG3JChXKuyCcZmQtWbLEtev9NfKD6Rqq4KEWWC5QoE2C+0ffUQUj1b5M7jnRT+c9la/p0aOHW/tOZW82bPifm7mgkpP+9Vt0ffaSlipRKbr+6zut64TalB6193UN11pUiVknytO9ew/XT9izZ0+cWv7JobJg2jatz6HArtYhUfBY7bNnnpkWO6hBg390DOi402LDr7yyJuB5dDz4B/LouTRCPNx6FEietWtftT17drt/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"><figcaption><span class="fig-no">Figure 2</span> Shift timeline, manned versus autonomous (illustrative) <span class="fig-id">FIG-01-02-02</span></figcaption></figure>
+<p>Four results matter.</p>
+<ol>
+<li><strong>Removing the driver removes all of the truck's operating standby, but not the shovel's breaks.</strong> The autonomous
+truck has no shift change and no crib breaks, so its operating standby falls from 90 min to zero. With unchanged
+shovel practice, however, the shovel's changeover and crib breaks come back as the truck's operating delay: it
+waits 70 min at EX02 for a loading unit that is not loading (DLY-OD-11). The net saving is only 20 min.</li>
+<li><strong>Autonomy adds a delay category.</strong> The 30 min of autonomy-specific stops more than cancel that saving: the
+autonomous truck has 10 min <em>less</em> in-cycle time than the manned one (9.75 h against 9.92 h). The complete-load
+count hides this — both show 22 — so compare cycles, not complete loads, when differences are small.</li>
+<li><strong>The gain comes from the operating model, not the truck.</strong> Hot-seating the four shovels removes another 60 min of
+operating delay: 10.75 h of in-cycle time, 50 min and two loads more than the manned truck. In the manned fleet
+the same effect would have needed relief drivers for 40 trucks; here it needs relief operators for four shovels.</li>
+<li><strong>KPIs move in different directions.</strong> Use of availability rises from 87.5 % to 100 %, because the autonomous truck
+has no operating standby, while operating efficiency falls (97.6 % to 84.0 % or 92.4 %), because what the truck
+still loses it now loses as operating delay. GMG notes that in an autonomous operation operating delay is &quot;within
+the control of the operating system&quot; <code>[F]</code>, and it is there that the autonomous truck's losses collect.
+Production effectiveness follows operating efficiency, lowered by the travel-empty share of every cycle. Either of
+the first two alone misleads; effective utilisation (working time over scheduled time: 85.4 % against 84.0 % or
+92.4 %) and in-cycle time tell the story.</li>
+</ol>
+<p>The <strong>break-even</strong> follows from the first equation. With equal downtime and equal queues, the autonomous truck is
+ahead only while its autonomy-specific delay stays below the standby and other operating delay it saves:</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msubsup><mi>T</mi><mrow><mtext>OD,aut</mtext></mrow><mrow><mo>&#x0002A;</mo></mrow></msubsup><mo>&#x0003D;</mo><msup><mrow><mo stretchy="true" fence="true" form="prefix">&#x00028;</mo><msub><mi>T</mi><mrow><mtext>SB</mtext></mrow></msub><mo>&#x0002B;</mo><msub><mi>T</mi><mrow><mtext>OD</mtext></mrow></msub><mo stretchy="true" fence="true" form="postfix">&#x00029;</mo></mrow><mrow><mtext>manned</mtext></mrow></msup><mo>&#x02212;</mo><msubsup><mrow><mo stretchy="true" fence="true" form="prefix">&#x00028;</mo><msub><mi>T</mi><mrow><mtext>SB</mtext></mrow></msub><mo>&#x0002B;</mo><msub><mi>T</mi><mrow><mtext>OD</mtext></mrow></msub><mo stretchy="true" fence="true" form="postfix">&#x00029;</mo></mrow><mrow><mtext>other</mtext></mrow><mrow><mtext>aut</mtext></mrow></msubsup></mrow></math></div>
+<p>where the second term counts the autonomous truck's standby and operating delay other than the autonomy-specific
+stops. Here <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msubsup><mi>T</mi><mrow><mtext>OD,aut</mtext></mrow><mrow><mo>&#x0002A;</mo></mrow></msubsup></mrow></math> is 20 min per truck per shift with unchanged shovel breaks and 80 min with
+hot-seated shovels. Every nuisance stop, permission hold and link-loss stop is paid from that margin, which is why
+access-area design (section 7.1), nuisance-stop rates (Volume 06) and coverage on R05 (Volume 11) are productivity
+topics as well as engineering ones.</p>
+<h3 id="s-4-7">4.7 Trade-offs and model limits</h3>
+<ul>
+<li><strong>One truck, no interaction.</strong> The model ignores bunching behind a stopped shovel, trucks delayed behind a held
+truck, and FMS reassignment during shovel breaks.</li>
+<li><strong>Fixed events.</strong> Breaks and delays have fixed times and lengths; <code>ahs_sim.kpi.synthetic_shift_log</code> generates
+seeded variable logs (ch-01-05).</li>
+<li><strong>No downtime.</strong> Both fleets are assumed to have no downtime (physical availability 100 %); autonomy also changes
+maintenance and physical availability (Volume 18), which this chapter does not quantify.</li>
+<li><strong>Travel empty as a fixed share.</strong> The lab does not record each trip; it splits in-cycle time into productive time
+and travel empty by the travel-empty share of the M-20481 cycle <code>[H]</code>.</li>
+<li><strong>Manned practice is one choice.</strong> A manned operation can hot-seat its trucks; an autonomous one can still stop for
+shovel breaks. The model shows the mechanism, not the result at any site.</li>
+</ul>
+<h2 id="s-5">5. Responsibilities and interface boundaries</h2>
+<p>Who does what without a driver, for the three events of this chapter <code>[H]</code>:</p>
+<table>
+<thead>
+<tr>
+<th>Element</th>
+<th>Stopped truck (SCN-RECOVER-DT17)</th>
+<th>Manned entry (SCN-POSCOM-LV07)</th>
+<th>Fire (SCN-FIRE-DT17)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>FMS</td>
+<td>Withdraws DT17 from EX02; records DLY-DN-01; reassigns</td>
+<td>Re-plans EX01 and EX02 routes while R05 is locked</td>
+<td>Re-plans EX02 assignments; records the delay</td>
+</tr>
+<tr>
+<td>AMS</td>
+<td>Holds DT17's state and road space; grants and releases the technician's permission; restores DT17's path only after release</td>
+<td>Locks the area, clears trucks out, holds and releases the permission</td>
+<td>Creates the exclusion zone; holds or reroutes R05 traffic; controls ERT access</td>
+</tr>
+<tr>
+<td>ADS</td>
+<td>Controlled stop; reports position and state</td>
+<td>Follows granted paths only</td>
+<td>Evaluates where to stop; stops</td>
+</tr>
+<tr>
+<td>VCS</td>
+<td>Detects and reports the fault; brakes</td>
+<td>—</td>
+<td>Executes the stop; reports suppression status</td>
+</tr>
+<tr>
+<td>Independent safety functions</td>
+<td>Can stop DT17 regardless of AMS or ADS</td>
+<td>Remote stop if separation fails</td>
+<td>Can stop any truck regardless of AMS</td>
+</tr>
+<tr>
+<td>Onboard safety-related systems</td>
+<td>Fault data for triage</td>
+<td>—</td>
+<td>Detect the fire; activate suppression</td>
+</tr>
+<tr>
+<td>Manned-vehicle devices</td>
+<td>Technician's PRU, radio, field terminal</td>
+<td>LV07's PRU, radio, field terminal</td>
+<td>ERT vehicles' PRUs and radios</td>
+</tr>
+<tr>
+<td>People</td>
+<td>Controller triages and dispatches; Field Technician isolates and repairs; Maintenance Planner follows up</td>
+<td>Driver requests and reads back; controller grants and releases</td>
+<td>Controller coordinates; ERT responds; Pit Supervisor decides on the area</td>
+</tr>
+</tbody>
+</table>
+<p>Two boundaries matter most. <strong>AMS holds the state, people hold the decisions</strong>: AMS remembers that DT17 is stopped,
+isolated and attended, but only an authorised role declares it repaired and releases it from recovery (REQ-01-02-001,
+REQ-01-02-002). <strong>The field reaches the system through devices</strong>: a technician whose PRU, radio or field terminal does
+not work is, to the system, not reliably there.</p>
+<p>Not everything becomes autonomous. These tasks stay manual and must now fit around autonomous traffic <code>[H]</code>:</p>
+<table>
+<thead>
+<tr>
+<th>Manual task</th>
+<th>Who</th>
+<th>Interaction with autonomous traffic</th>
+<th>Scenario</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Loading at EX01–EX04</td>
+<td>Shovel Operators</td>
+<td>Signal trucks away; request work zones; breaks stop the trucks unless hot-seated</td>
+<td>SCN-BASELINE-SHIFT</td>
+</tr>
+<tr>
+<td>Clean-up at EX02 with DZ03</td>
+<td>Dozer operator</td>
+<td>Work zone in the loading area; trucks held at EX02-Q</td>
+<td>SCN-DOZER-DZ03-EX02</td>
+</tr>
+<tr>
+<td>Watering R03 with WT02</td>
+<td>Water-truck operator</td>
+<td>Works under permission; spray can cause nuisance stops behind it</td>
+<td>SCN-WATER-WT02</td>
+</tr>
+<tr>
+<td>Road and windrow inspections with LV07</td>
+<td>Pit Supervisor or Survey</td>
+<td>Positive communication and permission for every entry</td>
+<td>SCN-POSCOM-LV07</td>
+</tr>
+<tr>
+<td>Recovering stopped trucks</td>
+<td>Field Technician</td>
+<td>Permission, stand-off, isolation, release, in fixed order</td>
+<td>SCN-RECOVER-DT17</td>
+</tr>
+<tr>
+<td>Inspections and maintenance</td>
+<td>Field Technician, Maintenance Planner</td>
+<td>Trucks taken out of service to MIA in manual or maintenance mode</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<h2 id="s-6">6. Normal, abnormal and degraded operation</h2>
+<p>The shared timeline for sections 6, 7 and 8 is SCN-RECOVER-DT17 (section 6.2). Section 6.1 first shows the most
+common new routine of an autonomous shift, the entry of a manned vehicle.</p>
+<h3 id="s-6-1">6.1 Normal operation — SCN-POSCOM-LV07</h3>
+<p>At 09:00 the Pit Supervisor asks LV07's driver to inspect a damaged windrow on R06. In the manned pit the driver would have
+called once and driven down R05. Now the entry follows positive communication <code>[H]</code>, with the registered times <code>[A]</code>:</p>
+<table>
+<thead>
+<tr>
+<th>Time</th>
+<th>Event</th>
+<th>System actor</th>
+<th>People</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>T+0 s</td>
+<td>LV07 at AP-02 requests entry: location, purpose, area (R05 and R06)</td>
+<td>Radio; field terminal</td>
+<td>Driver calls; controller answers</td>
+</tr>
+<tr>
+<td>T+20 s</td>
+<td>Area selected on the HMI; permission request submitted</td>
+<td>AMS</td>
+<td>AHS Controller</td>
+</tr>
+<tr>
+<td>T+25 s</td>
+<td>Trucks in the area stopped clear or rerouted via R24; area locked</td>
+<td>AMS; ADS; FMS re-plans</td>
+<td>Controller watches trucks leave</td>
+</tr>
+<tr>
+<td>T+90 s</td>
+<td>Area confirmed clear; permission granted, pending acknowledgement</td>
+<td>AMS</td>
+<td>—</td>
+</tr>
+<tr>
+<td>T+95 s</td>
+<td>Permission given by radio; read back; acknowledged on the field terminal</td>
+<td>AMS, field terminal</td>
+<td>Controller and driver</td>
+</tr>
+<tr>
+<td>T+100 s</td>
+<td>LV07 enters AA-North; PRU tracked against the permitted area</td>
+<td>PRU, AMS</td>
+<td>Driver</td>
+</tr>
+<tr>
+<td>T+1300 s</td>
+<td>Inspection complete; LV07 leaves at AP-02</td>
+<td>PRU</td>
+<td>Driver reports</td>
+</tr>
+<tr>
+<td>T+1320 s</td>
+<td>Release on the field terminal; PRU confirmed outside; area unlocked</td>
+<td>AMS</td>
+<td>Controller confirms</td>
+</tr>
+</tbody>
+</table>
+<p>The protocol costs 100 s before LV07 moves; the area costs far more. A permission over R05 and R06 closes the main
+route out of the pit for 21.6 minutes (section 4.4). Closing R06 alone would do the same, because R06 is the only link
+between the pit floor and the foot of R05. Only an area smaller than a segment (the damaged section of R06 and its
+lane, with trucks passing slowly in the other lane), or an inspection timed to a planned closure, keeps the route
+open — worth 236 s on every ore cycle that would otherwise take the west ramp.</p>
+<h3 id="s-6-2">6.2 Abnormal operation — SCN-RECOVER-DT17</h3>
+<p>At 13:20 (T+0 s) DT17 stops on R03 with a drivetrain fault, empty, in the X-bound lane, 600 m from X. LAB-01-02-01
+computes the timeline from the road network and assumed durations <code>[A]</code>; the registered scenario gives its skeleton
+(dispatch at T+60 s, isolation by about T+900 s, fault cleared at about T+2400 s).</p>
+<table>
+<thead>
+<tr>
+<th>Time</th>
+<th>Event</th>
+<th>System actor</th>
+<th>People</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>T+0 s</td>
+<td>Drivetrain fault; controlled stop in lane on R03</td>
+<td>VCS detects; ADS stops</td>
+<td>—</td>
+</tr>
+<tr>
+<td>T+5 s</td>
+<td>Stopped state, position and fault code at AMS; road space held; HMI alarm</td>
+<td>AMS; FMS withdraws DT17 from EX02</td>
+<td>Controller sees the alarm</td>
+</tr>
+<tr>
+<td>T+60 s</td>
+<td>Triage complete; field attendance needed</td>
+<td>—</td>
+<td>Controller dispatches Field Technician, informs Pit Supervisor</td>
+</tr>
+<tr>
+<td>T+360 s</td>
+<td>Leaves workshop MIA-WS with tools and isolation kit</td>
+<td>—</td>
+<td>Field Technician</td>
+</tr>
+<tr>
+<td>T+481 s</td>
+<td>At AP-01 (G01); requests entry: route via R13, R12, X; work area on R03</td>
+<td>Field terminal, PRU</td>
+<td>Technician and controller</td>
+</tr>
+<tr>
+<td>T+581 s</td>
+<td>Permission granted, read back; enters AA-Central</td>
+<td>AMS</td>
+<td>Field Technician</td>
+</tr>
+<tr>
+<td>T+747 s</td>
+<td>At the stand-off point, 50 m short of DT17</td>
+<td>PRU tracked</td>
+<td>First sight of DT17</td>
+</tr>
+<tr>
+<td>T+897 s</td>
+<td>Isolated state confirmed on HMI and at the truck; read-back; personal isolation; approach</td>
+<td>AMS state; truck isolation</td>
+<td>Technician and controller</td>
+</tr>
+<tr>
+<td>T+2397 s</td>
+<td>Fault cleared</td>
+<td>VCS self-test</td>
+<td>Field Technician</td>
+</tr>
+<tr>
+<td>T+2457 s</td>
+<td>Personal isolation removed; technician clear of DT17</td>
+<td>—</td>
+<td>Reports by radio</td>
+</tr>
+<tr>
+<td>T+2624 s</td>
+<td>Technician exits at AP-01</td>
+<td>PRU</td>
+<td>Field Technician</td>
+</tr>
+<tr>
+<td>T+2654 s</td>
+<td>Permission released; PRU confirmed outside AA-Central</td>
+<td>AMS</td>
+<td>Controller confirms</td>
+</tr>
+<tr>
+<td>T+2684 s</td>
+<td>DT17 state reset; FMS assigns a mission; AMS grants a path; staged restart</td>
+<td>FMS, AMS, ADS</td>
+<td>Controller watches DT17 move off</td>
+</tr>
+</tbody>
+</table>
+<p>The first human eyes on DT17 arrive at T+747 s; a manned truck had them at T+0 s. DT17 is down for 2684 s (44.7 min),
+of which the repair is 1500 s; the rest is triage, travel (287 s each way over 2.80 km), permissions, isolation and
+release. A person is at the truck for 1710 s (28.5 min). R03 is the only route between X and D01 (ch-01-03): at the
+reference mine <code>[A]</code> trucks may pass a stopped truck in the opposite lane at reduced speed while nobody is at it, but
+the technician's work area covers both lanes from T+747 s to T+2457 s, so for those 28.5 minutes waste haulage to D01
+is held (DLY-OD-04 on each truck affected).</p>
+<h3 id="s-6-3">6.3 Emergency — SCN-FIRE-DT17 (introduced; detail in ch-04-07)</h3>
+<p>On another day DT17 reports fire detection while climbing R05 loaded. In the manned mine the driver was the first
+detector, the first responder and the first person at risk. Now nobody in the cab is at risk — and nobody is there to
+act early. The registered key events <code>[A]</code>:</p>
+<table>
+<thead>
+<tr>
+<th>Time</th>
+<th>Event</th>
+<th>System actor</th>
+<th>People</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>T+0 s</td>
+<td>Fire detection alarm on DT17</td>
+<td>Onboard detection and suppression</td>
+<td>—</td>
+</tr>
+<tr>
+<td>T+5 s</td>
+<td>Controlled stop begins; stop location evaluated</td>
+<td>ADS, VCS</td>
+<td>—</td>
+</tr>
+<tr>
+<td>T+10 s</td>
+<td>Exclusion zone around DT17; R05 traffic held</td>
+<td>AMS</td>
+<td>—</td>
+</tr>
+<tr>
+<td>T+15 s</td>
+<td>Alarm acknowledged; ERT and Pit Supervisor called</td>
+<td>—</td>
+<td>AHS Controller</td>
+</tr>
+<tr>
+<td>T+60 s</td>
+<td>EX02 assignments re-planned; delay coded</td>
+<td>FMS</td>
+<td>Controller</td>
+</tr>
+<tr>
+<td>T+600 s</td>
+<td>ERT at the zone boundary under positive communication</td>
+<td>AMS (permission)</td>
+<td>ERT</td>
+</tr>
+</tbody>
+</table>
+<p>Detection and suppression are automatic because every autonomous truck at the reference mine is fitted with them
+(master-instructions §4). The first person arrives at T+600 s at the earliest, and only into an area the controller
+has opened. Stop location, zone size and ERT approach are developed in ch-04-07 and ch-16-06.</p>
+<h3 id="s-6-4">6.4 Degraded operation — conditions the driver used to absorb</h3>
+<p>The conditions of section 4.5 — integrity degradation on lower R05 (SCN-GNSS-R05), a link loss when trailer CT3
+fails (SCN-COMMS-R05), nuisance stops behind WT02 (SCN-WATER-WT02) — do not stop the mine. Each stops trucks for
+minutes, is coded as an operating delay and needs a controller decision: restrict the ramp and call Survey, wait for
+CT3 and reconcile, or review the snapshot and authorise a resume. In the lab they total 30 minutes per truck per shift
+<code>[A]</code>, enough by section 4.6 to decide whether the autonomous shift beats the manned one.</p>
+<h2 id="s-7">7. Engineering view</h2>
+<h3 id="s-7-1">7.1 Design decisions and trade-offs</h3>
+<p><strong>Stop, derate or continue.</strong> A driver chose continuously; an autonomous truck needs a default. The handbook default
+<code>[H]</code> is to stop on any condition the truck cannot resolve itself, because a stopped truck is a known state. The
+price is the operating delay of section 4.6, so every condition where a derate would suffice is worth engineering: it
+turns a stop into a slower cycle.</p>
+<p><strong>Where to stop.</strong> Stopping in lane is quick but blocks R03, the only route to D01; reaching a bay helps traffic but
+means moving on with a fault. Safety comes first (ch-04-07).</p>
+<p><strong>Size of an access area.</strong> A large area (all of R05 and R06) is simple and leaves no gap in the separation of LV07 from the trucks, but closes the main route for 21.6 minutes. A small area (one lane of the damaged section of R06) keeps the
+route open but needs a transit permission or escort down R05 and a rule for trucks passing in the other lane: more
+requests, more radio traffic, more chances of error. The break-even of section 4.6 is the budget
+against which this trade-off is made.</p>
+<p><strong>Which copy of the state is authoritative.</strong> DT17's stopped state exists in the truck, AMS and FMS. The design must
+say which is authoritative for each item — the truck for &quot;stopped and isolated&quot;, AMS for &quot;no path granted&quot;, FMS for
+&quot;not assigned&quot; — and how they are reconciled after a link loss or a server restart (ch-02-08).</p>
+<p><strong>Remote reset or field attendance.</strong> A remote reset saves most of the 2684 s of downtime; a wrong one puts a damaged
+truck back in traffic. Which faults may be reset from CR1, by whom and after which checks is a design decision with a
+safety argument.</p>
+<h3 id="s-7-2">7.2 Failure modes and mitigations</h3>
+<table>
+<thead>
+<tr>
+<th>Failure mode</th>
+<th>Effect</th>
+<th>Mitigation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>AMS loses DT17's stopped state (restart, failover)</td>
+<td>DT17 could be given a path while attended</td>
+<td>Fail closed: unknown = stopped, no path; reconcile from the truck first (SCN-AMS-RESTART)</td>
+</tr>
+<tr>
+<td>Path granted to DT17 while the technician's permission is active</td>
+<td>Moving truck and person in one area</td>
+<td>Interlock: no path through an active permission (REQ-01-02-002)</td>
+</tr>
+<tr>
+<td>Permission not acknowledged, or acknowledged late</td>
+<td>Driver and system disagree on the area</td>
+<td>Unacknowledged = not granted; time-out; re-issue (SCN-POSCOM-STALE)</td>
+</tr>
+<tr>
+<td>Technician's PRU stops reporting in the area</td>
+<td>Person's position unknown</td>
+<td>Hold the area; radio check; no release until confirmed (SCN-PRU-FAIL-LV07)</td>
+</tr>
+<tr>
+<td>Unwritten driver rule not carried over (a low windrow)</td>
+<td>Trucks keep to a path a driver would have avoided</td>
+<td>Rule register (table 4.2); map change process (REQ-01-02-004)</td>
+</tr>
+<tr>
+<td>Autonomy-specific stops uncoded or coded &quot;other&quot;</td>
+<td>Loss invisible; break-even margin unknown</td>
+<td>Codes DLY-OD-03 to DLY-OD-06, coded at the HMI (REQ-01-02-005)</td>
+</tr>
+<tr>
+<td>Recovery steps out of order</td>
+<td>Isolation removed with a path granted, or permission released with the person near the truck</td>
+<td>Recovery state shown and enforced (REQ-01-02-006); procedure 8.3</td>
+</tr>
+</tbody>
+</table>
+<h3 id="s-7-3">7.3 Interface and timing considerations</h3>
+<p>The SCN-RECOVER-DT17 timeline rests on a few messages and state changes, each with a producer, a consumer and a
+deadline:</p>
+<ul>
+<li><strong>T+0 s to T+5 s, fault and stop.</strong> VCS reports the fault; ADS reports &quot;stopped&quot; with position and reason. The five
+seconds are <code>[A]</code>; what matters is that the truck confirms the stopped state rather than AMS inferring it from a
+missing heartbeat.</li>
+<li><strong>T+5 s, FMS update.</strong> FMS must learn the same state from AMS, or it keeps counting on DT17's next load.</li>
+<li><strong>T+481 s to T+581 s, permission.</strong> Request, area lock, confirmation, grant, read-back, acknowledgement. Each step has
+a time-out; a step that times out leaves the permission not granted.</li>
+<li><strong>T+747 s to T+2457 s, presence.</strong> The PRU reports the technician's position throughout. A stale position is a
+reason to hold, never to release.</li>
+<li><strong>T+2457 s to T+2684 s, release order.</strong> Technician clear, isolation removed, permission released and confirmed,
+state reset, mission, path. AMS must enforce the order rather than rely on people: releasing DT17's path checks that
+no permission covering DT17 is active (REQ-01-02-002).</li>
+</ul>
+<p>The driver did all of this by voice. Now each message needs an interface control document entry (ch-02-06) with
+states, time-outs and failure behaviour, because no driver fills the gaps.</p>
+<h2 id="s-8">8. Operations view</h2>
+<h3 id="s-8-1">8.1 What the control room sees</h3>
+<p>At T+5 s the AHS Controller sees an alarm: &quot;DT17 stopped — drivetrain fault — R03, X-bound lane, 600 m from X&quot;, with
+the time since stop counting up. By handbook convention <code>[H]</code> the display shows the truck's recovery state (awaiting
+triage, attendance dispatched, attended and isolated, released, in service) and the permissions around it
+(REQ-01-02-006). At T+747 s it shows the technician's PRU at the stand-off point inside the work area; at T+897 s DT17
+isolated; at T+2654 s the permission released. Trucks held on R03 appear as held, with the reason.</p>
+<p>In the manned mine the controller <em>heard</em> the fleet; now the controller <em>watches</em> it, and what the HMI does not show
+the controller does not know. Recovery state and permissions therefore belong on the display, not in memory.</p>
+<h3 id="s-8-2">8.2 Who decides what</h3>
+<table>
+<thead>
+<tr>
+<th>Decision</th>
+<th>Responsible</th>
+<th>Accountable</th>
+<th>Consulted</th>
+<th>Informed</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Send someone to a stopped truck (or reset remotely)</td>
+<td>AHS Controller</td>
+<td>Pit Supervisor</td>
+<td>Field Technician, Maintenance Planner</td>
+<td>FMS (delay code)</td>
+</tr>
+<tr>
+<td>Grant access to AA-North or AA-Central</td>
+<td>AHS Controller (in AMS)</td>
+<td>Pit Supervisor</td>
+<td>Requesting driver or technician</td>
+<td>Other controllers</td>
+</tr>
+<tr>
+<td>Declare DT17 isolated and safe to approach</td>
+<td>Field Technician</td>
+<td>Pit Supervisor</td>
+<td>AHS Controller (HMI state)</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Declare the fault cleared</td>
+<td>Field Technician</td>
+<td>Maintenance Planner</td>
+<td>AHS Controller</td>
+<td>Pit Supervisor</td>
+</tr>
+<tr>
+<td>Release the permission; return DT17 to service</td>
+<td>AHS Controller</td>
+<td>Pit Supervisor</td>
+<td>Field Technician (clear, outside)</td>
+<td>FMS</td>
+</tr>
+<tr>
+<td>Change shovel break practice (hot-seat)</td>
+<td>Pit Supervisor</td>
+<td>Mine management</td>
+<td>Shovel Operators</td>
+<td>Controllers, Planner</td>
+</tr>
+</tbody>
+</table>
+<h3 id="s-8-3">8.3 Procedure excerpt — attending a stopped autonomous truck (SCN-RECOVER-DT17)</h3>
+<ol>
+<li><strong>AHS Controller (T+5 s):</strong> acknowledge the alarm; confirm that DT17 is stopped, has no path and is withdrawn from
+its assignment; note the fault code.</li>
+<li><strong>AHS Controller (by T+60 s):</strong> triage the fault data. If a remote reset is permitted for this fault, follow that
+procedure. Otherwise dispatch the Field Technician, inform the Pit Supervisor and code the stop (DLY-DN-01).</li>
+<li><strong>Field Technician (T+481 s):</strong> at AP-01, request entry by radio and field terminal: who, route and work area, why,
+how long. Do not enter until the permission is read back and acknowledged.</li>
+<li><strong>Field Technician (T+747 s):</strong> stop at the stand-off point. Confirm with the controller that DT17 is isolated and
+has no path; read back. Apply personal isolation before working on the truck.</li>
+<li><strong>Field Technician (T+2397 s to T+2457 s):</strong> when the fault is cleared, remove personal isolation, return to the
+light vehicle and report &quot;clear of DT17&quot;.</li>
+<li><strong>Field Technician (T+2624 s):</strong> leave the area; release the permission on the field terminal.</li>
+<li><strong>AHS Controller (T+2654 s):</strong> confirm the technician's PRU is outside; confirm the release; only then reset DT17 and
+let FMS assign it. Watch DT17 move off.</li>
+<li><strong>Maintenance Planner (after the shift):</strong> review the fault; decide on workshop follow-up.</li>
+</ol>
+<h3 id="s-8-4">8.4 KPIs and delay codes affected</h3>
+<table>
+<thead>
+<tr>
+<th>Event</th>
+<th>Delay code</th>
+<th>Category</th>
+<th>Note</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>DT17 stopped with drivetrain fault</td>
+<td>DLY-DN-01 Breakdown</td>
+<td>Downtime</td>
+<td>44.7 min; physical availability 93.8 % for the shift</td>
+</tr>
+<tr>
+<td>Trucks held while the work area covers R03</td>
+<td>DLY-OD-04 Held for access permission or work zone</td>
+<td>Operating delay</td>
+<td>On each held truck, linked to DT17's event</td>
+</tr>
+<tr>
+<td>Trucks held while LV07's permission locks R05</td>
+<td>DLY-OD-04</td>
+<td>Operating delay</td>
+<td>The reroute shows as a longer cycle, not a delay</td>
+</tr>
+<tr>
+<td>Nuisance stop; link loss; localisation</td>
+<td>DLY-OD-03; DLY-OD-05; DLY-OD-06</td>
+<td>Operating delay</td>
+<td></td>
+</tr>
+<tr>
+<td>Truck waits at EX02 during a shovel crib break or operator changeover</td>
+<td>DLY-OD-11 Loading unit not loading – truck waits</td>
+<td>Operating delay</td>
+<td>The shovel itself records DLY-SO-02 or DLY-SO-01</td>
+</tr>
+<tr>
+<td>Fuelling</td>
+<td>DLY-OD-09 Fuelling</td>
+<td>Operating delay</td>
+<td>Manned and autonomous trucks alike</td>
+</tr>
+<tr>
+<td>Truck queues at a working shovel or crusher</td>
+<td>DLY-NP-01; DLY-NP-02</td>
+<td>Non-productive time</td>
+<td>Manned and autonomous trucks alike</td>
+</tr>
+<tr>
+<td>Driver crib break</td>
+<td>DLY-SO-02 Operator break</td>
+<td>Operating standby</td>
+<td>Manned equipment only</td>
+</tr>
+<tr>
+<td>Driver changeover</td>
+<td>DLY-SO-01 Shift change</td>
+<td>Operating standby</td>
+<td>Gone for autonomous trucks; the controllers' handover does not stop the fleet</td>
+</tr>
+</tbody>
+</table>
+<p>With the stoppage, DT17's hot-seated shift falls from 10.75 h to 10.00 h of in-cycle time and from 24 to 23 complete
+loads (1.72 cycles lost); physical availability falls to 93.8 % and effective utilisation from 92.4 % to 86.1 %, while
+use of availability stays at 100 %.</p>
+<h3 id="s-8-5">8.5 Training and competency implications</h3>
+<p>Autonomy does not reduce the competence an operation needs; it moves it.</p>
+<ul>
+<li><strong>AHS Controllers</strong> supervise forty trucks they cannot see: fluent positive communication, permission handling
+(grant, read back, release, re-issue), fault triage from data, recognising patterns across trucks (three nuisance
+stops at one place are a road problem), and coding every stop as it happens.</li>
+<li><strong>Field Technicians and light-vehicle drivers</strong> need the access protocol, the stand-off and isolation routine, and
+the habit of treating PRU, radio and field terminal as safety equipment. Without a permission they are, to the
+system, not there.</li>
+<li><strong>Shovel Operators</strong> become the main manned interface of every truck: they signal trucks away, request work zones
+for DZ03 and decide with the Pit Supervisor how their breaks are covered.</li>
+<li><strong>Pit Supervisors</strong> need to read time usage as in section 4.6; use of availability alone looks better than the shift
+was.</li>
+<li><strong>Former drivers</strong> hold the unwritten rules that table 4.2 needs; capturing them before the transition is part of
+the work (ch-17-06, ch-19-05).</li>
+</ul>
+<h2 id="s-9">9. Requirements and acceptance criteria</h2>
+<p>REQ-01-02-001 [H]
+When an autonomous truck stops because of a fault, the AMS shall keep the truck's stopped state, position, stop reason
+and occupied road space, and shall not grant the truck a new path until an authorised role has released it from recovery.
+Rationale: a stopped truck is not finished; the system must remember on behalf of the absent driver (section 4.3).
+Verification: test (LAB-01-02-01 SCN-RECOVER-DT17 timeline; AMS restart during the stop); inspection.</p>
+<p>REQ-01-02-002 [H]
+The AMS shall not grant a path to a truck, or a path through an area, while a digital access permission covering that
+truck or area is active. A permission shall be released only after the permitted person or vehicle is confirmed
+outside the area by position report and by radio read-back.
+Rationale: release order is where recovery can put a person and a moving truck in one place (sections 4.3, 7.3).
+Verification: test (fault injection: path request with an active permission); demonstration.</p>
+<p>REQ-01-02-003 [H]
+The AMS shall grant a manned vehicle entry to an autonomous area only when the vehicle's position reporting unit is
+reporting, the requested area has been confirmed clear of autonomous traffic, and the grant has been read back and
+acknowledged on the field terminal. A grant not acknowledged within its time-out shall be treated as not granted.
+Rationale: manned vehicles and autonomous trucks are separated by plan, failing closed (section 4.4).
+Verification: test (SCN-POSCOM-LV07, SCN-POSCOM-STALE); inspection.</p>
+<p>REQ-01-02-004 [H]
+Every traffic rule that drivers applied by judgement in the manned operation and that the site still requires shall be
+recorded in a rule register with its system representation (AMS rule, speed restriction or map attribute), its owner
+and its configuration version.
+Rationale: an unwritten rule disappears with the driver (section 4.2).
+Verification: inspection (rule register against table 4.2 and the former manned procedures).</p>
+<p>REQ-01-02-005 [H]
+The FMS shall classify truck time with the handbook time usage model, recording autonomy-specific stops (DLY-OD-03 to
+DLY-OD-06) and waiting for a loading unit that is not loading (DLY-OD-11) under their own codes, so that manned and
+autonomous shifts can be compared on the same basis.
+Rationale: the gain from autonomy is the operating standby removed minus the operating delay added (section 4.6).
+Verification: test (LAB-01-02-01 experiments 1 and 2); inspection of the delay code set.</p>
+<p>REQ-01-02-006 [H]
+The control-room display shall show, for each stopped autonomous truck, the stop reason, the time since the stop, the
+recovery state (awaiting triage, attendance dispatched, attended and isolated, released, in service) and the access
+permissions active around it.
+Rationale: the controller knows only what the display shows (section 8.1).
+Verification: demonstration with the SCN-RECOVER-DT17 timeline.</p>
+<h2 id="s-10">10. Verification and validation</h2>
+<p><strong>Verification</strong> of this chapter's numbers:</p>
+<ul>
+<li>time usage is computed by <code>ahs_sim.kpi.classify</code> and <code>kpis</code>, which have their own unit tests;</li>
+<li>the lab tests check the reference values of section 4.6, the break-even values (20 and 80 min), that autonomy raises
+use of availability and lowers operating efficiency, that DLY-SO-02 never appears on an autonomous truck, and that
+every event log is valid;</li>
+<li>the SCN-RECOVER-DT17 timeline is checked against the registered skeleton (dispatch at T+60 s, isolation by about
+T+900 s, fault cleared at about T+2400 s) and its travel times against the road network;</li>
+<li>the LV07 reroute (+236 s for EX01 and EX02) is computed by <code>compute_cycle</code> with R05 and R06 closed.</li>
+</ul>
+<p>On a real system some requirements need fault injection: REQ-01-02-002 must be tested by deliberately requesting a
+path while a permission is active, not by observing that it never happens.</p>
+<p><strong>Validation</strong> of the time usage comparison needs real shift data from a manned and an autonomous operation, coded
+with the same delay codes — which is what REQ-01-02-005 asks for. The reference mine has no such data, and this
+chapter makes no claim about the size of the gain at any real site.</p>
+<h2 id="s-11">11. Common mistakes</h2>
+<h3 id="s-11-1">11.1 Design mistakes</h3>
+<ul>
+<li><strong>Treating &quot;stopped&quot; as &quot;safe and finished&quot;.</strong> The stop starts a recovery that needs persistent state, permissions
+and a release order.</li>
+<li><strong>Relying on perception to separate people from trucks.</strong> Separation is planned with PRUs and permissions.</li>
+<li><strong>Leaving rules implicit.</strong> Every rule the drivers carried in their heads needs a register entry and an owner.</li>
+<li><strong>Designing access areas without counting held trucks.</strong> An area over R05 costs 236 s on every ore cycle that must
+take the west ramp.</li>
+<li><strong>Letting the release order depend on people alone.</strong> The system must refuse a path through an active permission.</li>
+</ul>
+<h3 id="s-11-2">11.2 Operational mistakes</h3>
+<ul>
+<li><strong>Expecting the drivers' break time to appear automatically.</strong> The shovels still stop.</li>
+<li><strong>Reading only use of availability.</strong> It rises to 100 % while operating efficiency falls; effective utilisation and
+in-cycle time tell the story.</li>
+<li><strong>Leaving autonomy-specific stops uncoded.</strong> Thirty minutes of uncoded stops turn a gain into a loss unseen.</li>
+<li><strong>Driving into an autonomous area &quot;just for a minute&quot;.</strong> Without a permission the system does not know you are there.</li>
+<li><strong>Releasing a permission before the person is confirmed outside.</strong> It makes the rest of the procedure pointless.</li>
+</ul>
+<h2 id="s-12">12. Worked examples</h2>
+<p>All values <code>[A]</code>, computed by LAB-01-02-01 with <code>ahs_sim</code> on mine version 0.3.0.</p>
+<p><strong>Example 1 — manned.</strong> In-cycle time 720 − (30 + 60) − 15 − 20 = 595 min = 9.92 h (operating standby, operating
+delay, queues); 595 × 60 / 1564.1 = 22.8 cycles, 22 complete loads. Productive time 9.92 × (1 − 503.1 / 1564.1) =
+6.73 h. Use of availability 630 / 720 = 87.5 %; operating efficiency (630 − 15) / 630 = 97.6 %.</p>
+<p><strong>Example 2 — autonomous, shovel breaks unchanged.</strong> 720 − (10 + 60 + 15 + 30) − 20 = 585 min = 9.75 h; 22.4 cycles,
+22 complete loads; 10 minutes less than manned. Use of availability 720 / 720 = 100 %; operating efficiency
+(720 − 115) / 720 = 84.0 %.</p>
+<p><strong>Example 3 — autonomous, shovels hot-seated.</strong> 720 − (10 + 15 + 30) − 20 = 645 min = 10.75 h; 24.7 cycles,
+24 complete loads; 50 minutes and two loads more than manned. Operating efficiency (720 − 55) / 720 = 92.4 %.</p>
+<p><strong>Example 4 — break-even.</strong> Hot-seated: (90 + 15) − (10 + 15) = 80 min of autonomy-specific delay per truck per shift.
+Unchanged shovel breaks: (90 + 15) − (70 + 15) = 20 min.</p>
+<p><strong>Example 5 — first eyes on DT17.</strong> Dispatch at T+60 s, preparation 300 s, travel to AP-01 121 s, permission 100 s,
+travel to the stand-off point 167 s: T+747 s. Travel alone is 287 s for 2.80 km at site speed limits.</p>
+<p><strong>Example 6 — cost of the recovery.</strong> 2684 s = 44.7 min down, or 2684 / 1564.1 = 1.72 cycles of M-20481. In-cycle
+time falls from 10.75 h to 10.00 h, complete loads from 24 to 23, physical availability to 93.8 %.</p>
+<p><strong>Example 7 — cost of LV07's permission.</strong> R05 is locked for 1295 s; by the west ramp M-20481 takes 1800.1 s instead of
+1564.1 s (+236 s per ore cycle).</p>
+<h2 id="s-13">13. Hands-on labs</h2>
+<p>LAB-01-02-01, manned versus autonomous operating hours, builds the shift event logs of section 4.6 and classifies them
+with <code>ahs_sim.kpi</code>, sweeps the autonomy-specific delay to find the break-even, computes the SCN-RECOVER-DT17 timeline
+from the road network and measures the cost of LV07's permission with <code>ahs_sim.haul_cycle</code>. Instructions, expected
+results and the operations interpretation are in labs/README.md.</p>
+<h2 id="s-14">14. Discussion questions and assignments</h2>
+<h3 id="s-14-1">14.1 Engineering assignments</h3>
+<ol>
+<li>Use the lab to find the autonomy-specific delay at which the hot-seated autonomous truck completes the same number
+of loads as the manned truck. Why is it not exactly the 80-minute break-even?</li>
+<li>Specify the recovery state machine behind REQ-01-02-006: states, transitions, the role or message that triggers
+each, and what happens on a communications loss in each state.</li>
+<li>LV07's permission covers R05 and R06. Design a smaller area that keeps the route over R05 and R06 open (closing R06
+alone does not; use the lab to see why), and list the extra permissions, messages and failure modes it adds.</li>
+<li>Write three rules from table 4.2 as requirements, each with an owner, a configuration home and a test.</li>
+</ol>
+<h3 id="s-14-2">14.2 Operations assignments</h3>
+<ol>
+<li>Answer the Pit Supervisor's question from section 2 in five sentences, with the numbers of section 4.6.</li>
+<li>Write the radio exchange for the Field Technician's entry at AP-01 in SCN-RECOVER-DT17, including the read-back.</li>
+<li>Estimate the waste loads lost while the work area at DT17 holds R03 for 28.5 minutes, if 20 trucks <code>[A]</code> are on the
+D01 circuit with a 31.9-minute cycle (ch-01-01). What would you do with those trucks?</li>
+<li>List the tasks that are new to a former haul-truck driver joining the field crew, and the competency each needs.</li>
+</ol>
+<h2 id="s-15">15. Key takeaways</h2>
+<ul>
+<li>Autonomy does not remove the driver's tasks; it moves them — sensing and acting to ADS, VCS and safety functions,
+coordination to AMS as explicit rules, judgement and response to people outside the truck.</li>
+<li>A stopped autonomous truck is not &quot;safe and finished&quot;: its state, the permissions around it and a strict release
+order must persist until recovery is complete. In the walkthrough DT17 is down 44.7 minutes, 25 of them for repair.</li>
+<li>Manned vehicles are separated from trucks by plan — PRU, digital access permission, positive communication — not by
+perception. The price is held or rerouted trucks: 236 s per ore cycle while R05 is locked.</li>
+<li>Autonomy adds a delay category that drivers used to absorb, concentrated where coverage and positioning are weak,
+above all on R05.</li>
+<li>The gain in in-cycle time is the operating standby removed minus the operating delay added. With unchanged shovel
+breaks it can be negative; with hot-seated shovels it is 50 minutes per truck per shift in the reference model, with
+a break-even of 80 minutes of autonomy-specific delay.</li>
+<li>Read use of availability, operating efficiency and effective utilisation together; use of availability alone
+flatters autonomy.</li>
+</ul>
+<h2 id="s-16">16. Glossary terms introduced</h2>
+<p><code>function-allocation</code>, <code>manned-vehicle</code>, <code>mixed-fleet</code>, <code>autonomous-area</code>, <code>access-point</code>,
+<code>positive-communication</code>, <code>digital-access-permission</code>, <code>read-back</code>, <code>acknowledgement</code>, <code>fail-closed</code>,
+<code>position-reporting-unit</code>, <code>field-terminal</code>, <code>controlled-stop</code>, <code>isolation</code>, <code>stand-off-point</code>, <code>exclusion-zone</code>,
+<code>work-zone</code>, <code>recovery</code>, <code>remote-supervision</code>, <code>nuisance-stop</code>, <code>localisation-integrity</code>, <code>network-coverage</code>,
+<code>time-usage-model</code>, <code>standby</code>, <code>operating-standby</code>, <code>operating-delay</code>, <code>operator-break</code>, <code>hot-seat-change</code>,
+<code>use-of-availability</code>, <code>operating-efficiency</code>, <code>production-effectiveness</code>, <code>effective-utilisation</code>,
+<code>physical-availability</code>, <code>delay-code</code>, <code>staged-restart</code>, <code>competency</code></p>
+<nav aria-label="Introductory chapters"><p><a href="ch-01-01.en.html">Previous chapter</a> · <a href="../handbook.html">Handbook contents</a></p></nav>
+</main>
+</body>
+</html>

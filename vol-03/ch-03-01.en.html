@@ -1,0 +1,1581 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="generator" content="ahs-handbook build_articles 2.0.0">
+<meta name="ahs:id" content="ch-03-01">
+<meta name="ahs:version" content="0.1.2">
+<meta name="ahs:status" content="approved">
+<meta name="ahs:source-sha256" content="0944a530a018ae56">
+<title>Stakeholder needs and ConOps</title>
+<style>
+:root {
+  --bg: #fbfaf7;
+  --fg: #1d1f21;
+  --muted: #5d6166;
+  --accent: #1f6f8b;
+  --accent-soft: #e3f0f4;
+  --border: #d9d6cf;
+  --code-bg: #f1efea;
+  --warn-bg: #fff6e0;
+  --warn-border: #e2b54a;
+  --watermark: rgba(200, 60, 60, 0.07);
+  --font-body: system-ui, -apple-system, "Segoe UI", "Hiragino Sans", "Hiragino Kaku Gothic ProN",
+    "Noto Sans JP", "Yu Gothic", Meiryo, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #15171a;
+    --fg: #e6e4df;
+    --muted: #a3a7ad;
+    --accent: #6cc3de;
+    --accent-soft: #1d3440;
+    --border: #33373d;
+    --code-bg: #1f2226;
+    --warn-bg: #2e2716;
+    --warn-border: #8c7330;
+    --watermark: rgba(255, 120, 120, 0.06);
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #15171a;
+  --fg: #e6e4df;
+  --muted: #a3a7ad;
+  --accent: #6cc3de;
+  --accent-soft: #1d3440;
+  --border: #33373d;
+  --code-bg: #1f2226;
+  --warn-bg: #2e2716;
+  --warn-border: #8c7330;
+  --watermark: rgba(255, 120, 120, 0.06);
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0 auto;
+  max-width: 52rem;
+  padding: 1.25rem 16px 3rem;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-body);
+  font-size: 1.0625rem;
+  line-height: 1.7;
+  overflow-wrap: anywhere;
+}
+h1 { font-size: 1.9rem; line-height: 1.3; margin: 0.6rem 0 1rem; }
+h2 { font-size: 1.4rem; margin-top: 2.4rem; border-bottom: 1px solid var(--border); padding-bottom: 0.2rem; }
+h3 { font-size: 1.15rem; margin-top: 1.8rem; }
+a { color: var(--accent); }
+code { font-family: var(--font-mono); background: var(--code-bg); padding: 0.05rem 0.3rem; border-radius: 3px; font-size: 0.92em; }
+pre { background: var(--code-bg); padding: 0.8rem 1rem; overflow-x: auto; border-radius: 6px; line-height: 1.45; }
+pre code { background: none; padding: 0; }
+table { border-collapse: collapse; width: 100%; display: block; overflow-x: auto; margin: 1rem 0; }
+th, td { border: 1px solid var(--border); padding: 0.35rem 0.6rem; text-align: left; vertical-align: top; }
+/* Never break inside numbers or IDs in table cells; wide tables scroll horizontally instead. */
+th, td { overflow-wrap: normal; word-break: normal; }
+th { background: var(--accent-soft); }
+blockquote { margin: 1rem 0; padding: 0.2rem 1rem; border-left: 4px solid var(--accent); color: var(--muted); }
+.article-header .meta-row { display: flex; flex-wrap: wrap; gap: 0.4rem 0.9rem; align-items: center; font-size: 0.85rem; color: var(--muted); }
+.chapter-id { font-family: var(--font-mono); font-weight: 600; color: var(--fg); }
+.status { padding: 0.05rem 0.5rem; border: 1px solid var(--border); border-radius: 999px; }
+.status-draft, .status-revision, .status-in-review { border-color: var(--warn-border); background: var(--warn-bg); }
+.theme-toggle { font: inherit; font-size: 0.8rem; color: var(--fg); background: transparent; border: 1px solid var(--border); border-radius: 4px; padding: 0.1rem 0.5rem; cursor: pointer; }
+.disclaimer { background: var(--warn-bg); border: 1px solid var(--warn-border); border-radius: 6px; padding: 0.6rem 0.9rem; font-size: 0.9rem; }
+.disclaimer p { margin: 0.25rem 0; }
+.toc { border: 1px solid var(--border); border-radius: 6px; padding: 0.6rem 1rem; margin: 1.2rem 0; font-size: 0.92rem; }
+.toc ol { margin: 0.3rem 0 0; padding-left: 1.2rem; }
+.fig { margin: 1.6rem 0; text-align: center; }
+.fig img, .fig svg { max-width: 100%; height: auto; }
+.fig pre.mermaid { background: transparent; text-align: center; }
+figcaption { font-size: 0.9rem; color: var(--muted); margin-top: 0.5rem; }
+.fig-no { font-weight: 600; color: var(--fg); }
+.fig-id { font-family: var(--font-mono); font-size: 0.75rem; opacity: 0.7; }
+.math-block { overflow-x: auto; margin: 1rem 0; }
+math { font-size: 1.1em; }
+.widget { border: 1px solid var(--border); border-radius: 8px; padding: 1rem; margin: 1.5rem 0; background: var(--accent-soft); }
+.widget label { display: block; margin: 0.4rem 0; font-size: 0.95rem; }
+.widget select, .widget input { font: inherit; color: var(--fg); background: var(--bg); border: 1px solid var(--border); border-radius: 4px; padding: 0.15rem 0.3rem; max-width: 100%; }
+.widget .result { font-size: 1.05rem; margin-top: 0.7rem; }
+.widget table { font-size: 0.88rem; }
+.watermark { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; pointer-events: none; font-size: 22vw; font-weight: 800; color: var(--watermark); transform: rotate(-24deg); z-index: 0; }
+.article-header, .toc, .article-body, .article-footer { position: relative; z-index: 1; }
+.article-footer { margin-top: 3rem; font-size: 0.8rem; color: var(--muted); border-top: 1px solid var(--border); padding-top: 0.6rem; }
+@media (max-width: 600px) {
+  body { font-size: 1rem; }
+  h1 { font-size: 1.55rem; }
+}
+@media print { .watermark { color: rgba(0, 0, 0, 0.06); } .theme-toggle { display: none; } }
+
+</style>
+<script>
+(function () {
+  var root = document.documentElement;
+  try {
+    var saved = localStorage.getItem("ahs-theme");
+    if (saved === "dark" || saved === "light") root.dataset.theme = saved;
+  } catch (e) {}
+  var mq = window.matchMedia ? window.matchMedia("(prefers-color-scheme: dark)") : null;
+  // No explicit choice: follow the system theme (CSS does the same through prefers-color-scheme).
+  function isDark() {
+    return root.dataset.theme ? root.dataset.theme === "dark" : !!(mq && mq.matches);
+  }
+  // Mermaid diagrams keep their original definition in data-source and are re-rendered with the theme that
+  // matches the page whenever the theme changes (review 2026-11-14, R22).
+  window.ahsRenderMermaid = function () {
+    if (!window.mermaid) return;
+    var nodes = Array.prototype.slice.call(document.querySelectorAll("pre.mermaid"));
+    if (!nodes.length) return;
+    nodes.forEach(function (el) {
+      if (el.getAttribute("data-source") === null) {
+        el.setAttribute("data-source", el.textContent);
+      } else {
+        el.removeAttribute("data-processed");
+        el.textContent = el.getAttribute("data-source");
+      }
+    });
+    window.mermaid.initialize({ startOnLoad: false, securityLevel: "strict", theme: isDark() ? "dark" : "default" });
+    var done = window.mermaid.run({ nodes: nodes });
+    if (done && done.catch) done.catch(function (err) { if (window.console) console.error(err); });
+  };
+  function syncButton(btn) {
+    btn.setAttribute("aria-pressed", isDark() ? "true" : "false");
+  }
+  document.addEventListener("DOMContentLoaded", function () {
+    var btn = document.querySelector(".theme-toggle");
+    if (btn) syncButton(btn);
+    if (mq) {
+      var onSystemChange = function () {
+        if (root.dataset.theme) return;
+        if (btn) syncButton(btn);
+        window.ahsRenderMermaid();
+      };
+      if (mq.addEventListener) mq.addEventListener("change", onSystemChange);
+      else if (mq.addListener) mq.addListener(onSystemChange);
+    }
+    if (!btn) return;
+    btn.addEventListener("click", function () {
+      root.dataset.theme = isDark() ? "light" : "dark";
+      try { localStorage.setItem("ahs-theme", root.dataset.theme); } catch (e) {}
+      syncButton(btn);
+      window.ahsRenderMermaid();
+    });
+  });
+})();
+
+</script>
+<link rel="canonical" href="https://thomas-21.github.io/ahs_engineering_handbook/vol-03/ch-03-01.en.html">
+</head>
+<body data-chapter-id="ch-03-01" data-status="approved">
+<header class="article-header">
+  <div class="meta-row">
+    <a class="home-link" href="../handbook.html">All chapters</a>
+    <span class="chapter-id">ch-03-01</span>
+    <span class="lab-link">No lab in this chapter</span>
+    <button type="button" class="theme-toggle" aria-label="Theme">Theme</button>
+  </div>
+  <h1>Stakeholder needs and ConOps</h1>
+</header>
+<nav class="toc" aria-label="Contents"><strong>Contents</strong><ol><li><a href="#s-1">1. Overview</a></li><li><a href="#s-2">2. Operational motivation: the problem at the reference mine</a></li><li><a href="#s-3">3. Terminology and foundations</a></li><li><a href="#s-4">4. Technical explanation</a></li><li><a href="#s-5">5. Responsibilities and interface boundaries</a></li><li><a href="#s-6">6. Normal, abnormal and degraded operation</a></li><li><a href="#s-7">7. Engineering view</a></li><li><a href="#s-8">8. Operations view</a></li><li><a href="#s-9">9. Requirements and acceptance criteria</a></li><li><a href="#s-10">10. Verification and validation</a></li><li><a href="#s-11">11. Common mistakes</a></li><li><a href="#s-12">12. Worked examples</a></li><li><a href="#s-13">13. Hands-on labs</a></li><li><a href="#s-14">14. Discussion questions and assignments</a></li><li><a href="#s-15">15. Key takeaways</a></li><li><a href="#s-16">16. Glossary terms introduced</a></li></ol></nav>
+<main class="article-body">
+<h2 id="s-1">1. Overview</h2>
+<h3 id="s-1-1">1.1 Why this chapter matters</h3>
+<p>It is a workshop in the training room at the MIA, during the project that brings autonomous haulage into AA-North.
+On the screen is the supplier's draft concept of operations. Its access section has one sentence: &quot;Light vehicles
+request access via the field terminal; the AMS grants access when the area is clear.&quot; The pit patrol driver who
+takes LV07 down R05 most mornings reads it twice and asks three questions. Who do I talk to — the terminal or a
+person? What do I do if the radio says &quot;enter&quot; and the terminal says nothing? And when I am down on R06 and my time
+runs out, does the system decide I have left?</p>
+<p>The day-shift dispatcher, who will become one of the first AHS Controllers, has a different worry. At 18:00 they
+hand over to the night shift with a truck down on R03 and a light vehicle in the pit, and today that happens in
+five minutes at the whiteboard. Nothing in the draft mentions handover. The captain of the Emergency Response Team
+asks how the team reaches a burning truck on the ramp if the system has locked the ramp, and who tells them it is
+safe to walk up to it. The Pit Supervisor asks what it costs in tonnes every time LV07 goes into the pit.</p>
+<p>None of these questions is answered by a better algorithm. They are <strong>needs</strong> of people who will live with the
+system, and the draft has not recorded them. Left unrecorded, each becomes a late requirement or a workaround on site.
+This chapter is about catching them early and writing them so that both sides can check they were met:</p>
+<ul>
+<li>who the stakeholders of the reference-mine AHS are, and how their needs are elicited and recorded (FIG-03-01-01);</li>
+<li>the difference between a stakeholder need, a system requirement and a design solution, using LV07's entry to
+AA-North as the example (FIG-03-01-02);</li>
+<li>the structure of a concept of operations (ConOps) for autonomous haulage in AA-North, including operating modes
+and transitions in AA-North and at the MIA boundary;</li>
+<li>which manned practices the ConOps must preserve, change or replace, and which situations it must cover before
+go-live — among them a fire on DT17 and an R05 closure with traffic diverted over the west ramp R24.</li>
+</ul>
+<h3 id="s-1-2">1.2 Learning objectives — Engineering</h3>
+<p>After this chapter an engineering reader will be able to:</p>
+<ol>
+<li>Identify the stakeholders of the reference-mine AHS (operator, vendor, workforce, regulator, plant, maintenance,
+survey) and record their needs in a form that can be traced.</li>
+<li>Structure a concept of operations for introducing autonomous haulage into AA-North: operating modes, users,
+scenarios, interfaces and constraints.</li>
+<li>Distinguish a stakeholder need from a system requirement and from a design solution, using the LV07 access
+request as the example.</li>
+<li>Specify the operating modes and mode transitions (autonomous, manual, maintenance, stopped) of trucks in AA-North
+and at the MIA boundary as part of the ConOps.</li>
+</ol>
+<h3 id="s-1-3">1.3 Learning objectives — Operations</h3>
+<p>After this chapter an operations reader will be able to:</p>
+<ol>
+<li>Express an operational need of the AHS Controller or Pit Supervisor (for example at shift handover) as a clear,
+testable statement for the engineering team.</li>
+<li>Review a ConOps section on access to AA-North and identify missing roles, situations or procedures.</li>
+<li>Describe the current manned-operation practices (radio calls, area entry, shift handover) that the ConOps must
+preserve, change or replace.</li>
+<li>Identify the operational situations the ConOps must cover before autonomous haulage starts in AA-North,
+including a fire on DT17 and an R05 closure with traffic diverted to the west ramp R24.</li>
+</ol>
+<h2 id="s-2">2. Operational motivation: the problem at the reference mine</h2>
+<p>In the manned North Pit, many needs were met without anyone writing them down, because a person sat in every haul
+truck. When LV07 drove down R05, every truck driver on the ramp saw it and gave way. When a truck broke down, its
+driver called the dispatcher and stayed with the machine. When a fire alarm sounded, the driver chose where to stop,
+got out and met the fire crew. At shift change the drivers handed over the machines, and the dispatcher told the
+next dispatcher which trucks were down. These were not features of a system; they were the behaviour of people, and
+the needs they served — <em>be seen</em>, <em>get help</em>, <em>stop somewhere sensible</em>, <em>know what is still open</em> — were satisfied
+implicitly <code>[H]</code>.</p>
+<p>Autonomy removes the driver, and every need the driver met implicitly is left without anyone to meet it. Each must
+now be met explicitly by a system function, a procedure, a device or a role. The danger is that nobody notices that a need
+existed until the system is on site. Four patterns recur <code>[H]</code>:</p>
+<ul>
+<li><strong>The need is never stated.</strong> Nobody asked the night shift, the ERT or the plant, so the design has no answer for
+them. The gap shows up as a workaround: a controller writes permissions on a notepad because the HMI does not list
+them, or the ERT waits at the zone boundary because nobody knows who may confirm that the truck cannot move.</li>
+<li><strong>The need is stated as a solution.</strong> &quot;We need a button on the terminal to enter the pit&quot; fixes the design before
+anyone has asked what must be true when the driver enters. The real need — <em>no autonomous truck is routed into
+the place where I am</em> — is lost, and a button that does not guarantee it can satisfy the sentence.</li>
+<li><strong>The need is stated without a situation or a measure.</strong> &quot;Access should be quick&quot; cannot be designed against or
+tested. Quick compared with what, with how many trucks on R05, at night?</li>
+<li><strong>Needs conflict and nobody decides.</strong> The LV07 driver wants a short wait at AP-02; the Pit Supervisor wants the
+ore circuits of EX01 and EX02 to keep running. Both are legitimate. Without a recorded decision, the conflict is
+resolved by whoever writes the code.</li>
+</ul>
+<p>The cost of each pattern grows with time: a need found in a workshop changes a sentence; found after go-live it
+changes a release, a procedure, the training of four crews and the safety case. The concept of operations is where
+the project writes down, before design, how the system will be used, by whom and in which situations.</p>
+<h2 id="s-3">3. Terminology and foundations</h2>
+<p><strong>Stakeholder.</strong> A person or organisation with an interest in the system. Some use it every shift (the AHS
+Controller, the field crew); some are affected by it without using it (the plant at C01, the ERT); some govern or
+supply it (site management, the integration authority, system suppliers, the regulator). The reference mine's seven
+operational roles are defined in <code>mine.yaml</code> and ch-01-06; drivers of manned vehicles such as LV07, DZ03 and WT02
+are not a separate role and work under the Pit Supervisor (ch-01-06).</p>
+<p><strong>Operational need</strong> <code>[H]</code>. What a stakeholder must be able to do, or be certain of, in a stated situation, written
+in the stakeholder's terms and independent of any design. &quot;Before I drive in at AP-02, I need to know that no
+autonomous truck will be routed into the place where I will be, for as long as I am there&quot; is a need. This handbook
+records needs with chapter-local IDs <code>NEED-03-01-nn</code>; they are illustrative and not registered handbook IDs.</p>
+<p><strong>System requirement.</strong> A verifiable statement of what the system — or one of its elements, or people — shall do,
+allocated to FMS, AMS, ADS, VCS, independent safety functions, onboard systems, manned-vehicle devices or people
+(ch-02-03). Requirements in this handbook use the format <code>REQ-VV-CC-NNN</code> with an evidence label, a rationale and a
+verification method (chapter template). Ch-03-02 develops requirements engineering; this chapter stops at the step
+from need to requirement.</p>
+<p><strong>Design solution.</strong> One way of meeting a requirement: a state machine, a screen layout, a lock algorithm, a
+button. Design solutions are chosen by engineers after the requirement is known. A design solution written into a
+need or a ConOps freezes a choice before anyone has compared alternatives.</p>
+<p><strong>Concept of operations (ConOps).</strong> A description of how the system will be used, from the stakeholders' viewpoint:
+who uses it, in which modes and situations, through which interfaces, under which constraints, and what changes for
+the people involved. It is written before the requirements are fixed and is kept as the reference against which they
+are validated. It is not a requirements specification and not a design document.</p>
+<p><strong>Operational scenario.</strong> A defined sequence of events used to analyse system behaviour and human actions together.
+The handbook's scenarios are registered once in <code>scenario-registry.yml</code> with a trigger, an initial state, key events
+on a timeline, and the elements and roles involved. A ConOps for AA-North refers to registered scenarios rather than
+inventing its own.</p>
+<p><strong>Operating mode.</strong> How a truck is driven: autonomous (the AMS assigns paths, the ADS drives), manual (a person in
+the cab drives; the truck is then a manned vehicle that needs a permission) or maintenance (under the workshop's
+control in MIA) (ch-16-05). A stopped autonomous truck is in a <strong>stop state</strong> — fault, safety, remote or comms-lost —
+that says who owns the stop and what can end it.</p>
+<p><strong>Needs elicitation</strong> <code>[H]</code>. Finding out what stakeholders need: by observing the current operation, interviewing,
+running workshops, walking through scenarios and reading records such as shift logs, delay records and incident
+reports.</p>
+<p><strong>Stakeholder map</strong> <code>[H]</code>. A diagram of the stakeholders around the system, grouped by how they relate to it and
+showing the channel through which each one acts.</p>
+<p><strong>Validation and verification.</strong> Validation asks whether the system meets the stakeholders' needs in its operational
+context (&quot;the right system&quot;); verification asks whether it meets its specified requirements (&quot;the system right&quot;).
+Needs and the ConOps are validated; requirements are verified. Both are developed in ch-03-07 and Volume 18.</p>
+<h2 id="s-4">4. Technical explanation</h2>
+<h3 id="s-4-1">4.1 The stakeholders of the reference-mine AHS</h3>
+<p>FIG-03-01-01 shows the stakeholders of the reference-mine AHS in four groups around the system. The grouping is a
+handbook convention <code>[H]</code>; a project can draw the map differently, but every map should answer the same two
+questions: <em>who has a stake</em> and <em>through which channel does each one act</em>.</p>
+<figure id="FIG-03-01-01" class="fig"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 670" role="img" aria-label="Stakeholders of the reference-mine AHS grouped around the system: control room, field, support roles and organisations, with the channel each uses and the number of need records in this chapter">
+<style>
+.fg{fill:var(--fg,#1d1f21)} .mu{fill:var(--muted,#5d6166)}
+.t{font-size:12.5px;font-weight:600} .s{font-size:11px} .ttl{font-size:16px;font-weight:700}
+.g{font-size:12.5px;font-weight:700} .lk{font-size:11px;font-style:italic}
+.box{fill:var(--bg,#ffffff);stroke:var(--muted,#5d6166);stroke-width:1}
+.role{fill:var(--bg,#ffffff);stroke:#d97a1e;stroke-width:1.6}
+.grp{fill:var(--accent-soft,#e3f0f4);stroke:none;opacity:0.55}
+.ctr{fill:var(--accent,#1f6f8b)} .ctrt{fill:#ffffff;font-size:13px;font-weight:700} .ctrs{fill:#ffffff;font-size:11.5px}
+.ln{stroke:var(--accent,#1f6f8b);stroke-width:2;fill:none}
+.lnd{stroke:var(--muted,#5d6166);stroke-width:1.5;fill:none;stroke-dasharray:5 4}
+</style>
+<text class="fg ttl" x="10" y="26">Stakeholder map of the reference-mine AHS</text>
+<line class="ln" x1="480.0" y1="225" x2="480.0" y2="170"/>
+<line class="ln" x1="390" y1="270.0" x2="280" y2="270.0"/>
+<line class="lnd" x1="570" y1="270.0" x2="680" y2="270.0"/>
+<line class="lnd" x1="480.0" y1="315" x2="480.0" y2="380"/>
+<rect class="grp" x="300" y="50" width="360" height="120" rx="8"/>
+<text class="fg g" x="310" y="70">Control room CR1</text>
+<rect class="role" x="310" y="84" width="165" height="72" rx="5"/>
+<text class="fg t" x="318" y="101">AHS Controller</text>
+<text class="mu s" x="318" y="116">AMS / FMS HMI, radio,</text>
+<text class="mu s" x="318" y="129">remote stop</text>
+<text class="mu s" x="318" y="149">needs recorded: 3</text>
+<rect class="role" x="485" y="84" width="165" height="72" rx="5"/>
+<text class="fg t" x="493" y="101">Pit Supervisor</text>
+<text class="mu s" x="493" y="116">radio, FMS reports,</text>
+<text class="mu s" x="493" y="129">shift log</text>
+<text class="mu s" x="493" y="149">needs recorded: 3</text>
+<rect class="grp" x="10" y="50" width="270" height="470" rx="8"/>
+<text class="fg g" x="20" y="70">In the field</text>
+<rect class="role" x="20" y="84.0" width="250" height="90" rx="5"/>
+<text class="fg t" x="28" y="101.0">Field Technician</text>
+<text class="mu s" x="28" y="116.0">radio, field terminal, PRU</text>
+<text class="mu s" x="28" y="167.0">needs recorded: 1</text>
+<rect class="role" x="20" y="193.0" width="250" height="90" rx="5"/>
+<text class="fg t" x="28" y="210.0">Shovel Operator</text>
+<text class="mu s" x="28" y="225.0">loading display, radio</text>
+<text class="mu s" x="28" y="276.0">needs recorded: 1</text>
+<rect class="box" x="20" y="302.0" width="250" height="90" rx="5"/>
+<text class="fg t" x="28" y="319.0">Manned-vehicle drivers (LV07, DZ03, WT02)</text>
+<text class="mu s" x="28" y="334.0">radio, field terminal, PRU</text>
+<text class="mu s" x="28" y="385.0">needs recorded: 3</text>
+<rect class="role" x="20" y="411.0" width="250" height="90" rx="5"/>
+<text class="fg t" x="28" y="428.0">Emergency Response Team</text>
+<text class="mu s" x="28" y="443.0">radio, field terminal</text>
+<text class="mu s" x="28" y="494.0">needs recorded: 2</text>
+<rect class="grp" x="680" y="50" width="270" height="300" rx="8"/>
+<text class="fg g" x="690" y="70">Support roles</text>
+<rect class="role" x="690" y="84.0" width="250" height="76" rx="5"/>
+<text class="fg t" x="698" y="101.0">Maintenance Planner</text>
+<text class="mu s" x="698" y="116.0">equipment status (data)</text>
+<text class="mu s" x="698" y="153.0">needs recorded: 1</text>
+<rect class="role" x="690" y="172.66666666666669" width="250" height="76" rx="5"/>
+<text class="fg t" x="698" y="189.66666666666669">Survey</text>
+<text class="mu s" x="698" y="204.66666666666669">road and map data</text>
+<text class="mu s" x="698" y="241.66666666666669">needs recorded: 1</text>
+<rect class="box" x="690" y="261.33333333333337" width="250" height="76" rx="5"/>
+<text class="fg t" x="698" y="278.33333333333337">Planner</text>
+<text class="mu s" x="698" y="293.33333333333337">FMS plans and targets</text>
+<text class="mu s" x="698" y="330.33333333333337">needs recorded: 0</text>
+<rect class="grp" x="300" y="380" width="650" height="230" rx="8"/>
+<text class="fg g" x="310" y="400">Organisations and external parties</text>
+<rect class="box" x="310" y="414" width="200" height="82" rx="5"/>
+<text class="fg t" x="318" y="431">Site management</text>
+<text class="mu s" x="318" y="446">approvals, KPIs</text>
+<text class="mu s" x="318" y="489">needs recorded: 1</text>
+<rect class="box" x="520" y="414" width="200" height="82" rx="5"/>
+<text class="fg t" x="528" y="431">Integration authority</text>
+<text class="fg t" x="528" y="446">(site AHS engineering)</text>
+<text class="mu s" x="528" y="461">ConOps, requirements,</text>
+<text class="mu s" x="528" y="474">compatibility</text>
+<text class="mu s" x="528" y="489">needs recorded: 0</text>
+<rect class="box" x="730" y="414" width="200" height="82" rx="5"/>
+<text class="fg t" x="738" y="431">System suppliers and</text>
+<text class="fg t" x="738" y="446">truck OEM</text>
+<text class="mu s" x="738" y="461">releases, ICDs, support</text>
+<text class="mu s" x="738" y="489">needs recorded: 0</text>
+<rect class="box" x="310" y="506" width="200" height="82" rx="5"/>
+<text class="fg t" x="318" y="523">Plant (C01 control room)</text>
+<text class="fg t" x="318" y="538">— external</text>
+<text class="mu s" x="318" y="553">plant interface</text>
+<text class="mu s" x="318" y="581">needs recorded: 1</text>
+<rect class="box" x="520" y="506" width="200" height="82" rx="5"/>
+<text class="fg t" x="528" y="523">Workforce and its</text>
+<text class="fg t" x="528" y="538">representatives [A]</text>
+<text class="mu s" x="528" y="553">consultation, training</text>
+<text class="mu s" x="528" y="581">needs recorded: 1</text>
+<rect class="box" x="730" y="506" width="200" height="82" rx="5"/>
+<text class="fg t" x="738" y="523">Mining regulator [TBV]</text>
+<text class="mu s" x="738" y="538">notification or approval [TBV]</text>
+<text class="mu s" x="738" y="581">needs recorded: 1</text>
+<text class="mu lk" x="486.0" y="201.5">commands, HMI</text>
+<text class="mu lk" x="284" y="264.0">radio, terminal, PRU</text>
+<text class="mu lk" x="576" y="264.0">data</text>
+<text class="mu lk" x="486.0" y="351.5">decisions, releases, interfaces</text>
+<rect class="ctr" x="390" y="225" width="180" height="90" rx="8"/>
+<text class="ctrt" x="480.0" y="253" text-anchor="middle">Reference-mine AHS</text>
+<text class="ctrs" x="480.0" y="275" text-anchor="middle">FMS · AMS · ADS · VCS</text>
+<text class="ctrs" x="480.0" y="297" text-anchor="middle">ISF · OSS · MVD</text>
+<text class="mu s" x="10" y="638">Solid: uses the system in daily operation. Dashed: governs, supplies or is affected.</text>
+<text class="mu s" x="10" y="654">Orange outline: mine.yaml role. Needs: NEED-03-01-nn records of section 4.3 (illustrative [H]).</text>
+</svg>
+<figcaption><span class="fig-no">Figure 1</span> Stakeholder map of the reference-mine AHS <span class="fig-id">FIG-03-01-01</span></figcaption></figure>
+<table>
+<thead>
+<tr>
+<th>Group</th>
+<th>Stakeholder</th>
+<th>Interest in the AHS</th>
+<th>Channel</th>
+<th>Typical needs</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Control room CR1</td>
+<td>AHS Controller</td>
+<td>Runs the autonomous fleet every shift; owns permissions and open items</td>
+<td>AMS and FMS HMI, radio, remote stop</td>
+<td>One picture of the fleet; permissions they can trust; a handover they cannot get wrong</td>
+</tr>
+<tr>
+<td>Control room CR1</td>
+<td>Pit Supervisor</td>
+<td>Accountable for safe production on the shift</td>
+<td>Radio, FMS reports, shift log</td>
+<td>Know the production cost of decisions; approve holds and restrictions</td>
+</tr>
+<tr>
+<td>In the field</td>
+<td>Field Technician</td>
+<td>Diagnoses and recovers stopped trucks</td>
+<td>Radio, field terminal, PRU</td>
+<td>Approach a truck only when it cannot move</td>
+</tr>
+<tr>
+<td>In the field</td>
+<td>Shovel Operator</td>
+<td>Loads trucks at EX01–EX04</td>
+<td>Loading display, radio</td>
+<td>Know when trucks come and why they are held</td>
+</tr>
+<tr>
+<td>In the field</td>
+<td>Manned-vehicle drivers (LV07, DZ03, WT02)</td>
+<td>Work in autonomous areas under positive communication</td>
+<td>Radio, field terminal, PRU</td>
+<td>Enter, work and leave without an autonomous truck routed to them</td>
+</tr>
+<tr>
+<td>In the field</td>
+<td>Emergency Response Team</td>
+<td>Responds to fire, injury and other emergencies</td>
+<td>Radio, field terminal</td>
+<td>Reach the scene safely; know the machine cannot move</td>
+</tr>
+<tr>
+<td>Support roles</td>
+<td>Maintenance Planner</td>
+<td>Plans repairs and returns trucks to service</td>
+<td>Equipment status (data)</td>
+<td>A clear path from workshop back to autonomous operation</td>
+</tr>
+<tr>
+<td>Support roles</td>
+<td>Survey</td>
+<td>Road and map data, GNSS infrastructure</td>
+<td>Road and map data</td>
+<td>Trucks never drive on a map that does not match the road</td>
+</tr>
+<tr>
+<td>Support roles</td>
+<td>Planner</td>
+<td>Mine plan and shift targets</td>
+<td>FMS plans</td>
+<td>Targets that reflect closures and holds</td>
+</tr>
+<tr>
+<td>Organisations</td>
+<td>Site management</td>
+<td>Business and safety accountability</td>
+<td>Approvals, KPIs</td>
+<td>Production and safety measured consistently</td>
+</tr>
+<tr>
+<td>Organisations</td>
+<td>Integration authority (site AHS engineering)</td>
+<td>The AHS as a whole: ConOps, requirements, compatibility</td>
+<td>Documents, reviews</td>
+<td>Needs traced to requirements and tests</td>
+</tr>
+<tr>
+<td>Organisations</td>
+<td>System suppliers and truck OEM</td>
+<td>Supply and support constituent systems</td>
+<td>Releases, ICDs, support</td>
+<td>A stable, agreed scope</td>
+</tr>
+<tr>
+<td>Organisations</td>
+<td>Plant (C01 control room) — external</td>
+<td>Runs the crusher</td>
+<td>Plant interface</td>
+<td>No truck tips into a stopped crusher</td>
+</tr>
+<tr>
+<td>Organisations</td>
+<td>Workforce and its representatives <code>[A]</code></td>
+<td>Jobs, tasks and training change</td>
+<td>Consultation, training</td>
+<td>Know what changes, and be trained before it does</td>
+</tr>
+<tr>
+<td>Organisations</td>
+<td>Mining regulator <code>[TBV]</code></td>
+<td>Statutory oversight</td>
+<td>Notification or approval <code>[TBV]</code></td>
+<td>Whatever the applicable legislation requires <code>[TBV]</code></td>
+</tr>
+</tbody>
+</table>
+<p>The regulator is on the map because a ConOps that ignores it is incomplete, but this chapter states nothing about
+what the regulator requires. Whether a regulator must be notified, or must approve, before an autonomous area begins
+operation is recorded as an open item <code>[TBV]</code> (SRC-REG-AU-AHS-PRE-OPERATION-NOTIFICATION); the regulatory landscape is
+the subject of ch-19-03.</p>
+<p>Three observations come from the map. **All seven <code>mine.yaml</code> roles appear<strong>, and the figure script checks it.
+**Some stakeholders never touch an HMI</strong> — the plant, the ERT, the workforce — so their needs never show up in a
+user-interface review. And <strong>the organisations decide, the field roles experience</strong>: a supplier can agree a scope with
+site management that the night-shift controller would never have accepted.</p>
+<h3 id="s-4-2">4.2 Eliciting needs</h3>
+<p>Elicitation at a brownfield mine has a large advantage over a new site: the operation already exists. Five sources
+are used together <code>[H]</code>:</p>
+<ol>
+<li><strong>Observation of the current operation.</strong> Ride with the pit patrol driver; sit with the dispatcher through a shift
+change; listen to the pit radio channel for an hour. Most implicit needs are visible only in practice: the
+driver's &quot;LV07 at the crest, going down to R06&quot; is a need for awareness that nobody would mention in an
+interview.</li>
+<li><strong>Interviews and workshops with each stakeholder group,</strong> including the night shift and contractors. A workshop
+held only on day shift elicits day-shift needs.</li>
+<li><strong>Scenario walkthroughs.</strong> Take a registered scenario and, at each key event, ask every stakeholder involved what
+they need to know, to do or to be sure of at that moment. Section 6 applies this to SCN-POSCOM-LV07.</li>
+<li><strong>Records.</strong> Shift logs, delay records coded under <code>delay-codes.yml</code>, incident reports and maintenance records
+show where the current operation struggles. A delay that recurs is a need that is not met.</li>
+<li><strong>Constraints from other parts of the system.</strong> Other chapters of this handbook already contain requirements
+that any ConOps for AA-North must respect — for example that a permission fails closed (ch-10-06) or that an
+exclusion zone is cleared only on the Pit Supervisor's authorisation (ch-04-07). They are constraints on the
+ConOps, not needs to be renegotiated.</li>
+</ol>
+<p>Two cautions apply. A supplier's product description is a source of <strong>design solutions</strong>, not of needs. And a
+manager's account of what the controller needs is second-hand; ask the controller.</p>
+<h3 id="s-4-3">4.3 Recording needs: the need statement</h3>
+<p>A need that cannot be traced cannot be shown to be met. The handbook records each need as a short structured
+statement <code>[H]</code>:</p>
+<ul>
+<li><strong>ID</strong> (<code>NEED-03-01-nn</code>, chapter-local) and <strong>stakeholder</strong> (a role from the map);</li>
+<li><strong>situation</strong> — the registered scenario in which the need arises, or a described situation if none is registered;</li>
+<li><strong>need</strong> — what the stakeholder must be able to do or be certain of, in their words, without a design;</li>
+<li><strong>measure</strong> — an observable condition by which a reviewer can judge that the need is met;</li>
+<li><strong>source</strong> — observation, interview, workshop, record or constraint;</li>
+<li><strong>trace</strong> — the requirements, procedures or training items that respond to it, once they exist.</li>
+</ul>
+<p>The table lists the nineteen needs elicited for this chapter's example. Traces point to existing requirements defined
+in other chapters of this handbook; the figure script (<code>figures/make_figures.py</code>) reads the handbook's own requirement blocks with
+<code>ahs_sim.traceability</code> and stops if a traced ID does not exist.</p>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Stakeholder</th>
+<th>Situation</th>
+<th>Need (stakeholder's words)</th>
+<th>Trace</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>NEED-03-01-01</td>
+<td>LV07's driver</td>
+<td>SCN-POSCOM-LV07</td>
+<td>Before I drive in at AP-02, no autonomous truck is routed into the place where I will be, for as long as I am there</td>
+<td>REQ-10-06-001, REQ-10-06-002</td>
+</tr>
+<tr>
+<td>NEED-03-01-02</td>
+<td>LV07's driver</td>
+<td>SCN-POSCOM-LV07</td>
+<td>One clear &quot;enter&quot;, on which the radio and my terminal agree</td>
+<td>REQ-10-06-001; radio protocol (ch-16-03)</td>
+</tr>
+<tr>
+<td>NEED-03-01-03</td>
+<td>LV07's driver</td>
+<td>SCN-POSCOM-EXPIRY-LV07</td>
+<td>If my time runs out while I am still inside, the area stays closed until I am out</td>
+<td>REQ-10-06-003</td>
+</tr>
+<tr>
+<td>NEED-03-01-04</td>
+<td>AHS Controller</td>
+<td>SCN-POSCOM-LV07</td>
+<td>I see every active permission: holder, area, state, time left, owner</td>
+<td>REQ-10-06-009</td>
+</tr>
+<tr>
+<td>NEED-03-01-05</td>
+<td>AHS Controller</td>
+<td>SCN-SHIFT-HANDOVER</td>
+<td>At handover, the list of open items comes from the system, not from my memory</td>
+<td>REQ-01-06-004, REQ-16-02-001</td>
+</tr>
+<tr>
+<td>NEED-03-01-06</td>
+<td>AHS Controller (incoming)</td>
+<td>SCN-SHIFT-HANDOVER</td>
+<td>I take over a permission only after I have spoken to its holder</td>
+<td>REQ-16-02-004, REQ-10-06-010</td>
+</tr>
+<tr>
+<td>NEED-03-01-07</td>
+<td>Pit Supervisor</td>
+<td>SCN-POSCOM-LV07</td>
+<td>Before a lock holds a loading circuit, I know what it costs and I approve it</td>
+<td>REQ-10-06-011</td>
+</tr>
+<tr>
+<td>NEED-03-01-08</td>
+<td>ERT</td>
+<td>SCN-FIRE-DT17</td>
+<td>Before we approach, we know the truck cannot move, and nobody at CR1 can make it move</td>
+<td>REQ-04-07-004, REQ-04-07-008</td>
+</tr>
+<tr>
+<td>NEED-03-01-09</td>
+<td>ERT</td>
+<td>SCN-FIRE-DT17</td>
+<td>We have a route into AA-North that we have drilled and that is kept clear of autonomous trucks</td>
+<td>REQ-04-07-005, REQ-18-05-005</td>
+</tr>
+<tr>
+<td>NEED-03-01-10</td>
+<td>Pit Supervisor</td>
+<td>SCN-FIRE-DT17</td>
+<td>When a zone closes the ramp, I see the hold and reroute options with their production effect</td>
+<td>REQ-04-07-006</td>
+</tr>
+<tr>
+<td>NEED-03-01-11</td>
+<td>Field Technician</td>
+<td>SCN-RECOVER-DT17</td>
+<td>I walk to a stopped truck only when it is held centrally and isolated at the truck</td>
+<td>REQ-16-05-002</td>
+</tr>
+<tr>
+<td>NEED-03-01-12</td>
+<td>Survey</td>
+<td>SCN-MAP-R05</td>
+<td>After the R05 rework no truck drives R05 on the old map</td>
+<td>REQ-16-07-008</td>
+</tr>
+<tr>
+<td>NEED-03-01-13</td>
+<td>Plant (C01)</td>
+<td>SCN-CRUSHER-C01-DOWN</td>
+<td>When C01 stops accepting, no truck is sent to tip, whatever anyone types into the FMS</td>
+<td>REQ-02-03-006</td>
+</tr>
+<tr>
+<td>NEED-03-01-14</td>
+<td>Shovel Operator</td>
+<td>SCN-BASELINE-SHIFT</td>
+<td>I know when the next truck comes and, when my trucks are held, why</td>
+<td>— (open)</td>
+</tr>
+<tr>
+<td>NEED-03-01-15</td>
+<td>Maintenance Planner</td>
+<td>SCN-RECOVER-DT17</td>
+<td>A truck from the workshop returns to autonomous work only after the checks at PK1</td>
+<td>REQ-16-05-005</td>
+</tr>
+<tr>
+<td>NEED-03-01-16</td>
+<td>Site management</td>
+<td>SCN-SHIFT-HANDOVER</td>
+<td>A delay that runs across the shift change is counted once and split between the shifts</td>
+<td>REQ-16-02-007</td>
+</tr>
+<tr>
+<td>NEED-03-01-17</td>
+<td>Workforce <code>[A]</code></td>
+<td>SCN-BASELINE-SHIFT</td>
+<td>We know which tasks change and are trained before they do</td>
+<td>training (ch-16-10)</td>
+</tr>
+<tr>
+<td>NEED-03-01-18</td>
+<td>Pit Supervisor</td>
+<td>SCN-RSTOP-AANORTH</td>
+<td>I can stop every truck in AA-North at once, whatever state any permission is in</td>
+<td>REQ-10-06-008</td>
+</tr>
+<tr>
+<td>NEED-03-01-19</td>
+<td>Mining regulator</td>
+<td>—</td>
+<td>Not stated: notification or approval before operation <code>[TBV]</code></td>
+<td>SRC-REG-AU-AHS-PRE-OPERATION-NOTIFICATION</td>
+</tr>
+</tbody>
+</table>
+<p>The measures are not repeated in the table; for most needs they follow directly from the words. For NEED-03-01-01 the
+measure is <em>throughout a permission, no granted path of an autonomous truck enters the permitted area</em>; for
+NEED-03-01-05 it is <em>every open object in the AMS and FMS at 18:00 appears in the handover list</em>. Section 12 counts the
+records.</p>
+<p>Three entries are deliberately incomplete. NEED-03-01-14 has no trace: no chapter of this handbook contains a requirement for
+the Shovel Operator's view of incoming and held trucks, so the ConOps carries it as an open issue for the requirements
+work of ch-03-02 — exactly the kind of gap the table exists to expose. NEED-03-01-17 is met by people and training,
+not by a system function, and the trace says so. NEED-03-01-19 is not a need at all but a placeholder that keeps the
+regulator's question visible without inventing an answer.</p>
+<h3 id="s-4-4">4.4 Need, requirement and design solution: LV07 at AP-02</h3>
+<p>FIG-03-01-02 follows NEED-03-01-01 from the driver's words to the requirements that answer it and to the design
+solutions that lie beyond the ConOps.</p>
+<figure id="FIG-03-01-02" class="fig"><pre class="mermaid">flowchart LR
+  subgraph S[&quot;1 Stakeholder need&quot;]
+    N1[&quot;&lt;b&gt;NEED-03-01-01&lt;/b&gt;&lt;br/&gt;LV07&#x27;s driver: no autonomous truck&lt;br/&gt;is routed into the place where I will be,&lt;br/&gt;for as long as I am there&quot;]
+    NX[&quot;Not a need:&lt;br/&gt;a button on the terminal&lt;br/&gt;(a design solution written too early)&quot;]
+  end
+  subgraph C[&quot;2 ConOps for AA-North&quot;]
+    C1[&quot;&lt;b&gt;Scenario&lt;/b&gt;&lt;br/&gt;SCN-POSCOM-LV07&lt;br/&gt;T+0 s request ... T+100 s entry&quot;]
+    C2[&quot;&lt;b&gt;Operating rule&lt;/b&gt;&lt;br/&gt;digital state is authoritative for machines,&lt;br/&gt;voice read-back for people&quot;]
+    C3[&quot;&lt;b&gt;Boundary&lt;/b&gt;&lt;br/&gt;people enter AA-North only&lt;br/&gt;at AP-02 or AP-04&quot;]
+  end
+  subgraph R[&quot;3 System requirements, allocated&quot;]
+    R1[&quot;&lt;b&gt;AMS&lt;/b&gt; REQ-10-06-001&lt;br/&gt;entry only in the active state,&lt;br/&gt;after a valid acknowledgement&quot;]
+    R2[&quot;&lt;b&gt;AMS&lt;/b&gt; REQ-10-06-002&lt;br/&gt;lock every segment of the area&lt;br/&gt;and of the requester&#x27;s route&quot;]
+    R3[&quot;&lt;b&gt;MVD&lt;/b&gt; field terminal&lt;br/&gt;acknowledges the grant&quot;]
+    R4[&quot;&lt;b&gt;People&lt;/b&gt; radio read-back&lt;br/&gt;(procedure, ch-16-03)&quot;]
+  end
+  subgraph D[&quot;4 Design solutions, outside the ConOps&quot;]
+    D1[&quot;Permission state machine&lt;br/&gt;(ch-10-06)&quot;]
+    D2[&quot;Lock set derived from&lt;br/&gt;the road network&quot;]
+  end
+  N1 --&gt; C1
+  N1 --&gt; C2
+  N1 --&gt; C3
+  C1 --&gt; R1
+  C1 --&gt; R3
+  C2 --&gt; R4
+  C3 --&gt; R2
+  R1 --&gt; D1
+  R2 --&gt; D2
+  VAL[&quot;Validation: walkthrough with&lt;br/&gt;drivers and controllers&quot;] -.-&gt; N1
+  VER[&quot;Verification: test, inspection&quot;] -.-&gt; R1
+</pre><figcaption><span class="fig-no">Figure 2</span> From stakeholder need to ConOps to system requirement <span class="fig-id">FIG-03-01-02</span></figcaption></figure>
+<p><strong>The need</strong> is in the driver's terms and says nothing about how. It names a situation (entry at AP-02 in
+SCN-POSCOM-LV07) and implies a measure (no granted path enters the area while the driver may be inside).</p>
+<p><strong>The ConOps</strong> places the need in the operation. It states the scenario steps (request at T+0 s, area submitted at
+T+20 s, lock at T+25 s, grant at T+90 s, read-back at T+95 s, entry at T+100 s), the operating rule that <em>the digital
+state is authoritative for the machines and the voice exchange for the people</em> (ch-01-06), and the boundary rule
+that people enter AA-North only at AP-02 or AP-04 (<code>mine.yaml</code>). It still says nothing about how the AMS computes a
+lock.</p>
+<p><strong>The system requirements</strong> are verifiable statements, each allocated. From the existing requirements of other chapters:</p>
+<ul>
+<li>REQ-10-06-001 (AMS): the AMS shall allow entry under a digital access permission only in the active state, reached
+for the first time only on a valid acknowledgement of its own grant within the acknowledgement deadline;</li>
+<li>REQ-10-06-002 (AMS): while a permission is in a locked state, the AMS shall close to routing every segment of the
+permitted area, including the requester's route from the access point, and every segment that meets an
+intersection the requester crosses;</li>
+<li>the acknowledgement is sent from the field terminal (manned-vehicle devices), and the read-back and the &quot;enter&quot; are
+people's actions under the radio protocol of ch-16-03.</li>
+</ul>
+<p><strong>The design solutions</strong> — the ten-state permission machine of <code>ahs_sim.ams</code>, the derivation of the lock set from the
+road network, the screen that shows <em>granted — pending acknowledgement</em> — belong to ch-10-06 and ch-16-03. They are
+not in the ConOps, because a ConOps that specified them would close off alternatives before the requirements were
+fixed.</p>
+<p>Three confusions are common <code>[H]</code>:</p>
+<table>
+<thead>
+<tr>
+<th>Written as a need</th>
+<th>What it really is</th>
+<th>Better need</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>&quot;A button on the terminal to request entry&quot;</td>
+<td>Design solution</td>
+<td>&quot;I can ask for entry from AP-02 without leaving the vehicle, and get an answer I can trust&quot;</td>
+</tr>
+<tr>
+<td>&quot;The AMS shall lock R05 and R06 when LV07 enters&quot;</td>
+<td>System requirement for one case, written too early</td>
+<td>NEED-03-01-01</td>
+</tr>
+<tr>
+<td>&quot;Access shall be quick&quot;</td>
+<td>Wish without situation or measure</td>
+<td>&quot;With normal traffic on R05, I wait at AP-02 no longer than the time the site has agreed <code>[A]</code>&quot; — and see section 12, example 3</td>
+</tr>
+</tbody>
+</table>
+<p>One principle constrains every step of the chain: <strong>central permissions never override vehicle-side safety
+decisions</strong>. A need such as the ERT's &quot;make the truck safe so we can approach&quot; can never become a central command
+that moves a truck or clears its onboard safe state. NEED-03-01-08 is traced to REQ-04-07-004 — after a fire safe-state
+request the truck rejects every movement command from the AMS and FMS, and no AMS or FMS command clears the onboard
+safe state — and to REQ-04-07-008, which puts the decision to approach in people's hands at the zone boundary.
+NEED-03-01-18 is traced to REQ-10-06-008: no permission state delays or cancels a remote stop. A ConOps that describes
+a control-room &quot;release&quot; of a vehicle-side stop has made an error that no later design can repair.</p>
+<h3 id="s-4-5">4.5 The structure of a ConOps for AA-North</h3>
+<p>A ConOps is short compared with a requirements specification, but it must be complete in coverage. The handbook
+proposes the following outline <code>[H]</code>. Published guidance on ConOps content exists in systems-engineering standards
+and handbooks; its designations, editions and content are not verified here <code>[TBV]</code> (SRC-PUB-CONOPS-PRACTICE).</p>
+<table>
+<thead>
+<tr>
+<th>Section</th>
+<th>Content for AA-North</th>
+<th>Main sources</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1 Purpose and scope</td>
+<td>AA-North: R05 main ramp, R24 / R25 west corridor, pit floor, loading areas EX01–EX04, the RL 330 bench; access points AP-02 (P1) and AP-04 (P3); what is out of scope</td>
+<td><code>mine.yaml</code></td>
+</tr>
+<tr>
+<td>2 The current operation</td>
+<td>Manned haulage today: how dispatch, entry, breakdowns, fires and handovers work, with their radio calls</td>
+<td>Observation, shift logs</td>
+</tr>
+<tr>
+<td>3 Stakeholders and users</td>
+<td>The map of FIG-03-01-01 and the need records of section 4.3</td>
+<td>Section 4.1–4.3</td>
+</tr>
+<tr>
+<td>4 Operating modes and transitions</td>
+<td>Truck modes and stop states; who changes them and where; area-level hand-back to manual</td>
+<td>Section 4.6, ch-16-05</td>
+</tr>
+<tr>
+<td>5 Operational scenarios</td>
+<td>Normal, abnormal, degraded and emergency situations, each by registered scenario ID</td>
+<td><code>scenario-registry.yml</code>, section 4.8</td>
+</tr>
+<tr>
+<td>6 Interfaces</td>
+<td>Between constituents (FMS, AMS, ADS, VCS, ISF, onboard systems, devices) and with people and the plant</td>
+<td>ch-02-01, ch-02-06</td>
+</tr>
+<tr>
+<td>7 Constraints</td>
+<td>ODD; marginal coverage on R24; single control room CR1; two 12 h shifts <code>[A]</code>; existing requirements that apply</td>
+<td><code>mine.yaml</code>, other chapters</td>
+</tr>
+<tr>
+<td>8 Organisation and support</td>
+<td>Roles, staffing assumptions, competency and training, support from suppliers</td>
+<td>ch-01-06, ch-16-10</td>
+</tr>
+<tr>
+<td>9 Impacts</td>
+<td>Practices preserved, changed or replaced; delay coding and KPIs; workforce</td>
+<td>Section 4.7</td>
+</tr>
+<tr>
+<td>10 Open issues and assumptions</td>
+<td>Untraced needs, unresolved conflicts, <code>[TBV]</code> items</td>
+<td>Section 4.3</td>
+</tr>
+</tbody>
+</table>
+<p>Two properties make this outline usable. Every operational section points to <strong>registered scenarios</strong> rather than
+describing its own, and every section names the <strong>needs</strong> it answers, so a reviewer can check both directions: no
+need without a section, no section without a need.</p>
+<h3 id="s-4-6">4.6 Operating modes and transitions in AA-North and at the MIA boundary</h3>
+<p>A ConOps must say how trucks change mode, because each change is a moment at which responsibility passes between a
+system and a person. The handbook's modes and transitions are defined in ch-16-05; the ConOps restates them as
+operating rules and adds where each one may happen. Nothing here changes ch-16-05.</p>
+<table>
+<thead>
+<tr>
+<th>From → to</th>
+<th>Initiated by</th>
+<th>Where</th>
+<th>Condition (ch-16-05)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Autonomous → stop state (fault, safety, remote, comms-lost)</td>
+<td>ADS, VCS, onboard system, independent safety function or loss of AMS link</td>
+<td>Anywhere in AA-North</td>
+<td>The cause; the truck decides or the ISF acts, never the control room alone</td>
+</tr>
+<tr>
+<td>Stop state → autonomous</td>
+<td>AHS Controller (resume, reset) after the vehicle reports the cause cleared</td>
+<td>In place</td>
+<td>Per stop state: remote reset of a listed fault; authorised resume with checks; staged restart after a remote stop; reconciliation after comms loss; never after fire or an emergency stop at the machine</td>
+</tr>
+<tr>
+<td>Stop state → isolated</td>
+<td>Field Technician with the AHS Controller</td>
+<td>At the truck, under a permission</td>
+<td>Permission active; isolation central and at the truck; for fire, the ERT first</td>
+</tr>
+<tr>
+<td>Isolated → autonomous</td>
+<td>AHS Controller</td>
+<td>In place</td>
+<td>Return-to-autonomous checks</td>
+</tr>
+<tr>
+<td>Isolated → manual</td>
+<td>Person in the cab</td>
+<td>At the truck only, truck at rest</td>
+<td>Mission withdrawn, no reservations, permission covering the route out</td>
+</tr>
+<tr>
+<td>Manual → maintenance</td>
+<td>Maintenance Planner</td>
+<td>MIA workshop MIA-WS, reached through AP-01</td>
+<td>Handed to maintenance</td>
+</tr>
+<tr>
+<td>Maintenance → manual</td>
+<td>Maintenance Planner releases</td>
+<td>MIA</td>
+<td>Released by maintenance; driven out of MIA under a permission</td>
+</tr>
+<tr>
+<td>Manual → autonomous</td>
+<td>AHS Controller</td>
+<td>Park-up PK1 in AA-Central</td>
+<td>Return-to-autonomous checks</td>
+</tr>
+</tbody>
+</table>
+<p>Four rules follow for the ConOps <code>[H]</code>, each taken from ch-16-05 or <code>mine.yaml</code>:</p>
+<ul>
+<li><strong>Autonomous trucks enter MIA only in manual or maintenance mode.</strong> The boundary at AP-01 is a mode boundary: no
+autonomous route ends inside MIA.</li>
+<li><strong>No stop state leads to manual without passing isolated.</strong> Driving a truck needs a person at it, and the person
+needs a permission and an isolated truck.</li>
+<li><strong>Maintenance has no direct way back to autonomous.</strong> A truck repaired in the workshop is driven to PK1 and accepted
+there; it does not drive out of MIA in autonomous mode (NEED-03-01-15).</li>
+<li><strong>A truck in manual mode is a manned vehicle.</strong> It needs a permission like LV07 and is protected by the same lock.</li>
+</ul>
+<p>The ConOps also needs the <strong>area-level</strong> view: AA-North as a whole may be handed back to manual operation for a period
+(<code>hand-back-to-manual</code>, ch-04-02), for example when its ODD conditions cannot be met. The ConOps states who decides it
+and how manned trucks then enter, but leaves the criteria to the operational boundary documents of Volume 04.</p>
+<h3 id="s-4-7">4.7 Practices to preserve, change or replace</h3>
+<p>The reference mine is brownfield: people already know how to work in North Pit. A ConOps that ignores current
+practice will be met with practice that ignores the ConOps. For each practice the ConOps states whether autonomous
+operation <strong>preserves</strong> it, <strong>changes</strong> it or <strong>replaces</strong> it, and names the procedure that implements the result
+<code>[H]</code>.</p>
+<table>
+<thead>
+<tr>
+<th>Current manned practice</th>
+<th>Decision</th>
+<th>In autonomous operation</th>
+<th>Procedure</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Radio call before entering the pit (&quot;LV07 at the crest, going down&quot;)</td>
+<td>Change</td>
+<td>Positive communication with a digital access permission and read-back; the radio call stays, the digital permission is added</td>
+<td>ch-16-03, ch-10-06</td>
+</tr>
+<tr>
+<td>Truck drivers see the light vehicle and give way</td>
+<td>Replace</td>
+<td>Area lock removes the area from routing; PRU reports the light vehicle's position</td>
+<td>ch-10-06, ch-14-02</td>
+</tr>
+<tr>
+<td>Driver of a broken-down truck calls the dispatcher</td>
+<td>Replace</td>
+<td>The truck reports its stop state; the controller triages; the Field Technician approaches under permission and isolation</td>
+<td>ch-16-05</td>
+</tr>
+<tr>
+<td>Fire: driver stops, gets out, meets the fire crew</td>
+<td>Replace</td>
+<td>Onboard detection and safe state; AMS exclusion zone; ERT under positive communication; zone cleared on the Pit Supervisor's authorisation</td>
+<td>ch-04-07, ch-16-06</td>
+</tr>
+<tr>
+<td>Dispatcher assigns trucks by radio</td>
+<td>Replace</td>
+<td>FMS assignments; AMS mission execution</td>
+<td>ch-10-01</td>
+</tr>
+<tr>
+<td>Shift handover at the whiteboard</td>
+<td>Change</td>
+<td>Generated list of open items, acknowledged item by item, ownership transferred with read-back</td>
+<td>ch-01-06, ch-16-02</td>
+</tr>
+<tr>
+<td>Pre-start toolbox meeting</td>
+<td>Preserve</td>
+<td>Same meeting; adds the open items and restrictions of the AHS</td>
+<td>ch-16-02</td>
+</tr>
+<tr>
+<td>Pit radio channel shared by all</td>
+<td>Preserve</td>
+<td>Same channel; read-back rules apply to permissions</td>
+<td>ch-16-03</td>
+</tr>
+</tbody>
+</table>
+<p>The two &quot;change&quot; rows are where most friction is found. A driver used to saying &quot;going down&quot; on the radio now also
+waits for a terminal confirmation; a dispatcher used to a five-minute handover now acknowledges each item. The ConOps
+must explain <em>why</em> — what need the change serves — or the change will be worked around.</p>
+<h3 id="s-4-8">4.8 Situations the ConOps must cover before go-live</h3>
+<p>A ConOps covers situations, not features. For AA-North the registry already lists the situations: of the 64 registered
+scenarios, 40 are located in AA-North (section 12, example 1). Before go-live, every one of them must either have a
+ConOps section that covers it or a recorded reason why it does not apply (REQ-03-01-003). The operations objectives of
+this chapter name the minimum set <code>[H]</code>:</p>
+<ul>
+<li><strong>Normal:</strong> production on M-20481 (SCN-BASELINE-SHIFT); a light vehicle entering at AP-02 (SCN-POSCOM-LV07); shift
+handover with open items (SCN-SHIFT-HANDOVER).</li>
+<li><strong>Abnormal and degraded:</strong> a stale or duplicated grant (SCN-POSCOM-STALE); a permission expiring while LV07 is inside
+(SCN-POSCOM-EXPIRY-LV07); a PRU failure (SCN-PRU-FAIL-LV07); loss of coverage on lower R05 (SCN-COMMS-R05); an AMS
+restart (SCN-AMS-RESTART).</li>
+<li><strong>Emergency:</strong> fire on DT17 on R05 (SCN-FIRE-DT17); a remote stop of AA-North (SCN-RSTOP-AANORTH); a person detected
+near EX01 (SCN-PERSON-EX01).</li>
+<li><strong>Planned change:</strong> the R05 rework with the map update (SCN-MAP-R05) and its closure seen from the road
+(SCN-CLOSURE-R05). While R05 is closed, pit traffic reroutes over the west ramp — R09, R24, R25, R12 — and mission
+M-20481 grows from about 4.50 km to about 5.87 km (registry). The ConOps must state that the pit stays connected
+through R24 when R05 is closed, that both ramps closed means trucks are held (REQ-18-04-005), and that R05 reopens
+only for trucks on the validated map version (REQ-16-07-008).</li>
+</ul>
+<p>The fire is the hardest test of a draft. It involves seven architecture elements and four roles (registry), and the
+ERT — a stakeholder that never sits in front of an HMI — needs a route into a locked area, a confirmation that the
+truck cannot move, and a single owner for the decision to clear the zone. A draft that cannot be walked through
+SCN-FIRE-DT17 with the ERT captain in the room is not ready.</p>
+<h3 id="s-4-9">4.9 Trade-offs and limits</h3>
+<ul>
+<li><strong>Depth versus timeliness.</strong> A ConOps that tries to answer every question becomes a requirements specification and
+arrives too late to shape the design. The outline of section 4.5 keeps it at the level of situations, rules and
+responsibilities.</li>
+<li><strong>Supplier ConOps versus site ConOps.</strong> A supplier's ConOps describes their product in a generic mine. The site's
+ConOps describes AA-North with its people, its roads and its practices. Both are useful; only the site's can be
+validated against the site's needs, and the integration authority owns it (ch-02-01).</li>
+<li><strong>Stated needs versus constraints.</strong> Some answers are not negotiable in a ConOps workshop: fail-closed permissions,
+vehicle-side safety decisions, the exclusion-zone rules. Presenting them as constraints, with their reasons, avoids
+re-debating approved safety requirements as if they were preferences.</li>
+<li><strong>A living document.</strong> The ConOps is baselined before design and kept under change control afterwards (ch-03-08);
+each change marks the requirements traced to it for review (REQ-03-01-008).</li>
+</ul>
+<h2 id="s-5">5. Responsibilities and interface boundaries</h2>
+<p>The ConOps assigns each situation to elements and people. The table states what the ConOps for AA-North says each
+element does in the situations of this chapter, and what it never does <code>[H]</code>.</p>
+<table>
+<thead>
+<tr>
+<th>Element</th>
+<th>What the ConOps says it does</th>
+<th>What it never does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>FMS</td>
+<td>Assigns trucks; replans missions when R05 or a circuit is held; records delays by code across shifts</td>
+<td>Grants access; moves a truck held by the AMS; changes destination readiness owned by the plant</td>
+</tr>
+<tr>
+<td>AMS</td>
+<td>Locks permitted areas and executes permissions; creates exclusion zones; lists open items at handover; routes only trucks on the validated map</td>
+<td>Unlocks an area on a timer or a lost link; clears an onboard safe state; delays a remote stop</td>
+</tr>
+<tr>
+<td>ADS</td>
+<td>Drives within granted paths; stops for objects and degraded localisation; selects a stop location within the safe-state logic</td>
+<td>Accepts a central command to pass something it sees</td>
+</tr>
+<tr>
+<td>VCS</td>
+<td>Executes the stop and holds the truck; rejects movement after a fire safe-state request</td>
+<td>Takes a movement command while a vehicle-side stop is active</td>
+</tr>
+<tr>
+<td>Independent safety functions</td>
+<td>Remote stop of AA-North regardless of AMS and ADS state</td>
+<td>Depends on any permission state</td>
+</tr>
+<tr>
+<td>Onboard safety-related systems</td>
+<td>Detect fire and actuate suppression without the AMS, the network or the control room</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Manned-vehicle devices</td>
+<td>Carry LV07's request, acknowledgement and position</td>
+<td>Grant anything</td>
+</tr>
+<tr>
+<td>People</td>
+<td>Request, grant, read back, approve holds, clear zones, hand over, approach trucks under isolation</td>
+<td>Rely on a screen alone where a read-back or a field check is required</td>
+</tr>
+</tbody>
+</table>
+<p>The ConOps itself also has owners <code>[H]</code>: the integration authority (site AHS engineering, ch-02-01) owns the document
+and its trace to requirements; the Pit Supervisor owns the operations sections and their review by both shifts; the
+ERT reviews the emergency situations; suppliers are consulted on feasibility but do not approve the site's needs.</p>
+<h2 id="s-6">6. Normal, abnormal and degraded operation</h2>
+<h3 id="s-6-1">6.1 Normal operation — eliciting needs along SCN-POSCOM-LV07</h3>
+<p>This timeline is shared by sections 6, 7 and 8. The times are the registry's key events of SCN-POSCOM-LV07; the
+release rows at T+1700 s and T+1715 s are ch-10-06's <code>[A]</code> extension. For each step the table shows whose needs are at
+stake and what the ConOps must say.</p>
+<table>
+<thead>
+<tr>
+<th>Time</th>
+<th>Event (registry)</th>
+<th>Stakeholders at stake</th>
+<th>Needs</th>
+<th>What the ConOps states</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>T+0 s</td>
+<td>LV07 radios a request at AP-02 with location, purpose and area</td>
+<td>LV07's driver, AHS Controller</td>
+<td>NEED-03-01-02</td>
+<td>Entry to AA-North only at AP-02 or AP-04, by radio and field terminal together</td>
+</tr>
+<tr>
+<td>T+20 s</td>
+<td>Controller selects the area on the HMI and submits it</td>
+<td>AHS Controller, Pit Supervisor</td>
+<td>NEED-03-01-04, -07</td>
+<td>The controller sees the lock set and its production cost; the Pit Supervisor approves when a loading circuit is held</td>
+</tr>
+<tr>
+<td>T+25 s</td>
+<td>AMS stops or reroutes trucks inside the area; area locked</td>
+<td>Shovel Operators at EX01 and EX02, Planner</td>
+<td>NEED-03-01-01, -14</td>
+<td>Trucks of EX01 and EX02 swing to the west ramp; the shovels' trucks arrive later — the Shovel Operator's view is an open need</td>
+</tr>
+<tr>
+<td>T+90 s</td>
+<td>Area confirmed clear; grant sent, pending acknowledgement</td>
+<td>AHS Controller</td>
+<td>NEED-03-01-01</td>
+<td>&quot;Granted&quot; is not &quot;enter&quot;: the permission is not active until acknowledged</td>
+</tr>
+<tr>
+<td>T+95 s</td>
+<td>Permission by radio; driver reads back; acknowledgement on the terminal</td>
+<td>LV07's driver, AHS Controller</td>
+<td>NEED-03-01-02</td>
+<td>Voice is authoritative for people, the digital state for machines; disagreement means not granted</td>
+</tr>
+<tr>
+<td>T+100 s</td>
+<td>LV07 enters</td>
+<td>LV07's driver</td>
+<td>NEED-03-01-01, -03</td>
+<td>The area stays locked for as long as the driver may be inside</td>
+</tr>
+<tr>
+<td>T+1700 s <code>[A]</code></td>
+<td>LV07 reports out at AP-02</td>
+<td>LV07's driver, AHS Controller</td>
+<td>NEED-03-01-01</td>
+<td>Reporting out does not unlock the area</td>
+</tr>
+<tr>
+<td>T+1715 s <code>[A]</code></td>
+<td>PRU outside and read-back: released; lock lifted</td>
+<td>AHS Controller, Shovel Operators</td>
+<td>NEED-03-01-04</td>
+<td>The lock lifts only on confirmed release; trucks return to R05</td>
+</tr>
+</tbody>
+</table>
+<p>Walked through this way, a 100-second exchange yields needs from five stakeholders, including the Shovel Operator's,
+which the draft did not mention and no existing requirement answers. Each row asks &quot;who else is affected now?&quot;.</p>
+<h3 id="s-6-2">6.2 Abnormal operation — the stale grant (SCN-POSCOM-STALE)</h3>
+<p>In the registered variant the grant is issued (T+0 s), arrives at LV07's terminal after its expiry window and is
+rejected as stale (T+30 s); the area remains locked and the controller is alerted to re-issue (T+31 s). For the ConOps
+the question is not the message handling — ch-10-06 and ch-02-07 settle that — but what the people do. The driver has
+heard nothing that matches the terminal; NEED-03-01-02 says they need one clear &quot;enter&quot;. The ConOps therefore states
+the operating rule plainly: <strong>when the radio and the terminal disagree, the driver waits at AP-02 and the permission is
+treated as not granted</strong>; the controller re-issues, and the driver enters only when the terminal shows the permission
+confirmed and the controller has said &quot;enter&quot;. The rule protects the person whichever channel failed.</p>
+<h3 id="s-6-3">6.3 Degraded operation — LV07 inside with no position reports from its PRU (SCN-PRU-FAIL-LV07)</h3>
+<p>While LV07 is inside, its PRU stops reporting (T+0 s); the AMS marks the position stale and applies the configured
+protective action (T+10 s); the controller calls LV07 and confirms its location by voice (T+15 s). The need exposed is
+the controller's: <em>I know where the person is</em>. The ConOps keeps the voice channel as the fallback for people and
+states that a stale position never ends the permission or unlocks the area (REQ-10-06-006). Voice alone is not enough
+either: SCN-POSCOM-RADIO-ONLY is the near miss in which the radio exchange alone was taken as a permission.</p>
+<h3 id="s-6-4">6.4 A need that is easy to miss — the 18:00 handover (SCN-SHIFT-HANDOVER)</h3>
+<p>At 18:00 the day controller hands over three open items: the speed restriction on R05, LV07's permission and DT17
+down on R03. In ch-01-06's timeline the summary is generated at T−600 s, LV07's permission is transferred with a
+read-back at T+360 s, the outgoing controller still answers the Field Technician at T+600 s because item 3 is still
+theirs, and the handover record closes at T+900 s. None of this is visible in a ConOps written from the fleet's point
+of view, because the trucks do not stop for the handover. The needs come from the controllers: NEED-03-01-05 (the list
+comes from the system), NEED-03-01-06 (I take over a permission only after speaking to its holder) and, from site
+management, NEED-03-01-16 (a delay running across 18:00 is split, not closed). The ConOps section on the control room
+names the handover as a situation in its own right, with SCN-SHIFT-HANDOVER as its scenario.</p>
+<h3 id="s-6-5">6.5 Emergency — the ERT's needs in SCN-FIRE-DT17</h3>
+<p>DT17, loaded on R05, raises a fire alarm (T+0 s), begins a controlled stop (T+5 s); the AMS creates an exclusion zone
+and holds R05 traffic (T+10 s); the controller acknowledges and calls the ERT and the Pit Supervisor (T+15 s); the FMS
+replans the EX02 trucks (T+60 s); the ERT arrives at the zone boundary under positive communication (T+600 s). Between
+T+15 s and T+600 s the ERT is driving from the MIA through AA-Central into AA-North. The ConOps must state the route
+(the ERT's access routes through AP-02 and AP-04 are drilled before go-live, REQ-18-05-005), who confirms at the
+boundary that the truck is in a latched safe state and isolated in the AMS (REQ-04-07-008), and who may clear the zone
+afterwards (the AHS Controller on the Pit Supervisor's authorisation, REQ-04-07-009). These are NEED-03-01-08, -09 and
+-10. None of them is a feature of the fire system; all of them decide whether the ERT can do its job.</p>
+<h2 id="s-7">7. Engineering view</h2>
+<h3 id="s-7-1">7.1 Design decisions and trade-offs</h3>
+<ul>
+<li><strong>Needs before requirements, but not long before.</strong> Needs are recorded during elicitation and traced as soon as
+requirements exist; a need table that is never traced becomes a wish list. The table of section 4.3 carries its
+trace column from the start, and an empty trace is an open issue, not a blank.</li>
+<li><strong>Reuse the existing requirements as constraints.</strong> Tracing new needs to existing requirements avoids a second,
+inconsistent set and shows where nothing exists yet (NEED-03-01-14).</li>
+<li><strong>Scenarios from the registry, not from the ConOps.</strong> One definition of each situation serves the ConOps, the
+requirements, the tests and training; the price is that a new situation must first be proposed for the registry.</li>
+<li><strong>Allocation is part of the step from need to requirement.</strong> Each requirement in the trace names an element.
+Section 12 shows the spread: 14 of the 19 needs reach the AMS, 8 reach people. A need allocated only to people (a
+procedure or training) is a valid answer, and the ConOps says so explicitly rather than leaving it to be
+discovered as &quot;not implemented&quot;.</li>
+<li><strong>Modes from the vehicle-side view.</strong> The mode table of section 4.6 is taken from ch-16-05, where it is derived from
+what the vehicle can confirm. A ConOps that defined modes from the control room's view would tend to add transitions
+the control room can trigger but the vehicle cannot confirm.</li>
+</ul>
+<h3 id="s-7-2">7.2 Failure modes and mitigations</h3>
+<table>
+<thead>
+<tr>
+<th>Failure of the needs and ConOps work</th>
+<th>Effect</th>
+<th>Mitigation <code>[H]</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Stakeholder missing from the map (plant, ERT, night shift)</td>
+<td>No need recorded; late requirement or workaround</td>
+<td>Map checked against <code>mine.yaml</code> roles and the context boundary (ch-02-01); review by both shifts and the ERT (REQ-03-01-007)</td>
+</tr>
+<tr>
+<td>Need written as a design solution</td>
+<td>Alternatives closed; real need lost</td>
+<td>Need-statement format (REQ-03-01-001); review question &quot;what must be true?&quot;</td>
+</tr>
+<tr>
+<td>Need without situation or measure</td>
+<td>Cannot be traced, verified or validated</td>
+<td>Format requires a scenario and a measure</td>
+</tr>
+<tr>
+<td>Conflicting needs left undecided</td>
+<td>The code decides</td>
+<td>Conflicts recorded as open issues with an owner; decisions recorded (ch-03-09)</td>
+</tr>
+<tr>
+<td>ConOps describes a central override of a vehicle-side stop</td>
+<td>Unsafe requirement derived; later found in safety review</td>
+<td>REQ-03-01-005; inspection against REQ-02-03-003, REQ-10-06-008</td>
+</tr>
+<tr>
+<td>Registry scenario in the area not covered</td>
+<td>Situation unprepared at go-live</td>
+<td>Coverage index against the registry (REQ-03-01-003)</td>
+</tr>
+<tr>
+<td>ConOps changed without updating requirements</td>
+<td>Requirements validated against an outdated concept</td>
+<td>Change record marks traced requirements for review (REQ-03-01-008; ch-03-03 suspect links)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="s-7-3">7.3 Interface and timing considerations</h3>
+<p>Needs about time must be stated with their conditions, because the same step takes very different times in different
+situations. In the registry timeline of SCN-POSCOM-LV07 the area is confirmed clear 65 s after the lock, and LV07
+enters at T+100 s; the registry notes that this assumes no truck is left to clear, and that with baseline traffic on
+R05 and R06 clearing takes 346–492 s (LAB-16-04-01). A need &quot;I wait no longer than two minutes <code>[A]</code>&quot; written against
+the nominal timeline cannot be met in normal production (section 12, example 3). The ConOps resolves such conflicts in
+one of three ways <code>[H]</code>: state the expected wait with its conditions so that the driver plans for it; reduce the area
+(ch-10-06 section 4.6 discusses the area and the access point); or accept the production cost of holding traffic. It
+must not resolve them by shortening the clearing, because the clearing is what makes the area safe.</p>
+<p>The ConOps also fixes, for each people-to-system interface (radio and terminal at T+95 s, HMI at T+20 s and T+90 s,
+plant and FMS), the channel and which side is authoritative; ch-02-06 turns system interfaces into ICDs.</p>
+<h2 id="s-8">8. Operations view</h2>
+<h3 id="s-8-1">8.1 What the control room sees</h3>
+<p>The ConOps describes what controllers need to see; the requirements traced in section 4.3 specify it. Along the shared
+timeline:</p>
+<ul>
+<li><strong>T+20 s:</strong> the area the controller has selected, the derived lock set, the loading units that will be held and the
+estimated production cost, with the Pit Supervisor's approval requested when a circuit is held (REQ-10-06-011).</li>
+<li><strong>T+90 s:</strong> LV07's permission shown as <em>granted — pending acknowledgement</em>, not as active.</li>
+<li><strong>T+95 s onwards:</strong> the permission list with holder, owner, area, access point, state and validity remaining, and
+separately the holder's awareness state (REQ-10-06-009).</li>
+<li><strong>At 18:00:</strong> the generated handover list with every open object and its owner (REQ-01-06-004).</li>
+</ul>
+<p>A ConOps review asks of each screen: <em>which need does this serve?</em> A screen element without a need is a candidate
+for removal; a need without one is a gap.</p>
+<h3 id="s-8-2">8.2 Who decides what</h3>
+<table>
+<thead>
+<tr>
+<th>Decision</th>
+<th>Responsible</th>
+<th>Accountable</th>
+<th>Consulted</th>
+<th>Informed</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Elicit and record operational needs</td>
+<td>Integration authority (site AHS engineering)</td>
+<td>Integration authority</td>
+<td>All stakeholder groups</td>
+<td>Suppliers</td>
+</tr>
+<tr>
+<td>Write and maintain the ConOps</td>
+<td>Integration authority</td>
+<td>Integration authority</td>
+<td>Pit Supervisor, suppliers</td>
+<td>Site management</td>
+</tr>
+<tr>
+<td>Review the operations sections</td>
+<td>Pit Supervisors and AHS Controllers of both shifts</td>
+<td>Pit Supervisor</td>
+<td>Field Technicians, Shovel Operators, Survey, Maintenance Planner</td>
+<td>Integration authority</td>
+</tr>
+<tr>
+<td>Review emergency situations</td>
+<td>ERT</td>
+<td>Pit Supervisor</td>
+<td>AHS Controllers</td>
+<td>Integration authority</td>
+</tr>
+<tr>
+<td>Decide a conflict between needs (e.g. access wait against production)</td>
+<td>Pit Supervisor</td>
+<td>Site management <code>[A]</code></td>
+<td>Integration authority, the stakeholders involved</td>
+<td>All crews</td>
+</tr>
+<tr>
+<td>Baseline the ConOps</td>
+<td>Integration authority</td>
+<td>Site management <code>[A]</code></td>
+<td>Pit Supervisor</td>
+<td>Suppliers, all crews</td>
+</tr>
+</tbody>
+</table>
+<p>All entries are handbook conventions <code>[H]</code>; &quot;site management&quot; is a function <code>[A]</code>, not a <code>mine.yaml</code> role.</p>
+<h3 id="s-8-3">8.3 Procedure excerpt — reviewing the AA-North access section of a draft ConOps</h3>
+<p>The steps follow the timeline of section 6.1 <code>[H]</code>. They are carried out in a review session with the draft, the need
+table and the registry entry of SCN-POSCOM-LV07 on the table.</p>
+<ol>
+<li><strong>Pit Supervisor (chair):</strong> confirm that the reviewers include an AHS Controller from each shift, a light-vehicle
+driver who enters AA-North, a Shovel Operator from EX01 or EX02 and an ERT member.</li>
+<li><strong>AHS Controller:</strong> read the registry's key events of SCN-POSCOM-LV07 aloud, one row at a time.</li>
+<li><strong>All reviewers, at each row (T+0 s to T+100 s):</strong> say who is affected at that moment and what they need to know,
+do or be sure of. Mark each need as present in the draft, present but written as a solution, or missing.</li>
+<li><strong>Light-vehicle driver:</strong> check that the draft says what to do when the radio and the terminal disagree
+(section 6.2) and when the time runs out inside (SCN-POSCOM-EXPIRY-LV07).</li>
+<li><strong>AHS Controller:</strong> check that the draft names the access points (AP-02, AP-04), the read-back, the release
+confirmation and the handover of an active permission (SCN-SHIFT-HANDOVER).</li>
+<li><strong>ERT member:</strong> check that the draft gives the ERT a route into AA-North and a named person who confirms at the zone
+boundary that the truck cannot move.</li>
+<li><strong>Shovel Operator:</strong> check what the draft says about trucks held by the lock and how the shovel learns of it.</li>
+<li><strong>Pit Supervisor:</strong> list each missing role, situation or procedure with an owner; send the list to the integration
+authority; record the review with names, shifts and date (REQ-03-01-007).</li>
+</ol>
+<h3 id="s-8-4">8.4 KPIs and delay codes affected</h3>
+<p>The ConOps states how the events it describes will be coded, so that the KPIs agreed with site management measure the
+operation it describes. In the situations of this chapter <code>[H]</code>: trucks held by LV07's area lock, and a loading unit
+left without trucks by a held circuit, are DLY-OD-04; trucks held outside a fire exclusion zone are DLY-OD-14; a latched
+remote stop of AA-North is DLY-OD-13; trucks held for a map-version reload after the R05 rework are DLY-OD-04; longer
+cycles over the west ramp while R05 is closed are not a delay. All the coded delays are Operating Delay in the GMG Time Usage Model <code>[F]</code>
+(SRC-PUB-GMG-TUM-2020) and reduce Operating Efficiency; a running delay crosses the shift boundary and is split
+(REQ-16-02-007). If the ConOps says nothing about coding, each crew codes differently and the KPI comparison between
+manned and autonomous operation, which site management will ask for, means nothing.</p>
+<h3 id="s-8-5">8.5 Training and competency implications</h3>
+<p>Operations people need two new skills. <strong>Stating a need</strong> — what they must be able to do or be sure of, in a
+situation, with a measure — rather than proposing a screen; Pit Supervisors and senior controllers practise it on their
+own shift logs. <strong>Walking a scenario</strong> — reading a registered timeline and asking at each step who is affected; it is
+reused in ch-03-04 and ch-16-10. Engineers need time in the operation they design for: a shift in CR1 and a ride with
+the pit patrol <code>[R]</code>.</p>
+<h2 id="s-9">9. Requirements and acceptance criteria</h2>
+<p>REQ-03-01-001 [H]
+Each operational need recorded for the AHS shall state its stakeholder role, the situation in which it arises (a
+registered scenario ID or a described situation), what the stakeholder must be able to do or be certain of, and an
+observable condition by which a reviewer can judge whether it is met.
+Rationale: a need without a situation or an observable condition cannot be traced, verified or validated (sections
+4.3, 7.2).
+Verification: inspection of the need records; review of a sample against the need-statement format of section 4.3.</p>
+<p>REQ-03-01-002 [H]
+The integration authority shall keep, for every system requirement derived from an operational need, a trace link to
+that need and to the ConOps section that describes the need's situation.
+Rationale: needs and requirements must be checkable in both directions; an untraced need is an open issue (sections
+4.3, 7.1).
+Verification: inspection of the trace records; analysis listing needs without requirements and requirements without
+needs.</p>
+<p>REQ-03-01-003 [H]
+The ConOps for an autonomous area shall name, for every registered scenario located in that area, the ConOps section
+that covers it or the recorded reason why it does not apply.
+Rationale: the registry already lists the situations of the area; a scenario that the ConOps does not cover is
+unprepared at go-live (section 4.8; 40 scenarios in AA-North, section 12).
+Verification: inspection of the ConOps scenario index; analysis of the registry against the index.</p>
+<p>REQ-03-01-004 [H]
+The ConOps shall define the truck operating modes and stop states used in the area and, for every permitted
+transition between them, the role or element that initiates it, the place where it may happen and the condition that
+must hold.
+Rationale: each mode change passes responsibility between a system and a person; the transitions must match ch-16-05
+(section 4.6).
+Verification: inspection against the transition table of ch-16-05; review with AHS Controllers and Field Technicians.</p>
+<p>REQ-03-01-005 [H]
+No action described in the ConOps shall clear, delay or override a vehicle-side stop, an onboard safe state or a remote
+stop; every control-room action on a truck is described as a request that the vehicle may refuse.
+Rationale: central permissions never override vehicle-side safety decisions (sections 4.4, 5; REQ-04-07-004,
+REQ-10-06-008).
+Verification: inspection of the ConOps; review against REQ-02-03-003 and REQ-10-06-008.</p>
+<p>REQ-03-01-006 [H]
+For every current manned-operation practice listed in the ConOps, the ConOps shall state whether autonomous operation
+preserves, changes or replaces it and name the procedure that implements the result.
+Rationale: practices that are changed without explanation are worked around (section 4.7).
+Verification: inspection; review by Pit Supervisors of both shifts.</p>
+<p>REQ-03-01-007 [H]
+The integration authority shall obtain a recorded review of the operations sections of the ConOps by AHS Controllers
+and Pit Supervisors of both the DAY and the NIGHT shift, and of its emergency situations by the Emergency Response
+Team, before the ConOps is baselined.
+Rationale: needs of the night shift, the handover and the ERT are the easiest to miss (sections 2, 6.4, 6.5).
+Verification: inspection of the review record (names, shifts, date, findings and their owners).</p>
+<p>REQ-03-01-008 [H]
+The integration authority shall record every change to a baselined ConOps with the needs, scenarios and derived
+requirements it affects, and mark the trace links to those requirements for review.
+Rationale: requirements validated against an outdated concept are not validated (sections 4.9, 7.2; suspect links in
+ch-03-03).
+Verification: inspection of the ConOps change records and of the marked trace links.</p>
+<p><strong>Acceptance criteria for a ConOps of AA-North</strong> <code>[H]</code>: every need in the table has a section and every section a need;
+every one of the 40 AA-North scenarios is indexed or excluded with a reason; the mode table matches ch-16-05; the
+review record names reviewers from both shifts and the ERT; and no section describes a central override of a
+vehicle-side stop.</p>
+<h2 id="s-10">10. Verification and validation</h2>
+<p><strong>Verification of the needs and the ConOps</strong> checks that they are complete and well formed:</p>
+<ul>
+<li><strong>Inspection of need records</strong> against the format of section 4.3. The same checks that ch-03-02 applies to
+requirements can be applied to needs — no vague terms such as &quot;quick&quot; or &quot;user-friendly&quot; without a measure, a
+stakeholder and a situation present.</li>
+<li><strong>Coverage analysis against the registry.</strong> The figure script of this chapter counts the scenarios located in
+AA-North; a project script compares them with the ConOps index (REQ-03-01-003).</li>
+<li><strong>Trace analysis.</strong> Every need has a trace or an open-issue owner; every traced requirement exists (the script checks
+the IDs against the handbook corpus). Ch-03-03 develops trace graphs and coverage.</li>
+<li><strong>Consistency with existing requirements (constraints).</strong> The mode table is compared with ch-16-05; the access rules with ch-10-06;
+the fire response with ch-04-07.</li>
+</ul>
+<p><strong>Validation of the ConOps</strong> asks whether the described operation is the one the stakeholders need. It is done with
+people <code>[H]</code>: table-top walkthroughs of the registered scenarios (section 8.3), ride-alongs that compare the &quot;current
+operation&quot; section with what drivers actually do, and later operational trials and site acceptance (ch-03-07,
+ch-18-04, ch-18-05). A need validated only in a workshop is a hypothesis until the first shifts confirm it.</p>
+<h2 id="s-11">11. Common mistakes</h2>
+<h3 id="s-11-1">11.1 Design mistakes</h3>
+<ul>
+<li><strong>Writing the ConOps from the supplier's product description.</strong> It describes a product, not AA-North.</li>
+<li><strong>Recording solutions as needs</strong> (&quot;a button&quot;, &quot;a pop-up&quot;), which closes off alternatives and loses the real need.</li>
+<li><strong>Defining modes from the control room's view</strong> and adding transitions the vehicle cannot confirm.</li>
+<li><strong>A ConOps without a scenario index,</strong> so nobody can tell which registered situations it covers.</li>
+</ul>
+<h3 id="s-11-2">11.2 Operational mistakes</h3>
+<ul>
+<li><strong>Sending managers to the needs workshop</strong> instead of the controllers, drivers and ERT members who do the work.</li>
+<li><strong>Holding every workshop on day shift.</strong> Night-shift handover and staffing needs are then missing.</li>
+<li><strong>Asking for a screen instead of stating a need.</strong> &quot;We want a red button&quot; gets a red button, not the certainty
+behind the request.</li>
+<li><strong>Leaving conflicts unspoken.</strong> A driver who accepts a wait in the workshop and calls the controller impatient on
+site has not had the conflict decided.</li>
+</ul>
+<h2 id="s-12">12. Worked examples</h2>
+<p>Registry and need statistics are printed by <code>figures/make_figures.py</code> (it reads <code>scenario-registry.yml</code> through
+<code>ahs_sim.scenarios</code> and the handbook's requirements through <code>ahs_sim.traceability</code>). Scenario times are the registry's
+<code>[A]</code> values.</p>
+<p><strong>Example 1 — the situations of AA-North.</strong> The registry holds 64 scenarios; 40 of them are located in AA-North. By
+category: network 6, mixed-fleet 5, access-control 4, production 4, lifecycle 3, loading 3, road 3, vehicle 3, mapping 2,
+safety-function 2, safety-onboard 2, and one each of architecture, control-room and localisation. Of the 40,
+all involve the AHS Controller, 38 involve people as an architecture element, 3 involve the ERT and 10 are variants of
+another scenario. A ConOps index for AA-North therefore has 40 rows; if each row takes 20 minutes <code>[A]</code> to review in a
+workshop, the index alone needs 40 × 20 = 800 minutes — more than 13 hours of workshop time. That is the honest size of &quot;covering the
+registered situations&quot;.</p>
+<p><strong>Example 2 — the need table.</strong> The 19 records of section 4.3 come from 12 of the 15 stakeholders on the map. Sixteen
+are traced to 20 distinct requirements of 8 chapters (ch-01-06, ch-02-03, ch-04-07, ch-10-06, ch-16-02,
+ch-16-05, ch-16-07, ch-18-05); one is met by training only, one is open and one is a <code>[TBV]</code> placeholder. Counted per
+element over the allocations of the table: AMS 14, people 8, FMS 4, manned-vehicle devices 2, and ADS, VCS, onboard
+systems and independent safety functions 1 each. The AMS dominates because most of the needs elicited here concern
+access, handover and holds; a different elicitation (Survey, maintenance) would shift the spread. The open need
+(NEED-03-01-14) is 1 of 19, about 5 %: small, but it is the one that would otherwise surface on site.</p>
+<p><strong>Example 3 — a need about time.</strong> In the registry timeline LV07 enters at T+100 s, 65 s of which is clearing after the
+lock at T+25 s. With baseline traffic on R05 and R06, clearing takes 346–492 s (registry note, LAB-16-04-01). Keeping
+the 10 s from grant to entry of the registry timeline, entry happens at</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mi>t</mi><mrow><mtext>entry</mtext></mrow></msub><mo>&#x0003D;</mo><mn>25</mn><mo>&#x0002B;</mo><msub><mi>t</mi><mrow><mtext>clear</mtext></mrow></msub><mo>&#x0002B;</mo><mn>10</mn><mtext>&#x000A0;</mtext><mtext>s</mtext></mrow></math></div>
+<p>that is 25 + 346 + 10 = 381 s to 25 + 492 + 10 = 527 s, or 6.4 to 8.8 minutes. A need stated as &quot;no longer than two
+minutes <code>[A]</code>&quot; (120 s) cannot be met in normal production; it can be met only when no truck is inside the area. The
+ConOps must either state the expected wait with its conditions, reduce the area, or accept the production cost — and
+record which.</p>
+<p><strong>Example 4 — a need about the handover.</strong> In SCN-SHIFT-HANDOVER the handover runs from T+0 s to T+900 s for three open
+items: 900 / 3 = 300 s per item. A need written as &quot;handover within 15 minutes&quot; holds for three items; with six items at
+the same pace it would take 6 × 300 = 1800 s, 30 minutes. The controllers' real need is not a duration but completeness
+— every item transferred explicitly (NEED-03-01-05, -06) — and the duration is a consequence of the number of items.
+Written that way, the need leads to REQ-16-02-001 (a generated list) rather than to a timer.</p>
+<h2 id="s-13">13. Hands-on labs</h2>
+<p>This chapter has no lab: needs elicitation and ConOps writing are taught through the
+structured assignments of section 14. The need table, the stakeholder map and the registry statistics of section 12
+are produced by the figure script <code>figures/make_figures.py</code>, which checks that every traced requirement exists in the
+handbook's chapters and that all seven <code>mine.yaml</code> roles are on the map. Readers can add their own need records to the
+script and see whether their traces resolve. The requirement corpus and trace tools are introduced properly in
+LAB-03-02-01 and LAB-03-03-01.</p>
+<h2 id="s-14">14. Discussion questions and assignments</h2>
+<h3 id="s-14-1">14.1 Engineering assignments</h3>
+<ol>
+<li>Add four stakeholders you believe are missing from FIG-03-01-01 (for example the comms provider or the fuel-bay
+contractor). For each, write one need in the format of section 4.3 and say which registered scenario it arises in,
+or describe the situation if none is registered.</li>
+<li>Rewrite the three &quot;confusions&quot; of section 4.4 for SCN-RECOVER-DT17: one need written as a solution, one written as a
+requirement, one written without a measure. Then write the correct need for each.</li>
+<li>Draft section 4 of the AA-North ConOps (operating modes and transitions) in no more than one page, using the table of
+section 4.6. Mark each statement that comes from ch-16-05 and each that you have added; justify the additions.</li>
+<li>NEED-03-01-14 (Shovel Operator) has no trace. Propose the system requirement(s) that would answer it, allocate them,
+and state how they would be verified. Check that none of them lets the shovel command a truck.</li>
+</ol>
+<h3 id="s-14-2">14.2 Operations assignments</h3>
+<ol>
+<li>Write one need of the AHS Controller and one of the Pit Supervisor at shift handover, in the format of section 4.3,
+with a measure that an engineer could test.</li>
+<li>Carry out the review procedure of section 8.3 on this one-sentence draft: &quot;Light vehicles request access via the
+field terminal; the AMS grants access when the area is clear.&quot; List every missing role, situation and procedure.</li>
+<li>For your own site or shift, list five current practices (radio calls, area entry, handover, breakdowns, fire
+call-out). For each, say whether autonomous operation should preserve, change or replace it, and why.</li>
+<li>R05 is closed for rework and traffic runs over R24. List the situations the ConOps must cover for the closure, the
+reopening and a fire on R24 during the closure, and name the registered scenario for each — or say that none exists.</li>
+</ol>
+<h2 id="s-15">15. Key takeaways</h2>
+<ul>
+<li>Autonomy removes the driver, but not the needs the driver met implicitly; each must now be met explicitly by a
+system function, a procedure, a device or a role.</li>
+<li>A need states what a stakeholder must be able to do or be certain of, in a situation, with a measure — not a design.</li>
+<li>Need, ConOps, requirement and design are four different things; FIG-03-01-02 follows LV07's entry through them.</li>
+<li>The ConOps covers situations by registered scenario: 40 for AA-North. A scenario without a section is unprepared.</li>
+<li>Modes and transitions are part of the ConOps and follow ch-16-05: no stop state leads to manual without isolation,
+MIA is entered only in manual or maintenance mode, and the way back to autonomous goes through PK1.</li>
+<li>No ConOps action clears, delays or overrides a vehicle-side stop, an onboard safe state or a remote stop
+(REQ-03-01-005).</li>
+<li>Elicit from the people who do the work, on both shifts, with the ERT in the room.</li>
+</ul>
+<h2 id="s-16">16. Glossary terms introduced</h2>
+<p><code>stakeholder</code>, <code>operational-need</code>, <code>stakeholder-map</code>, <code>needs-elicitation</code>, <code>concept-of-operations</code>,
+<code>operational-scenario</code>, <code>requirement</code>, <code>design-solution</code>, <code>operating-mode</code>, <code>stop-state</code>, <code>mode-transition</code>,
+<code>hand-back-to-manual</code>, <code>validation</code>, <code>verification</code>, <code>positive-communication</code>, <code>digital-access-permission</code>,
+<code>area-lock</code>, <code>read-back</code>, <code>access-point</code>, <code>integration-authority</code>, <code>open-item</code>, <code>exclusion-zone</code>,
+<code>vehicle-side-safety-decision</code>, <code>return-to-autonomous-checks</code></p>
+<nav aria-label="Introductory chapters"><p><a href="../handbook.html">Handbook contents</a> · <a href="ch-03-02.en.html">Next chapter</a></p></nav>
+</main>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.1/dist/mermaid.min.js"></script>
+<script>if(window.ahsRenderMermaid){window.ahsRenderMermaid();}</script>
+</body>
+</html>

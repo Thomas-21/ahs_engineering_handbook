@@ -1,0 +1,1884 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="generator" content="ahs-handbook build_articles 2.0.0">
+<meta name="ahs:id" content="ch-16-01">
+<meta name="ahs:version" content="0.1.2">
+<meta name="ahs:status" content="approved">
+<meta name="ahs:source-sha256" content="5c07738a7c9616e8">
+<title>Control room organisation and roles</title>
+<style>
+:root {
+  --bg: #fbfaf7;
+  --fg: #1d1f21;
+  --muted: #5d6166;
+  --accent: #1f6f8b;
+  --accent-soft: #e3f0f4;
+  --border: #d9d6cf;
+  --code-bg: #f1efea;
+  --warn-bg: #fff6e0;
+  --warn-border: #e2b54a;
+  --watermark: rgba(200, 60, 60, 0.07);
+  --font-body: system-ui, -apple-system, "Segoe UI", "Hiragino Sans", "Hiragino Kaku Gothic ProN",
+    "Noto Sans JP", "Yu Gothic", Meiryo, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #15171a;
+    --fg: #e6e4df;
+    --muted: #a3a7ad;
+    --accent: #6cc3de;
+    --accent-soft: #1d3440;
+    --border: #33373d;
+    --code-bg: #1f2226;
+    --warn-bg: #2e2716;
+    --warn-border: #8c7330;
+    --watermark: rgba(255, 120, 120, 0.06);
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #15171a;
+  --fg: #e6e4df;
+  --muted: #a3a7ad;
+  --accent: #6cc3de;
+  --accent-soft: #1d3440;
+  --border: #33373d;
+  --code-bg: #1f2226;
+  --warn-bg: #2e2716;
+  --warn-border: #8c7330;
+  --watermark: rgba(255, 120, 120, 0.06);
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0 auto;
+  max-width: 52rem;
+  padding: 1.25rem 16px 3rem;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-body);
+  font-size: 1.0625rem;
+  line-height: 1.7;
+  overflow-wrap: anywhere;
+}
+h1 { font-size: 1.9rem; line-height: 1.3; margin: 0.6rem 0 1rem; }
+h2 { font-size: 1.4rem; margin-top: 2.4rem; border-bottom: 1px solid var(--border); padding-bottom: 0.2rem; }
+h3 { font-size: 1.15rem; margin-top: 1.8rem; }
+a { color: var(--accent); }
+code { font-family: var(--font-mono); background: var(--code-bg); padding: 0.05rem 0.3rem; border-radius: 3px; font-size: 0.92em; }
+pre { background: var(--code-bg); padding: 0.8rem 1rem; overflow-x: auto; border-radius: 6px; line-height: 1.45; }
+pre code { background: none; padding: 0; }
+table { border-collapse: collapse; width: 100%; display: block; overflow-x: auto; margin: 1rem 0; }
+th, td { border: 1px solid var(--border); padding: 0.35rem 0.6rem; text-align: left; vertical-align: top; }
+/* Never break inside numbers or IDs in table cells; wide tables scroll horizontally instead. */
+th, td { overflow-wrap: normal; word-break: normal; }
+th { background: var(--accent-soft); }
+blockquote { margin: 1rem 0; padding: 0.2rem 1rem; border-left: 4px solid var(--accent); color: var(--muted); }
+.article-header .meta-row { display: flex; flex-wrap: wrap; gap: 0.4rem 0.9rem; align-items: center; font-size: 0.85rem; color: var(--muted); }
+.chapter-id { font-family: var(--font-mono); font-weight: 600; color: var(--fg); }
+.status { padding: 0.05rem 0.5rem; border: 1px solid var(--border); border-radius: 999px; }
+.status-draft, .status-revision, .status-in-review { border-color: var(--warn-border); background: var(--warn-bg); }
+.theme-toggle { font: inherit; font-size: 0.8rem; color: var(--fg); background: transparent; border: 1px solid var(--border); border-radius: 4px; padding: 0.1rem 0.5rem; cursor: pointer; }
+.disclaimer { background: var(--warn-bg); border: 1px solid var(--warn-border); border-radius: 6px; padding: 0.6rem 0.9rem; font-size: 0.9rem; }
+.disclaimer p { margin: 0.25rem 0; }
+.toc { border: 1px solid var(--border); border-radius: 6px; padding: 0.6rem 1rem; margin: 1.2rem 0; font-size: 0.92rem; }
+.toc ol { margin: 0.3rem 0 0; padding-left: 1.2rem; }
+.fig { margin: 1.6rem 0; text-align: center; }
+.fig img, .fig svg { max-width: 100%; height: auto; }
+.fig pre.mermaid { background: transparent; text-align: center; }
+figcaption { font-size: 0.9rem; color: var(--muted); margin-top: 0.5rem; }
+.fig-no { font-weight: 600; color: var(--fg); }
+.fig-id { font-family: var(--font-mono); font-size: 0.75rem; opacity: 0.7; }
+.math-block { overflow-x: auto; margin: 1rem 0; }
+math { font-size: 1.1em; }
+.widget { border: 1px solid var(--border); border-radius: 8px; padding: 1rem; margin: 1.5rem 0; background: var(--accent-soft); }
+.widget label { display: block; margin: 0.4rem 0; font-size: 0.95rem; }
+.widget select, .widget input { font: inherit; color: var(--fg); background: var(--bg); border: 1px solid var(--border); border-radius: 4px; padding: 0.15rem 0.3rem; max-width: 100%; }
+.widget .result { font-size: 1.05rem; margin-top: 0.7rem; }
+.widget table { font-size: 0.88rem; }
+.watermark { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; pointer-events: none; font-size: 22vw; font-weight: 800; color: var(--watermark); transform: rotate(-24deg); z-index: 0; }
+.article-header, .toc, .article-body, .article-footer { position: relative; z-index: 1; }
+.article-footer { margin-top: 3rem; font-size: 0.8rem; color: var(--muted); border-top: 1px solid var(--border); padding-top: 0.6rem; }
+@media (max-width: 600px) {
+  body { font-size: 1rem; }
+  h1 { font-size: 1.55rem; }
+}
+@media print { .watermark { color: rgba(0, 0, 0, 0.06); } .theme-toggle { display: none; } }
+
+</style>
+<script>
+(function () {
+  var root = document.documentElement;
+  try {
+    var saved = localStorage.getItem("ahs-theme");
+    if (saved === "dark" || saved === "light") root.dataset.theme = saved;
+  } catch (e) {}
+  var mq = window.matchMedia ? window.matchMedia("(prefers-color-scheme: dark)") : null;
+  // No explicit choice: follow the system theme (CSS does the same through prefers-color-scheme).
+  function isDark() {
+    return root.dataset.theme ? root.dataset.theme === "dark" : !!(mq && mq.matches);
+  }
+  // Mermaid diagrams keep their original definition in data-source and are re-rendered with the theme that
+  // matches the page whenever the theme changes (review 2026-11-14, R22).
+  window.ahsRenderMermaid = function () {
+    if (!window.mermaid) return;
+    var nodes = Array.prototype.slice.call(document.querySelectorAll("pre.mermaid"));
+    if (!nodes.length) return;
+    nodes.forEach(function (el) {
+      if (el.getAttribute("data-source") === null) {
+        el.setAttribute("data-source", el.textContent);
+      } else {
+        el.removeAttribute("data-processed");
+        el.textContent = el.getAttribute("data-source");
+      }
+    });
+    window.mermaid.initialize({ startOnLoad: false, securityLevel: "strict", theme: isDark() ? "dark" : "default" });
+    var done = window.mermaid.run({ nodes: nodes });
+    if (done && done.catch) done.catch(function (err) { if (window.console) console.error(err); });
+  };
+  function syncButton(btn) {
+    btn.setAttribute("aria-pressed", isDark() ? "true" : "false");
+  }
+  document.addEventListener("DOMContentLoaded", function () {
+    var btn = document.querySelector(".theme-toggle");
+    if (btn) syncButton(btn);
+    if (mq) {
+      var onSystemChange = function () {
+        if (root.dataset.theme) return;
+        if (btn) syncButton(btn);
+        window.ahsRenderMermaid();
+      };
+      if (mq.addEventListener) mq.addEventListener("change", onSystemChange);
+      else if (mq.addListener) mq.addListener(onSystemChange);
+    }
+    if (!btn) return;
+    btn.addEventListener("click", function () {
+      root.dataset.theme = isDark() ? "light" : "dark";
+      try { localStorage.setItem("ahs-theme", root.dataset.theme); } catch (e) {}
+      syncButton(btn);
+      window.ahsRenderMermaid();
+    });
+  });
+})();
+
+</script>
+<link rel="canonical" href="https://thomas-21.github.io/ahs_engineering_handbook/vol-16/ch-16-01.en.html">
+</head>
+<body data-chapter-id="ch-16-01" data-status="approved">
+<header class="article-header">
+  <div class="meta-row">
+    <a class="home-link" href="../handbook.html">All chapters</a>
+    <span class="chapter-id">ch-16-01</span>
+    <button type="button" class="theme-toggle" aria-label="Theme">Theme</button>
+  </div>
+  <h1>Control room organisation and roles</h1>
+</header>
+<nav class="toc" aria-label="Contents"><strong>Contents</strong><ol><li><a href="#s-1">1. Overview</a></li><li><a href="#s-2">2. Operational motivation: the problem at the reference mine</a></li><li><a href="#s-3">3. Terminology and foundations</a></li><li><a href="#s-4">4. Technical explanation</a></li><li><a href="#s-5">5. Responsibilities and interface boundaries</a></li><li><a href="#s-6">6. Normal, abnormal and degraded operation</a></li><li><a href="#s-7">7. Engineering view</a></li><li><a href="#s-8">8. Operations view</a></li><li><a href="#s-9">9. Requirements and acceptance criteria</a></li><li><a href="#s-10">10. Verification and validation</a></li><li><a href="#s-11">11. Common mistakes</a></li><li><a href="#s-12">12. Worked examples</a></li><li><a href="#s-13">13. Hands-on labs</a></li><li><a href="#s-14">14. Discussion questions and assignments</a></li><li><a href="#s-15">15. Key takeaways</a></li><li><a href="#s-16">16. Glossary terms introduced</a></li></ol></nav>
+<main class="article-body">
+<h2 id="s-1">1. Overview</h2>
+<h3 id="s-1-1">1.1 Why this chapter matters</h3>
+<p>On a Tuesday DAY shift the reference mine runs a simulator drill of SCN-FIRE-DT17: DT17, loaded on mission M-20481,
+reports a fire while climbing R05. The drill goes well by the clock. The controller acknowledges at T+15 s, the
+exclusion zone is in place, the ERT reaches the zone boundary at T+600 s. The review afterwards is less comfortable.</p>
+<ul>
+<li>The pit was rerouted over the west ramp R24, but nobody can say who decided it. The controller remembers a radio
+call from the Pit Supervisor; the Pit Supervisor remembers saying &quot;do what you need to&quot;.</li>
+<li>The ERT leader asked the controller on the radio to &quot;clear the zone, we're done here&quot;. The controller could have
+done it: the command was on the screen, one click away.</li>
+<li>The night before, the incoming AHS Controller had found that the Survey account could deploy a map version and that
+the &quot;maintenance&quot; profile used by Field Technicians in CR1 could resume a truck.</li>
+<li>The controller held every permission and answered every call. A second controller was called in, but nobody said
+which areas they should take.</li>
+</ul>
+<p>None of this is a fault of FMS, AMS, ADS or VCS. Each is a question of organisation: which role decides, which role
+may press which button, how the system knows who pressed it, and what happens when the one person who holds
+everything is busy. ch-01-06 introduced roles, CR1 and the handover at overview level; this chapter goes down to the
+commands themselves:</p>
+<ul>
+<li>the CR1 command catalogue and which role may issue each command to FMS, AMS, the vehicle or the independent safety
+function — and which command no role may issue from CR1;</li>
+<li>deriving HMI and device rights from a RACI, and checking them (LAB-16-01-01);</li>
+<li>logins, sessions and role switches, so that every safety-relevant command is traced to a person, role and time;</li>
+<li>the span of control of one AHS Controller, and when the work is split or escalated;</li>
+<li>how decision rights move from the controller to the Pit Supervisor and the ERT during SCN-FIRE-DT17;</li>
+<li>the communication lines between CR1, the field, the MIA workshop and the ERT;</li>
+<li>single points of failure in the organisation itself.</li>
+</ul>
+<p>Workflow and task allocation inside the control room — what the controller does when, and how tasks are scheduled —
+belong to ch-17-07; this chapter defines roles and authority. Controller workload, alarms and the HMI are ch-16-10.</p>
+<h3 id="s-1-2">1.2 Learning objectives — Engineering</h3>
+<p>After this chapter an engineering reader will be able to:</p>
+<ol>
+<li>Map each control-room and field role at the reference mine to the FMS, AMS, ADS, VCS and independent
+safety-function commands it may issue, and identify commands that no role should be able to issue from CR1.</li>
+<li>Specify role-based HMI access rights and audit logging so that permission grants, remote stops and map
+deployments are restricted to authorised roles and attributable to a named user.</li>
+<li>Explain how CR1 logins, sessions and role switches are recorded so that every safety-relevant command can be traced
+to a person, role and time during a later investigation.</li>
+<li>Analyse single points of failure in the control-room organisation — one controller holding all active
+permissions, a single CR1 workstation, one radio channel — and propose system or staffing mitigations.</li>
+</ol>
+<h3 id="s-1-3">1.3 Learning objectives — Operations</h3>
+<p>After this chapter an operations reader will be able to:</p>
+<ol>
+<li>Construct a RACI matrix for CR1 covering dispatch changes, digital access permissions, remote stop, map
+deployment and emergency notification across the seven handbook roles.</li>
+<li>Describe the span of control of one AHS Controller across AA-North, AA-Central and AA-South, and state the
+conditions under which work is split between controllers or escalated to the Pit Supervisor.</li>
+<li>Distinguish the decisions taken by the AHS Controller, the Pit Supervisor and the ERT during SCN-FIRE-DT17, and
+explain where each hands over to the next.</li>
+<li>Explain the communication lines between CR1, the field (radio, field terminal) and the workshop at the MIA.</li>
+</ol>
+<h2 id="s-2">2. Operational motivation: the problem at the reference mine</h2>
+<p>An organisation chart says who reports to whom. A control room needs something more precise: for every command that
+changes what the autonomous fleet does, who may issue it, who answers for it, and how the system enforces and
+records that. At the reference mine three gaps between the paper organisation and the running system show up again
+and again <code>[A]</code>.</p>
+<p><strong>The RACI and the HMI were written by different people.</strong> The RACI comes out of a workshop of supervisors and
+controllers; the HMI's user profiles come from commissioning, built for convenience during testing. Nobody compares
+the two, and when they differ the HMI wins, because the HMI is what executes. LAB-16-01-01 compares such as-delivered
+profiles <code>[A]</code> with the reference RACI of this chapter and finds ten findings in six of the seven roles (section 12,
+example 2).</p>
+<p><strong>Accountability without a button is invisible.</strong> Under the conventions of ch-01-06, the Pit Supervisor is
+accountable for imposing restrictions, choosing manual recovery, clearing exclusion zones and restarting areas, but
+the AHS Controller executes them in AMS. If the system records only the person who pressed the button, the Pit
+Supervisor's decision exists only in memory. The drill review of section 1.1 cannot find out who decided the reroute
+because nothing recorded it.</p>
+<p><strong>One controller is one person.</strong> The baseline staffing of CR1 is one AHS Controller per shift for all three
+autonomous areas, with a second workstation for a controller called in by the Pit Supervisor (ch-01-06)
+<code>[A]</code>. In normal operation this works because AMS does the driving and the controller handles
+events. In an emergency the same person must run the first response, keep every active permission under control,
+answer the field and watch AA-Central and AA-South. Whether one person is enough is a workload question (ch-16-10);
+which decisions and states are tied to that one person is this chapter's question.</p>
+<p>SCN-FIRE-DT17 is the walkthrough for sections 6, 7 and 8, because in it decision rights move fastest: from the truck
+to AMS in ten seconds, to the Pit Supervisor within a quarter of a minute and to the ERT at the zone boundary.</p>
+<h2 id="s-3">3. Terminology and foundations</h2>
+<p>The terms of ch-01-06 — role, decision rights, RACI matrix, authorisation, role-based authorisation, least
+privilege, span of control, escalation, permission owner, open item — are used here without change. A short
+reminder of RACI: <strong>R</strong>esponsible does the work, <strong>A</strong>ccountable owns the outcome and is exactly one role,
+<strong>C</strong>onsulted is asked before, <strong>I</strong>nformed is told after. A role marked A/R is accountable and does the work itself.</p>
+<p><strong>Command.</strong> An instruction issued from CR1, or from a device carried by a role, that changes the state of FMS, AMS,
+a truck or the independent safety function. The <strong>command catalogue</strong> is the closed list of such commands that the
+site recognises <code>[H]</code>. In this chapter it is the catalogue of <code>ahs_sim.control_room.COMMANDS</code> plus clearing an
+exclusion zone (section 4.1).</p>
+<p><strong>Command right.</strong> The ability, granted to a user account or to the holder of a device, to issue a command — a menu
+item in the HMI or a remote-stop transmitter in someone's custody. It is not a decision right: the Pit Supervisor
+decides to clear an exclusion zone but, in the reference design, cannot issue the command.</p>
+<p><strong>Issuer and authoriser.</strong> The <em>issuer</em> is the person who executes a command. The <em>authoriser</em> is the person, in the
+accountable role, whose decision the command carries out. For many safety-relevant commands they are different
+people; both are recorded <code>[H]</code>.</p>
+<p><strong>Session.</strong> The period during which one person works at one workstation or device under one role, from login to
+logout. A <strong>role switch</strong> — the same person changing to another role — ends one session and starts another <code>[H]</code>.
+Every command belongs to exactly one session.</p>
+<p><strong>Area scope.</strong> The autonomous areas a controller's session supervises. In the baseline the single session on duty
+covers AA-North, AA-Central and AA-South; when a second controller is called in, the areas are divided between two
+sessions (section 4.5).</p>
+<p><strong>Decision-rights handover.</strong> The point in an event at which the accountable role for the next decision changes, for
+example from the AHS Controller to the Pit Supervisor when an emergency is declared. Unlike a shift handover, it moves
+specific decisions, not everything.</p>
+<p><strong>Communication line.</strong> A defined channel between two parties with a stated purpose, such as the AHS radio channel,
+the telephone between CR1 and the MIA workshop, or the stop radio RSR (section 4.6).</p>
+<p><strong>Statutory role.</strong> A position that mining safety legislation requires a site to appoint, with duties set by law. The
+handbook roles are teaching conventions, not statutory roles (section 4.8).</p>
+<h2 id="s-4">4. Technical explanation</h2>
+<h3 id="s-4-1">4.1 The roles and the command catalogue</h3>
+<p>The seven roles of the reference mine are those of <code>mine.yaml</code> v0.3.0: AHS Controller (AHS-CTRL), Pit Supervisor
+(PIT-SUP), Shovel Operator (SHV-OP), Field Technician (FIELD-TECH), Maintenance Planner (MAINT-PLN), Survey (SURVEY)
+and Emergency Response Team (ERT). ch-01-06 describes where each works, what it decides and to whom it escalates. Three
+further roles appear in the handbook where a topic needs them. They are not <code>mine.yaml</code> roles and hold no command in
+the catalogue; they are listed here so that the command RACI can stay to the seven <code>[A]</code>:</p>
+<table>
+<thead>
+<tr>
+<th>Role outside <code>mine.yaml</code></th>
+<th>Where it appears</th>
+<th>Relation to CR1 commands</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Planner <code>[H]</code> (glossary, ch-01-06)</td>
+<td>ch-01-06: mine plan and shift targets</td>
+<td>Informed of dispatch changes and production decisions; no AMS command</td>
+</tr>
+<tr>
+<td>Safety-case owner <code>[A]</code></td>
+<td>ch-04-10: accountable for the evidence register</td>
+<td>Informed when the RACI or the command rights change, because controls such as CTL-06 (&quot;zone cleared only by an authorised role&quot;) rest on them</td>
+</tr>
+<tr>
+<td>IT-security <code>[A]</code></td>
+<td>Account and role administration; in ch-04-09 these duties sit with site AHS engineering</td>
+<td>Executes account and role changes on a recorded authorisation; issues no operational command</td>
+</tr>
+</tbody>
+</table>
+<p>The command catalogue is the list of everything CR1 can make the fleet do. The reference catalogue has thirteen
+commands, of which one is forbidden. The thirteenth, clearing an exclusion zone, is included because SCN-FIRE-DT17 needs it
+(ch-02-03, function F18); it is also part of the <code>ahs_sim.control_room</code> model:</p>
+<table>
+<thead>
+<tr>
+<th>Command</th>
+<th>Executed by</th>
+<th>Safety-relevant</th>
+<th>Function in ch-02-03</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Dispatch change</td>
+<td>FMS</td>
+<td>no</td>
+<td>F01–F03 (dispatch rules, assignment)</td>
+</tr>
+<tr>
+<td>Grant an access permission</td>
+<td>AMS</td>
+<td>yes</td>
+<td>F10</td>
+</tr>
+<tr>
+<td>Confirm a permission release</td>
+<td>AMS</td>
+<td>yes</td>
+<td>F10</td>
+</tr>
+<tr>
+<td>Speed restriction</td>
+<td>AMS</td>
+<td>yes</td>
+<td>F09</td>
+</tr>
+<tr>
+<td>Close a road segment</td>
+<td>AMS</td>
+<td>yes</td>
+<td>F09</td>
+</tr>
+<tr>
+<td>Deploy a map version</td>
+<td>AMS</td>
+<td>yes</td>
+<td>map version (ch-12-09)</td>
+</tr>
+<tr>
+<td>Switch a truck to manual (at the truck)</td>
+<td>VCS</td>
+<td>yes</td>
+<td>recovery (ch-16-05)</td>
+</tr>
+<tr>
+<td>Resume a truck after a fault stop or recovery (offer)</td>
+<td>AMS → ADS</td>
+<td>yes</td>
+<td>F08, an offer under REQ-02-03-003</td>
+</tr>
+<tr>
+<td>Remote stop</td>
+<td>Independent safety function</td>
+<td>yes</td>
+<td>F16</td>
+</tr>
+<tr>
+<td>Remote-stop release (reset at the source)</td>
+<td>Independent safety function</td>
+<td>yes</td>
+<td>F17</td>
+</tr>
+<tr>
+<td>Emergency notification</td>
+<td>People</td>
+<td>yes</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Clear an exclusion zone</td>
+<td>AMS</td>
+<td>yes</td>
+<td>F18</td>
+</tr>
+<tr>
+<td>Direct driving (steer, propel, brake)</td>
+<td>ADS</td>
+<td>yes</td>
+<td>none — forbidden from CR1</td>
+</tr>
+</tbody>
+</table>
+<p>All entries are handbook conventions <code>[H]</code>. &quot;Resume a truck&quot; covers a single truck after a fault stop or a recovery;
+restarting traffic after a remote stop or an exclusion zone is covered by the remote-stop release and the clearing
+command, whose accountable role is the Pit Supervisor.</p>
+<p>The last row matters most. No role may steer, propel or brake an autonomous truck from CR1 <code>[H]</code>. The ADS drives; AMS
+turns the controller's missions, areas and permissions into offers that the ADS may refuse (REQ-02-03-003). A remote
+&quot;nudge&quot; to reposition a truck, convenient during commissioning, would put a person in the driving loop without a view of
+the truck's surroundings. Teleoperation is a different system with its own safety case.</p>
+<p>FIG-16-01-02 groups the commands by the element that executes them and shows who may issue each under the reference
+rights of section 4.3. The AHS Controller issues every AMS and FMS command. The Pit Supervisor issues only remote stop,
+its release and emergency notifications — RST-P1 is in the Pit Supervisor's custody (<code>equipment.yaml</code>). The Field
+Technician switches a truck to manual, at the truck. Four roles have no command right at all: they request by radio and
+field terminal.</p>
+<figure id="FIG-16-01-02" class="fig"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1151 664" role="img" aria-label="Grid of seven roles against FMS, AMS, ADS, VCS, independent safety function and people, with the commands each role may issue">
+<style>
+text.a161{font-family:system-ui,-apple-system,"Segoe UI","Hiragino Sans","Noto Sans CJK JP",sans-serif}
+.a161-fg{fill:var(--fg,#1d1f21)} .a161-mu{fill:var(--muted,#5d6166)}
+.a161-ttl{font-size:15px;font-weight:700} .a161-tb{font-size:12.5px;font-weight:700} .a161-s{font-size:11.5px}
+.a161-x{font-size:10.5px} .a161-i{font-size:11px;font-style:italic}
+.a161-hd{fill:var(--accent-soft,#e3f0f4)} .a161-grid{stroke:var(--border,#d9d6cf);stroke-width:1;fill:none}
+.a161-chip{fill:var(--bg,#ffffff);stroke:var(--accent,#1f6f8b);stroke-width:1.2}
+.a161-stop{fill:var(--warn-bg,#fff6e0);stroke:var(--warn-border,#e2b54a);stroke-width:1.6}
+.a161-forb{fill:none;stroke:#c0392b;stroke-width:1.6;stroke-dasharray:6 4}
+.a161-cA{fill:var(--accent,#1f6f8b)} .a161-cR{fill:var(--accent-soft,#e3f0f4);stroke:var(--accent,#1f6f8b);stroke-width:1}
+.a161-cC{fill:none;stroke:var(--muted,#5d6166);stroke-width:1} .a161-on{fill:var(--bg,#ffffff)}
+.a161-red{fill:#c0392b}
+</style>
+<text class="a161 a161-fg a161-ttl" x="10" y="26">Who may issue which command, by the element that executes it (least-privilege reference rights)</text>
+<rect class="a161-hd" x="10" y="72" width="1131" height="34"/>
+<text class="a161 a161-fg a161-tb" x="18" y="94">Role</text>
+<text class="a161 a161-fg a161-tb" x="208" y="94">FMS</text>
+<text class="a161 a161-fg a161-tb" x="326" y="94">AMS</text>
+<text class="a161 a161-fg a161-tb" x="516" y="94">ADS</text>
+<text class="a161 a161-fg a161-tb" x="634" y="94">VCS</text>
+<text class="a161 a161-fg a161-tb" x="809" y="94">Independent safety</text>
+<text class="a161 a161-fg a161-tb" x="999" y="94">People (notification)</text>
+<rect class="a161-grid" x="10" y="106" width="1131" height="194"/>
+<text class="a161 a161-fg a161-tb" x="18" y="132">AHS Controller</text>
+<rect class="a161-chip" x="205" y="112" width="108" height="22" rx="5"/>
+<text class="a161 a161-fg a161-x" x="211" y="127">Dispatch change</text>
+<rect class="a161-chip" x="323" y="112" width="180" height="22" rx="5"/>
+<text class="a161 a161-fg a161-x" x="329" y="127">Clear exclusion zone</text>
+<rect class="a161-chip" x="323" y="138" width="180" height="22" rx="5"/>
+<text class="a161 a161-fg a161-x" x="329" y="153">Deploy map version</text>
+<rect class="a161-chip" x="323" y="164" width="180" height="22" rx="5"/>
+<text class="a161 a161-fg a161-x" x="329" y="179">Grant access permission</text>
+<rect class="a161-chip" x="323" y="190" width="180" height="22" rx="5"/>
+<text class="a161 a161-fg a161-x" x="329" y="205">Confirm permission release</text>
+<rect class="a161-chip" x="323" y="216" width="180" height="22" rx="5"/>
+<text class="a161 a161-fg a161-x" x="329" y="231">Close road segment</text>
+<rect class="a161-chip" x="323" y="242" width="180" height="22" rx="5"/>
+<text class="a161 a161-fg a161-x" x="329" y="257">Speed restriction</text>
+<rect class="a161-chip" x="323" y="268" width="180" height="22" rx="5"/>
+<text class="a161 a161-fg a161-x" x="329" y="283">Resume truck (offer)</text>
+<rect class="a161-stop" x="806" y="112" width="180" height="22" rx="5"/>
+<text class="a161 a161-fg a161-x" x="812" y="127">Remote stop</text>
+<rect class="a161-stop" x="806" y="138" width="180" height="22" rx="5"/>
+<text class="a161 a161-fg a161-x" x="812" y="153">Remote-stop release</text>
+<rect class="a161-chip" x="996" y="112" width="140" height="22" rx="5"/>
+<text class="a161 a161-fg a161-x" x="1002" y="127">Emergency notification</text>
+<rect class="a161-grid" x="10" y="300" width="1131" height="64"/>
+<text class="a161 a161-fg a161-tb" x="18" y="326">Pit Supervisor</text>
+<rect class="a161-stop" x="806" y="306" width="180" height="22" rx="5"/>
+<text class="a161 a161-fg a161-x" x="812" y="321">Remote stop</text>
+<rect class="a161-stop" x="806" y="332" width="180" height="22" rx="5"/>
+<text class="a161 a161-fg a161-x" x="812" y="347">Remote-stop release</text>
+<rect class="a161-chip" x="996" y="306" width="140" height="22" rx="5"/>
+<text class="a161 a161-fg a161-x" x="1002" y="321">Emergency notification</text>
+<rect class="a161-grid" x="10" y="364" width="1131" height="46"/>
+<text class="a161 a161-fg a161-tb" x="18" y="390">Shovel Operator</text>
+<text class="a161 a161-mu a161-i" x="208" y="391">no command rights (requests by radio)</text>
+<rect class="a161-grid" x="10" y="410" width="1131" height="46"/>
+<text class="a161 a161-fg a161-tb" x="18" y="436">Field Technician</text>
+<rect class="a161-chip" x="631" y="416" width="165" height="22" rx="5"/>
+<text class="a161 a161-fg a161-x" x="637" y="431">Truck to manual (at truck)</text>
+<rect class="a161-grid" x="10" y="456" width="1131" height="46"/>
+<text class="a161 a161-fg a161-tb" x="18" y="482">Maintenance Planner</text>
+<text class="a161 a161-mu a161-i" x="208" y="483">no command rights (requests by radio)</text>
+<rect class="a161-grid" x="10" y="502" width="1131" height="46"/>
+<text class="a161 a161-fg a161-tb" x="18" y="528">Survey</text>
+<text class="a161 a161-mu a161-i" x="208" y="529">no command rights (requests by radio)</text>
+<rect class="a161-grid" x="10" y="548" width="1131" height="46"/>
+<text class="a161 a161-fg a161-tb" x="18" y="574">Emergency Response Team</text>
+<text class="a161 a161-mu a161-i" x="208" y="575">no command rights (requests by radio)</text>
+<rect class="a161-forb" x="511" y="108" width="112" height="484" rx="6"/>
+<text class="a161 a161-red a161-x" x="516" y="612">Direct driving</text>
+<text class="a161 a161-red a161-x" x="516" y="626">Forbidden from CR1 for every role</text>
+<text class="a161 a161-mu a161-x" x="809" y="612">device: RST-CR1 / RST-P1 / RST-P2</text>
+<text class="a161 a161-mu a161-i" x="10" y="654">From LAB-16-01-01 (reference rights, ahs_sim.control_room). Accountable roles without a right authorise; the issuer records them [H].</text>
+</svg>
+<figcaption><span class="fig-no">Figure 1</span> Roles mapped to FMS / AMS / ADS / VCS / independent safety commands <span class="fig-id">FIG-16-01-02</span></figcaption></figure>
+<h3 id="s-4-2">4.2 From the RACI to command rights</h3>
+<p>A RACI on paper and command rights in a system describe the same thing in two places. The reference mine keeps the
+RACI as the master and derives the rights from it <code>[H]</code>, using the rules that <code>ahs_sim.control_room.check_authority</code>
+checks:</p>
+<ol>
+<li><strong>Exactly one accountable role per command.</strong> No accountable role means nobody owns the outcome; two means each
+believes the other does.</li>
+<li><strong>At least one responsible role per command.</strong> A command that nobody is responsible for is never issued, or is
+issued by whoever is nearest.</li>
+<li><strong>A role may hold a command right only if it is R or A for that command.</strong> A right held by a role that is only
+consulted or informed is a right the RACI does not intend.</li>
+<li><strong>No role may hold a right to a forbidden command.</strong> Direct driving from CR1 is the only forbidden command in the
+reference catalogue.</li>
+</ol>
+<p>The rules are necessary, not sufficient. Rule 3 allows an accountable role to hold the right, but the reference design
+does not give the Pit Supervisor the right to apply restrictions, close segments, deploy maps or clear exclusion zones,
+although the Pit Supervisor is accountable for all of them. As in ch-01-06, the Pit Supervisor sees AMS read-only and
+decides; the controller executes, so every change to AMS goes through one pair of hands. The cost is that the decision
+must be recorded separately, because the button-presser is not the decider. In the reference RACI this is the case for
+six of the twelve commands (section 12, example 4). For these <strong>authorise-only</strong> commands the HMI asks the issuer for
+the authorising person and role before execution and records both <code>[H]</code> (REQ-16-01-003).</p>
+<p>Rule 3 also misses a right that is <em>within</em> the RACI but wider than intended. The as-delivered &quot;supervisor&quot; profile of
+LAB-16-01-01 lets the Pit Supervisor apply restrictions, close segments and clear exclusion zones; the checker accepts
+this, and only the comparison with the least-privilege profile shows it. A rights review therefore has two parts: the
+rules, which find contradictions, and the comparison with the intended profile, which finds generosity.</p>
+<p><strong>Separation of duties.</strong> A map change is prepared and validated by Survey and deployed by the AHS Controller on the Pit
+Supervisor's authority <code>[H]</code>. Survey is consulted on deployment and must not hold the deployment right — exactly what the
+as-delivered profile gets wrong. The same principle forbids self-authorisation: nobody can be both the issuer and the
+recorded authoriser of a command (REQ-16-01-003).</p>
+<p><strong>Stop rights are broad, go rights are narrow.</strong> Remote stop is issued by the Pit Supervisor or the AHS Controller —
+from the console RST-CR1 or the portable transmitters RST-P1 and RST-P2 — and acts through the independent stop
+radio regardless of AMS and ADS state (ch-02-04, ch-04-05). The release is reset at the source that issued it, on the
+Pit Supervisor's authority, and the staged restart is the controller's (ch-04-05). Commands that let trucks move —
+resume, remote-stop release, clearing an exclusion zone, grant — are narrow and recorded with their authoriser. This asymmetry is ch-01-06's fifth
+principle, &quot;stopping is open to every authorised controller; restarting requires authority&quot;, made concrete in the
+rights table.</p>
+<h3 id="s-4-3">4.3 The reference RACI for the CR1 command catalogue</h3>
+<p>FIG-16-01-03 is the reference RACI of the reference mine for the twelve commands that a role may issue. It follows the
+principles of ch-01-06 section 4.3 and agrees with the decision tables of ch-04-05 (remote stop and restart),
+ch-04-07 (fire) and ch-04-09 (area remote stop) <code>[H]</code>.</p>
+<figure id="FIG-16-01-03" class="fig"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 576" role="img" aria-label="Matrix of twelve commands against seven roles with Responsible, Accountable, Consulted and Informed">
+<style>
+text.a161{font-family:system-ui,-apple-system,"Segoe UI","Hiragino Sans","Noto Sans CJK JP",sans-serif}
+.a161-fg{fill:var(--fg,#1d1f21)} .a161-mu{fill:var(--muted,#5d6166)}
+.a161-ttl{font-size:15px;font-weight:700} .a161-tb{font-size:12.5px;font-weight:700} .a161-s{font-size:11.5px}
+.a161-x{font-size:10.5px} .a161-i{font-size:11px;font-style:italic}
+.a161-hd{fill:var(--accent-soft,#e3f0f4)} .a161-grid{stroke:var(--border,#d9d6cf);stroke-width:1;fill:none}
+.a161-chip{fill:var(--bg,#ffffff);stroke:var(--accent,#1f6f8b);stroke-width:1.2}
+.a161-stop{fill:var(--warn-bg,#fff6e0);stroke:var(--warn-border,#e2b54a);stroke-width:1.6}
+.a161-forb{fill:none;stroke:#c0392b;stroke-width:1.6;stroke-dasharray:6 4}
+.a161-cA{fill:var(--accent,#1f6f8b)} .a161-cR{fill:var(--accent-soft,#e3f0f4);stroke:var(--accent,#1f6f8b);stroke-width:1}
+.a161-cC{fill:none;stroke:var(--muted,#5d6166);stroke-width:1} .a161-on{fill:var(--bg,#ffffff)}
+.a161-red{fill:#c0392b}
+</style>
+<text class="a161 a161-fg a161-ttl" x="10" y="26">RACI for the CR1 command catalogue at the reference mine</text>
+<rect class="a161-hd" x="10" y="64" width="1004" height="56"/>
+<text class="a161 a161-fg a161-tb" x="18" y="98">Command</text>
+<text class="a161 a161-fg a161-tb" x="246" y="98">Executes</text>
+<text class="a161 a161-fg a161-x" x="416" y="88" text-anchor="middle" font-weight="700">AHS</text>
+<text class="a161 a161-fg a161-x" x="416" y="103" text-anchor="middle" font-weight="700">Controller</text>
+<text class="a161 a161-fg a161-x" x="508" y="88" text-anchor="middle" font-weight="700">Pit</text>
+<text class="a161 a161-fg a161-x" x="508" y="103" text-anchor="middle" font-weight="700">Supervisor</text>
+<text class="a161 a161-fg a161-x" x="600" y="88" text-anchor="middle" font-weight="700">Shovel</text>
+<text class="a161 a161-fg a161-x" x="600" y="103" text-anchor="middle" font-weight="700">Operator</text>
+<text class="a161 a161-fg a161-x" x="692" y="88" text-anchor="middle" font-weight="700">Field</text>
+<text class="a161 a161-fg a161-x" x="692" y="103" text-anchor="middle" font-weight="700">Technician</text>
+<text class="a161 a161-fg a161-x" x="784" y="88" text-anchor="middle" font-weight="700">Maintenance</text>
+<text class="a161 a161-fg a161-x" x="784" y="103" text-anchor="middle" font-weight="700">Planner</text>
+<text class="a161 a161-fg a161-x" x="876" y="88" text-anchor="middle" font-weight="700">Survey</text>
+<text class="a161 a161-fg a161-x" x="968" y="88" text-anchor="middle" font-weight="700">ERT</text>
+<rect class="a161-grid" x="10" y="120" width="1004" height="30"/>
+<text class="a161 a161-fg a161-s" x="18" y="140">Dispatch change *</text>
+<text class="a161 a161-mu a161-x" x="246" y="140">FMS</text>
+<rect class="a161-cR" x="394" y="125" width="44" height="20" rx="4"/>
+<text class="a161 a161-fg a161-tb" x="416" y="140" text-anchor="middle">R</text>
+<rect class="a161-cA" x="486" y="125" width="44" height="20" rx="4"/>
+<text class="a161 a161-on a161-tb" x="508" y="140" text-anchor="middle">A</text>
+<rect class="a161-cC" x="578" y="125" width="44" height="20" rx="4"/>
+<text class="a161 a161-mu a161-s" x="600" y="140" text-anchor="middle">C</text>
+<text class="a161 a161-mu a161-s" x="784" y="140" text-anchor="middle">I</text>
+<rect class="a161-grid" x="10" y="150" width="1004" height="30"/>
+<text class="a161 a161-fg a161-s" x="18" y="170">Grant access permission</text>
+<text class="a161 a161-mu a161-x" x="246" y="170">AMS</text>
+<rect class="a161-cA" x="394" y="155" width="44" height="20" rx="4"/>
+<text class="a161 a161-on a161-tb" x="416" y="170" text-anchor="middle">A/R</text>
+<text class="a161 a161-mu a161-s" x="508" y="170" text-anchor="middle">I</text>
+<rect class="a161-grid" x="10" y="180" width="1004" height="30"/>
+<text class="a161 a161-fg a161-s" x="18" y="200">Confirm permission release</text>
+<text class="a161 a161-mu a161-x" x="246" y="200">AMS</text>
+<rect class="a161-cA" x="394" y="185" width="44" height="20" rx="4"/>
+<text class="a161 a161-on a161-tb" x="416" y="200" text-anchor="middle">A/R</text>
+<text class="a161 a161-mu a161-s" x="508" y="200" text-anchor="middle">I</text>
+<rect class="a161-grid" x="10" y="210" width="1004" height="30"/>
+<text class="a161 a161-fg a161-s" x="18" y="230">Speed restriction *</text>
+<text class="a161 a161-mu a161-x" x="246" y="230">AMS</text>
+<rect class="a161-cR" x="394" y="215" width="44" height="20" rx="4"/>
+<text class="a161 a161-fg a161-tb" x="416" y="230" text-anchor="middle">R</text>
+<rect class="a161-cA" x="486" y="215" width="44" height="20" rx="4"/>
+<text class="a161 a161-on a161-tb" x="508" y="230" text-anchor="middle">A</text>
+<text class="a161 a161-mu a161-s" x="600" y="230" text-anchor="middle">I</text>
+<rect class="a161-cC" x="670" y="215" width="44" height="20" rx="4"/>
+<text class="a161 a161-mu a161-s" x="692" y="230" text-anchor="middle">C</text>
+<rect class="a161-cC" x="854" y="215" width="44" height="20" rx="4"/>
+<text class="a161 a161-mu a161-s" x="876" y="230" text-anchor="middle">C</text>
+<rect class="a161-grid" x="10" y="240" width="1004" height="30"/>
+<text class="a161 a161-fg a161-s" x="18" y="260">Close road segment *</text>
+<text class="a161 a161-mu a161-x" x="246" y="260">AMS</text>
+<rect class="a161-cR" x="394" y="245" width="44" height="20" rx="4"/>
+<text class="a161 a161-fg a161-tb" x="416" y="260" text-anchor="middle">R</text>
+<rect class="a161-cA" x="486" y="245" width="44" height="20" rx="4"/>
+<text class="a161 a161-on a161-tb" x="508" y="260" text-anchor="middle">A</text>
+<text class="a161 a161-mu a161-s" x="600" y="260" text-anchor="middle">I</text>
+<rect class="a161-cC" x="670" y="245" width="44" height="20" rx="4"/>
+<text class="a161 a161-mu a161-s" x="692" y="260" text-anchor="middle">C</text>
+<text class="a161 a161-mu a161-s" x="784" y="260" text-anchor="middle">I</text>
+<rect class="a161-cC" x="854" y="245" width="44" height="20" rx="4"/>
+<text class="a161 a161-mu a161-s" x="876" y="260" text-anchor="middle">C</text>
+<rect class="a161-grid" x="10" y="270" width="1004" height="30"/>
+<text class="a161 a161-fg a161-s" x="18" y="290">Deploy map version *</text>
+<text class="a161 a161-mu a161-x" x="246" y="290">AMS</text>
+<rect class="a161-cR" x="394" y="275" width="44" height="20" rx="4"/>
+<text class="a161 a161-fg a161-tb" x="416" y="290" text-anchor="middle">R</text>
+<rect class="a161-cA" x="486" y="275" width="44" height="20" rx="4"/>
+<text class="a161 a161-on a161-tb" x="508" y="290" text-anchor="middle">A</text>
+<text class="a161 a161-mu a161-s" x="600" y="290" text-anchor="middle">I</text>
+<rect class="a161-cC" x="854" y="275" width="44" height="20" rx="4"/>
+<text class="a161 a161-mu a161-s" x="876" y="290" text-anchor="middle">C</text>
+<rect class="a161-grid" x="10" y="300" width="1004" height="30"/>
+<text class="a161 a161-fg a161-s" x="18" y="320">Truck to manual (at truck) *</text>
+<text class="a161 a161-mu a161-x" x="246" y="320">VCS</text>
+<rect class="a161-cC" x="394" y="305" width="44" height="20" rx="4"/>
+<text class="a161 a161-mu a161-s" x="416" y="320" text-anchor="middle">C</text>
+<rect class="a161-cA" x="486" y="305" width="44" height="20" rx="4"/>
+<text class="a161 a161-on a161-tb" x="508" y="320" text-anchor="middle">A</text>
+<rect class="a161-cR" x="670" y="305" width="44" height="20" rx="4"/>
+<text class="a161 a161-fg a161-tb" x="692" y="320" text-anchor="middle">R</text>
+<text class="a161 a161-mu a161-s" x="784" y="320" text-anchor="middle">I</text>
+<rect class="a161-grid" x="10" y="330" width="1004" height="30"/>
+<text class="a161 a161-fg a161-s" x="18" y="350">Resume truck (offer)</text>
+<text class="a161 a161-mu a161-x" x="246" y="350">AMS</text>
+<rect class="a161-cA" x="394" y="335" width="44" height="20" rx="4"/>
+<text class="a161 a161-on a161-tb" x="416" y="350" text-anchor="middle">A/R</text>
+<text class="a161 a161-mu a161-s" x="508" y="350" text-anchor="middle">I</text>
+<rect class="a161-cC" x="670" y="335" width="44" height="20" rx="4"/>
+<text class="a161 a161-mu a161-s" x="692" y="350" text-anchor="middle">C</text>
+<text class="a161 a161-mu a161-s" x="784" y="350" text-anchor="middle">I</text>
+<rect class="a161-grid" x="10" y="360" width="1004" height="30"/>
+<text class="a161 a161-fg a161-s" x="18" y="380">Remote stop</text>
+<text class="a161 a161-mu a161-x" x="246" y="380">Independent safety</text>
+<rect class="a161-cR" x="394" y="365" width="44" height="20" rx="4"/>
+<text class="a161 a161-fg a161-tb" x="416" y="380" text-anchor="middle">R</text>
+<rect class="a161-cA" x="486" y="365" width="44" height="20" rx="4"/>
+<text class="a161 a161-on a161-tb" x="508" y="380" text-anchor="middle">A/R</text>
+<text class="a161 a161-mu a161-s" x="600" y="380" text-anchor="middle">I</text>
+<text class="a161 a161-mu a161-s" x="968" y="380" text-anchor="middle">I</text>
+<rect class="a161-grid" x="10" y="390" width="1004" height="30"/>
+<text class="a161 a161-fg a161-s" x="18" y="410">Remote-stop release</text>
+<text class="a161 a161-mu a161-x" x="246" y="410">Independent safety</text>
+<rect class="a161-cR" x="394" y="395" width="44" height="20" rx="4"/>
+<text class="a161 a161-fg a161-tb" x="416" y="410" text-anchor="middle">R</text>
+<rect class="a161-cA" x="486" y="395" width="44" height="20" rx="4"/>
+<text class="a161 a161-on a161-tb" x="508" y="410" text-anchor="middle">A/R</text>
+<rect class="a161-cC" x="578" y="395" width="44" height="20" rx="4"/>
+<text class="a161 a161-mu a161-s" x="600" y="410" text-anchor="middle">C</text>
+<text class="a161 a161-mu a161-s" x="968" y="410" text-anchor="middle">I</text>
+<rect class="a161-grid" x="10" y="420" width="1004" height="30"/>
+<text class="a161 a161-fg a161-s" x="18" y="440">Emergency notification</text>
+<text class="a161 a161-mu a161-x" x="246" y="440">People (notification)</text>
+<rect class="a161-cR" x="394" y="425" width="44" height="20" rx="4"/>
+<text class="a161 a161-fg a161-tb" x="416" y="440" text-anchor="middle">R</text>
+<rect class="a161-cA" x="486" y="425" width="44" height="20" rx="4"/>
+<text class="a161 a161-on a161-tb" x="508" y="440" text-anchor="middle">A</text>
+<text class="a161 a161-mu a161-s" x="784" y="440" text-anchor="middle">I</text>
+<text class="a161 a161-mu a161-s" x="968" y="440" text-anchor="middle">I</text>
+<rect class="a161-grid" x="10" y="450" width="1004" height="30"/>
+<text class="a161 a161-fg a161-s" x="18" y="470">Clear exclusion zone *</text>
+<text class="a161 a161-mu a161-x" x="246" y="470">AMS</text>
+<rect class="a161-cR" x="394" y="455" width="44" height="20" rx="4"/>
+<text class="a161 a161-fg a161-tb" x="416" y="470" text-anchor="middle">R</text>
+<rect class="a161-cA" x="486" y="455" width="44" height="20" rx="4"/>
+<text class="a161 a161-on a161-tb" x="508" y="470" text-anchor="middle">A</text>
+<rect class="a161-cC" x="670" y="455" width="44" height="20" rx="4"/>
+<text class="a161 a161-mu a161-s" x="692" y="470" text-anchor="middle">C</text>
+<text class="a161 a161-mu a161-s" x="784" y="470" text-anchor="middle">I</text>
+<rect class="a161-cC" x="946" y="455" width="44" height="20" rx="4"/>
+<text class="a161 a161-mu a161-s" x="968" y="470" text-anchor="middle">C</text>
+<text class="a161 a161-fg a161-x" x="18" y="502">A/R  accountable and issues</text>
+<text class="a161 a161-fg a161-x" x="208" y="502">A  accountable, authorises</text>
+<text class="a161 a161-fg a161-x" x="398" y="502">R  responsible, issues</text>
+<text class="a161 a161-fg a161-x" x="588" y="502">C  consulted</text>
+<text class="a161 a161-fg a161-x" x="778" y="502">I  informed</text>
+<text class="a161 a161-fg a161-x" x="18" y="524">* the accountable role holds no right: the issuer records the authorising person and role</text>
+<text class="a161 a161-mu a161-i" x="10" y="564">Reference RACI [H] from LAB-16-01-01; check_authority reports 0 findings. Direct driving has no row: no role may issue it from CR1.</text>
+</svg>
+<figcaption><span class="fig-no">Figure 2</span> RACI matrix for core control-room decisions at the reference mine <span class="fig-id">FIG-16-01-03</span></figcaption></figure>
+<table>
+<thead>
+<tr>
+<th>Command</th>
+<th>AHS-CTRL</th>
+<th>PIT-SUP</th>
+<th>SHV-OP</th>
+<th>FIELD-TECH</th>
+<th>MAINT-PLN</th>
+<th>SURVEY</th>
+<th>ERT</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Dispatch change</td>
+<td>R</td>
+<td>A</td>
+<td>C</td>
+<td></td>
+<td>I</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Grant an access permission</td>
+<td>A/R</td>
+<td>I</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Confirm a permission release</td>
+<td>A/R</td>
+<td>I</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Speed restriction</td>
+<td>R</td>
+<td>A</td>
+<td>I</td>
+<td>C</td>
+<td></td>
+<td>C</td>
+<td></td>
+</tr>
+<tr>
+<td>Close a road segment</td>
+<td>R</td>
+<td>A</td>
+<td>I</td>
+<td>C</td>
+<td>I</td>
+<td>C</td>
+<td></td>
+</tr>
+<tr>
+<td>Deploy a map version</td>
+<td>R</td>
+<td>A</td>
+<td>I</td>
+<td></td>
+<td></td>
+<td>C</td>
+<td></td>
+</tr>
+<tr>
+<td>Switch a truck to manual (at the truck)</td>
+<td>C</td>
+<td>A</td>
+<td></td>
+<td>R</td>
+<td>I</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Resume a truck (offer)</td>
+<td>A/R</td>
+<td>I</td>
+<td></td>
+<td>C</td>
+<td>I</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Remote stop</td>
+<td>R</td>
+<td>A/R</td>
+<td>I</td>
+<td></td>
+<td></td>
+<td></td>
+<td>I</td>
+</tr>
+<tr>
+<td>Remote-stop release</td>
+<td>R</td>
+<td>A/R</td>
+<td>C</td>
+<td></td>
+<td></td>
+<td></td>
+<td>I</td>
+</tr>
+<tr>
+<td>Emergency notification</td>
+<td>R</td>
+<td>A</td>
+<td></td>
+<td></td>
+<td>I</td>
+<td></td>
+<td>I</td>
+</tr>
+<tr>
+<td>Clear an exclusion zone</td>
+<td>R</td>
+<td>A</td>
+<td></td>
+<td>C</td>
+<td>I</td>
+<td></td>
+<td>C</td>
+</tr>
+</tbody>
+</table>
+<p>The least-privilege rights derived from it are: the AHS Controller holds eleven command rights (every row except the
+switch to manual, which is executed at the truck); the Pit Supervisor holds remote stop, remote-stop release and
+emergency notification; the Field Technician holds the switch to manual; the other four roles hold none. With these
+rights, <code>check_authority</code> reports no finding, and no command is left without someone who can execute it.</p>
+<p>Reading the table by column gives the same picture as ch-01-06's example 5, now at command level. The AHS Controller is
+responsible for eleven commands and accountable for three; the Pit Supervisor is accountable for nine and responsible
+for two (section 12, example 1). The Pit Supervisor's reachability is therefore part of the design: nine commands carry
+a decision that only the Pit Supervisor can take. The table covers routine use. Inside a declared incident the incident's own decision table applies:
+in SCN-FIRE-DT17 the grant of the ERT's access is still issued by the controller, but the Pit Supervisor is accountable
+for it (ch-04-07 section 8.2).</p>
+<h3 id="s-4-4">4.4 Sessions, role switches and the audit record</h3>
+<p>REQ-01-06-002 already requires AMS to record, for every command, the person, role, workstation or device, time,
+command, target, parameters, result and — for commands that need authorisation — the authorising person and role. To
+reconstruct decisions after an incident, the record must also show <em>how</em> the person came to hold the role at that
+moment. The reference design records sessions as events in their own right <code>[H]</code>:</p>
+<table>
+<thead>
+<tr>
+<th>Session event</th>
+<th>Recorded content <code>[H]</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Login</td>
+<td>Person, role requested, workstation, area scope, time; result (accepted or refused, and why — for example no valid authorisation, ch-16-09)</td>
+</tr>
+<tr>
+<td>Area-scope change</td>
+<td>Areas added or removed, the other session involved, ownership transfers of permissions and open items in the moved areas</td>
+</tr>
+<tr>
+<td>Role switch</td>
+<td>End of the old session, start of a new one; never a change of role inside a running session</td>
+</tr>
+<tr>
+<td>Command</td>
+<td>Session ID, command, target, parameters, issuer, authoriser (person and role) where required, result</td>
+</tr>
+<tr>
+<td>Refused command</td>
+<td>Session ID, command, reason (no right, missing authoriser, self-authorisation, area outside scope)</td>
+</tr>
+<tr>
+<td>Logout</td>
+<td>Time; refused while the session owns an active permission or open item (REQ-01-06-005)</td>
+</tr>
+<tr>
+<td>Session loss</td>
+<td>Workstation failure or timeout; permissions and locks persist, ownership flagged for takeover</td>
+</tr>
+</tbody>
+</table>
+<p>Two design choices follow. First, <strong>a role switch is a new session</strong>. A Pit Supervisor who is also authorised as an AHS
+Controller and sits down at workstation 2 as second controller logs in as AHS Controller in a new session, and cannot
+authorise that session's commands as Pit Supervisor; the deputy must (REQ-16-01-003). Otherwise one person could decide
+and execute a principle-3 decision with nothing in the record to show that the check of two people had collapsed into
+one.</p>
+<p>Second, <strong>the record answers the investigator's question</strong>: for every safety-relevant command in an incident window,
+who issued it, in which role and session, on whose authority and when, on the synchronised clock that AMS, FMS and the
+voice recorder share (ch-02-07). Shared accounts defeat this (ch-04-09), and so would a &quot;break-glass&quot; account. The
+reference design has none: stop-direction commands need no session (the remote stop is a device), and go-direction
+commands are never urgent enough to bypass the record (REQ-16-01-006).</p>
+<h3 id="s-4-5">4.5 Span of control: one controller, three areas</h3>
+<p>The span of control of the AHS Controller on duty is the whole autonomous fleet in AA-North, AA-Central and AA-South.
+ch-01-06 measures it in events and active states rather than trucks. This chapter adds the organisational question:
+<strong>which states are tied to the person</strong>, and how they move when the span has to be split <code>[H]</code>.</p>
+<p>At any moment the controller owns every active permission, restriction, closure, protected stopped truck and open item.
+If the controller is absorbed by one event, these states still need an owner: LV07's permission still has an expiry,
+and a Field Technician at a stopped truck still needs a contact.</p>
+<p>The work can be split in two ways:</p>
+<ul>
+<li><strong>By area.</strong> The second controller takes one or two areas, for example AA-Central and AA-South, with every permission,
+restriction and open item in them. The first controller keeps AA-North and the event. Ownership moves item by item,
+by acceptance, as at a shift handover (REQ-01-06-003). This is the reference choice <code>[H]</code>, because AMS can enforce it:
+a command outside a session's area scope is refused, and no area is ever without a supervising session
+(REQ-16-01-005).</li>
+<li><strong>By function.</strong> One controller runs the emergency; the other takes everything else, including normal traffic in the
+same area. This matches ch-01-06 section 6.3, but AMS cannot easily enforce it: to whom does a permission request at
+AP-02 during the fire on R05 belong? The reference design uses it only for the first minutes, while the second
+controller is arriving, and splits by area once they have logged in.</li>
+</ul>
+<p>The conditions for splitting are events, not ratios <code>[H]</code>: an emergency in any area; abnormal events in two areas at
+once (SCN-COMMS-R05 in AA-North while a truck is down on R03); a planned high-load task such as a map deployment or a
+staged restart; or the controller reporting that the structured scan of areas, alarms and permissions can no longer be
+completed. Workload estimation is ch-16-10's subject; the handbook states no number of trucks or events per controller,
+which would need a verified source <code>[TBV]</code>.</p>
+<p><strong>Escalation</strong> follows ch-01-06 section 4.4. This chapter adds the case of an unreachable Pit Supervisor. The rule <code>[H]</code>
+is that <strong>an unmade decision leaves the protective state in place</strong>: the pit stays held, the zone closed, the area
+locked. The controller calls the deputy named on the roster (REQ-16-01-007) and does not take the decision in the Pit
+Supervisor's place. Waiting has a production cost (section 12, example 3) but, while the protective state holds, creates no
+new hazard, which is why it is the default.</p>
+<h3 id="s-4-6">4.6 Communication lines</h3>
+<p>FIG-16-01-01 shows the communication lines of CR1 at the reference mine <code>[H]</code>. It extends ch-01-06's three channels
+(voice radio, field terminal, PRU) with the MIA workshop, the ERT and the stop radio.</p>
+<figure id="FIG-16-01-01" class="fig"><pre class="mermaid">flowchart LR
+  subgraph CR1[&quot;CR1 control room at the MIA&quot;]
+    WS1[&quot;Workstation 1&lt;br/&gt;AHS Controller on duty&lt;br/&gt;AMS and FMS HMI&quot;]
+    WS2[&quot;Workstation 2&lt;br/&gt;second controller when called in&lt;br/&gt;incoming controller at handover&quot;]
+    PSD[&quot;Pit Supervisor desk&lt;br/&gt;read-only AMS, FMS reports&quot;]
+    RST[&quot;Remote-stop console RST-CR1&quot;]
+  end
+  subgraph FIELD[&quot;Field: AA-North, AA-Central, AA-South&quot;]
+    PS[&quot;Pit Supervisor in the field&lt;br/&gt;portable transmitter RST-P1&quot;]
+    SO[&quot;Shovel Operators EX01 to EX04&quot;]
+    FT[&quot;Field Technicians&lt;br/&gt;field terminal, PRU&quot;]
+    SV[&quot;Survey&lt;br/&gt;field terminal, PRU&quot;]
+    MV[&quot;Drivers of LV, DZ, WT&lt;br/&gt;field terminal, PRU&quot;]
+  end
+  subgraph MIA[&quot;MIA workshop&quot;]
+    MP[&quot;Maintenance Planner&quot;]
+  end
+  ERT[&quot;Emergency Response Team&lt;br/&gt;called out from the MIA&quot;]
+  subgraph SYS[&quot;Systems&quot;]
+    FMS[&quot;FMS&quot;]
+    AMS[&quot;AMS&quot;]
+    TR[&quot;Autonomous trucks&lt;br/&gt;ADS, VCS, stop receivers&quot;]
+  end
+  WS1 &lt;--&gt;|&quot;AHS radio channel&quot;| FIELD
+  WS1 &lt;--&gt;|&quot;radio and telephone&quot;| ERT
+  WS1 &lt;--&gt;|&quot;telephone&quot;| MP
+  WS1 &lt;--&gt;|&quot;commands, states&quot;| AMS
+  WS1 &lt;--&gt;|&quot;assignments, delays&quot;| FMS
+  MP --&gt;|&quot;equipment status&quot;| FMS
+  ERT --&gt;|&quot;requests, acknowledgements, positions&quot;| AMS
+  FIELD --&gt;|&quot;requests, acknowledgements, positions&quot;| AMS
+  AMS &lt;--&gt;|&quot;missions, granted paths, states&quot;| TR
+  FMS &lt;--&gt;|&quot;assignments&quot;| AMS
+  RST -.-&gt;|&quot;stop radio RSR, independent of AMS&quot;| TR
+  PS -.-&gt;|&quot;stop radio RSR&quot;| TR
+  PSD --- WS1
+  WS2 --- WS1
+  classDef stop fill:#fff6e0,stroke:#e2b54a,stroke-width:2px
+  class RST,PS stop
+</pre><figcaption><span class="fig-no">Figure 3</span> CR1 organisation and communication lines (CR1, field, MIA workshop, ERT) <span class="fig-id">FIG-16-01-01</span></figcaption></figure>
+<table>
+<thead>
+<tr>
+<th>Line</th>
+<th>Between</th>
+<th>Purpose</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>AHS radio channel</td>
+<td>CR1 and everyone in or entering an autonomous area</td>
+<td>Requests, permissions, read-backs, confirmations, instructions</td>
+<td>The voice half of positive communication (ch-16-03)</td>
+</tr>
+<tr>
+<td>Site channel</td>
+<td>CR1 and manned traffic outside autonomous areas</td>
+<td>Broadcasts such as the temporary rule at V while R05 is closed (ch-04-01)</td>
+<td></td>
+</tr>
+<tr>
+<td>Field terminal and PRU</td>
+<td>Manned vehicles, Field Technicians, Survey, ERT and AMS, via the site wireless network</td>
+<td>Structured requests, acknowledgements, releases; position reports</td>
+<td>The digital half of positive communication (ch-10-06)</td>
+</tr>
+<tr>
+<td>Telephone CR1–MIA</td>
+<td>AHS Controller and the Maintenance Planner at the MIA workshop</td>
+<td>Truck faults, recovery plans, return to service</td>
+<td>The Maintenance Planner's equipment status reaches FMS as data</td>
+</tr>
+<tr>
+<td>ERT call-out</td>
+<td>AHS Controller and the ERT at the MIA</td>
+<td>Emergency notification, location, access route, hazards</td>
+<td>Registry: ERT and Pit Supervisor notified by radio at T+15 s</td>
+</tr>
+<tr>
+<td>Stop radio RSR</td>
+<td>Remote-stop console RST-CR1 and portable transmitters RST-P1, RST-P2 to the stop receivers on the trucks</td>
+<td>Remote stop only</td>
+<td>One-way, independent of the site wireless network and of AMS (ch-02-04)</td>
+</tr>
+</tbody>
+</table>
+<p>Two lines need organisational rules. The <strong>AHS radio channel</strong> carries every positive-communication exchange in all
+three areas; during SCN-FIRE-DT17 the ERT's entry, the Pit Supervisor and routine requests share it. Emergency traffic
+has priority and routine requests wait <code>[H]</code>; a separate incident talk group is a site design choice <code>[R]</code>, and the
+handbook specifies no channel plan. On the <strong>telephone to the MIA workshop</strong>, the Maintenance Planner's return time for a
+truck is information; only the equipment status entered in FMS changes what FMS does.</p>
+<h3 id="s-4-7">4.7 Single points of failure in the organisation</h3>
+<p>A single point of failure in a technical system is an element whose failure alone stops the whole function. Control
+rooms have organisational ones as well <code>[H]</code>:</p>
+<table>
+<thead>
+<tr>
+<th>Single point</th>
+<th>What fails with it</th>
+<th>System mitigation</th>
+<th>Staffing or procedure mitigation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>One controller holds every active permission and open item</td>
+<td>Every permission and open item loses its contact when that person is absorbed, ill or called away</td>
+<td>Ownership persists in AMS, session loss keeps the lock and raises a takeover alarm (ch-01-06 section 7.1); area-scoped sessions allow a split</td>
+<td>Second controller called in (CTL-44); split by area with item-by-item acceptance</td>
+</tr>
+<tr>
+<td>One operations workstation (workstation 1)</td>
+<td>Supervision of the whole fleet while it is down</td>
+<td>Second workstation with the same functions; remote stop independent of both (RST-CR1, RST-P2)</td>
+<td>Degraded procedure from ch-01-06 section 6.4</td>
+</tr>
+<tr>
+<td>One AHS radio channel</td>
+<td>All voice exchanges in all three areas during an emergency</td>
+<td>Field terminal carries the digital half of every permission, so a congested channel delays entry but never grants it</td>
+<td>Emergency priority on the channel; routine requests deferred <code>[R]</code></td>
+</tr>
+<tr>
+<td>One Pit Supervisor reachable</td>
+<td>Nine of twelve commands carry a decision that only the Pit Supervisor takes</td>
+<td>Authorise-only commands cannot be executed without a recorded authoriser — the decision waits, the protective state stays</td>
+<td>Named deputy on every roster (REQ-16-01-007; checked in ch-16-09)</td>
+</tr>
+<tr>
+<td>One person authorised for a critical task on a shift</td>
+<td>That task cannot be done if the person is unavailable</td>
+<td>Roster check against competency records (ch-16-09)</td>
+<td>At least two authorised people per critical task on each roster <code>[A]</code></td>
+</tr>
+<tr>
+<td>CR1 itself</td>
+<td>All central supervision</td>
+<td>Trucks stop on their own on loss of their links; remote stop through the portable transmitters</td>
+<td>The handbook defines no backup control room; a site sets this in its emergency response plan <code>[A]</code> (ch-16-06)</td>
+</tr>
+</tbody>
+</table>
+<p>Under the reference rights the AHS Controller is the only role that can issue seven safety-relevant commands (section
+12, example 4), and with one controller per shift that role is one person. The answer is not to give other roles those
+rights, which would undo least privilege, but a second controller who is quick to call and to take over, and an AMS
+that keeps states safe while the person is busy.</p>
+<h3 id="s-4-8">4.8 Statutory roles</h3>
+<p>Australian mining safety legislation requires sites to appoint certain positions with duties defined by law. For
+Western Australia, for example, the Work Health and Safety (Mines) Regulations 2022 are in force <code>[F]</code>
+(SRC-REG-WA-WHS-MINES-REGS-2022, title and in-force status only). Which statutory positions apply to an AHS operation,
+what they require, and how handbook roles relate to them is not verified and not stated here <code>[TBV]</code>
+(SRC-REG-AU-AHS-STATUTORY-ROLES). The handbook's RACI is a teaching convention, not a statement of legal duties.</p>
+<h2 id="s-5">5. Responsibilities and interface boundaries</h2>
+<table>
+<thead>
+<tr>
+<th>Element</th>
+<th>Responsibility for roles and authority</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>FMS</td>
+<td>Executes dispatch changes from the controller's session; holds equipment status from the Maintenance Planner; records the issuer of each change</td>
+</tr>
+<tr>
+<td>AMS</td>
+<td>Holds the command catalogue and the command rights per role; refuses commands outside the session's rights or area scope; requires and records the authoriser for authorise-only commands; records sessions, area-scope changes and role switches; keeps ownership of permissions and open items through session loss</td>
+</tr>
+<tr>
+<td>ADS</td>
+<td>Accepts resumes and granted paths only as offers; accepts no direct driving command from CR1</td>
+</tr>
+<tr>
+<td>VCS</td>
+<td>Accepts the switch to manual only at the truck; reports mode changes to AMS</td>
+</tr>
+<tr>
+<td>Independent safety functions</td>
+<td>Executes remote stops from RST-CR1, RST-P1 and RST-P2 regardless of AMS and ADS state; records issuing device and time; reset at the source</td>
+</tr>
+<tr>
+<td>Onboard safety-related systems</td>
+<td>Start the event (fire on DT17) that moves decision rights; decide the vehicle's own safe state</td>
+</tr>
+<tr>
+<td>Manned-vehicle devices</td>
+<td>Carry requests, acknowledgements, releases and positions with the holder's identity; give no command right over trucks</td>
+</tr>
+<tr>
+<td>People</td>
+<td>Hold the roles; decide according to the RACI; issue or authorise commands; keep the shift log that gives each decision its reason</td>
+</tr>
+<tr>
+<td>Site administration (IT-security <code>[A]</code>)</td>
+<td>Creates accounts, assigns roles only on a recorded authorisation (ch-16-09), reviews rights against the RACI</td>
+</tr>
+</tbody>
+</table>
+<p>The boundary that matters most runs between <strong>deciding</strong> and <strong>executing</strong>. AMS executes a correct-looking command
+exactly; it cannot tell whether the right person decided it. Only three things connect the RACI on paper with the
+state in the system: the command right, the recorded authoriser and the session record. Remove any one and the RACI
+becomes a document nobody can check.</p>
+<h2 id="s-6">6. Normal, abnormal and degraded operation</h2>
+<h3 id="s-6-1">6.1 Normal operation — who grants, who requests, what enforces (SCN-POSCOM-LV07)</h3>
+<p>In SCN-POSCOM-LV07 the three parts of authority are split cleanly between people and systems <code>[H]</code>:</p>
+<table>
+<thead>
+<tr>
+<th>Time</th>
+<th>Event</th>
+<th>Requests</th>
+<th>Decides</th>
+<th>Enforces</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>T+0 s</td>
+<td>Radio request at AP-02: location, purpose, area</td>
+<td>LV07's driver (radio, field terminal)</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<td>T+20 s</td>
+<td>Area selected, permission request submitted</td>
+<td>—</td>
+<td>AHS Controller (A/R for the grant)</td>
+<td>AMS starts area clearing</td>
+</tr>
+<tr>
+<td>T+25 s</td>
+<td>Trucks in the area stopped or rerouted, area locked</td>
+<td>—</td>
+<td>—</td>
+<td>AMS</td>
+</tr>
+<tr>
+<td>T+90 s</td>
+<td>Area confirmed clear, permission granted pending acknowledgement</td>
+<td>—</td>
+<td>—</td>
+<td>AMS</td>
+</tr>
+<tr>
+<td>T+95 s</td>
+<td>Permission by radio, read-back, acknowledgement on the field terminal</td>
+<td>Driver reads back and acknowledges</td>
+<td>AHS Controller confirms the read-back</td>
+<td>Field terminal and AMS (ACTIVE)</td>
+</tr>
+<tr>
+<td>T+100 s</td>
+<td>LV07 enters</td>
+<td>—</td>
+<td>—</td>
+<td>AMS keeps trucks out</td>
+</tr>
+</tbody>
+</table>
+<p>The driver has no command right; the request is a request. The controller holds the only command right and is
+accountable for the grant. AMS enforces the area lock, which no person maintains by hand. The Pit Supervisor is informed
+through the permission list, not asked. The exchange itself is ch-16-03's and ch-10-06's subject.</p>
+<h3 id="s-6-2">6.2 Scheduled transition — the role persists, the person changes (SCN-SHIFT-HANDOVER)</h3>
+<p>At 18:00 the AHS Controller role continues and the person in it changes. Decision rights belong to the role; ownership
+of running states belongs to a person and moves item by item (ch-01-06, ch-16-02). Organisationally the handover is two
+sessions in the AHS Controller role overlapping from T+0 s to T+900 s, both scoped to all three areas, while every
+permission and open item has exactly one owner. A command issued during the overlap belongs to the session that issued
+it, so the record shows which controller did what although both were &quot;the controller&quot;.</p>
+<h3 id="s-6-3">6.3 Abnormal operation — decision rights during SCN-FIRE-DT17</h3>
+<p>This timeline is shared by sections 6, 7 and 8. Registry key events are at T+0, 5, 10, 15, 60 and 600 s. The
+intermediate times T+7.4, 12, 120, 180, 300.7, 340.7, 510.9 and 555.1 s are those of ch-04-07, used unchanged here <code>[A]</code>. T+90 s
+(second controller called) is added in this chapter <code>[A]</code>. After T+600 s the steps are not timed.</p>
+<table>
+<thead>
+<tr>
+<th>Time</th>
+<th>Event</th>
+<th>Accountable for the decision in force</th>
+<th>Who acts</th>
+<th>Command and record</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>T+0 s</td>
+<td>Fire detection on DT17, suppression active</td>
+<td>Engineering design authority (the truck decides by design)</td>
+<td>OSS, ADS, VCS</td>
+<td>No command; event logged on the truck</td>
+</tr>
+<tr>
+<td>T+5 s</td>
+<td>Controlled stop begins, stop location evaluated</td>
+<td>Engineering design authority</td>
+<td>ADS, VCS</td>
+<td>—</td>
+</tr>
+<tr>
+<td>T+7.4 s</td>
+<td>DT17 at standstill, safe state latched</td>
+<td>—</td>
+<td>VCS</td>
+<td>—</td>
+</tr>
+<tr>
+<td>T+10 s</td>
+<td>Exclusion zone created, R05 traffic held</td>
+<td>AHS Controller (containment)</td>
+<td>AMS, automatically</td>
+<td>AMS event; no person issued it</td>
+</tr>
+<tr>
+<td>T+12 s</td>
+<td>DT17 unavailable, R05 blocked reported to FMS</td>
+<td>—</td>
+<td>AMS → FMS</td>
+<td>—</td>
+</tr>
+<tr>
+<td>T+15 s</td>
+<td>Alarm acknowledged; ERT and Pit Supervisor notified by radio</td>
+<td>Pit Supervisor (from now accountable for the incident on the shift)</td>
+<td>AHS Controller</td>
+<td>Acknowledgement in the controller's session; emergency notification recorded</td>
+</tr>
+<tr>
+<td>T+60 s</td>
+<td>EX02 assignments re-planned, delays coded</td>
+<td>Pit Supervisor</td>
+<td>FMS</td>
+<td>—</td>
+</tr>
+<tr>
+<td>T+90 s</td>
+<td>Second controller called to workstation 2</td>
+<td>Pit Supervisor</td>
+<td>Pit Supervisor by telephone</td>
+<td>Shift log; the second session's login when it starts</td>
+</tr>
+<tr>
+<td>T+120 s</td>
+<td>Decision: run the pit via R24</td>
+<td>Pit Supervisor</td>
+<td>AHS Controller applies it</td>
+<td>Route change in the first controller's session, authoriser PIT-SUP recorded</td>
+</tr>
+<tr>
+<td>T+180 s</td>
+<td>ERT leaves the MIA</td>
+<td>ERT (its own movement)</td>
+<td>ERT</td>
+<td>—</td>
+</tr>
+<tr>
+<td>T+300.7 s</td>
+<td>ERT requests entry at AP-01</td>
+<td>Pit Supervisor</td>
+<td>AHS Controller grants under positive communication</td>
+<td>Permission with issuer, holder and read-back</td>
+</tr>
+<tr>
+<td>T+340.7 s</td>
+<td>Entry confirmed; rerouted trucks held at V and X while the ERT passes</td>
+<td>Pit Supervisor</td>
+<td>AHS Controller, AMS</td>
+<td>Holds recorded</td>
+</tr>
+<tr>
+<td>T+510.9 s</td>
+<td>ERT at AP-02 (P1)</td>
+<td>—</td>
+<td>ERT</td>
+<td>Position reports</td>
+</tr>
+<tr>
+<td>T+555.1 s</td>
+<td>AA-North permission confirmed for R05 above the zone</td>
+<td>Pit Supervisor</td>
+<td>AHS Controller</td>
+<td>Permission</td>
+</tr>
+<tr>
+<td>T+600 s</td>
+<td>ERT at the zone boundary; isolation confirmed before entry</td>
+<td>Pit Supervisor (isolation); ERT takes command of the response inside the zone</td>
+<td>AHS Controller (system state), ERT (at the truck)</td>
+<td>Isolation checks recorded</td>
+</tr>
+<tr>
+<td>after T+600 s</td>
+<td>&quot;Fire out, scene safe&quot;</td>
+<td>ERT</td>
+<td>ERT</td>
+<td>Radio report, logged by the controller</td>
+</tr>
+<tr>
+<td>after T+600 s</td>
+<td>Zone cleared, R05 restored in stages</td>
+<td>Pit Supervisor</td>
+<td>AHS Controller</td>
+<td>Clear command, authoriser PIT-SUP, evidence: ERT report</td>
+</tr>
+<tr>
+<td>after T+600 s</td>
+<td>DT17 returned to service</td>
+<td>Maintenance Planner</td>
+<td>Field Technician</td>
+<td>FMS equipment status</td>
+</tr>
+</tbody>
+</table>
+<p>The accountable column changes four times, and each change is a decision-rights handover:</p>
+<ol>
+<li><strong>From the truck to AMS (T+10 s).</strong> No person decides the stop or the containment; both are by design, and the
+controller is accountable for containment working as designed.</li>
+<li><strong>From the controller to the Pit Supervisor (T+15 s).</strong> From the emergency notification onwards, the Pit Supervisor
+is accountable for the incident on the shift. The controller remains responsible for executing everything in AMS
+and stays with the event; the controller does not hand the emergency over mid-flow (ch-01-06 section 6.3).</li>
+<li><strong>From the Pit Supervisor to the ERT for the scene (T+600 s).</strong> The ERT decides how to fight the fire inside the
+zone and when the scene is safe. It does not decide anything about traffic, access or the zone in AMS.</li>
+<li><strong>Back to the Pit Supervisor for clearance, then to the Maintenance Planner for DT17.</strong> The ERT's &quot;scene safe&quot; is
+evidence for the Pit Supervisor's clearance decision, not the decision itself.</li>
+</ol>
+<p>The drill of section 1.1 failed at handovers 2 and 4. &quot;Do what you need to&quot; is not a decision on hold or reroute, and
+the ERT leader's &quot;clear the zone&quot; asked the controller to execute a Pit Supervisor's decision. Under REQ-16-01-003 AMS
+would have asked for an authoriser in both cases and refused the ERT leader as one.</p>
+<h3 id="s-6-4">6.4 Degraded operation — the accountable role cannot be reached</h3>
+<p>Suppose the Pit Supervisor is in a radio shadow in the pit at T+15 s, and the telephone goes unanswered <code>[A]</code>. At
+T+15 s the system is in its protective state: DT17 stopped, zone established, R05 held. What is missing is a decision on production
+and the start of the incident command.</p>
+<p>The reference rule <code>[H]</code>: the controller continues every step for which they are responsible (acknowledge, call the ERT,
+confirm containment), keeps the pit held and calls the deputy named on the shift roster. The controller does not decide
+the reroute alone: the route change is authorise-only, and AMS asks for an authoriser that the controller cannot
+supply. When the deputy answers, the deputy is recorded as authoriser. The wait costs production (section 12, example
+3); a controller trading risk against production without the role that holds that right would save tonnes and remove
+the check that principle 3 of ch-01-06 exists to provide.</p>
+<p>A second degraded case: workstation 1 freezes at T+20 s. The first controller moves to workstation 2 and logs in under
+a new session; ownership of the session's states moves with the person, by acceptance, and the remote stop on the
+console RST-CR1 and the portable RST-P2 never depended on either workstation. If no workstation is available, the
+controller keeps the pit held, works by radio and asks the Pit Supervisor whether an area remote stop is needed as an
+additional latched stop — a decision with a production cost, as ch-04-07 section 8.3 notes.</p>
+<h2 id="s-7">7. Engineering view</h2>
+<h3 id="s-7-1">7.1 Design decisions and trade-offs</h3>
+<p><strong>The RACI as a configuration item.</strong> ch-02-03 requires the function allocation of the AHS to be maintained as a
+configuration item and checked for gaps and overlaps before every release (REQ-02-03-001). The command RACI and the
+rights derived from it are the human end of the same allocation and get the same treatment <code>[H]</code>: a versioned table,
+checked with the rules of section 4.2 on every change of roles, every change of the command catalogue and every
+release of the AMS or FMS software (REQ-16-01-001). A new release that adds a command — a &quot;resume all&quot; button, a new
+map tool — is a change to the catalogue, and the command has no right holder until the RACI says who it is.</p>
+<p><strong>Accountable without the button.</strong> Giving the Pit Supervisor the HMI rights they are accountable for would make the
+record simpler. The reference design rejects it: two people changing AMS state in parallel breaks the controller's
+picture of the fleet, and a Pit Supervisor in the field has no HMI in front of them. The price is the authorise-only
+mechanism, which must be quick enough for an emergency: the HMI fills the authoriser from the on-shift roster (Pit
+Supervisor and deputy), records the radio or telephone time of the decision and needs no second login.</p>
+<p><strong>No direct driving, no break-glass.</strong> Both would make some situations easier, and both put a person into a loop the
+architecture keeps them out of — the driving loop or the authority loop. A truck that AMS cannot move is recovered at
+the truck (ch-16-05); a decision that cannot be authorised waits.</p>
+<p><strong>Sessions per person, scope per area.</strong> Personal accounts with the role as a session attribute make every command
+attributable (ch-01-06, ch-04-09); area scope makes the split of section 4.5 enforceable. Because scope changes happen
+when nobody has time, the reference HMI offers one action, &quot;move AA-Central and AA-South to workstation 2&quot;, that lists
+the permissions and open items in those areas for the receiving controller to accept one by one.</p>
+<p><strong>Device rights count as rights.</strong> LAB-16-01-01 derives the remote-stop rights from <code>equipment.yaml</code>: RST-P1 is carried
+by the Pit Supervisor, the console RST-CR1 and RST-P2 serve the AHS Controller. A transmitter lent to another role is a
+rights change and is recorded as one <code>[R]</code>.</p>
+<h3 id="s-7-2">7.2 Failure modes and mitigations</h3>
+<table>
+<thead>
+<tr>
+<th>Failure mode</th>
+<th>Effect</th>
+<th>Mitigation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>HMI profiles accepted as delivered</td>
+<td>Rights broader than the RACI; Survey deploys maps, maintenance resumes trucks</td>
+<td>Rights derived from the RACI and checked (REQ-16-01-001, LAB-16-01-01)</td>
+</tr>
+<tr>
+<td>Direct driving available in CR1</td>
+<td>A person drives a truck without the ADS's checks or a view of its surroundings</td>
+<td>Forbidden command; no role holds it (REQ-16-01-002)</td>
+</tr>
+<tr>
+<td>Authorise-only command without recorded authoriser</td>
+<td>Decision not reconstructable; principle-3 check collapsed</td>
+<td>Authoriser required before execution; self-authorisation refused (REQ-16-01-003)</td>
+</tr>
+<tr>
+<td>Role switch inside a session</td>
+<td>One person decides and executes without a trace</td>
+<td>Role switch ends the session (REQ-16-01-004)</td>
+</tr>
+<tr>
+<td>Second controller without area scope</td>
+<td>Two controllers act on the same area; permissions with unclear owner</td>
+<td>Area-scoped sessions, transfer by acceptance (REQ-16-01-005)</td>
+</tr>
+<tr>
+<td>Emergency mode widens rights</td>
+<td>Anyone can restart or clear during the event that most needs the check</td>
+<td>Emergency changes priorities, never rights (REQ-16-01-006)</td>
+</tr>
+<tr>
+<td>Pit Supervisor unreachable</td>
+<td>Decisions wait, or are taken by the wrong role</td>
+<td>Protective state persists; deputy on the roster (REQ-16-01-007)</td>
+</tr>
+<tr>
+<td>Remote-stop transmitter in the wrong hands</td>
+<td>Stop right outside the rights table; reset at an unknown source</td>
+<td>Custody recorded; transmitters in the rights review</td>
+</tr>
+</tbody>
+</table>
+<h3 id="s-7-3">7.3 Interface and timing considerations</h3>
+<p>Each step of the shared timeline leaves a defined record <code>[H]</code>. The table lists the records that an investigation of
+the drill in section 1.1 needs and did not have:</p>
+<table>
+<thead>
+<tr>
+<th>Time</th>
+<th>Record</th>
+<th>Producer</th>
+<th>Minimum content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>T+10 s</td>
+<td>Exclusion zone created</td>
+<td>AMS</td>
+<td>Trigger (fire event from DT17), zone, closed segments, held trucks; no person</td>
+</tr>
+<tr>
+<td>T+15 s</td>
+<td>Alarm acknowledgement; emergency notification</td>
+<td>AMS HMI, voice recorder</td>
+<td>Session ID (person, role AHS-CTRL, workstation 1), time; ERT and Pit Supervisor called</td>
+</tr>
+<tr>
+<td>T+90 s</td>
+<td>Second controller called</td>
+<td>Shift log</td>
+<td>Who called whom, time; then the login of session 2 with its area scope</td>
+</tr>
+<tr>
+<td>T+120 s</td>
+<td>Route change for the pit via R24</td>
+<td>AMS</td>
+<td>Session 1, command, target, issuer, authoriser PIT-SUP (person), time of the radio decision</td>
+</tr>
+<tr>
+<td>T+300.7 s to T+555.1 s</td>
+<td>ERT permissions</td>
+<td>AMS, field terminal</td>
+<td>Issuer, holder ERT, area, read-back confirmed</td>
+</tr>
+<tr>
+<td>T+600 s</td>
+<td>Isolation conditions confirmed</td>
+<td>AMS, shift log</td>
+<td>Each condition, who confirmed it, time</td>
+</tr>
+<tr>
+<td>after T+600 s</td>
+<td>Zone cleared</td>
+<td>AMS</td>
+<td>Session, issuer, authoriser PIT-SUP, evidence reference (ERT &quot;scene safe&quot;, time)</td>
+</tr>
+</tbody>
+</table>
+<p>Two timing points follow. <strong>The authoriser's decision and the issuer's command have different times</strong>, often tens of
+seconds apart, and both are kept: the authoriser's time is the radio time recorded by the issuer, the command time comes
+from AMS. <strong>Area-scope transfer during an event must not leave a gap</strong>: the areas move only when the receiving
+session accepts them, and until then the first session keeps them, as with any ownership transfer.</p>
+<h2 id="s-8">8. Operations view</h2>
+<h3 id="s-8-1">8.1 What the control room sees</h3>
+<p>Each workstation shows, in addition to the fleet, alarm, permission and area views of ch-01-06 <code>[H]</code>:</p>
+<ul>
+<li><strong>Who is on</strong>: the sessions open in CR1 — person, role, workstation, area scope — and the on-shift Pit Supervisor and
+deputy from the roster, with how to reach them;</li>
+<li><strong>What is mine</strong>: the permissions and open items owned by this session, distinct from those of the other session;</li>
+<li><strong>Waiting for authority</strong>: authorise-only commands prepared but not yet executed, with the role whose decision is
+needed and how long they have waited;</li>
+<li><strong>Refusals</strong>: commands the system refused in this session and why.</li>
+</ul>
+<p>During SCN-FIRE-DT17, from T+15 s to T+120 s, the reroute stands in &quot;waiting for authority&quot; as a prepared command with
+&quot;authoriser: Pit Supervisor — pending&quot;.</p>
+<h3 id="s-8-2">8.2 Who decides what</h3>
+<p>FIG-16-01-03 and section 4.3 give the RACI for the command catalogue. For SCN-FIRE-DT17 the decision table of ch-04-07
+section 8.2 applies unchanged; LAB-16-01-01 checks it with the same rules and finds no finding. The decision tree for
+splitting or escalating the controller's work is <code>[H]</code>:</p>
+<ol>
+<li>Is there a risk to people (fire, person in an area, collision, near miss)? → Notify the Pit Supervisor at once; the
+Pit Supervisor is accountable for the incident; the controller keeps the event.</li>
+<li>Does the next step need a decision of the Pit Supervisor (restriction, closure, reroute, clearance, restart, manual
+recovery)? → Prepare the command, obtain the decision, record the authoriser. No answer → keep the protective
+state, call the deputy.</li>
+<li>Are abnormal events active in two areas, or is a planned high-load task due, or can the scan of areas, alarms and
+permissions no longer be completed? → Ask the Pit Supervisor for the second controller; split by area.</li>
+<li>Does a field role ask you to execute a decision that is not theirs (&quot;clear the zone&quot;)? → Treat it as information for
+the accountable role, not as a decision.</li>
+</ol>
+<h3 id="s-8-3">8.3 Procedure excerpt — calling in the second controller during SCN-FIRE-DT17</h3>
+<p>The steps follow the shared timeline of section 6.3 and concern only the organisation; the emergency procedure itself
+is ch-16-06's and ch-04-07's <code>[H]</code>.</p>
+<ol>
+<li><strong>AHS Controller (T+15 s):</strong> acknowledge the incident, confirm containment, call the ERT and the Pit Supervisor. Say
+explicitly that the Pit Supervisor is now accountable for the incident: &quot;Pit Supervisor, fire on DT17, R05 mid-ramp,
+zone established, R05 held — you have the incident.&quot;</li>
+<li><strong>Pit Supervisor (by T+90 s):</strong> call the second controller to CR1. State which areas they will take: &quot;Take
+AA-Central and AA-South at workstation 2.&quot;</li>
+<li><strong>Second controller (on arrival):</strong> log in under your own identity as AHS Controller at workstation 2. Request the
+area scope stated by the Pit Supervisor.</li>
+<li><strong>AHS Controller (first):</strong> move the areas in one action. Read each permission and open item in the moved areas to
+the second controller; the second controller accepts each one on the HMI. Keep AA-North and the event.</li>
+<li><strong>Second controller:</strong> for every permission accepted, call the holder by radio, give your name as the controller now
+responsible and have the holder read back (as at a shift handover, ch-16-02).</li>
+<li><strong>Pit Supervisor (T+120 s):</strong> give the hold-or-reroute decision in words that the controller can record: &quot;Run the pit
+via R24 — Pit Supervisor authorises.&quot; <strong>AHS Controller:</strong> enter the Pit Supervisor as authoriser and execute.</li>
+<li><strong>ERT leader (after T+600 s):</strong> report &quot;fire out, scene safe&quot; to the controller. Do not ask for the zone to be cleared.</li>
+<li><strong>Pit Supervisor:</strong> decide the clearance on the recorded evidence and say so on the radio. <strong>AHS Controller:</strong> enter
+the authoriser and clear the zone.</li>
+<li><strong>Pit Supervisor (end of the event):</strong> decide when the areas return to one controller; the transfer back follows
+step 4 in reverse.</li>
+</ol>
+<h3 id="s-8-4">8.4 KPIs and delay codes affected</h3>
+<p>Organisation has no delay code of its own; its effects show in the codes of the events it handles <code>[H]</code>. Trucks held by
+the exclusion zone, including pit trucks held while the hold-or-reroute decision is pending, are Operating Delay,
+DLY-OD-14; EX02 without trucks is Non-Productive Time, DLY-NP-03; trucks stopped by an area remote stop are DLY-OD-13
+(ch-04-07, ch-04-05; GMG Time Usage Model <code>[F]</code>, SRC-PUB-GMG-TUM-2020). A slow decision lengthens these intervals
+without changing their codes.</p>
+<p>The organisation can be measured with indicators of its own <code>[H]</code>, read per shift or month, with no target set here:</p>
+<ul>
+<li><strong>decision latency</strong> for authorise-only commands: from &quot;waiting for authority&quot; to the recorded decision;</li>
+<li>authorise-only commands executed <strong>without a recorded authoriser</strong> — the target is zero, and the system prevents it;</li>
+<li><strong>refused commands</strong> by reason;</li>
+<li><strong>open rights-review findings</strong> and their age;</li>
+<li><strong>second-controller call-outs</strong> and the time from call to accepted area scope.</li>
+</ul>
+<h3 id="s-8-5">8.5 Training and competency implications</h3>
+<p>Every role learns the RACI by command, not by job title: the controller, that a prepared command waits for its
+authoriser; the Pit Supervisor, to state decisions in recordable words and to stay reachable or hand over to the deputy;
+the ERT, that &quot;scene safe&quot; is a report, not a clearance. Second controllers practise the area split in drills. Linking
+accounts to competency records, expiry and re-authorisation is ch-16-09's subject.</p>
+<h2 id="s-9">9. Requirements and acceptance criteria</h2>
+<p>REQ-16-01-001 [H]
+The command rights of every role, in the HMI and in devices, shall be derived from a RACI of the site's command
+catalogue that is maintained as a configuration item. The RACI and the rights shall be checked, on every change of
+roles or catalogue and before every AMS or FMS release, for: exactly one accountable and at least one responsible role
+per command, no right held by a role that is not responsible or accountable, and no right to a forbidden command. Rights
+wider than the site's least-privilege profile shall be reported for review.
+Rationale: when the HMI and the RACI differ, the HMI is what executes (sections 2 and 4.2).
+Verification: test (LAB-16-01-01: draft RACI 4 findings, as-delivered rights 10 findings, reference 0); inspection of
+the configuration record.</p>
+<p>REQ-16-01-002 [H]
+No role shall hold a command right, from CR1 or any remote device, that steers, propels or brakes an autonomous truck
+directly. Movement commands from CR1 shall be offers that the ADS applies only under REQ-02-03-003.
+Rationale: direct driving bypasses the ADS's checks and puts a person into the driving loop without a view of the
+truck's surroundings (section 4.1).
+Verification: inspection of the command catalogue and every user profile; test (LAB-16-01-01 reports FORBIDDEN_RIGHT
+for the as-delivered controller profile).</p>
+<p>REQ-16-01-003 [H]
+For every command whose accountable role does not issue it, the AMS shall require the authorising person and role before
+execution and shall record both with the issuer. It shall refuse the command when the authoriser is the issuer, or when
+the authoriser does not hold the accountable role on the current roster.
+Rationale: an accountable role without the button leaves no trace unless the authoriser is recorded (sections 4.2 and
+6.3).
+Verification: test with each of the six authorise-only commands of the reference RACI: missing authoriser, self-
+authorisation and an ERT member as authoriser are refused; inspection of the records.</p>
+<p>REQ-16-01-004 [H]
+The AMS shall record logins, logouts, session losses, area-scope changes and role switches as events with person, role,
+workstation, area scope and time. A change of role shall end the current session and start a new one, and every
+command shall be recorded against exactly one session.
+Rationale: every safety-relevant command must be traceable to a person, role and time, including how the person came
+to hold the role (section 4.4).
+Verification: inspection of the event schema; replay of SCN-FIRE-DT17 with a second controller and a role switch.</p>
+<p>REQ-16-01-005 [H]
+The AMS shall support the division of the autonomous areas between two controller sessions. Moving an area shall
+transfer each active permission and open item in it only on acceptance by the receiving session; until accepted, the
+giving session shall remain the owner. No autonomous area shall be without a supervising session, and commands outside
+a session's area scope shall be refused.
+Rationale: the second controller can take part of the span of control only if the split is enforceable (section 4.5).
+Verification: test (move AA-Central and AA-South during SCN-FIRE-DT17; refused acceptance keeps the owner; command
+outside scope refused).</p>
+<p>REQ-16-01-006 [H]
+Stop-direction commands (remote stop) shall remain available to their authorised issuers independently of any AMS
+session. No emergency mode, shared account or override account shall widen the rights to go-direction commands (grant,
+resume, release, clear, restart).
+Rationale: stopping must never wait for a login; starting must never skip the check (sections 4.2 and 4.4).
+Verification: inspection of the account list and of emergency functions; test of the remote stop with no AMS session
+open.</p>
+<p>REQ-16-01-007 [H]
+Every shift roster shall name, for each role that is accountable for a command in the RACI, the person on shift and a
+reachable deputy. When the accountable person cannot be reached, the AHS Controller shall keep the protective state and
+contact the deputy, and shall not take the decision in the accountable role's place.
+Rationale: nine of twelve commands carry a decision only the Pit Supervisor takes; an unreachable decider must not turn
+into a silent transfer of authority (sections 4.5 and 6.4).
+Verification: inspection of rosters (roster coverage check in ch-16-09); drill of SCN-FIRE-DT17 with the Pit Supervisor
+unreachable.</p>
+<p>REQ-16-01-008 [H]
+Remote-stop transmitters shall be included in the rights review: each transmitter's custodian role shall be recorded and
+shall be one of the authorised issuers of the remote stop.
+Rationale: a device is a command right (section 7.1).
+Verification: inspection against <code>equipment.yaml</code> (LAB-16-01-01 derives the issuers AHS-CTRL and PIT-SUP); custody
+records.</p>
+<h2 id="s-10">10. Verification and validation</h2>
+<p><strong>Verification</strong> shows that the system enforces the organisation:</p>
+<ul>
+<li>the rights check of LAB-16-01-01 runs on the site's real RACI and real profiles before every release (REQ-16-01-001);</li>
+<li>negative tests: for every command and every role without the right, one attempt, refused and logged — twelve commands
+and seven roles give 84 cases, of which the reference rights allow 15 and 69 must be refused;</li>
+<li>authorise-only tests: each of the six commands is tried without authoriser, with the issuer as authoriser and with a
+consulted role as authoriser, and each is refused (REQ-16-01-003);</li>
+<li>a replay of SCN-FIRE-DT17 with a second controller checks the area move, item-by-item acceptance, refused commands
+outside scope and the records of section 7.3;</li>
+<li>the remote stop is exercised with no AMS session open and with both workstations unavailable.</li>
+</ul>
+<p><strong>Validation</strong> asks whether the organisation works for the people in it. It needs drills built on registered scenarios
+— SCN-FIRE-DT17 with an unreachable Pit Supervisor, the area split during SCN-COMMS-R05, an emergency during
+SCN-SHIFT-HANDOVER — and a review of real decision latencies and refusals. The drill of section 1.1 found what
+verification could not: every command in it was allowed by the as-delivered profiles.</p>
+<h2 id="s-11">11. Common mistakes</h2>
+<h3 id="s-11-1">11.1 Design mistakes</h3>
+<ul>
+<li><strong>Accepting supplier profiles as the rights model.</strong> They are built for commissioning, not for operation.</li>
+<li><strong>Checking only for contradictions.</strong> The rules find rights the RACI does not allow; only the least-privilege
+profile finds rights it allows but does not intend.</li>
+<li><strong>Recording only the button-presser.</strong> For half of the reference catalogue, the decider is someone else.</li>
+<li><strong>A remote nudge &quot;for commissioning only&quot;</strong> that stays in the production profile.</li>
+<li><strong>Role switches inside a session</strong>, or one account per workstation.</li>
+<li><strong>An emergency mode that unlocks everything.</strong></li>
+<li><strong>A second workstation with no area scope</strong>, so that two controllers act on one area.</li>
+</ul>
+<h3 id="s-11-2">11.2 Operational mistakes</h3>
+<ul>
+<li><strong>&quot;Do what you need to.&quot;</strong> A delegation without content leaves the decision unrecorded and unowned.</li>
+<li><strong>Executing a field role's request as if it were a decision</strong> (&quot;clear the zone&quot;).</li>
+<li><strong>Taking the Pit Supervisor's decision because the Pit Supervisor is out of reach</strong>, instead of holding and calling
+the deputy.</li>
+<li><strong>Calling in a second controller without saying what they take.</strong></li>
+<li><strong>Lending a remote-stop transmitter</strong> to whoever is going into the pit.</li>
+<li><strong>Treating the RACI as a document for audits</strong> rather than the source of the HMI rights.</li>
+</ul>
+<h2 id="s-12">12. Worked examples</h2>
+<p>All values come from LAB-16-01-01 and are illustrative <code>[A]</code>; the RACI and rights are handbook conventions <code>[H]</code>.</p>
+<p><strong>Example 1 — the reference RACI in numbers.</strong> Over the twelve commands:</p>
+<table>
+<thead>
+<tr>
+<th>Role</th>
+<th>R</th>
+<th>A</th>
+<th>C</th>
+<th>I</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>AHS Controller</td>
+<td>11</td>
+<td>3</td>
+<td>1</td>
+<td>0</td>
+</tr>
+<tr>
+<td>Pit Supervisor</td>
+<td>2</td>
+<td>9</td>
+<td>0</td>
+<td>3</td>
+</tr>
+<tr>
+<td>Shovel Operator</td>
+<td>0</td>
+<td>0</td>
+<td>2</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Field Technician</td>
+<td>1</td>
+<td>0</td>
+<td>4</td>
+<td>0</td>
+</tr>
+<tr>
+<td>Maintenance Planner</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>6</td>
+</tr>
+<tr>
+<td>Survey</td>
+<td>0</td>
+<td>0</td>
+<td>3</td>
+<td>0</td>
+</tr>
+<tr>
+<td>ERT</td>
+<td>0</td>
+<td>0</td>
+<td>1</td>
+<td>3</td>
+</tr>
+</tbody>
+</table>
+<p>The A column sums to 12: one accountable role per command. The controller answers for three commands (grant, release,
+resume), the Pit Supervisor for nine.</p>
+<p><strong>Example 2 — auditing the as-delivered profiles.</strong> The workshop draft RACI first fails the rules with four findings:
+clearing the exclusion zone has two accountable roles (ERT and Pit Supervisor), emergency notification has none (&quot;anyone
+may call&quot;), and map deployment has nobody responsible (Survey accountable, nobody deploying). After correction the
+reference RACI passes. Checked against it, the as-delivered rights give ten findings:</p>
+<table>
+<thead>
+<tr>
+<th>Role</th>
+<th>Finding</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>AHS Controller</td>
+<td>Direct driving (forbidden); switch to manual (consulted only)</td>
+</tr>
+<tr>
+<td>Pit Supervisor</td>
+<td>Grant a permission (informed only); resume a truck (informed only)</td>
+</tr>
+<tr>
+<td>Survey</td>
+<td>Deploy a map version (consulted only); close a segment (consulted only)</td>
+</tr>
+<tr>
+<td>Maintenance Planner</td>
+<td>Resume a truck; switch to manual (informed only for both)</td>
+</tr>
+<tr>
+<td>Field Technician</td>
+<td>Resume a truck (consulted only)</td>
+</tr>
+<tr>
+<td>Shovel Operator</td>
+<td>Dispatch change (consulted only)</td>
+</tr>
+</tbody>
+</table>
+<p>The checker does not flag three further &quot;supervisor&quot; rights — restriction, closure, clearing the zone — because the Pit
+Supervisor is accountable for them; the least-privilege comparison lists exactly these three for review.</p>
+<p><strong>Example 3 — the cost of waiting for a decision.</strong> ch-04-07 computed that holding the pit costs 15582 t/h and running
+it via R24 costs 896 t/h (34 trucks, LAB-04-07-01). Every minute the hold-or-reroute decision waits after the zone is
+created at T+10 s therefore costs (15582 − 896) / 60 = 244.8 t <code>[A]</code>, assuming the pit is held until the decision as in
+ch-04-07's timeline:</p>
+<table>
+<thead>
+<tr>
+<th>Decision at</th>
+<th>Wait after T+10 s</th>
+<th>Extra tonnes lost</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>T+60 s</td>
+<td>50 s</td>
+<td>204.0 t</td>
+</tr>
+<tr>
+<td>T+120 s (ch-04-07)</td>
+<td>110 s</td>
+<td>448.7 t</td>
+</tr>
+<tr>
+<td>T+300 s</td>
+<td>290 s</td>
+<td>1183.0 t</td>
+</tr>
+<tr>
+<td>T+600 s</td>
+<td>590 s</td>
+<td>2406.9 t</td>
+</tr>
+</tbody>
+</table>
+<p>If the Pit Supervisor is unreachable and the deputy answers at T+600 s, the wait costs about 2407 t. That is the price of
+the rule in section 6.4 — and the reason to make the deputy reachable, not to let the controller decide.</p>
+<p><strong>Example 4 — where the organisation concentrates.</strong> The AHS Controller is the only role that can issue seven
+safety-relevant commands: grant, release, restriction, closure, map deployment, resume and clearing the zone. The Field
+Technician alone switches a truck to manual. Remote stop, its release and emergency notification have two issuing roles
+each. Six commands are authorise-only (dispatch change, restriction, closure, map deployment, switch to manual,
+clearing the zone). With one AHS Controller per shift <code>[A]</code>, seven commands rest on one person and nine decisions on
+another — the two single points that the second controller and the named deputy cover.</p>
+<p><strong>Example 5 — the fire decision table.</strong> The nine decisions of ch-04-07 section 8.2 pass the same four rules with no
+finding. Ordered by time, the accountable roles are: engineering design authority (T+0 s), AHS Controller (T+10 s),
+Pit Supervisor (T+15 s, T+120 s, T+300.7 s, T+600 s), ERT (scene safe), Pit Supervisor (clearance), Maintenance Planner
+(DT17's return to service). The Pit Supervisor holds the accountable role for five of the nine decisions; the ERT for
+one.</p>
+<h2 id="s-13">13. Hands-on labs</h2>
+<p><strong>LAB-16-01-01 — Role–command authority checker</strong> (labs/README.md). A table model of the seven
+<code>mine.yaml</code> roles against the CR1 command catalogue of <code>ahs_sim.control_room</code>, checked with <code>check_authority</code>. It
+finds the errors of a workshop draft RACI, checks as-delivered profiles against the reference RACI, derives the
+least-privilege rights (including the remote-stop issuers from <code>equipment.yaml</code>), lists sole issuers and
+authorise-only commands, checks ch-04-07's fire decision table and computes the cost of waiting for the hold-or-reroute
+decision. Tests: <code>make test CH=ch-16-01</code>.</p>
+<h2 id="s-14">14. Discussion questions and assignments</h2>
+<h3 id="s-14-1">14.1 Engineering assignments</h3>
+<ol>
+<li>Add a command &quot;resume all trucks in an area&quot; to the catalogue. Decide its RACI row and its rights, and show with
+LAB-16-01-01 that the check passes. Which existing commands does it overlap?</li>
+<li>Specify the HMI dialogue for an authorise-only command: the fields, the source of the authoriser list, the refusal
+messages, and what is recorded when the authoriser's decision came by radio.</li>
+<li>Design the event schema for sessions and area-scope changes so that the records of section 7.3 can be produced for
+SCN-FIRE-DT17. Show the records for a role switch by a Pit Supervisor who becomes second controller.</li>
+<li>The site considers letting the Pit Supervisor clear exclusion zones from a tablet in the field. What does it gain
+and lose, and how would the rights check report it?</li>
+</ol>
+<h3 id="s-14-2">14.2 Operations assignments</h3>
+<ol>
+<li>Build the RACI for the commands used in SCN-SHIFT-HANDOVER (permission ownership transfer, restriction review,
+manual recovery of DT17) and check it with the four rules.</li>
+<li>Write the radio calls of section 8.3 steps 1, 2 and 6 for SCN-FIRE-DT17 so that each decision can be recorded with
+its authoriser.</li>
+<li>During SCN-COMMS-R05, DT17 is down on R03 in AA-Central. Decide whether to call in the second controller, which areas
+each controller takes and what is transferred.</li>
+<li>Using example 3, explain to a new Pit Supervisor why their deputy must be reachable, in no more than five sentences.</li>
+</ol>
+<h2 id="s-15">15. Key takeaways</h2>
+<ul>
+<li>Authority in a control room is a property of commands: who may issue each, who answers for it, how both are recorded.</li>
+<li>Derive command rights from the RACI and check them: one accountable, at least one responsible, rights only for R or A,
+nothing forbidden — then compare with the least-privilege profile.</li>
+<li>No role drives a truck from CR1. Stop rights are broad; go rights are narrow and recorded with their authoriser.</li>
+<li>Sessions per person, a new session for a new role, area scope for every session: then every command has a person,
+role and time.</li>
+<li>In SCN-FIRE-DT17 decision rights move from the truck to AMS, to the Pit Supervisor and, for the scene, to the ERT;
+clearance returns to the Pit Supervisor.</li>
+<li>An unmade decision leaves the protective state in place; the answer to an unreachable decider is a reachable deputy.</li>
+</ul>
+<h2 id="s-16">16. Glossary terms introduced</h2>
+<p><code>command-catalogue</code>, <code>command-right</code>, <code>authorise-only-command</code>, <code>user-session</code>, <code>area-scope</code>,
+<code>decision-rights-handover</code>, <code>communication-line</code>, <code>statutory-role</code></p>
+<p>Used from the glossary: <code>span-of-control</code>, <code>raci</code>, <code>decision-rights</code>, <code>role-based-authorisation</code>, <code>least-privilege</code>,
+<code>escalation</code>, <code>permission-owner</code>, <code>open-item</code>, <code>audit-trail</code>, <code>remote-stop</code>, <code>exclusion-zone</code>, <code>single-point-of-failure</code>.</p>
+<nav aria-label="Introductory chapters"><p><a href="../handbook.html">Handbook contents</a> · <a href="ch-16-02.en.html">Next chapter</a></p></nav>
+</main>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.1/dist/mermaid.min.js"></script>
+<script>if(window.ahsRenderMermaid){window.ahsRenderMermaid();}</script>
+</body>
+</html>

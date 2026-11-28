@@ -1,0 +1,1496 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="generator" content="ahs-handbook build_articles 2.0.0">
+<meta name="ahs:id" content="ch-12-01">
+<meta name="ahs:version" content="0.1.2">
+<meta name="ahs:status" content="approved">
+<meta name="ahs:source-sha256" content="2aed32647a100472">
+<title>Surveying for autonomous mines</title>
+<style>
+:root {
+  --bg: #fbfaf7;
+  --fg: #1d1f21;
+  --muted: #5d6166;
+  --accent: #1f6f8b;
+  --accent-soft: #e3f0f4;
+  --border: #d9d6cf;
+  --code-bg: #f1efea;
+  --warn-bg: #fff6e0;
+  --warn-border: #e2b54a;
+  --watermark: rgba(200, 60, 60, 0.07);
+  --font-body: system-ui, -apple-system, "Segoe UI", "Hiragino Sans", "Hiragino Kaku Gothic ProN",
+    "Noto Sans JP", "Yu Gothic", Meiryo, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #15171a;
+    --fg: #e6e4df;
+    --muted: #a3a7ad;
+    --accent: #6cc3de;
+    --accent-soft: #1d3440;
+    --border: #33373d;
+    --code-bg: #1f2226;
+    --warn-bg: #2e2716;
+    --warn-border: #8c7330;
+    --watermark: rgba(255, 120, 120, 0.06);
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #15171a;
+  --fg: #e6e4df;
+  --muted: #a3a7ad;
+  --accent: #6cc3de;
+  --accent-soft: #1d3440;
+  --border: #33373d;
+  --code-bg: #1f2226;
+  --warn-bg: #2e2716;
+  --warn-border: #8c7330;
+  --watermark: rgba(255, 120, 120, 0.06);
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0 auto;
+  max-width: 52rem;
+  padding: 1.25rem 16px 3rem;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-body);
+  font-size: 1.0625rem;
+  line-height: 1.7;
+  overflow-wrap: anywhere;
+}
+h1 { font-size: 1.9rem; line-height: 1.3; margin: 0.6rem 0 1rem; }
+h2 { font-size: 1.4rem; margin-top: 2.4rem; border-bottom: 1px solid var(--border); padding-bottom: 0.2rem; }
+h3 { font-size: 1.15rem; margin-top: 1.8rem; }
+a { color: var(--accent); }
+code { font-family: var(--font-mono); background: var(--code-bg); padding: 0.05rem 0.3rem; border-radius: 3px; font-size: 0.92em; }
+pre { background: var(--code-bg); padding: 0.8rem 1rem; overflow-x: auto; border-radius: 6px; line-height: 1.45; }
+pre code { background: none; padding: 0; }
+table { border-collapse: collapse; width: 100%; display: block; overflow-x: auto; margin: 1rem 0; }
+th, td { border: 1px solid var(--border); padding: 0.35rem 0.6rem; text-align: left; vertical-align: top; }
+/* Never break inside numbers or IDs in table cells; wide tables scroll horizontally instead. */
+th, td { overflow-wrap: normal; word-break: normal; }
+th { background: var(--accent-soft); }
+blockquote { margin: 1rem 0; padding: 0.2rem 1rem; border-left: 4px solid var(--accent); color: var(--muted); }
+.article-header .meta-row { display: flex; flex-wrap: wrap; gap: 0.4rem 0.9rem; align-items: center; font-size: 0.85rem; color: var(--muted); }
+.chapter-id { font-family: var(--font-mono); font-weight: 600; color: var(--fg); }
+.status { padding: 0.05rem 0.5rem; border: 1px solid var(--border); border-radius: 999px; }
+.status-draft, .status-revision, .status-in-review { border-color: var(--warn-border); background: var(--warn-bg); }
+.theme-toggle { font: inherit; font-size: 0.8rem; color: var(--fg); background: transparent; border: 1px solid var(--border); border-radius: 4px; padding: 0.1rem 0.5rem; cursor: pointer; }
+.disclaimer { background: var(--warn-bg); border: 1px solid var(--warn-border); border-radius: 6px; padding: 0.6rem 0.9rem; font-size: 0.9rem; }
+.disclaimer p { margin: 0.25rem 0; }
+.toc { border: 1px solid var(--border); border-radius: 6px; padding: 0.6rem 1rem; margin: 1.2rem 0; font-size: 0.92rem; }
+.toc ol { margin: 0.3rem 0 0; padding-left: 1.2rem; }
+.fig { margin: 1.6rem 0; text-align: center; }
+.fig img, .fig svg { max-width: 100%; height: auto; }
+.fig pre.mermaid { background: transparent; text-align: center; }
+figcaption { font-size: 0.9rem; color: var(--muted); margin-top: 0.5rem; }
+.fig-no { font-weight: 600; color: var(--fg); }
+.fig-id { font-family: var(--font-mono); font-size: 0.75rem; opacity: 0.7; }
+.math-block { overflow-x: auto; margin: 1rem 0; }
+math { font-size: 1.1em; }
+.widget { border: 1px solid var(--border); border-radius: 8px; padding: 1rem; margin: 1.5rem 0; background: var(--accent-soft); }
+.widget label { display: block; margin: 0.4rem 0; font-size: 0.95rem; }
+.widget select, .widget input { font: inherit; color: var(--fg); background: var(--bg); border: 1px solid var(--border); border-radius: 4px; padding: 0.15rem 0.3rem; max-width: 100%; }
+.widget .result { font-size: 1.05rem; margin-top: 0.7rem; }
+.widget table { font-size: 0.88rem; }
+.watermark { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; pointer-events: none; font-size: 22vw; font-weight: 800; color: var(--watermark); transform: rotate(-24deg); z-index: 0; }
+.article-header, .toc, .article-body, .article-footer { position: relative; z-index: 1; }
+.article-footer { margin-top: 3rem; font-size: 0.8rem; color: var(--muted); border-top: 1px solid var(--border); padding-top: 0.6rem; }
+@media (max-width: 600px) {
+  body { font-size: 1rem; }
+  h1 { font-size: 1.55rem; }
+}
+@media print { .watermark { color: rgba(0, 0, 0, 0.06); } .theme-toggle { display: none; } }
+
+</style>
+<script>
+(function () {
+  var root = document.documentElement;
+  try {
+    var saved = localStorage.getItem("ahs-theme");
+    if (saved === "dark" || saved === "light") root.dataset.theme = saved;
+  } catch (e) {}
+  var mq = window.matchMedia ? window.matchMedia("(prefers-color-scheme: dark)") : null;
+  // No explicit choice: follow the system theme (CSS does the same through prefers-color-scheme).
+  function isDark() {
+    return root.dataset.theme ? root.dataset.theme === "dark" : !!(mq && mq.matches);
+  }
+  // Mermaid diagrams keep their original definition in data-source and are re-rendered with the theme that
+  // matches the page whenever the theme changes (review 2026-11-14, R22).
+  window.ahsRenderMermaid = function () {
+    if (!window.mermaid) return;
+    var nodes = Array.prototype.slice.call(document.querySelectorAll("pre.mermaid"));
+    if (!nodes.length) return;
+    nodes.forEach(function (el) {
+      if (el.getAttribute("data-source") === null) {
+        el.setAttribute("data-source", el.textContent);
+      } else {
+        el.removeAttribute("data-processed");
+        el.textContent = el.getAttribute("data-source");
+      }
+    });
+    window.mermaid.initialize({ startOnLoad: false, securityLevel: "strict", theme: isDark() ? "dark" : "default" });
+    var done = window.mermaid.run({ nodes: nodes });
+    if (done && done.catch) done.catch(function (err) { if (window.console) console.error(err); });
+  };
+  function syncButton(btn) {
+    btn.setAttribute("aria-pressed", isDark() ? "true" : "false");
+  }
+  document.addEventListener("DOMContentLoaded", function () {
+    var btn = document.querySelector(".theme-toggle");
+    if (btn) syncButton(btn);
+    if (mq) {
+      var onSystemChange = function () {
+        if (root.dataset.theme) return;
+        if (btn) syncButton(btn);
+        window.ahsRenderMermaid();
+      };
+      if (mq.addEventListener) mq.addEventListener("change", onSystemChange);
+      else if (mq.addListener) mq.addListener(onSystemChange);
+    }
+    if (!btn) return;
+    btn.addEventListener("click", function () {
+      root.dataset.theme = isDark() ? "light" : "dark";
+      try { localStorage.setItem("ahs-theme", root.dataset.theme); } catch (e) {}
+      syncButton(btn);
+      window.ahsRenderMermaid();
+    });
+  });
+})();
+
+</script>
+<link rel="canonical" href="https://thomas-21.github.io/ahs_engineering_handbook/vol-12/ch-12-01.en.html">
+</head>
+<body data-chapter-id="ch-12-01" data-status="approved">
+<header class="article-header">
+  <div class="meta-row">
+    <a class="home-link" href="../handbook.html">All chapters</a>
+    <span class="chapter-id">ch-12-01</span>
+    <button type="button" class="theme-toggle" aria-label="Theme">Theme</button>
+  </div>
+  <h1>Surveying for autonomous mines</h1>
+</header>
+<nav class="toc" aria-label="Contents"><strong>Contents</strong><ol><li><a href="#s-1">1. Overview</a></li><li><a href="#s-2">2. Operational motivation: the problem at the reference mine</a></li><li><a href="#s-3">3. Terminology and foundations</a></li><li><a href="#s-4">4. Technical explanation</a></li><li><a href="#s-5">5. Responsibilities and interface boundaries</a></li><li><a href="#s-6">6. Normal, abnormal and degraded operation</a></li><li><a href="#s-7">7. Engineering view</a></li><li><a href="#s-8">8. Operations view</a></li><li><a href="#s-9">9. Requirements and acceptance criteria</a></li><li><a href="#s-10">10. Verification and validation</a></li><li><a href="#s-11">11. Common mistakes</a></li><li><a href="#s-12">12. Worked examples</a></li><li><a href="#s-13">13. Hands-on labs</a></li><li><a href="#s-14">14. Discussion questions and assignments</a></li><li><a href="#s-15">15. Key takeaways</a></li><li><a href="#s-16">16. Glossary terms introduced</a></li></ol></nav>
+<main class="article-body">
+<h2 id="s-1">1. Overview</h2>
+<h3 id="s-1-1">1.1 Why this chapter matters</h3>
+<p>Thursday, DAY shift. The Survey lead has three requests on the whiteboard in CR1. The R05 windrow and edge rework is
+booked for Tuesday, and the Pit Supervisor wants the as-built &quot;the moment the dozer is off the ramp&quot;. EX02 moves to a
+new face next week, and the AHS map needs its new loading area before the shovel can load. And yesterday afternoon the
+AHS Controller watched trucks derate one after another on lower R05 (SCN-GNSS-R05) and asked Survey to &quot;check GB1&quot;.
+The workshop adds a fourth item: GB1's antenna has to be moved next month for building works at the MIA.</p>
+<p>The map team asks the question that sits under all four: &quot;When you hand us coordinates, what are they — which grid,
+which control, which epoch, how good, and who checked them?&quot; Nobody answers at once. The AHS Controller asks a second
+one: &quot;To survey R24 before Tuesday, does your crew enter at AP-04 or AP-02, and what does the permission hold?&quot;</p>
+<p>The questions this meeting raises are the subject of the chapter:</p>
+<ul>
+<li>What chain connects a survey mark on the ground to a lane in the AHS map, and where can it break?</li>
+<li>What must a survey deliver to the AHS, and which accuracy attributes must each deliverable carry?</li>
+<li>How far does an error in survey control move a map feature, and does the geometry of the control matter?</li>
+<li>What must be checked when the base station GB1 is moved or replaced, and why does it matter for every truck?</li>
+<li>Which survey request goes first, and how does a Survey crew work inside an autonomous area?</li>
+</ul>
+<p>This chapter covers:</p>
+<ul>
+<li>the <strong>survey control chain</strong> from survey marks through the local mine grid REFMINE-GRID to AHS map coordinates, and
+the role of GB1 (FIG-12-01-01);</li>
+<li>the <strong>site transformation</strong> and <strong>error propagation</strong> from control to map features, computed and checked by Monte
+Carlo in LAB-12-01-01;</li>
+<li><strong>survey deliverables</strong> for the AHS and the <strong>survey hand-off package</strong> the map team accepts (FIG-12-01-02);</li>
+<li><strong>GB1 checks</strong> after a move, a replacement or repeated degradation alarms;</li>
+<li><strong>surveying inside autonomous areas</strong> under digital access permissions, scheduling the west-ramp survey before an R05
+closure, and <strong>prioritising</strong> competing survey requests.</li>
+</ul>
+<p>Photogrammetry and drones are ch-12-02; mobile LiDAR ch-12-03; terrain models ch-12-04; as-built validation ch-12-07;
+the AHS map data model ch-12-08; map change management ch-12-09. Every accuracy, tolerance and error value in this
+chapter is an illustrative assumption <code>[A]</code>; survey accuracy requirements and geodetic standards are topics only <code>[TBV]</code>.</p>
+<h3 id="s-1-2">1.2 Learning objectives — Engineering</h3>
+<p>After this chapter an engineering reader will be able to:</p>
+<ol>
+<li>Explain the survey control chain from survey marks through the local mine grid (REFMINE-GRID) to AHS map
+coordinates, and the role of RTK base station GB1.</li>
+<li>Specify the survey deliverables the AHS needs (road edges, windrows, loading areas, dump edges, intersections) and
+the accuracy attributes each must carry, leaving values to the site <code>[A]</code>.</li>
+<li>Calculate how a survey control error propagates into AHS map feature positions in a worked example <code>[A]</code>.</li>
+<li>Specify the survey checks required when GB1 is moved or replaced, and their effect on map and localisation
+consistency.</li>
+<li>Design the survey hand-off package (coordinate system, epoch, method, accuracy statement, author) that the map team
+accepts.</li>
+</ol>
+<h3 id="s-1-3">1.3 Learning objectives — Operations</h3>
+<p>After this chapter an operations reader will be able to:</p>
+<ol>
+<li>Plan a survey task inside AA-North with digital access permission, including entry at AP-02 and coordination with
+the AHS Controller.</li>
+<li>Prioritise competing survey requests (R05 rework, EX02 face move, GB1 check after GNSS degradation) by production and
+safety impact.</li>
+<li>Schedule a survey of the west ramp R24, crest P3 and Intersection V before a planned R05 closure so that the detour is
+mapped from current data.</li>
+<li>Brief the Survey crew on the choice between AP-02 and AP-04 for pit entry and on what their permission area covers.</li>
+</ol>
+<h2 id="s-2">2. Operational motivation: the problem at the reference mine</h2>
+<p>An autonomous truck drives where the AMS grants it a path, and the AMS plans on the AHS map. The truck knows where it
+is from GNSS positioning corrected by the RTK base station GB1, refined by its own sensing (Volume 05). Both sides
+therefore depend on survey: the map's lanes, edges and zones come from surveyed geometry, and GB1's own position was
+surveyed. If the map and the truck's position do not rest on the same control, the truck can be exactly where its
+receiver says and still not be where the map says. The vehicle's own sensing stops it if the road ahead differs from
+what it expects (Volume 06), but a site that relies on that has already lost the map as a planning tool.</p>
+<p>The reference mine sets the frame. All positions are easting, northing and reduced level in REFMINE-GRID, a local
+engineering grid in metres (<code>mine.yaml</code>). It is deliberately not a geodetic coordinate reference system, so that the
+fictional mine cannot be placed on the Earth (ch-01-03). GB1 stands at the MIA at (−1450, 250, RL 425), about
+4.1 km from the EX02 loading spot (ch-01-03). R05 carries high GNSS multipath risk and R24, R07, R08, R17 and R18 medium
+(<code>mine.yaml</code>); six segments, 4.09 km of road, are medium or high (ch-01-03).</p>
+<p>Four pieces of work at the reference mine need Survey in the coming weeks:</p>
+<ul>
+<li><strong>SCN-MAP-R05.</strong> R05 is closed for windrow and edge rework; pit traffic climbs the west ramp R24 and the loaded leg
+of M-20481 grows from 4.50 km to 5.87 km (LAB-12-01-01 recomputes both with <code>ahs_sim.mine</code>). The as-built of R05 is
+the input to the map change; the detour's map must be current before the closure.</li>
+<li><strong>SCN-SHOVEL-EX02-MOVE.</strong> The AMS activates EX02's new loading area at T+3600 s (registry). The area is only as good
+as the survey of the new floor and face toe.</li>
+<li><strong>SCN-GNSS-R05.</strong> At T+300 s the AHS Controller calls Survey to check GB1 and satellite availability (registry). What
+&quot;check GB1&quot; means has not yet been defined; ch-04-02 and ch-16-07 record only the outcome.</li>
+<li><strong>GB1 antenna move.</strong> A planned move or replacement of the base station changes the anchor of every RTK position on
+site.</li>
+</ul>
+<p>The production stakes differ by more than an order of magnitude. LAB-12-01-01 runs the deterministic shift of
+<code>ahs_sim.fms</code>: each hour that R05 stays closed costs 311.7 t, because the detour carries the traffic (the same figure
+ch-16-04 found for a permission on R05 and R06); each hour that EX02 stands without a valid loading area costs 3960 t,
+under fixed and under dynamic dispatch alike. Neither figure says anything about GB1, which touches every truck at
+once. Section 4.10 turns these numbers into a priority rule.</p>
+<h2 id="s-3">3. Terminology and foundations</h2>
+<p><strong>Survey, the activity and the role.</strong> Survey as an activity (glossary <code>survey</code>) is the measurement of positions and shapes on site.
+Survey as a role (glossary <code>survey-role</code>) is the reference-mine role that owns road and map data on site and checks
+the GNSS infrastructure (<code>mine.yaml</code>).</p>
+<p><strong>Survey control and the control register.</strong> Survey control is the set of survey marks on stable ground whose
+coordinates are known and published, from which all other survey is derived. The <strong>control register</strong> <code>[H]</code> lists each
+mark's published easting, northing and RL in REFMINE-GRID, its status (in use, suspect, disturbed, destroyed), the date
+of its last check and the register version. In the lab the marks are labelled CM1 to CM9; these are lab labels <code>[A]</code>,
+not reference-mine IDs.</p>
+<p><strong>Local mine grid and reduced level.</strong> REFMINE-GRID is a plane grid in metres (glossary <code>local-mine-grid</code>); RL is the
+height above the site's fictional datum (glossary <code>reduced-level</code>). A real site relates its grid to a geodetic datum
+and a map projection (glossary <code>geodetic-datum</code>); how that is done, and which datum and projection apply, are topics
+only here <code>[TBV]</code> (SRC-PUB-GEODETIC-DATUM-EPOCH).</p>
+<p><strong>Working frame and site transformation.</strong> Survey instruments and GNSS rovers deliver coordinates in a frame of their
+own — in the lab a teaching <strong>working frame</strong> <code>[A]</code>. The <strong>site transformation</strong> <code>[H]</code> converts working-frame coordinates
+to REFMINE-GRID. It is fitted on control marks observed in both frames and is itself a controlled item with a version.
+Survey software often calls this step a site calibration <code>[TBV]</code>; the handbook avoids the word &quot;localisation&quot; for it
+because that word means the truck's own position estimate (glossary <code>localisation</code>).</p>
+<p><strong>Similarity (Helmert) transformation.</strong> The 2D transform used by <code>ahs_sim.mapping</code>: one scale, one rotation, two
+shifts (section 4.3). Heights are handled separately by an offset.</p>
+<p><strong>Residual and check point.</strong> A residual is the difference between a mark's published coordinate and its fitted
+position. A <strong>check point</strong> is a point of known coordinates that is not used in the fit and is observed to test it; the
+same idea serves ground control in photogrammetry (ch-12-02).</p>
+<p><strong>RTK and the base station.</strong> RTK positioning corrects a rover with carrier-phase corrections from a base station at a
+known position (glossary <code>real-time-kinematic</code>, <code>base-station</code>). At the reference mine GB1 provides the corrections for
+trucks and survey rovers alike, carried over the site network (ch-11-01).</p>
+<p><strong>Epoch.</strong> In this handbook the survey epoch <code>[H]</code> is the date and time that a set of observations represents. Open pits
+change by the hour, so a coordinate without an epoch cannot be compared with anything. Geodetic epochs — the reference
+date of a datum on a moving continent — are a related but different topic <code>[TBV]</code>.</p>
+<p><strong>Accuracy attribute and accuracy statement.</strong> An accuracy attribute is the stated uncertainty attached to a surveyed
+feature, horizontally and vertically, with the confidence level it refers to. An <strong>accuracy statement</strong> <code>[H]</code> says how
+that figure was obtained: from check points, from a model, or from the instrument's specification. The handbook gives
+the format; the site gives the values <code>[A]</code>.</p>
+<p><strong>Error propagation.</strong> How uncertainty in inputs (control marks, observations) becomes uncertainty in outputs (map
+feature positions). The lab propagates it twice: with a closed-form first-order expression and by Monte Carlo — 2000
+simulated surveys with seeded noise <code>[A]</code>.</p>
+<p><strong>Survey hand-off package.</strong> The bundle that travels from Survey to the map team with every delivery <code>[H]</code> (section 4.8).</p>
+<h2 id="s-4">4. Technical explanation</h2>
+<h3 id="s-4-1">4.1 The control chain</h3>
+<p>FIG-12-01-01 shows the chain from the ground to the truck.</p>
+<figure id="FIG-12-01-01" class="fig"><pre class="mermaid">flowchart TD
+  A[&quot;Survey marks on stable ground&lt;br/&gt;a control network around the mapped area&quot;] --&gt; B[&quot;Control register (Survey)&lt;br/&gt;published E, N, RL in REFMINE-GRID&lt;br/&gt;mark status, register version&quot;]
+  B --&gt; C[&quot;Site transformation&lt;br/&gt;working frame to REFMINE-GRID&lt;br/&gt;fitted on the marks, residuals checked&quot;]
+  B --&gt; D[&quot;GB1 RTK base station&lt;br/&gt;its position surveyed from the marks&quot;]
+  D --&gt; E[&quot;RTK corrections&lt;br/&gt;over the site network&quot;]
+  E --&gt; F[&quot;Survey rovers and instruments&lt;br/&gt;road edges, windrows, loading areas,&lt;br/&gt;dump edges, intersections&quot;]
+  C --&gt; F
+  F --&gt; G[&quot;Survey features in REFMINE-GRID&lt;br/&gt;E, N, RL with accuracy attributes&quot;]
+  G --&gt; H[&quot;Survey hand-off package&lt;br/&gt;coordinate system, epoch, method,&lt;br/&gt;control and transformation versions,&lt;br/&gt;accuracy statement, author and checker&quot;]
+  H --&gt; I[&quot;Map team: edit and validate&lt;br/&gt;new AHS map version (ch-12-08, ch-12-09)&quot;]
+  I --&gt; J[&quot;AMS plans and grants&lt;br/&gt;on the deployed map version&quot;]
+  E --&gt; K[&quot;Truck localisation (ADS)&lt;br/&gt;uses the same GB1 corrections (Volume 05)&quot;]
+  J --&gt; K
+  B -. &quot;re-observe check marks&lt;br/&gt;after any GB1 move or replacement&quot; .-&gt; D
+  K -.- L[&quot;Map and truck positions agree only&lt;br/&gt;while both rest on the same control and GB1&quot;]
+</pre><figcaption><span class="fig-no">Figure 1</span> Survey control chain: marks, local mine grid, AHS map <span class="fig-id">FIG-12-01-01</span></figcaption></figure>
+<p>Read it from the top. Survey marks on stable ground carry published coordinates in the control register. Two things are
+derived from those marks: the site transformation, which turns instrument coordinates into REFMINE-GRID, and the
+position of GB1, which every RTK rover on site — survey rovers and trucks — implicitly uses. Survey observes road edges,
+windrows, loading areas, dump edges and intersections, transforms them into the grid and hands them over as a package.
+The map team edits and validates a new map version (ch-12-08, ch-12-09); the AMS plans and grants on the deployed
+version; the truck's ADS localises with GB1's corrections.</p>
+<p>Every link can break, and each break has a different signature <code>[H]</code>:</p>
+<table>
+<thead>
+<tr>
+<th>Link</th>
+<th>How it breaks</th>
+<th>What it looks like downstream</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Marks</td>
+<td>A mark is disturbed by bench work, a grader or a blast; its published coordinate is now wrong</td>
+<td>Residuals at that mark grow; features near it move (section 4.5)</td>
+</tr>
+<tr>
+<td>Register</td>
+<td>Two versions in use; a mark re-coordinated but not re-issued</td>
+<td>Two crews deliver the same road at different positions</td>
+</tr>
+<tr>
+<td>Site transformation</td>
+<td>Fitted on marks clustered on one side; an old version reused</td>
+<td>Errors grow with distance from the control (section 4.4)</td>
+</tr>
+<tr>
+<td>GB1 position</td>
+<td>Base moved or replaced and given a wrong coordinate</td>
+<td>Every RTK position on site shifts by the same vector (section 4.6)</td>
+</tr>
+<tr>
+<td>Observations</td>
+<td>Multipath near highwalls; poor satellite geometry</td>
+<td>Large scatter on lower R05; the feature's own error dominates</td>
+</tr>
+<tr>
+<td>Hand-off</td>
+<td>Frame, epoch or control version missing</td>
+<td>The map team cannot compare the delivery with the map (section 4.8)</td>
+</tr>
+</tbody>
+</table>
+<p>The last row of FIG-12-01-01 is the point of the chapter: the map and the truck's position agree only while both rest
+on the same control and the same GB1 coordinate.</p>
+<h3 id="s-4-2">4.2 The local mine grid and what it is not</h3>
+<p>REFMINE-GRID has three properties that matter for survey. It is <strong>plane</strong>: distances and grades are read directly from
+coordinates, which is why mine plans, survey and machine guidance use a site grid <code>[H]</code>. It is <strong>local</strong>: its origin is
+the crusher C01 at (0, 0, RL 424), and it has no defined relation to latitude and longitude. And it is <strong>fictional by
+design</strong>: <code>road-network.geojson</code> declares it as &quot;LOCAL:REFMINE-GRID (metres; NOT WGS 84)&quot; (ch-01-03).</p>
+<p>For this chapter the consequence is simple. Every coordinate in the reference mine, every survey delivery and every
+map version is in REFMINE-GRID and RL. Where a real site would carry a documented link from its grid to a national
+datum, the reference mine carries none, and the handbook does not invent one. The lab's working frame is a teaching
+device: a plane frame related to the grid by a scale of 1.000150, a rotation of 0.40° and shifts of 1000 m and −500 m
+<code>[A]</code>, plus a height offset of −12.0 m <code>[A]</code>. It shows what a transformation does; it describes no real projection.</p>
+<h3 id="s-4-3">4.3 The site transformation</h3>
+<p>The 2D similarity transform of <code>ahs_sim.mapping.Similarity2D</code> maps working-frame coordinates <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">&#x00028;</mo><mi>e</mi><mo>&#x0002C;</mo><mi>n</mi><mo stretchy="false">&#x00029;</mo></mrow></math> to grid
+coordinates <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">&#x00028;</mo><msup><mi>e</mi><mi>&#x02032;</mi></msup><mo>&#x0002C;</mo><msup><mi>n</mi><mi>&#x02032;</mi></msup><mo stretchy="false">&#x00029;</mo></mrow></math>:</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msup><mi>e</mi><mi>&#x02032;</mi></msup><mo>&#x0003D;</mo><mi>s</mi><mo stretchy="false">&#x00028;</mo><mi>cos</mi><mi>&#x003B8;</mi><mspace width="0.167em" /><mi>e</mi><mo>&#x02212;</mo><mi>sin</mi><mi>&#x003B8;</mi><mspace width="0.167em" /><mi>n</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0002B;</mo><msub><mi>t</mi><mi>e</mi></msub><mo>&#x0002C;</mo><mspace width="2em" /><msup><mi>n</mi><mi>&#x02032;</mi></msup><mo>&#x0003D;</mo><mi>s</mi><mo stretchy="false">&#x00028;</mo><mi>sin</mi><mi>&#x003B8;</mi><mspace width="0.167em" /><mi>e</mi><mo>&#x0002B;</mo><mi>cos</mi><mi>&#x003B8;</mi><mspace width="0.167em" /><mi>n</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0002B;</mo><msub><mi>t</mi><mi>n</mi></msub></mrow></math></div>
+<p><code>fit_similarity</code> estimates the four parameters by least squares from at least two control marks observed in both frames,
+and returns the residuals at the marks. With more marks than the minimum, the residuals show how well the marks agree
+with each other and with the transform.</p>
+<p>LAB-12-01-01 places six control marks CM1–CM6 around the area the AHS map covers (network A, <code>[A]</code>): near the MIA and
+GB1, on the west rim beyond P3, on the south rim near P1, on the east rim above P2, on the north rim beyond EX02, and
+near D01. Each mark is observed in the working frame with a per-axis error of 0.02 m <code>[A]</code>. One seeded survey gives:</p>
+<table>
+<thead>
+<tr>
+<th>Quantity</th>
+<th>True <code>[A]</code></th>
+<th>Fitted</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Scale</td>
+<td>150 ppm</td>
+<td>151.7 ppm</td>
+</tr>
+<tr>
+<td>Rotation</td>
+<td>0.40°</td>
+<td>0.4000°</td>
+</tr>
+<tr>
+<td>RMS residual at the six marks</td>
+<td>—</td>
+<td>0.0259 m</td>
+</tr>
+<tr>
+<td>Largest residual</td>
+<td>—</td>
+<td>0.0419 m at CM3</td>
+</tr>
+</tbody>
+</table>
+<p>Heights are transformed by an offset fitted as the mean of the six differences between published RL and observed
+height. The fitted offset is −12.007 m against the true −12.0 m; over 2000 simulated surveys its standard deviation is
+0.0122 m, equal to <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x003C3;</mi><mo>&#x0002F;</mo><msqrt><mrow><mi>n</mi></mrow></msqrt><mo>&#x0003D;</mo><mn>0.03</mn><mo>&#x0002F;</mo><msqrt><mrow><mn>6</mn></mrow></msqrt></mrow></math> with a height error of 0.03 m per observation <code>[A]</code>. Real sites may
+model height with more than an offset (a tilted plane, a geoid model); that is a topic here <code>[TBV]</code>.</p>
+<h3 id="s-4-4">4.4 Error propagation from control to map features</h3>
+<p>Once fitted, the transform is applied to every surveyed feature, and its errors go with it. For a 2D similarity fitted
+on <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>n</mi></mrow></math> marks with independent per-axis noise <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x003C3;</mi></mrow></math>, a first-order expression gives the per-axis standard deviation of
+a transformed point at distance <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>r</mi></mrow></math> from the centroid of the marks:</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mi>&#x003C3;</mi><mi>T</mi></msub><mo stretchy="false">&#x00028;</mo><mi>r</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mi>&#x003C3;</mi><msqrt><mrow><mfrac><mrow><mn>1</mn></mrow><mrow><mi>n</mi></mrow></mfrac><mo>&#x0002B;</mo><mfrac><mrow><msup><mi>r</mi><mn>2</mn></msup></mrow><mrow><msub><mo>&#x02211;</mo><mrow><mi>i</mi></mrow></msub><msubsup><mi>r</mi><mi>i</mi><mn>2</mn></msubsup></mrow></mfrac></mrow></msqrt></mrow></math></div>
+<p>where <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>r</mi><mi>i</mi></msub></mrow></math> are the distances of the marks from their centroid. The first term is the uncertainty of the shift, the
+second that of rotation and scale, which grows with distance. LAB-12-01-01 checks the expression against a Monte Carlo
+run of 2000 seeded surveys <code>[A]</code>: at every feature the two agree within 5 %. It also compares network A with network B,
+four marks clustered within a few hundred metres of the MIA — a control network that was never extended to the pit
+<code>[A]</code>. Results in millimetres:</p>
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th>Distance from network A centroid (m)</th>
+<th>Network A σ per axis</th>
+<th>Network A 95th percentile</th>
+<th>With the feature's own observation error, 95th percentile</th>
+<th>Network B σ per axis</th>
+<th>Network B 95th percentile</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>R05 midpoint</td>
+<td>194</td>
+<td>8.2</td>
+<td>20.0</td>
+<td>124.4</td>
+<td>76.0</td>
+<td>189.8</td>
+</tr>
+<tr>
+<td>P1 (crest, AP-02)</td>
+<td>486</td>
+<td>8.4</td>
+<td>20.6</td>
+<td>126.6</td>
+<td>59.7</td>
+<td>148.2</td>
+</tr>
+<tr>
+<td>W</td>
+<td>500</td>
+<td>8.4</td>
+<td>20.5</td>
+<td>52.8</td>
+<td>79.0</td>
+<td>197.2</td>
+</tr>
+<tr>
+<td>X</td>
+<td>810</td>
+<td>8.9</td>
+<td>21.9</td>
+<td>53.9</td>
+<td>51.7</td>
+<td>128.5</td>
+</tr>
+<tr>
+<td>P2 (ramp toe)</td>
+<td>854</td>
+<td>8.9</td>
+<td>21.6</td>
+<td>125.0</td>
+<td>92.9</td>
+<td>232.5</td>
+</tr>
+<tr>
+<td>Z</td>
+<td>907</td>
+<td>9.0</td>
+<td>22.0</td>
+<td>53.1</td>
+<td>91.1</td>
+<td>227.4</td>
+</tr>
+<tr>
+<td>P3 (crest, AP-04)</td>
+<td>1406</td>
+<td>10.3</td>
+<td>24.6</td>
+<td>76.5</td>
+<td>50.4</td>
+<td>124.2</td>
+</tr>
+<tr>
+<td>EX02-L</td>
+<td>1523</td>
+<td>10.5</td>
+<td>25.6</td>
+<td>77.7</td>
+<td>105.0</td>
+<td>261.8</td>
+</tr>
+<tr>
+<td>V</td>
+<td>1658</td>
+<td>11.0</td>
+<td>26.8</td>
+<td>54.7</td>
+<td>28.8</td>
+<td>70.7</td>
+</tr>
+<tr>
+<td>D01</td>
+<td>2432</td>
+<td>13.4</td>
+<td>32.6</td>
+<td>58.3</td>
+<td>119.4</td>
+<td>298.2</td>
+</tr>
+<tr>
+<td>GB1</td>
+<td>2807</td>
+<td>14.9</td>
+<td>36.3</td>
+<td>60.4</td>
+<td>11.4</td>
+<td>27.9</td>
+</tr>
+</tbody>
+</table>
+<p>The &quot;95th percentile&quot; columns are of the horizontal error. The column with the feature's own observation error adds a
+per-axis error of 0.02 m on low-risk segments, 0.03 m on medium and 0.05 m on high multipath risk <code>[A]</code>, assigned from
+the <code>mine.yaml</code> class of the segment each feature lies on.</p>
+<p>Three readings matter.</p>
+<ol>
+<li><strong>With control that surrounds the work, control contributes about a centimetre.</strong> Network A's σ stays between 8.2 and
+14.9 mm everywhere the AHS map reaches, and it is smallest near the centroid, which lies 194 m from the middle of R05.</li>
+<li><strong>On R05 the observation, not the control, dominates.</strong> With the assumed 0.05 m error near the highwall, the 95th
+percentile at P1, P2 and the R05 midpoint is 124–127 mm, against 20–22 mm from control alone. Improving the control
+network would not help there; a method less sensitive to multipath on lower R05 would <code>[A]</code>.</li>
+<li><strong>Clustered control extrapolates badly.</strong> Network B is better than network A only near the MIA (GB1: 11.4 mm against
+14.9 mm). At EX02-L its σ is 105.0 mm, 10.0 times network A's, and its 95th percentile reaches 261.8 mm; at D01
+298.2 mm. The marks did not get worse; the work moved away from them. A rotation error that is invisible across a
+few hundred metres of MIA becomes a displacement of decimetres four kilometres away.</li>
+</ol>
+<p>The design rule that follows is old survey practice <code>[TBV]</code> and the handbook adopts it <code>[H]</code>: control must surround the
+area it serves, including in height, and a delivery must say which marks were used. Worked example 1 (section 12)
+repeats the EX02-L figures by hand.</p>
+<h3 id="s-4-5">4.5 A disturbed mark</h3>
+<p>Marks on a mine's rim do not stay put. Bench work, a grader or a blast can move a mark without anyone noticing. The
+lab moves CM5, on the north rim beyond EX02, by 0.15 m <code>[A]</code> while its published coordinate stays unchanged, and
+repeats the survey:</p>
+<table>
+<thead>
+<tr>
+<th>Check</th>
+<th>Clean survey</th>
+<th>CM5 disturbed by 0.15 m</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>RMS residual at the six marks</td>
+<td>0.0259 m</td>
+<td>0.0611 m</td>
+</tr>
+<tr>
+<td>Largest residual</td>
+<td>0.0419 m at CM3</td>
+<td>0.1138 m at CM5</td>
+</tr>
+<tr>
+<td>Leave-one-out discrepancy at CM5</td>
+<td>0.0402 m</td>
+<td>0.1710 m</td>
+</tr>
+<tr>
+<td>Largest leave-one-out discrepancy at any other mark</td>
+<td>0.0506 m (CM3)</td>
+<td>0.0779 m</td>
+</tr>
+</tbody>
+</table>
+<p>Least squares spreads a blunder over all residuals — every residual grows — but the disturbed mark keeps the largest.
+The <strong>leave-one-out</strong> check is sharper: fit on five marks, predict the sixth, compare with its published coordinate.
+CM5's discrepancy of 0.171 m stands well clear of the others. The procedure that follows is part of every control fit
+<code>[H]</code>: report residuals per mark, run leave-one-out, and if one mark stands out, set it &quot;suspect&quot; in the control register,
+refit without it, and have Survey re-establish it. A delivery fitted on a suspect mark is not accepted (REQ-12-01-003).</p>
+<h3 id="s-4-6">4.6 GB1: the anchor of every RTK position</h3>
+<p>GB1's corrections let a rover compute its position relative to GB1's antenna. The rover then adds the coordinate GB1
+was given. If GB1 is moved or replaced and given a coordinate that is wrong by a vector Δ, every RTK position on site —
+trucks, survey rovers, machine guidance on dozers and shovels (ch-12-06) — shifts by approximately Δ <code>[F]</code>
+(SRC-PUB-NGS-RT-GUIDELINES-2014). Nothing on a truck reports this. The rover's quality indicators describe the solution
+relative to the base, not the correctness of the base's coordinate <code>[TBV]</code>
+(SRC-PUB-SURVEY-CONTROL-PRACTICE); a truck positioned 0.10 m east of where it
+is reports a healthy fix.</p>
+<p>The consequences for the AHS are specific.</p>
+<ul>
+<li><strong>Map and trucks diverge.</strong> A map surveyed before the change and trucks localised after it disagree by Δ everywhere
+at once. A lane boundary drawn 0.10 m off is not a hazard by itself <code>[A]</code>, but Δ adds to every other error and is the
+same everywhere, so nothing averages it out.</li>
+<li><strong>New survey disagrees with old map.</strong> A survey made after the change shows every road &quot;moved&quot; by Δ. Change detection
+(ch-12-04, ch-12-07) then reports a uniform shift — the tell-tale of a base problem, not of road works.</li>
+<li><strong>3DMG digs to the wrong place.</strong> A dozer restoring EX02's loading floor to design with machine guidance (ch-12-06)
+works Δ off the design.</li>
+</ul>
+<p>LAB-12-01-01 gives GB1 a coordinate error of (0.06, −0.08) m, 0.10 m <code>[A]</code>, and re-observes four check points (CM1, CM2,
+CM3, CM6) with a rover on GB1's corrections. The individual differences from their published coordinates are 0.0684 to
+0.1247 m; their mean is 0.0621 m east and −0.0844 m north, 0.1047 m in all. With 0.02 m per observation and four marks,
+the lab flags a mean above <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>3</mn><mi>&#x003C3;</mi><mo>&#x0002F;</mo><msqrt><mrow><mi>n</mi></mrow></msqrt><mo>&#x0003D;</mo><mn>0.03</mn></mrow></math> m <code>[A]</code> — a teaching rule, not a tolerance. The error is flagged.
+Without an error the same check gives a mean of 0.0048 m and is not flagged.</p>
+<p><strong>The GB1 check</strong> <code>[H]</code> that this chapter specifies has three parts:</p>
+<ol>
+<li><strong>Status.</strong> GB1 transmitting, corrections current at the trucks (correction age), no alarms at the base (ch-11-01,
+ch-16-02 shift-start checks).</li>
+<li><strong>Position.</strong> Re-observe at least three check points distributed around the mine with a rover on GB1's corrections;
+compare with their published coordinates; flag a common offset above the site's limit <code>[A]</code>. A common offset points to
+GB1; scattered differences point to the marks or the observations.</li>
+<li><strong>Record.</strong> GB1's coordinate, its source (which marks, which register version), the check result and the date go into
+the control register and the map frame record (section 4.8).</li>
+</ol>
+<p><strong>When GB1 is moved or replaced</strong> the order matters <code>[H]</code>: (a) before the change, record a check of the old base; (b)
+establish the new antenna position from the control marks, not from the old base alone; (c) before trucks use the new
+base, run the position check above; (d) record the new coordinate as a new version of the GB1 entry, linked to the map
+frame record; (e) if the check is flagged, the trucks must not use the new base until it is resolved — the AHS Controller
+treats it like a site-wide loss of GNSS (ch-11-01) rather than letting trucks run on a base whose coordinate is in
+doubt. Whether a real site's GNSS equipment allows a seamless switch, and what the receivers do during
+it, is a Volume 05 topic <code>[TBV]</code>.</p>
+<h3 id="s-4-7">4.7 Survey deliverables for the AHS</h3>
+<p>FIG-12-01-02 maps what Survey delivers to the AHS map features each deliverable feeds.</p>
+<figure id="FIG-12-01-02" class="fig"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 528" role="img" aria-label="Survey deliverables and the AHS map features they feed">
+<style>
+.h{fill:var(--fg,#1d1f21);font-size:14px;font-weight:600}
+.t{fill:var(--fg,#1d1f21);font-size:13px;font-weight:600}
+.s{fill:var(--muted,#5d6166);font-size:11.5px}
+.n{fill:var(--muted,#5d6166);font-size:11.5px}
+.bl{fill:var(--accent-soft,#e3f0f4);stroke:var(--accent,#1f6f8b);stroke-width:1.2}
+.br{fill:var(--bg,#fbfaf7);stroke:var(--accent,#1f6f8b);stroke-width:1.2}
+.ln{stroke:var(--accent,#1f6f8b);stroke-width:1.4;fill:none;opacity:0.75}
+.ar{fill:var(--accent,#1f6f8b)}
+</style>
+<text class="h" x="30" y="36">Survey deliverables (Survey)</text>
+<text class="h" x="640" y="36">AHS map features (map team)</text>
+<rect class="bl" x="30" y="60" width="330" height="46" rx="6"/>
+<text class="t" x="40" y="79">Road edge strings</text>
+<text class="s" x="40" y="97">both edges, 3D, per segment</text>
+<rect class="bl" x="30" y="120" width="330" height="46" rx="6"/>
+<text class="t" x="40" y="139">Windrow toe and crest strings</text>
+<text class="s" x="40" y="157">both sides, with height</text>
+<rect class="bl" x="30" y="180" width="330" height="46" rx="6"/>
+<text class="t" x="40" y="199">Loading-area floor and face toe</text>
+<text class="s" x="40" y="217">EX01–EX04, after each move</text>
+<rect class="bl" x="30" y="240" width="330" height="46" rx="6"/>
+<text class="t" x="40" y="259">Dump crest and tip edge</text>
+<text class="s" x="40" y="277">D01 paddocks and edges</text>
+<rect class="bl" x="30" y="300" width="330" height="46" rx="6"/>
+<text class="t" x="40" y="319">Intersection outlines</text>
+<text class="s" x="40" y="337">V, W, X, Y, Z</text>
+<rect class="bl" x="30" y="360" width="330" height="46" rx="6"/>
+<text class="t" x="40" y="379">Crests and ramp ends</text>
+<text class="s" x="40" y="397">P1, P2, P3; access points</text>
+<rect class="bl" x="30" y="420" width="330" height="46" rx="6"/>
+<text class="t" x="40" y="439">Control and GB1 check report</text>
+<text class="s" x="40" y="457">marks, residuals, base position</text>
+<rect class="br" x="640" y="60" width="330" height="46" rx="6"/>
+<text class="t" x="650" y="79">Segment lanes and drivable boundary</text>
+<text class="s" x="650" y="97">R01–R25 (ch-12-08)</text>
+<rect class="br" x="640" y="120" width="330" height="46" rx="6"/>
+<text class="t" x="650" y="139">Edge and windrow attributes</text>
+<text class="s" x="650" y="157">presence, height class [H]</text>
+<rect class="br" x="640" y="180" width="330" height="46" rx="6"/>
+<text class="t" x="650" y="199">Loading-area zone and loading spots</text>
+<text class="s" x="650" y="217">Z-EXnn-L zones</text>
+<rect class="br" x="640" y="240" width="330" height="46" rx="6"/>
+<text class="t" x="650" y="259">Dump zone and tip points</text>
+<text class="s" x="650" y="277">Z-D01</text>
+<rect class="br" x="640" y="300" width="330" height="46" rx="6"/>
+<text class="t" x="650" y="319">Intersection zones</text>
+<text class="s" x="650" y="337">conflict areas (ch-10-05)</text>
+<rect class="br" x="640" y="360" width="330" height="46" rx="6"/>
+<text class="t" x="650" y="379">Pit exits and crest nodes</text>
+<text class="s" x="650" y="397">R05 to P1, R24 to P3</text>
+<rect class="br" x="640" y="420" width="330" height="46" rx="6"/>
+<text class="t" x="650" y="439">Map frame record</text>
+<text class="s" x="650" y="457">control, transformation, GB1 versions</text>
+<path class="ln" d="M360 83.0 C480 83.0 512 83.0 632 83.0"/>
+<path class="ar" d="M632 78.0 L640 83.0 L632 88.0 Z"/>
+<path class="ln" d="M360 83.0 C480 83.0 512 323.0 632 323.0"/>
+<path class="ar" d="M632 318.0 L640 323.0 L632 328.0 Z"/>
+<path class="ln" d="M360 143.0 C480 143.0 512 83.0 632 83.0"/>
+<path class="ar" d="M632 78.0 L640 83.0 L632 88.0 Z"/>
+<path class="ln" d="M360 143.0 C480 143.0 512 143.0 632 143.0"/>
+<path class="ar" d="M632 138.0 L640 143.0 L632 148.0 Z"/>
+<path class="ln" d="M360 203.0 C480 203.0 512 203.0 632 203.0"/>
+<path class="ar" d="M632 198.0 L640 203.0 L632 208.0 Z"/>
+<path class="ln" d="M360 263.0 C480 263.0 512 263.0 632 263.0"/>
+<path class="ar" d="M632 258.0 L640 263.0 L632 268.0 Z"/>
+<path class="ln" d="M360 323.0 C480 323.0 512 323.0 632 323.0"/>
+<path class="ar" d="M632 318.0 L640 323.0 L632 328.0 Z"/>
+<path class="ln" d="M360 383.0 C480 383.0 512 383.0 632 383.0"/>
+<path class="ar" d="M632 378.0 L640 383.0 L632 388.0 Z"/>
+<path class="ln" d="M360 383.0 C480 383.0 512 83.0 632 83.0"/>
+<path class="ar" d="M632 78.0 L640 83.0 L632 88.0 Z"/>
+<path class="ln" d="M360 443.0 C480 443.0 512 443.0 632 443.0"/>
+<path class="ar" d="M632 438.0 L640 443.0 L632 448.0 Z"/>
+<text class="n" x="30" y="498">Every deliverable carries: horizontal and vertical accuracy statement, method, epoch (date and time observed),</text>
+<text class="n" x="30" y="515">coordinate system REFMINE-GRID and RL, control register version, author and checker. Values are site decisions [A].</text>
+</svg>
+<figcaption><span class="fig-no">Figure 2</span> Survey deliverables and the AHS map features they feed <span class="fig-id">FIG-12-01-02</span></figcaption></figure>
+<p>The map features are defined in ch-12-08; this chapter specifies what Survey owes them <code>[H]</code>:</p>
+<table>
+<thead>
+<tr>
+<th>Deliverable</th>
+<th>Geometry</th>
+<th>Feeds</th>
+<th>Accuracy attributes it carries</th>
+<th>When</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Road edge strings</td>
+<td>3D polylines, both edges, per segment</td>
+<td>Lanes and drivable boundary; intersection zones</td>
+<td>Horizontal and vertical, at a stated confidence <code>[A]</code></td>
+<td>New road, rework, re-cut</td>
+</tr>
+<tr>
+<td>Windrow toe and crest strings</td>
+<td>3D polylines, both sides</td>
+<td>Edge and windrow attributes (presence, height class)</td>
+<td>Vertical of the crest; horizontal of the toe <code>[A]</code></td>
+<td>Rework (SCN-MAP-R05), damage reports</td>
+</tr>
+<tr>
+<td>Loading-area floor and face toe</td>
+<td>Surface and polyline</td>
+<td>Loading-area zone and loading spots</td>
+<td>Horizontal of the toe; vertical of the floor <code>[A]</code></td>
+<td>Every face move (SCN-SHOVEL-EX02-MOVE)</td>
+</tr>
+<tr>
+<td>Dump crest and tip edge</td>
+<td>Polyline and surface</td>
+<td>Dump zone and tip points</td>
+<td>Horizontal of the crest <code>[A]</code></td>
+<td>As the dump advances</td>
+</tr>
+<tr>
+<td>Intersection outlines</td>
+<td>Polygons</td>
+<td>Intersection zones</td>
+<td>Horizontal <code>[A]</code></td>
+<td>New or re-shaped intersection</td>
+</tr>
+<tr>
+<td>Crests and ramp ends</td>
+<td>Points and short strings</td>
+<td>Pit exits and crest nodes (R05 to P1, R24 to P3)</td>
+<td>Horizontal and vertical <code>[A]</code></td>
+<td>Ramp works</td>
+</tr>
+<tr>
+<td>Control and GB1 check report</td>
+<td>Table</td>
+<td>Map frame record</td>
+<td>Residuals, check-point differences</td>
+<td>Every fit; every GB1 change</td>
+</tr>
+</tbody>
+</table>
+<p>Three rules come with the table <code>[H]</code>. First, <strong>values belong to the site</strong>: the handbook says which attributes exist,
+not how large they may be; design guidelines and survey accuracy requirements are topics only <code>[TBV]</code>
+(SRC-REG-AU-MINE-SURVEY-REQUIREMENTS). Second, <strong>an attribute states its basis</strong>: &quot;±0.05 m&quot; without a confidence level and
+without saying whether it comes from check points or a model is not an accuracy statement. Third, <strong>a deliverable is
+complete for its purpose</strong>: a windrow survey that covers both sides of R05 except the 60 m where DZ03 was still working
+is a partial delivery and must say so.</p>
+<h3 id="s-4-8">4.8 The survey hand-off package</h3>
+<p>A coordinate is useful to the map team only with its context. The package <code>[H]</code>:</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Content</th>
+<th>Why the map team needs it</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Delivery ID and purpose</td>
+<td>e.g. &quot;R05 as-built after windrow and edge rework&quot;, linked to the change request</td>
+<td>Traceability to the map change (ch-12-09)</td>
+</tr>
+<tr>
+<td>Coordinate system</td>
+<td>REFMINE-GRID, RL; no other frame</td>
+<td>Mixing frames is the commonest silent error</td>
+</tr>
+<tr>
+<td>Epoch</td>
+<td>Date and time span of the observations</td>
+<td>Pits change; the map team compares like with like</td>
+</tr>
+<tr>
+<td>Method</td>
+<td>RTK, total station, photogrammetry (ch-12-02), LiDAR (ch-12-03)</td>
+<td>Sets the expected error and its failure modes</td>
+</tr>
+<tr>
+<td>Control used</td>
+<td>Marks and control-register version; site transformation version; GB1 coordinate version</td>
+<td>Lets anyone reproduce or question the frame</td>
+</tr>
+<tr>
+<td>Transformation check</td>
+<td>Residuals per mark, leave-one-out result</td>
+<td>Shows the frame was sound on the day</td>
+</tr>
+<tr>
+<td>Accuracy statement</td>
+<td>Horizontal and vertical values with confidence level, and their basis (check points, model, specification) <code>[A]</code></td>
+<td>Lets validation (ch-12-07) set what counts as a deviation</td>
+</tr>
+<tr>
+<td>Feature list</td>
+<td>Feature codes, segments covered, gaps and exclusions</td>
+<td>Shows completeness</td>
+</tr>
+<tr>
+<td>Conditions</td>
+<td>Satellite geometry, multipath areas, dust, traffic, permission ID</td>
+<td>Explains scatter; links to the access record</td>
+</tr>
+<tr>
+<td>Map version compared</td>
+<td>The AHS map version the survey was checked against, with the main differences</td>
+<td>Starts the change set</td>
+</tr>
+<tr>
+<td>Author and checker</td>
+<td>Two named people; the checker is not the author <code>[R]</code></td>
+<td>Accountability</td>
+</tr>
+</tbody>
+</table>
+<p>The map team rejects a package with a missing field rather than filling it in (REQ-12-01-004). That is the cheapest
+point in the whole chain to stop an error: before any map edit exists.</p>
+<h3 id="s-4-9">4.9 Surveying inside autonomous areas</h3>
+<p>Survey crews work inside autonomous areas under the same digital access permissions as any manned entry (ch-10-06,
+ch-16-04): they stop at an access point, pass the access checks, request by radio and terminal, wait for the area to be
+confirmed clear, read back the permission and enter. A Survey crew is not an exception, however short the task.</p>
+<p>Two choices decide what a survey costs: the access point and the area. ch-10-06 and ch-16-04 give the rule — AP-02 for
+work on R05, R06 and the pit floor; AP-04 for the RL 330 bench — and the costs of permissions on R06. LAB-12-01-01 adds
+the cases this chapter needs: surveys of the pit-exit corridor, with R05 open and with R05 closed. A loading unit is
+&quot;held&quot; when its loaded route has no path with the area locked, and &quot;rerouted&quot; when the path changes:</p>
+<table>
+<thead>
+<tr>
+<th>Survey area (segments locked)</th>
+<th>R05 open</th>
+<th>R05 closed (SCN-MAP-R05)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>R24 from AP-04, stopping short of W (R24)</td>
+<td>none held, none rerouted</td>
+<td>all four units held</td>
+</tr>
+<tr>
+<td>R24 including Intersection W (R24, R09, R10, R11)</td>
+<td>EX03, EX04 held</td>
+<td>all four units held</td>
+</tr>
+<tr>
+<td>Crest P3 (R24 and R25)</td>
+<td>none held, none rerouted</td>
+<td>all four units held</td>
+</tr>
+<tr>
+<td>R25 and Intersection V (R25, R12, R13, R14, R15)</td>
+<td>none held, none rerouted</td>
+<td>all four units held</td>
+</tr>
+<tr>
+<td>R05 from AP-02 (R05)</td>
+<td>all four rerouted over R24</td>
+<td>none: R05 is already closed</td>
+</tr>
+</tbody>
+</table>
+<p>The table carries the operational lesson of the chapter. <strong>Before an R05 closure, the west ramp, P3 and V can be
+surveyed at no production cost</strong> — R24 carries no baseline route — as long as the crew stops short of W, whose lock
+would hold the bench circuits of EX03 and EX04. <strong>During the closure, the same surveys isolate AA-North</strong>: R24, P3 and V
+are the only way out, and a lock on any of them holds every loading unit. A detour that has to be surveyed after the
+closure has started cannot be surveyed without stopping the pit. Hence the scheduling rule <code>[R]</code>: survey the detour —
+R24, P3, R25 and V — before the closure, deliver it, and have the map team confirm that the detour's map elements are
+current (ch-12-08) before R05 is closed. The crew's route from AP-01 to AP-04 crosses V (ch-16-04); before the closure
+that crossing costs nothing either.</p>
+<p>Conversely, the R05 survey itself is cheapest <em>during</em> the closure: the area is already empty of traffic, and the
+permission on R05 adds nothing to the closure's cost.</p>
+<p><strong>What the permission covers</strong> <code>[H]</code>: the segments in the area and nothing else. A crew permitted on R24 short of W
+does not walk to the junction to &quot;get the last string&quot;; it asks for an extension or a new permission. The crew briefing
+says where the area ends on the ground (in this case: the last marker before W), what happens if the permission
+expires (leave, or stop and call — a stale permission is not a permission, ch-10-06), and which access point is the exit.</p>
+<h3 id="s-4-10">4.10 Prioritising survey requests</h3>
+<p>Survey's time is finite, and the three requests of section 1.1 compete for it. The handbook ranks them by what waiting
+costs <code>[H]</code>:</p>
+<ol>
+<li><strong>Anything that may affect every truck's position comes first.</strong> A GB1 check after repeated degradation alarms
+(SCN-GNSS-R05) is first even though no tonnage figure can be put on it: if GB1 is wrong, every map comparison and
+every other survey made with it is wrong too. ch-04-02 and ch-16-07 have the controller keep the R05 restriction
+until Survey reports; the check also unblocks every later survey.</li>
+<li><strong>Then whatever stops a loading unit.</strong> EX02 without a valid loading area costs 3960 t per hour in the lab's shift
+(fixed and dynamic dispatch alike).</li>
+<li><strong>Then whatever lengthens cycles.</strong> An R05 closure costs 311.7 t per hour while R24 carries the traffic.</li>
+<li><strong>Except when the detour is at risk.</strong> If anything threatens the only open exit — a GB1 problem that also degrades
+R24 (medium multipath), a discrepancy on the detour's map — reopening R05 becomes the priority, because the next
+step is an isolated AA-North.</li>
+</ol>
+<p>The numbers are from one deterministic model with assumed parameters <code>[A]</code>; the order they produce — loading unit before
+cycle time, detour risk above both — is the part that carries over. The Pit Supervisor owns the decision; Survey proposes
+it with these figures.</p>
+<h3 id="s-4-11">4.11 Trade-offs and model limits</h3>
+<ul>
+<li>The lab's working frame, marks, error inputs and thresholds are assumptions <code>[A]</code>; real GNSS errors are not Gaussian
+or independent, and multipath near highwalls is correlated along the road <code>[TBV]</code>.</li>
+<li>Only a 2D similarity plus a height offset is modelled; real site transformations may include more parameters <code>[TBV]</code>.</li>
+<li>The control marks are perfectly stable unless the lab disturbs one; real marks settle and move slowly.</li>
+<li>The lab does not simulate the truck side of FIG-12-01-01 (localisation); it is described only. The localisation model
+<code>ahs_sim.localisation</code> is covered in Volume 05.</li>
+<li>Access costs use loaded routes and reachability only; clear times and lost tonnage per area are in ch-16-04.</li>
+</ul>
+<h2 id="s-5">5. Responsibilities and interface boundaries</h2>
+<table>
+<thead>
+<tr>
+<th>Element</th>
+<th>Responsible for</th>
+<th>Not responsible for</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>FMS</td>
+<td>Carrying survey windows, closures and face moves in the plan; recomputing allocation and cycle times when a closure is applied</td>
+<td>Judging survey quality</td>
+</tr>
+<tr>
+<td>AMS</td>
+<td>Holding the map frame record with the map version; enforcing survey permissions (area lock, confirmed clear, release); showing GB1 status; granting nothing on changed segments to a truck without the new map version (<code>grant_allowed</code>, ch-12-09)</td>
+<td>Checking control or survey data</td>
+</tr>
+<tr>
+<td>ADS</td>
+<td>Localising with GB1's corrections; reporting position quality; stopping on its own sensing if the road differs from the map (Volume 06)</td>
+<td>Detecting an error in GB1's coordinate</td>
+</tr>
+<tr>
+<td>VCS</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Independent safety functions</td>
+<td>Remote stop for any vehicle in the area, independent of survey and map</td>
+<td>Relying on map or survey data</td>
+</tr>
+<tr>
+<td>Onboard safety-related systems</td>
+<td>Safe-state requests anywhere</td>
+<td>—</td>
+</tr>
+<tr>
+<td>People</td>
+<td>Survey: control register, marks, site transformation, GB1 coordinate and checks, deliverables and hand-off packages, the survey crew's access requests. Map team <code>[A]</code>: accepts or rejects packages, edits and validates the map (ch-12-08, ch-12-09). AHS Controller: grants and releases survey permissions, calls Survey on GNSS patterns, applies closures. Pit Supervisor: ranks survey requests, approves closures and permissions that hold a circuit. Field Technician: GB1 hardware, with Survey for its position</td>
+<td>Survey does not approve map changes on its own; the map team does not re-coordinate survey data</td>
+</tr>
+</tbody>
+</table>
+<h2 id="s-6">6. Normal, abnormal and degraded operation</h2>
+<h3 id="s-6-1">6.1 Normal operation</h3>
+<p>The control register is current; marks are checked on a schedule and after nearby work <code>[A]</code>; GB1's status is in the
+shift-start check (ch-16-02) and its position check is recorded on its own schedule <code>[A]</code>. Survey works under
+permissions, delivers packages, and the map team accepts or rejects them on completeness before editing.</p>
+<h3 id="s-6-2">6.2 Abnormal operation — SCN-MAP-R05: surveying the detour before, and R05 during, the closure (shared timeline for sections 7 and 8)</h3>
+<p>The registry's events run from the closure (T−3600 s) to the return of routes (T+2700 s). Survey's work starts days
+earlier; those rows, and the intermediate rows in the closure hour, are <code>[A]</code>. T−3389.4 s is from ch-10-03. The registry
+compresses rework and as-built into one hour; the order of steps, not their duration, is the point.</p>
+<table>
+<thead>
+<tr>
+<th>Time</th>
+<th>Event</th>
+<th>System</th>
+<th>People</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>T−7 d <code>[A]</code></td>
+<td>Rework of R05 confirmed; survey requests raised for the detour (R24, P3, R25, V) and for the R05 as-built</td>
+<td>FMS (plan)</td>
+<td>Pit Supervisor, Survey, AHS Controller</td>
+</tr>
+<tr>
+<td>T−5 d <code>[A]</code></td>
+<td>Survey of R24 from AP-04, short of W, then R25 and V; no unit held (R05 open)</td>
+<td>AMS (permissions)</td>
+<td>Survey crew, AHS Controller</td>
+</tr>
+<tr>
+<td>T−4 d <code>[A]</code></td>
+<td>Detour hand-off package delivered; map team confirms R24, R25, P3 and V current, or edits them (ch-12-08)</td>
+<td>—</td>
+<td>Survey, map team</td>
+</tr>
+<tr>
+<td>T−1 d <code>[A]</code></td>
+<td>Control check: CM2 (west rim) and CM3 (south rim) re-observed; GB1 position check recorded</td>
+<td>—</td>
+<td>Survey</td>
+</tr>
+<tr>
+<td>T−3600 s</td>
+<td>R05 closed; AMS replans over the west ramp; FMS recomputes cycle times and allocation</td>
+<td>FMS, AMS</td>
+<td>AHS Controller</td>
+</tr>
+<tr>
+<td>T−3389.4 s</td>
+<td>Last truck leaves R05; closure effective (ch-10-03)</td>
+<td>AMS</td>
+<td>Controller informs Survey and the rework crew</td>
+</tr>
+<tr>
+<td>T−3300 s <code>[A]</code></td>
+<td>DZ03 starts the rework under a work zone on R05</td>
+<td>AMS</td>
+<td>Pit Supervisor</td>
+</tr>
+<tr>
+<td>T−1200 s <code>[A]</code></td>
+<td>DZ03 leaves; Survey enters at AP-02 under permission on R05 (no extra cost: R05 closed)</td>
+<td>AMS</td>
+<td>Survey crew, AHS Controller</td>
+</tr>
+<tr>
+<td>T−300 s <code>[A]</code></td>
+<td>Survey leaves R05; permission released and confirmed</td>
+<td>AMS</td>
+<td>Survey crew, AHS Controller</td>
+</tr>
+<tr>
+<td>T+0 s</td>
+<td>As-built survey submitted (hand-off package)</td>
+<td>—</td>
+<td>Survey</td>
+</tr>
+<tr>
+<td>T+0 to T+600 s <code>[A]</code></td>
+<td>Map team checks the package for completeness before editing</td>
+<td>—</td>
+<td>Map team</td>
+</tr>
+<tr>
+<td>T+1800 s</td>
+<td>Map change validated against survey</td>
+<td>—</td>
+<td>Survey, map team</td>
+</tr>
+<tr>
+<td>T+2400 s</td>
+<td>New map version deployed; road reopened</td>
+<td>AMS</td>
+<td>AHS Controller</td>
+</tr>
+<tr>
+<td>T+2700 s</td>
+<td>Routes return from the west ramp to R05; reservations on R24 and V released</td>
+<td>AMS</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<h3 id="s-6-3">6.3 Degraded operation — SCN-GNSS-R05: &quot;check GB1&quot;</h3>
+<p>The registry: T+0 s DT17's integrity degrades and it derates; T+40 s a second truck reports degradation at the same
+place and one truck stops; T+60 s the controller applies a ramp speed restriction; T+300 s Survey is called to check the
+base station and satellite availability. ch-04-02 and ch-16-07 continue with Survey finding GB1 and the corrections
+working, the degradation attributed to satellite geometry, and the restriction kept with a review time. This chapter
+defines what Survey does between T+300 s and that finding <code>[A]</code>:</p>
+<ol>
+<li>GB1 status and correction age at the trucks (from the network-health and GNSS views; ch-11-01).</li>
+<li>A position check: three or more check points re-observed with a rover on GB1's corrections — at least one near R05,
+such as CM3 near P1, and others around the mine. A common offset above the limit points to GB1; a clean result points
+away from it.</li>
+<li>A report to the AHS Controller and Pit Supervisor: &quot;GB1 working; corrections current; check points within the limit;
+degradation local to lower R05&quot; — or the opposite, which turns a local restriction into a site-wide problem.</li>
+</ol>
+<p>The pattern matters: degradation at one place on several trucks points to the place (geometry, multipath); degradation
+everywhere points to GB1 (ch-11-01). A wrong GB1 coordinate produces <em>neither</em> pattern, which is why the position check
+exists.</p>
+<h3 id="s-6-4">6.4 Abnormal operation — SCN-POSCOM-LV07 applied to a Survey vehicle</h3>
+<p>The access process for a Survey vehicle is the process of SCN-POSCOM-LV07: radio request at T+0 s, area selected and
+submitted at T+20 s, lock at T+25 s, confirmed clear and granted at T+90 s, permission by radio with read-back at
+T+95 s, entry at T+100 s (registry). ch-16-04 found that with baseline traffic on R05 and R06 clearing takes 346–492 s,
+not 65 s; a Survey crew planning a ramp survey with R05 open should expect minutes at AP-02, not seconds. With R05
+already closed (section 6.2) the area is empty and confirmation is quick.</p>
+<h3 id="s-6-5">6.5 Abnormal operation — GB1 moved or replaced</h3>
+<p>A planned move follows the order of section 4.6 <code>[H]</code>: old-base check recorded; new position established from the
+marks; position check passed before any truck uses the new base; new GB1 entry in the control register and map frame
+record. The change is scheduled like any infrastructure change with an impact on every truck — with the Pit Supervisor,
+at a time when a failed check can be absorbed <code>[R]</code>.</p>
+<h2 id="s-7">7. Engineering view</h2>
+<h3 id="s-7-1">7.1 Design decisions and trade-offs</h3>
+<table>
+<thead>
+<tr>
+<th>Decision</th>
+<th>Options</th>
+<th>Handbook position</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Where control marks go</td>
+<td>Convenient (near the MIA); around the mapped area</td>
+<td>Around the area, in plan and in height <code>[H]</code>; network B shows why</td>
+</tr>
+<tr>
+<td>How residuals are judged</td>
+<td>Overall RMS; per mark plus leave-one-out</td>
+<td>Per mark plus leave-one-out <code>[H]</code></td>
+</tr>
+<tr>
+<td>GB1's coordinate</td>
+<td>Set once; versioned and checked</td>
+<td>A versioned control item, checked after any change <code>[H]</code></td>
+</tr>
+<tr>
+<td>Accuracy figures in deliverables</td>
+<td>Instrument specification; check points</td>
+<td>Check points where possible; the statement says which <code>[H]</code></td>
+</tr>
+<tr>
+<td>Frame of deliveries</td>
+<td>Whatever the instrument gives; REFMINE-GRID only</td>
+<td>REFMINE-GRID and RL only, with the control and transformation versions <code>[H]</code></td>
+</tr>
+<tr>
+<td>When to survey a detour</td>
+<td>When it is needed; before the closure</td>
+<td>Before the closure, delivered and confirmed <code>[R]</code></td>
+</tr>
+<tr>
+<td>Lower R05 method</td>
+<td>RTK like elsewhere; a method less sensitive to multipath</td>
+<td>Site decision; the lab shows observation error dominates there <code>[A]</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="s-7-2">7.2 Failure modes and mitigations</h3>
+<table>
+<thead>
+<tr>
+<th>Failure mode</th>
+<th>Effect</th>
+<th>Mitigation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Control clustered on one side</td>
+<td>Decimetre errors far from the marks (network B)</td>
+<td>Control around the area (REQ-12-01-002)</td>
+</tr>
+<tr>
+<td>Disturbed mark used</td>
+<td>All features near it shifted; residuals inflated</td>
+<td>Per-mark residuals, leave-one-out, mark status (REQ-12-01-003)</td>
+</tr>
+<tr>
+<td>GB1 given a wrong coordinate</td>
+<td>Map and trucks diverge everywhere by the same vector; trucks report healthy fixes</td>
+<td>GB1 position check before use (REQ-12-01-005)</td>
+</tr>
+<tr>
+<td>Delivery without frame, epoch or control version</td>
+<td>Silent mix of frames or of old and new surfaces</td>
+<td>Package rejected (REQ-12-01-004)</td>
+</tr>
+<tr>
+<td>Detour surveyed during the closure</td>
+<td>Survey isolates AA-North</td>
+<td>Detour surveyed and confirmed before closure (REQ-12-01-006)</td>
+</tr>
+<tr>
+<td>Crew outside its permitted area</td>
+<td>A person on a road where trucks hold granted paths</td>
+<td>Area boundary briefed on the ground; extension or new permission (REQ-12-01-007)</td>
+</tr>
+<tr>
+<td>Accuracy attribute without basis</td>
+<td>Validation cannot tell a deviation from noise</td>
+<td>Accuracy statement with basis (REQ-12-01-001)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="s-7-3">7.3 Interface and timing considerations along SCN-MAP-R05</h3>
+<ul>
+<li><strong>T−5 d.</strong> Survey permission on R24 is an AMS permission like any other; the AMS returns the units held (none) before
+submission (REQ-10-06-011). A request that would include W shows EX03 and EX04 held, and the crew stops short.</li>
+<li><strong>T−4 d.</strong> The detour package carries the control and transformation versions. The map team compares it with the
+current map; any change to R24, R25, P3 or V is a map change of its own, deployed before T−3600 s (ch-12-09).</li>
+<li><strong>T−3600 s to T−300 s.</strong> The R05 permission sits inside a closure; the AMS shows both. The permission ends with a
+release confirmation, not with the closure.</li>
+<li><strong>T+0 s.</strong> The hand-off package arrives with its epoch (T−1200 s to T−300 s) and with &quot;map version compared&quot;. The
+version check is a data interface, not a phone call.</li>
+<li><strong>T+1800–2400 s.</strong> Validation (ch-12-07) uses the package's accuracy statement to tell deviations from noise. At
+deployment the AMS grants nothing on R05 to a truck that has not confirmed the new version (SCN-MAP-MISMATCH-DT17,
+ch-12-09).</li>
+</ul>
+<h2 id="s-8">8. Operations view</h2>
+<h3 id="s-8-1">8.1 What the control room sees</h3>
+<p>The AHS Controller sees survey crews as permissions: area, holder, access point, validity window, state (requested,
+locked, granted, released). Next to them: GB1 status and correction age; pending map versions and the delivery they come
+from; closures and their reasons. Survey's control register is not on the HMI, but its result is: the map frame record
+names the GB1 coordinate version in force, and a GB1 check in progress is shown as such.</p>
+<h3 id="s-8-2">8.2 Who decides what</h3>
+<table>
+<thead>
+<tr>
+<th>Decision</th>
+<th>Responsible</th>
+<th>Accountable</th>
+<th>Consulted</th>
+<th>Informed</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Order of survey requests</td>
+<td>Survey</td>
+<td>Pit Supervisor</td>
+<td>AHS Controller</td>
+<td>Shovel Operators</td>
+</tr>
+<tr>
+<td>Access point and area for a survey task</td>
+<td>AHS Controller</td>
+<td>Pit Supervisor (if a circuit is held)</td>
+<td>Survey</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Control fit accepted (residuals, leave-one-out)</td>
+<td>Survey</td>
+<td>Survey</td>
+<td>Map team</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Package accepted for map editing</td>
+<td>Map team</td>
+<td>Survey</td>
+<td>AHS Controller</td>
+<td>Pit Supervisor</td>
+</tr>
+<tr>
+<td>GB1 check result after a move or alarms</td>
+<td>Survey</td>
+<td>Pit Supervisor</td>
+<td>Field Technician, AHS Controller</td>
+<td>All CR1 controllers</td>
+</tr>
+<tr>
+<td>Trucks kept off a new GB1 until the check passes</td>
+<td>AHS Controller</td>
+<td>Pit Supervisor</td>
+<td>Survey</td>
+<td>Maintenance Planner</td>
+</tr>
+</tbody>
+</table>
+<h3 id="s-8-3">8.3 Procedure excerpts</h3>
+<p><strong>A. A survey task inside AA-North (Survey crew and AHS Controller).</strong></p>
+<ol>
+<li><strong>Survey:</strong> state the task, the segments, the time needed and the preferred access point, at least a shift ahead for
+planned work <code>[A]</code>.</li>
+<li><strong>AHS Controller:</strong> choose the access point and the smallest area that contains the route and the task; read the
+units held and rerouted before submitting; if a circuit is held, get the Pit Supervisor's approval or change the
+area (ch-16-04).</li>
+<li><strong>Survey crew:</strong> at the access point, run the access checks; request by radio and terminal.</li>
+<li><strong>AHS Controller:</strong> submit; wait for confirmed clear; give the permission by radio; the crew reads back the area, its
+limit on the ground and the validity window.</li>
+<li><strong>Survey crew:</strong> work only inside the area; at the limit, stop. Ask for an extension before the window ends.</li>
+<li><strong>Survey crew:</strong> leave by the agreed access point; report out; the controller confirms the release.</li>
+</ol>
+<p><strong>B. Before an R05 closure (Survey, AHS Controller, map team).</strong></p>
+<ol>
+<li><strong>Survey (T−7 d):</strong> plan the detour survey — R24 from AP-04 short of W, then P3, R25 and V — while R05 is open.</li>
+<li><strong>AHS Controller:</strong> confirm that no unit is held by these areas (section 4.9).</li>
+<li><strong>Survey:</strong> deliver the detour package; <strong>map team:</strong> confirm the detour's map elements or deploy a change before the
+closure.</li>
+<li><strong>Survey (T−1 d):</strong> check control near the work and record a GB1 position check.</li>
+<li><strong>Pit Supervisor:</strong> release the closure plan only when steps 3 and 4 are recorded.</li>
+</ol>
+<p><strong>C. Checking GB1 (after a move or replacement, or on the controller's call during GNSS alarms).</strong></p>
+<ol>
+<li><strong>AHS Controller:</strong> call Survey with the pattern seen (one place or everywhere) and the restriction in force.</li>
+<li><strong>Survey:</strong> check GB1 status and correction age.</li>
+<li><strong>Survey:</strong> re-observe at least three check points around the mine with a rover on GB1's corrections; compute the
+mean difference.</li>
+<li><strong>Survey → AHS Controller and Pit Supervisor:</strong> report &quot;within limit&quot; or &quot;common offset of … m&quot;.</li>
+<li><strong>AHS Controller:</strong> if flagged, treat it as a site-wide GNSS problem — no truck on the new or suspect base — and
+inform the Pit Supervisor; if not flagged, continue with the local restriction and its review condition.</li>
+</ol>
+<h3 id="s-8-4">8.4 KPIs and delay codes affected</h3>
+<p>A closure for map work lengthens cycles — 236.0 s more per EX02 cycle on the detour (ch-10-03) — and shows as fewer
+loads, not as a delay code. Trucks or loading units held because a survey permission or work zone holds their circuit are
+coded DLY-OD-04 <code>[H]</code> (<code>coding_rules</code>). Speed restrictions while Survey checks GB1 also show as cycle time. A useful
+non-GMG indicator is the age of the map frame record: days since GB1's position was last checked and since the control
+marks near the active pit were last re-observed.</p>
+<h3 id="s-8-5">8.5 Training and competency implications</h3>
+<p>Survey crews learn the access procedure as manned-entry workers, not as visitors, and practise reading the area limit on
+the ground. Surveyors learn the control register, leave-one-out checks and the GB1 position check, and the hand-off
+package. AHS Controllers learn to read a GNSS pattern (one place, everywhere, nowhere visible) and what &quot;check GB1&quot;
+involves. Pit Supervisors learn the priority rule and why the detour is surveyed before a closure. Map-team members learn
+to reject an incomplete package.</p>
+<h2 id="s-9">9. Requirements and acceptance criteria</h2>
+<p>REQ-12-01-001 [H]
+Every survey deliverable to the AHS map shall carry horizontal and vertical accuracy attributes with their confidence
+level and an accuracy statement naming their basis (check points, model or specification); the values shall be set by
+the site.
+Rationale: an attribute without a basis cannot separate a deviation from noise during validation (section 4.7).
+Verification: inspection of hand-off packages</p>
+<p>REQ-12-01-002 [H]
+Control used for AHS map deliveries shall surround the area delivered, in plan and in height, and the delivery shall name
+the marks used.
+Rationale: clustered control extrapolates badly — 105.0 mm σ at EX02-L from marks near the MIA against 10.5 mm from
+marks around the mine (section 4.4).
+Verification: analysis (LAB-12-01-01), inspection of the control register</p>
+<p>REQ-12-01-003 [H]
+Each site transformation fit shall report residuals per mark and a leave-one-out check; a mark that stands out shall be
+set &quot;suspect&quot; in the control register and excluded until re-established.
+Rationale: a 0.15 m disturbance raises one mark's leave-one-out discrepancy to 0.171 m while the others stay below
+0.078 m (section 4.5).
+Verification: test (LAB-12-01-01), inspection</p>
+<p>REQ-12-01-004 [H]
+The map team shall accept a survey delivery for map editing only with a complete hand-off package (section 4.8) in
+REFMINE-GRID and RL, and shall reject, not complete, a package with a missing field.
+Rationale: frame, epoch and control version cannot be reconstructed after the fact.
+Verification: inspection; test of the map change workflow (ch-12-09)</p>
+<p>REQ-12-01-005 [H]
+After GB1 is moved or replaced, no truck shall use its corrections until a position check on at least three check points
+around the mine has been recorded within the site's limit, and GB1's coordinate shall be recorded as a new version in the
+control register and the map frame record.
+Rationale: a base coordinate error shifts every RTK position on site and is not reported by the rovers (section 4.6).
+Verification: inspection of the GB1 change record; drill</p>
+<p>REQ-12-01-006 [H]
+Before R05 is closed for planned work, R24, P3, R25 and Intersection V shall have been surveyed or confirmed against the
+current map, with the result delivered before the closure.
+Rationale: during the closure any survey permission on the detour holds every loading unit (section 4.9).
+Verification: inspection of the closure plan (SCN-MAP-R05)</p>
+<p>REQ-12-01-007 [H]
+A Survey crew inside an autonomous area shall work only within the area of its digital access permission and shall
+request an extension or a new permission for any work outside it.
+Rationale: the permission protects only its area; the AMS grants paths everywhere else.
+Verification: inspection of permission records; observation in drills</p>
+<p>REQ-12-01-008 [H]
+The AHS map frame record shall name the control-register version, site transformation version and GB1 coordinate version
+on which the current map version rests, and the AMS shall display it with the map version.
+Rationale: map and truck positions agree only while both rest on the same control and base (FIG-12-01-01).
+Verification: inspection; test (HMI against the map frame record)</p>
+<h2 id="s-10">10. Verification and validation</h2>
+<ul>
+<li><strong>The lab verifies its arithmetic.</strong> Eleven tests in LAB-12-01-01 check the working-frame round trip and an exact fit,
+the single fit, the agreement of the closed-form σ with Monte Carlo within 5 % at every feature, the network B
+figures, the disturbed-mark and GB1 checks, the access table, the route lengths and the production costs.</li>
+<li><strong>The lab does not validate survey practice.</strong> Errors are Gaussian and independent by assumption <code>[A]</code>; real GNSS
+errors near highwalls are neither. A site validates its accuracy statements with check points not used in any fit.</li>
+<li><strong>Site validation of the chain.</strong> Re-observe check points with the trucks' own receivers parked on them during a
+quiet shift <code>[A]</code>: if the truck reports the check point where the register has it, map and truck rest on the same
+control.</li>
+<li><strong>Procedural validation.</strong> Drills: a GB1 change with a deliberately wrong coordinate in a test window (the check must
+flag it), a survey task that would cross W (the controller must stop it short), and a package with a missing epoch (the
+map team must reject it).</li>
+</ul>
+<h2 id="s-11">11. Common mistakes</h2>
+<h3 id="s-11-1">11.1 Design mistakes</h3>
+<ul>
+<li>Placing control where it is convenient — around the MIA — and transforming the pit from it.</li>
+<li>Treating GB1's coordinate as installation data rather than as a versioned control item.</li>
+<li>Quoting instrument specifications as the accuracy of a delivery.</li>
+<li>Allowing more than one frame or control version into the map pipeline.</li>
+<li>Judging a transformation by its overall RMS alone.</li>
+</ul>
+<h3 id="s-11-2">11.2 Operational mistakes</h3>
+<ul>
+<li>Surveying the west ramp after R05 has been closed, or crossing W &quot;for the last string&quot;.</li>
+<li>Calling Survey to &quot;check GB1&quot; and accepting &quot;it is transmitting&quot; as the answer.</li>
+<li>Ranking survey requests by who asked loudest rather than by what waiting costs.</li>
+<li>Handing over a delivery by e-mail with coordinates but no package.</li>
+<li>Letting trucks run on a newly installed base before its position check.</li>
+</ul>
+<h2 id="s-12">12. Worked examples</h2>
+<p><strong>Example 1 — Control error at EX02-L.</strong> Network A: <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>n</mi><mo>&#x0003D;</mo><mn>6</mn></mrow></math>, <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo>&#x02211;</mo><msubsup><mi>r</mi><mi>i</mi><mn>2</mn></msubsup><mo>&#x0003D;</mo><mn>21</mn><mspace width="0.167em" /><mn>548</mn><mspace width="0.167em" /><mn>333</mn></mrow></math> m², EX02-L at
+<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>r</mi><mo>&#x0003D;</mo><mn>1523.2</mn></mrow></math> m from the centroid. <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>1</mn><mo>&#x0002F;</mo><mi>n</mi><mo>&#x0003D;</mo><mn>0.167</mn></mrow></math>; <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mi>r</mi><mn>2</mn></msup><mo>&#x0002F;</mo><mo>&#x02211;</mo><msubsup><mi>r</mi><mi>i</mi><mn>2</mn></msubsup><mo>&#x0003D;</mo><mn>0.108</mn></mrow></math>; <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>&#x003C3;</mi><mi>T</mi></msub><mo>&#x0003D;</mo><mn>0.02</mn><msqrt><mrow><mn>0.167</mn><mo>&#x0002B;</mo><mn>0.108</mn></mrow></msqrt><mo>&#x0003D;</mo><mn>0.0105</mn></mrow></math> m, 10.5 mm per axis <code>[A]</code>. Network B: <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>n</mi><mo>&#x0003D;</mo><mn>4</mn></mrow></math>, <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo>&#x02211;</mo><msubsup><mi>r</mi><mi>i</mi><mn>2</mn></msubsup><mo>&#x0003D;</mo><mn>555</mn><mspace width="0.167em" /><mn>000</mn></mrow></math> m², <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>r</mi><mo>&#x0003D;</mo><mn>3925.9</mn></mrow></math> m; <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>1</mn><mo>&#x0002F;</mo><mi>n</mi><mo>&#x0003D;</mo><mn>0.25</mn></mrow></math>;
+<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mi>r</mi><mn>2</mn></msup><mo>&#x0002F;</mo><mo>&#x02211;</mo><msubsup><mi>r</mi><mi>i</mi><mn>2</mn></msubsup><mo>&#x0003D;</mo><mn>27.77</mn></mrow></math>; <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>&#x003C3;</mi><mi>T</mi></msub><mo>&#x0003D;</mo><mn>0.02</mn><msqrt><mrow><mn>28.02</mn></mrow></msqrt><mo>&#x0003D;</mo><mn>0.106</mn></mrow></math> m. Monte Carlo gives 10.5 mm and 105.0 mm. The marks are
+equally good; the second network is four kilometres away.</p>
+<p><strong>Example 2 — The GB1 check limit.</strong> Four check points, 0.02 m per observation <code>[A]</code>. The standard deviation of the mean
+is <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>0.02</mn><mo>&#x0002F;</mo><msqrt><mrow><mn>4</mn></mrow></msqrt><mo>&#x0003D;</mo><mn>0.01</mn></mrow></math> m; with <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>K</mi><mo>&#x0003D;</mo><mn>3</mn></mrow></math> the limit is 0.03 m <code>[A]</code>. The observed mean of 0.0621 m east and −0.0844 m
+north exceeds it on both axes; the base is suspect. With three check points the limit would be 0.035 m; more points make
+a smaller offset detectable.</p>
+<p><strong>Example 3 — Ranking requests.</strong> EX02 idle: 3960 t per hour. R05 closed with the detour open: 311.7 t per hour. An hour
+of Survey spent on EX02's new loading area instead of the R05 as-built saves, in this model, 3960 − 311.7 = 3648.3 t —
+provided nothing threatens R24. A GB1 check after repeated alarms goes before both.</p>
+<h2 id="s-13">13. Hands-on labs</h2>
+<p><strong>LAB-12-01-01 — From survey control to map coordinates: transformation and error propagation</strong>
+(labs/README.md). The lab fits the site transformation on six control marks with <code>ahs_sim.mapping. fit_similarity</code>, propagates control error to eleven map features in closed form and by Monte Carlo, compares a
+surrounding and a clustered control network, finds a disturbed mark by leave-one-out, detects an error in GB1's
+coordinate with check points, tabulates which loading units a survey permission holds with R05 open and closed, and
+computes route lengths and production costs. Eleven tests check every value quoted in this chapter. GNSS and RTK error
+inputs are lab-local <code>[A]</code>; the lab does not use <code>ahs_sim.localisation</code> (Volume 05).</p>
+<h2 id="s-14">14. Discussion questions and assignments</h2>
+<h3 id="s-14-1">14.1 Engineering assignments</h3>
+<ol>
+<li>Add a seventh mark to network B of your choice and find the position that most reduces σ at EX02-L. Explain the result
+with the formula of section 4.4.</li>
+<li>Make the observation error on R05 correlated along the road (a slowly varying offset) and discuss what Monte Carlo
+and the closed form can and cannot tell you then.</li>
+<li>Write the GB1 change plan for the antenna move: steps, check points, limits <code>[A]</code>, records and who signs.</li>
+<li>Draft the hand-off package for the R05 as-built of SCN-MAP-R05, with every field of section 4.8 filled.</li>
+</ol>
+<h3 id="s-14-2">14.2 Operations assignments</h3>
+<ol>
+<li>Plan the detour survey before an R05 closure: areas, access points, order, times, and the crew briefing on the area
+limits.</li>
+<li>Survey has one crew tomorrow and three requests: the R05 as-built, EX02's new loading area and a GB1 check after
+alarms. Write the order and the reasons for the Pit Supervisor.</li>
+<li>A surveyor on R24 asks by radio to &quot;pop down to W for two minutes&quot;. Write the controller's answer.</li>
+</ol>
+<h2 id="s-15">15. Key takeaways</h2>
+<ul>
+<li>The AHS map and the truck's position agree only while both rest on the same control and the same GB1 coordinate.</li>
+<li>REFMINE-GRID is local and fictional by design; every delivery is in it, with its control, transformation and GB1
+versions.</li>
+<li>Control that surrounds the work contributes about a centimetre (8.2–14.9 mm σ in the lab); clustered control gives
+105.0 mm at EX02-L. On lower R05 the observation error dominates.</li>
+<li>Per-mark residuals and leave-one-out find a disturbed mark that the overall RMS only hints at.</li>
+<li>A wrong GB1 coordinate moves everything and alarms nothing; check it with check points after every change.</li>
+<li>Survey the detour before an R05 closure; during it, any survey of R24, P3 or V isolates AA-North.</li>
+<li>Rank survey requests by what waiting costs: GB1 first, then a stopped loading unit, then a lengthened cycle.</li>
+</ul>
+<h2 id="s-16">16. Glossary terms introduced</h2>
+<ul>
+<li><code>survey-control</code> — Survey control</li>
+<li><code>control-register</code> — Control register</li>
+<li><code>site-transformation</code> — Site transformation</li>
+<li><code>similarity-transformation</code> — Similarity (Helmert) transformation</li>
+<li><code>check-point</code> — Check point</li>
+<li><code>survey-epoch</code> — Survey epoch</li>
+<li><code>accuracy-statement</code> — Accuracy statement</li>
+<li><code>error-propagation</code> — Error propagation</li>
+<li><code>survey-hand-off-package</code> — Survey hand-off package</li>
+</ul>
+<p>Existing terms used: <code>survey</code>, <code>survey-role</code>, <code>local-mine-grid</code>, <code>reduced-level</code>, <code>geodetic-datum</code>,
+<code>real-time-kinematic</code>, <code>base-station</code>, <code>gnss</code>, <code>multipath</code>, <code>localisation</code>, <code>ahs-map</code>, <code>map-version</code>, <code>as-built</code>,
+<code>windrow</code>, <code>digital-access-permission</code>, <code>access-point</code>, <code>road-closure</code>, <code>reroute</code>, <code>pit-exit</code>, <code>work-zone</code>.</p>
+<nav aria-label="Introductory chapters"><p><a href="../handbook.html">Handbook contents</a> · <a href="ch-12-02.en.html">Next chapter</a></p></nav>
+</main>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.1/dist/mermaid.min.js"></script>
+<script>if(window.ahsRenderMermaid){window.ahsRenderMermaid();}</script>
+</body>
+</html>

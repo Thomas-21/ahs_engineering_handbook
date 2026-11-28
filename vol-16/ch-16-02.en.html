@@ -1,0 +1,1525 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="generator" content="ahs-handbook build_articles 2.0.0">
+<meta name="ahs:id" content="ch-16-02">
+<meta name="ahs:version" content="0.1.2">
+<meta name="ahs:status" content="approved">
+<meta name="ahs:source-sha256" content="64d46172639c6b75">
+<title>Shift start, handover and end of shift</title>
+<style>
+:root {
+  --bg: #fbfaf7;
+  --fg: #1d1f21;
+  --muted: #5d6166;
+  --accent: #1f6f8b;
+  --accent-soft: #e3f0f4;
+  --border: #d9d6cf;
+  --code-bg: #f1efea;
+  --warn-bg: #fff6e0;
+  --warn-border: #e2b54a;
+  --watermark: rgba(200, 60, 60, 0.07);
+  --font-body: system-ui, -apple-system, "Segoe UI", "Hiragino Sans", "Hiragino Kaku Gothic ProN",
+    "Noto Sans JP", "Yu Gothic", Meiryo, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #15171a;
+    --fg: #e6e4df;
+    --muted: #a3a7ad;
+    --accent: #6cc3de;
+    --accent-soft: #1d3440;
+    --border: #33373d;
+    --code-bg: #1f2226;
+    --warn-bg: #2e2716;
+    --warn-border: #8c7330;
+    --watermark: rgba(255, 120, 120, 0.06);
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #15171a;
+  --fg: #e6e4df;
+  --muted: #a3a7ad;
+  --accent: #6cc3de;
+  --accent-soft: #1d3440;
+  --border: #33373d;
+  --code-bg: #1f2226;
+  --warn-bg: #2e2716;
+  --warn-border: #8c7330;
+  --watermark: rgba(255, 120, 120, 0.06);
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0 auto;
+  max-width: 52rem;
+  padding: 1.25rem 16px 3rem;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-body);
+  font-size: 1.0625rem;
+  line-height: 1.7;
+  overflow-wrap: anywhere;
+}
+h1 { font-size: 1.9rem; line-height: 1.3; margin: 0.6rem 0 1rem; }
+h2 { font-size: 1.4rem; margin-top: 2.4rem; border-bottom: 1px solid var(--border); padding-bottom: 0.2rem; }
+h3 { font-size: 1.15rem; margin-top: 1.8rem; }
+a { color: var(--accent); }
+code { font-family: var(--font-mono); background: var(--code-bg); padding: 0.05rem 0.3rem; border-radius: 3px; font-size: 0.92em; }
+pre { background: var(--code-bg); padding: 0.8rem 1rem; overflow-x: auto; border-radius: 6px; line-height: 1.45; }
+pre code { background: none; padding: 0; }
+table { border-collapse: collapse; width: 100%; display: block; overflow-x: auto; margin: 1rem 0; }
+th, td { border: 1px solid var(--border); padding: 0.35rem 0.6rem; text-align: left; vertical-align: top; }
+/* Never break inside numbers or IDs in table cells; wide tables scroll horizontally instead. */
+th, td { overflow-wrap: normal; word-break: normal; }
+th { background: var(--accent-soft); }
+blockquote { margin: 1rem 0; padding: 0.2rem 1rem; border-left: 4px solid var(--accent); color: var(--muted); }
+.article-header .meta-row { display: flex; flex-wrap: wrap; gap: 0.4rem 0.9rem; align-items: center; font-size: 0.85rem; color: var(--muted); }
+.chapter-id { font-family: var(--font-mono); font-weight: 600; color: var(--fg); }
+.status { padding: 0.05rem 0.5rem; border: 1px solid var(--border); border-radius: 999px; }
+.status-draft, .status-revision, .status-in-review { border-color: var(--warn-border); background: var(--warn-bg); }
+.theme-toggle { font: inherit; font-size: 0.8rem; color: var(--fg); background: transparent; border: 1px solid var(--border); border-radius: 4px; padding: 0.1rem 0.5rem; cursor: pointer; }
+.disclaimer { background: var(--warn-bg); border: 1px solid var(--warn-border); border-radius: 6px; padding: 0.6rem 0.9rem; font-size: 0.9rem; }
+.disclaimer p { margin: 0.25rem 0; }
+.toc { border: 1px solid var(--border); border-radius: 6px; padding: 0.6rem 1rem; margin: 1.2rem 0; font-size: 0.92rem; }
+.toc ol { margin: 0.3rem 0 0; padding-left: 1.2rem; }
+.fig { margin: 1.6rem 0; text-align: center; }
+.fig img, .fig svg { max-width: 100%; height: auto; }
+.fig pre.mermaid { background: transparent; text-align: center; }
+figcaption { font-size: 0.9rem; color: var(--muted); margin-top: 0.5rem; }
+.fig-no { font-weight: 600; color: var(--fg); }
+.fig-id { font-family: var(--font-mono); font-size: 0.75rem; opacity: 0.7; }
+.math-block { overflow-x: auto; margin: 1rem 0; }
+math { font-size: 1.1em; }
+.widget { border: 1px solid var(--border); border-radius: 8px; padding: 1rem; margin: 1.5rem 0; background: var(--accent-soft); }
+.widget label { display: block; margin: 0.4rem 0; font-size: 0.95rem; }
+.widget select, .widget input { font: inherit; color: var(--fg); background: var(--bg); border: 1px solid var(--border); border-radius: 4px; padding: 0.15rem 0.3rem; max-width: 100%; }
+.widget .result { font-size: 1.05rem; margin-top: 0.7rem; }
+.widget table { font-size: 0.88rem; }
+.watermark { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; pointer-events: none; font-size: 22vw; font-weight: 800; color: var(--watermark); transform: rotate(-24deg); z-index: 0; }
+.article-header, .toc, .article-body, .article-footer { position: relative; z-index: 1; }
+.article-footer { margin-top: 3rem; font-size: 0.8rem; color: var(--muted); border-top: 1px solid var(--border); padding-top: 0.6rem; }
+@media (max-width: 600px) {
+  body { font-size: 1rem; }
+  h1 { font-size: 1.55rem; }
+}
+@media print { .watermark { color: rgba(0, 0, 0, 0.06); } .theme-toggle { display: none; } }
+
+</style>
+<script>
+(function () {
+  var root = document.documentElement;
+  try {
+    var saved = localStorage.getItem("ahs-theme");
+    if (saved === "dark" || saved === "light") root.dataset.theme = saved;
+  } catch (e) {}
+  var mq = window.matchMedia ? window.matchMedia("(prefers-color-scheme: dark)") : null;
+  // No explicit choice: follow the system theme (CSS does the same through prefers-color-scheme).
+  function isDark() {
+    return root.dataset.theme ? root.dataset.theme === "dark" : !!(mq && mq.matches);
+  }
+  // Mermaid diagrams keep their original definition in data-source and are re-rendered with the theme that
+  // matches the page whenever the theme changes (review 2026-11-14, R22).
+  window.ahsRenderMermaid = function () {
+    if (!window.mermaid) return;
+    var nodes = Array.prototype.slice.call(document.querySelectorAll("pre.mermaid"));
+    if (!nodes.length) return;
+    nodes.forEach(function (el) {
+      if (el.getAttribute("data-source") === null) {
+        el.setAttribute("data-source", el.textContent);
+      } else {
+        el.removeAttribute("data-processed");
+        el.textContent = el.getAttribute("data-source");
+      }
+    });
+    window.mermaid.initialize({ startOnLoad: false, securityLevel: "strict", theme: isDark() ? "dark" : "default" });
+    var done = window.mermaid.run({ nodes: nodes });
+    if (done && done.catch) done.catch(function (err) { if (window.console) console.error(err); });
+  };
+  function syncButton(btn) {
+    btn.setAttribute("aria-pressed", isDark() ? "true" : "false");
+  }
+  document.addEventListener("DOMContentLoaded", function () {
+    var btn = document.querySelector(".theme-toggle");
+    if (btn) syncButton(btn);
+    if (mq) {
+      var onSystemChange = function () {
+        if (root.dataset.theme) return;
+        if (btn) syncButton(btn);
+        window.ahsRenderMermaid();
+      };
+      if (mq.addEventListener) mq.addEventListener("change", onSystemChange);
+      else if (mq.addListener) mq.addListener(onSystemChange);
+    }
+    if (!btn) return;
+    btn.addEventListener("click", function () {
+      root.dataset.theme = isDark() ? "light" : "dark";
+      try { localStorage.setItem("ahs-theme", root.dataset.theme); } catch (e) {}
+      syncButton(btn);
+      window.ahsRenderMermaid();
+    });
+  });
+})();
+
+</script>
+<link rel="canonical" href="https://thomas-21.github.io/ahs_engineering_handbook/vol-16/ch-16-02.en.html">
+</head>
+<body data-chapter-id="ch-16-02" data-status="approved">
+<header class="article-header">
+  <div class="meta-row">
+    <a class="home-link" href="../handbook.html">All chapters</a>
+    <span class="chapter-id">ch-16-02</span>
+    <button type="button" class="theme-toggle" aria-label="Theme">Theme</button>
+  </div>
+  <h1>Shift start, handover and end of shift</h1>
+</header>
+<nav class="toc" aria-label="Contents"><strong>Contents</strong><ol><li><a href="#s-1">1. Overview</a></li><li><a href="#s-2">2. Operational motivation: the problem at the reference mine</a></li><li><a href="#s-3">3. Terminology and foundations</a></li><li><a href="#s-4">4. Technical explanation</a></li><li><a href="#s-5">5. Responsibilities and interface boundaries</a></li><li><a href="#s-6">6. Normal, abnormal and degraded operation</a></li><li><a href="#s-7">7. Engineering view</a></li><li><a href="#s-8">8. Operations view</a></li><li><a href="#s-9">9. Requirements and acceptance criteria</a></li><li><a href="#s-10">10. Verification and validation</a></li><li><a href="#s-11">11. Common mistakes</a></li><li><a href="#s-12">12. Worked examples</a></li><li><a href="#s-13">13. Hands-on labs</a></li><li><a href="#s-14">14. Discussion questions and assignments</a></li><li><a href="#s-15">15. Key takeaways</a></li><li><a href="#s-16">16. Glossary terms introduced</a></li></ol></nav>
+<main class="article-body">
+<h2 id="s-1">1. Overview</h2>
+<h3 id="s-1-1">1.1 Why this chapter matters</h3>
+<p>At 17:50 the handover view in CR1 refreshes. The day AHS Controller expects three lines — the R05 speed restriction,
+LV07's permission on R06, DT17 down on R03 — because those are the three situations they have been talking about on the
+radio all afternoon. The view shows five. Below DT17 sit two more: the Field Technician's own access permission for the
+work area around the truck, and DT17's drivetrain-fault alarm, acknowledged at 17:31 and still active. Neither was in the
+controller's head as a separate thing; both are separate things in the AMS. The technician's permission is also the
+most expensive item on the list: while it locks R03, the dump D01 cannot be reached, and the eighteen trucks of EX03 and
+EX04 have been held since 17:45.</p>
+<p>The night controller logs in at the second workstation at 17:58. In the next fifteen minutes, while the fleet keeps
+running, responsibility for all five objects must move to them; two involve people in autonomous areas.</p>
+<p>The scene raises questions that this chapter answers:</p>
+<ul>
+<li>What exactly must cross 18:00, and how can both controllers know that nothing was left behind?</li>
+<li>How does LV07's permission change owner without being cancelled, re-issued or silently extended?</li>
+<li>What happens if the Field Technician calls with news halfway through, or if a fire alarm goes off?</li>
+<li>What does the night controller need to check at the start of the shift that is not an open item at all?</li>
+<li>What must be in the records at 06:00 so that the next shift, the Pit Supervisor and the Maintenance Planner can act?</li>
+</ul>
+<p>ch-01-06 introduced the handover as a transfer of responsibility for running states and set the 18:00 timeline of
+SCN-SHIFT-HANDOVER. This chapter works it out as a procedure and as a system function. It covers:</p>
+<ul>
+<li>the <strong>shift as a cycle</strong> of checkpoints, from handover in to handover out;</li>
+<li>the <strong>handover snapshot</strong>: which system objects it contains, how they are generated, grouped and checked;</li>
+<li><strong>ownership transfer</strong> of an active digital access permission, and why an unowned permission fails closed;</li>
+<li><strong>shift-start checks</strong> the system can run itself and those that need a person;</li>
+<li><strong>deferring a handover</strong> while an event is not yet stabilised;</li>
+<li><strong>end-of-shift records</strong>: shift log, delay coding across the shift boundary and the open-item list.</li>
+</ul>
+<p>All procedures, data fields and check rules are handbook conventions <code>[H]</code>; every time, expiry, identifier and
+production figure is an illustrative assumption <code>[A]</code> and none is a recommended value. Fatigue management and
+shift-length regulation are outside the chapter's scope and are named only as topics <code>[TBV]</code>.</p>
+<h3 id="s-1-2">1.2 Learning objectives — Engineering</h3>
+<p>After this chapter an engineering reader will be able to:</p>
+<ol>
+<li>Specify the system-state snapshot AMS and FMS must provide at handover (active permissions, stopped trucks, speed
+restrictions, closed segments, pending map versions, open alarms) so that no open item exists only in a
+controller's memory.</li>
+<li>Explain how ownership of an active digital access permission transfers between controller sessions without revoking
+it unintentionally or extending it silently, and why an un-owned permission must fail closed.</li>
+<li>Design a handover view in which open items are generated from system state rather than typed, each with owner,
+start time, expiry or review condition, and acknowledgement by the incoming controller.</li>
+<li>Specify which shift-start checks the system can perform automatically (map version consistency across trucks, comms
+sites CT1–CT3, base station GB1, mode of every truck) and which need human confirmation.</li>
+</ol>
+<h3 id="s-1-3">1.3 Learning objectives — Operations</h3>
+<p>After this chapter an operations reader will be able to:</p>
+<ol>
+<li>Conduct the 18:00 handover in SCN-SHIFT-HANDOVER so that each of the three open items (LV07 permission, DT17 down
+on R03, R05 speed restriction) is stated, confirmed and signed for by the incoming controller.</li>
+<li>Perform shift-start checks for CR1: fleet and mode status, AHS map version, comms sites CT1–CT3 and GB1 status,
+active permissions and restrictions, and planned work for the shift.</li>
+<li>Complete end-of-shift records — shift log, delay coding and open-item list — that the next shift, the Pit
+Supervisor and the Maintenance Planner can act on.</li>
+<li>Identify handover failure modes (implicit items, verbal-only transfer, handover during an active event) and apply
+the rule for deferring a handover until an event is stabilised.</li>
+</ol>
+<h2 id="s-2">2. Operational motivation: the problem at the reference mine</h2>
+<p>The reference mine runs two 12 h shifts, DAY from 06:00 to 18:00 and NIGHT from 18:00 to 06:00 (<code>mine.yaml</code>, <code>[A]</code>).
+The trucks do not stop for the change of controller. Twice a day, therefore, the one person in CR1 who answers for the
+autonomous fleet in AA-North, AA-Central and AA-South is replaced by another person while the fleet is moving, people
+are in the pit, and restrictions are in force. The handover is the most predictable hazard in the control room: it
+happens every twelve hours, at a known time, and the hazard log of ch-04-01 records it as HZ-08, <em>open item lost at the
+controller shift handover</em>, with controls CTL-31 to CTL-34 (generated summary, item-by-item acknowledgement, ownership
+accepted after read-back, permissions that persist until released by their owner).</p>
+<p>ch-01-06 showed three ways a handover goes wrong at this mine: a restriction carried into the night with no recorded
+reason, a light vehicle whose permission nobody in CR1 knows about, and a decision that cannot be traced to a person.
+Three further problems motivate this chapter.</p>
+<p><strong>People think in situations; systems hold objects.</strong> &quot;DT17 on R03&quot; is, in the AMS, a stopped truck, a Field
+Technician's permission, a standing alarm and a running delay record. Transferring the situation can leave one object
+without an owner (section 1.1).</p>
+<p><strong>The handover falls at the busiest hour.</strong> In ch-01-06 example 1 the controller's occupancy over the whole DAY shift is
+0.42, but 0.75 between 17:00 and 18:00, because a stopped truck, a permission and the handover preparation all fall in
+the last hour. A handover that depends on the outgoing controller assembling a list at that moment will be incomplete
+on exactly the days when it matters.</p>
+<p><strong>Open items carry cost and records across the boundary.</strong> The technician's permission on R03 holds every waste
+circuit (section 4.3); DT17's breakdown starts on one shift and ends on the next. If the night controller does not know
+why each object exists and when it should end, the mine pays until someone notices, and the shift reports are wrong.</p>
+<p>The chapter follows SCN-SHIFT-HANDOVER from 17:50 (T−600 s) to the R05 review at 20:00 (T+7200 s) and on to 06:00.</p>
+<h2 id="s-3">3. Terminology and foundations</h2>
+<p><strong>Shift and shift handover.</strong> A shift is a scheduled working period of a crew (glossary <code>shift</code>); the shift handover
+is the transfer of responsibility from the outgoing to the incoming person in a role (glossary <code>shift-handover</code>). This
+chapter is about the AHS Controller's handover; the Pit Supervisors and Shovel Operators have their own (ch-01-06
+section 6.1).</p>
+<p><strong>Open item and system object.</strong> An <em>open item</em> is anything still in progress at a shift change that the incoming
+shift must carry on (glossary <code>open-item</code>). The handbook distinguishes the <em>system objects</em> that hold an open item in AMS
+or FMS — a permission, a stopped truck, a restriction, a closure, a pending map version, a standing alarm — from the
+<em>checklist item</em> a person discusses. One checklist item can contain several linked objects <code>[H]</code>.</p>
+<p><strong>Handover snapshot</strong> <code>[H]</code>. The list of system objects that AMS and FMS generate from their own state at a defined
+time, each with its owner, start time and review condition. It is a starting point: the incoming controller
+acknowledges the <em>live</em> state, not the snapshot.</p>
+<p><strong>Owner and owner session.</strong> Every object has exactly one owning controller (REQ-01-06-003); for a permission the owner
+is the <em>permission owner</em> (glossary <code>permission-owner</code>), distinct from the <em>holder</em>, the person or vehicle in the area.
+Ownership is attached to a person's session at a workstation, not to the workstation.</p>
+<p><strong>Review condition</strong> <code>[H]</code>. The time or event at which an open item must be looked at again: an expiry for a
+permission, a review time for a restriction (R05 at 20:00), a decision for a stopped truck (&quot;recovery decision by the
+Pit Supervisor after diagnosis&quot;), a clearing condition for a standing alarm. An object without a review condition has
+no defined end.</p>
+<p><strong>Acknowledgement (at handover).</strong> The incoming controller's record that they found the object in the live system
+and understood it. For a permission the transfer also needs the holder's read-back (section 4.5). It refers to one
+version of the object <code>[H]</code>.</p>
+<p><strong>Handover record, shift log and event log.</strong> The <em>handover record</em> shows that each object was acknowledged and
+transferred, by whom and when; the <em>shift log</em> holds decisions, reasons and context; the <em>event log</em> is the machine
+record of commands and state changes (glossary <code>handover-record</code>, <code>shift-log</code>, <code>event-log</code>; ch-01-06 section 4.7).</p>
+<p><strong>Shift-start check</strong> <code>[H]</code>. A check made at the start of a shift on the state of the system as a whole — fleet modes,
+map versions, comms sites, the GNSS base station — as opposed to the open items. Some checks the system can make and
+report; others need a person.</p>
+<p><strong>Handover deferral</strong> <code>[H]</code>. The rule that a handover is not started, or is stopped, while an event is in its first
+response phase, and resumes once the Pit Supervisor declares the event stabilised (section 4.8).</p>
+<p><strong>Situational awareness.</strong> Knowing what is happening across one's span of control, what it means and what will happen
+next (glossary <code>situational-awareness</code>). A handover works only if it transfers enough of it for the first call.</p>
+<h2 id="s-4">4. Technical explanation</h2>
+<h3 id="s-4-1">4.1 The shift as a cycle of checkpoints</h3>
+<p>A controller's shift does not begin at 18:00 and end at 06:00 as a single block of supervision. It runs through a
+sequence of checkpoints, each with a purpose and a record <code>[H]</code>. FIG-16-02-01 shows them for the NIGHT shift.</p>
+<figure id="FIG-16-02-01" class="fig"><pre class="mermaid">gantt
+  title NIGHT shift in CR1 - checkpoints from handover to handover [A]
+  dateFormat YYYY-MM-DD HH:mm
+  axisFormat %H:%M
+  todayMarker off
+  section Handover in
+  Summary generated, outgoing controller adds context :a1, 2026-01-01 17:50, 10m
+  Handover, three open items acknowledged one by one :crit, a2, 2026-01-01 18:00, 15m
+  Shift-start checks (automatic and human) :a3, 2026-01-01 18:15, 15m
+  section Review points carried over
+  LV07 permission expiry :milestone, m1, 2026-01-01 18:40, 0m
+  R05 restriction review with Survey :milestone, m2, 2026-01-01 20:00, 0m
+  section During the shift
+  Structured scan every 2 h (areas, alarms, permissions) :b1, 2026-01-01 18:30, 10h
+  Mid-shift check of open items and records :b2, 2026-01-02 00:00, 15m
+  section Handover out
+  Records closed - shift log, delay codes, open items :c1, 2026-01-02 05:20, 30m
+  Summary generated, context added :c2, 2026-01-02 05:50, 10m
+  Handover to the DAY controller :crit, c3, 2026-01-02 06:00, 15m
+</pre><figcaption><span class="fig-no">Figure 1</span> Timeline of a 12 h shift with shift-start, mid-shift and handover checkpoints <span class="fig-id">FIG-16-02-01</span></figcaption></figure>
+<table>
+<thead>
+<tr>
+<th>Checkpoint</th>
+<th>When (NIGHT shift) <code>[A]</code></th>
+<th>Purpose</th>
+<th>Record</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Handover in</td>
+<td>17:50–18:15</td>
+<td>Take over every open object with its context</td>
+<td>Handover record</td>
+</tr>
+<tr>
+<td>Shift-start checks</td>
+<td>18:15–18:30</td>
+<td>Confirm that the system as a whole is fit to run the shift</td>
+<td>Check record in the shift log</td>
+</tr>
+<tr>
+<td>Review points carried over</td>
+<td>18:40 (LV07 expiry), 20:00 (R05 review)</td>
+<td>Act on the review conditions inherited at handover</td>
+<td>Shift log; object updated</td>
+</tr>
+<tr>
+<td>Structured scans</td>
+<td>every 2 h</td>
+<td>Areas, alarms, active permissions and open objects scanned in a fixed order</td>
+<td>Scan entry</td>
+</tr>
+<tr>
+<td>Mid-shift check</td>
+<td>00:00</td>
+<td>Open objects, delay records, staffing for the second half</td>
+<td>Shift log</td>
+</tr>
+<tr>
+<td>End-of-shift records</td>
+<td>05:20–05:50</td>
+<td>Close what can be closed; complete shift log and delay coding</td>
+<td>Shift report</td>
+</tr>
+<tr>
+<td>Handover out</td>
+<td>05:50–06:15</td>
+<td>Generate the snapshot, add context, hand over</td>
+<td>Handover record</td>
+</tr>
+</tbody>
+</table>
+<p>The table is a teaching convention, not a recommended timetable. Handover in and handover out are the two ends of one
+cycle: what the night controller does at 05:20 decides how long and how complete the 06:00 handover is.</p>
+<p>Whether twelve-hour shifts, the number of consecutive shifts, breaks or fatigue limits are appropriate for control-room
+work is a question for the site's fatigue-management arrangements and the applicable legislation. This handbook does
+not state any limit or requirement on them <code>[TBV]</code> (SRC-REG-AU-FATIGUE-SHIFT).</p>
+<h3 id="s-4-2">4.2 What the snapshot must contain</h3>
+<p>ch-01-06 divided what crosses the boundary into <strong>system state</strong>, <strong>context</strong> and <strong>ownership</strong>. The snapshot carries
+the first and third; the outgoing controller adds the second. <code>ahs_sim.control_room</code> models the snapshot with six kinds
+of system object <code>[H]</code>:</p>
+<table>
+<thead>
+<tr>
+<th>Kind</th>
+<th>Source</th>
+<th>Created when</th>
+<th>Minimum fields</th>
+<th>Typical review condition</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>PERMISSION</td>
+<td>AMS</td>
+<td>A digital access permission is in any non-terminal state</td>
+<td>Identifier, holder, area, access point, owner, state, validity remaining</td>
+<td>Expiry; holder reports out</td>
+</tr>
+<tr>
+<td>STOPPED_TRUCK</td>
+<td>AMS, FMS</td>
+<td>A truck is stopped for a fault or held for recovery</td>
+<td>Truck, location, reason, protective reservation, isolation state, owner</td>
+<td>Recovery decision; return to service</td>
+</tr>
+<tr>
+<td>RESTRICTION</td>
+<td>AMS</td>
+<td>A speed restriction is in force</td>
+<td>Segment, value, reason, authorising Pit Supervisor, owner</td>
+<td>Review time with the role that can judge it</td>
+</tr>
+<tr>
+<td>CLOSURE</td>
+<td>AMS</td>
+<td>A segment is closed</td>
+<td>Segment, reason, authorisation, rerouting in force</td>
+<td>Reopening condition</td>
+</tr>
+<tr>
+<td>MAP_PENDING</td>
+<td>AMS</td>
+<td>An AHS map version is approved but not deployed to every truck</td>
+<td>Version, trucks on the old and new version</td>
+<td>Deployment complete</td>
+</tr>
+<tr>
+<td>ALARM</td>
+<td>AMS</td>
+<td>An alarm is acknowledged but still active (standing)</td>
+<td>Source, code, priority, since</td>
+<td>Clearing condition</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Each kind comes from the system that holds the state</strong>, so a permission is on the snapshot exactly while the AMS
+holds it. <strong>Each object carries a review condition</strong>, because an object that cannot end becomes a permanent cost.
+<strong>Running delay records</strong> are attached to the object that causes them (DT17's breakdown to STOPPED_TRUCK-01, the held
+waste circuits to PERMISSION-02), not listed separately (section 4.9).</p>
+<h3 id="s-4-3">4.3 Generating the 18:00 snapshot</h3>
+<p>At 17:50 (T−600 s) <code>handover_items</code> turns the AMS and FMS state of SCN-SHIFT-HANDOVER into five objects, all owned by
+the day controller's session CTRL-DAY <code>[A]</code>:</p>
+<table>
+<thead>
+<tr>
+<th>Object</th>
+<th>Subject</th>
+<th>Since</th>
+<th>Review condition or expiry</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>PERMISSION-01</td>
+<td>PERM-LV07-0001: LV07, R05 + R06 (windrow on R06), AP-02</td>
+<td>17:40</td>
+<td>expires 18:40 (T+2400 s)</td>
+</tr>
+<tr>
+<td>PERMISSION-02</td>
+<td>PERM-FT-0001: Field Technician at DT17, R03, AP-01</td>
+<td>17:45</td>
+<td>expires 19:45 (T+6300 s)</td>
+</tr>
+<tr>
+<td>STOPPED_TRUCK-01</td>
+<td>DT17 down on R03</td>
+<td>17:30</td>
+<td>recovery decision by the Pit Supervisor after diagnosis</td>
+</tr>
+<tr>
+<td>RESTRICTION-01</td>
+<td>R05 speed restriction 20 km/h, both directions</td>
+<td>14:21</td>
+<td>review 20:00 with Survey (T+7200 s)</td>
+</tr>
+<tr>
+<td>ALARM-01</td>
+<td>DT17 drivetrain-fault alarm, acknowledged 17:31</td>
+<td>17:30</td>
+<td>clears when DT17 is recovered or returned to service</td>
+</tr>
+</tbody>
+</table>
+<p>The scenario registry and ch-01-06 speak of <em>three</em> open items, and the handover view still shows three: the lab groups
+an object whose detail names another object as <em>linked</em> under that object's item. Item 1 is RESTRICTION-01; item 2 is
+PERMISSION-01; item 3 is STOPPED_TRUCK-01 with PERMISSION-02 and ALARM-01 linked to it. FIG-16-02-03 shows the result.</p>
+<figure id="FIG-16-02-03" class="fig"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1270 582" role="img" aria-label="Checklist of SCN-SHIFT-HANDOVER with three items built from five AMS and FMS objects, owners, review conditions, acknowledgement times and the generator&#x27;s checks">
+<style>
+text{font-family:system-ui,-apple-system,"Segoe UI","Hiragino Sans","Noto Sans CJK JP",sans-serif}
+.fg{fill:var(--fg,#1d1f21)} .mu{fill:var(--muted,#5d6166)}
+.tb{font-size:13px;font-weight:700} .ttl{font-size:15px;font-weight:700}
+.sm{font-size:12px} .xs{font-size:11px} .ti{font-size:11px;font-style:italic}
+.card{fill:none;stroke:var(--accent,#1f6f8b);stroke-width:1.4}
+.hd{fill:var(--accent-soft,#e3f0f4)} .row{fill:none;stroke:var(--muted,#5d6166);stroke-width:0.5}
+.box{fill:var(--warn-bg,#fff6e0);stroke:var(--warn-border,#e2b54a);stroke-width:1.2}
+.ok{fill:#1baf7a} .bad{fill:#c0392b}
+</style>
+<text class="fg ttl" x="10" y="30">Generated handover checklist at 18:00: three items, five system objects, five acknowledgements</text>
+<rect class="hd" x="10" y="60" width="830" height="28"/>
+<text class="fg tb" x="18" y="79">Item 1 - R05 speed restriction</text>
+<text class="mu xs" x="16" y="104">Object</text>
+<text class="mu xs" x="266" y="104">Since</text>
+<text class="mu xs" x="316" y="104">Owner 17:50</text>
+<text class="mu xs" x="406" y="104">Review or expiry</text>
+<text class="mu xs" x="696" y="104">Acknowledged</text>
+<rect class="row" x="10" y="112" width="830" height="24"/>
+<text class="fg xs" x="16" y="128">RESTRICTION-01 R05, 20 km/h</text>
+<text class="fg xs" x="266" y="128">14:21</text>
+<text class="fg xs" x="316" y="128">CTRL-DAY</text>
+<text class="fg xs" x="406" y="128">review 20:00 with Survey</text>
+<circle class="ok" cx="700" cy="124" r="4.5"/>
+<text class="fg xs" x="710" y="128">18:03 by CTRL-NIGHT</text>
+<rect class="hd" x="10" y="150" width="830" height="28"/>
+<text class="fg tb" x="18" y="169">Item 2 - LV07 access permission</text>
+<text class="mu xs" x="16" y="194">Object</text>
+<text class="mu xs" x="266" y="194">Since</text>
+<text class="mu xs" x="316" y="194">Owner 17:50</text>
+<text class="mu xs" x="406" y="194">Review or expiry</text>
+<text class="mu xs" x="696" y="194">Acknowledged</text>
+<rect class="row" x="10" y="202" width="830" height="24"/>
+<text class="fg xs" x="16" y="218">PERMISSION-01 LV07, R05 + R06</text>
+<text class="fg xs" x="266" y="218">17:40</text>
+<text class="fg xs" x="316" y="218">CTRL-DAY</text>
+<text class="fg xs" x="406" y="218">expires 18:40</text>
+<circle class="ok" cx="700" cy="214" r="4.5"/>
+<text class="fg xs" x="710" y="218">18:06 by CTRL-NIGHT</text>
+<rect class="hd" x="10" y="240" width="830" height="28"/>
+<text class="fg tb" x="18" y="259">Item 3 - DT17 down on R03 (with linked objects)</text>
+<text class="mu xs" x="16" y="284">Object</text>
+<text class="mu xs" x="266" y="284">Since</text>
+<text class="mu xs" x="316" y="284">Owner 17:50</text>
+<text class="mu xs" x="406" y="284">Review or expiry</text>
+<text class="mu xs" x="696" y="284">Acknowledged</text>
+<rect class="row" x="10" y="292" width="830" height="24"/>
+<text class="fg xs" x="16" y="308">STOPPED_TRUCK-01 DT17, R03</text>
+<text class="fg xs" x="266" y="308">17:30</text>
+<text class="fg xs" x="316" y="308">CTRL-DAY</text>
+<text class="fg xs" x="406" y="308">Pit Supervisor decides (18:11 manual recovery)</text>
+<circle class="ok" cx="700" cy="304" r="4.5"/>
+<text class="fg xs" x="710" y="308">18:13 by CTRL-NIGHT</text>
+<rect class="row" x="10" y="316" width="830" height="24"/>
+<text class="fg xs" x="16" y="332">PERMISSION-02 Field Technician, R03</text>
+<text class="fg xs" x="266" y="332">17:45</text>
+<text class="fg xs" x="316" y="332">CTRL-DAY</text>
+<text class="fg xs" x="406" y="332">expires 19:45</text>
+<circle class="ok" cx="700" cy="328" r="4.5"/>
+<text class="fg xs" x="710" y="332">18:13 by CTRL-NIGHT</text>
+<rect class="row" x="10" y="340" width="830" height="24"/>
+<text class="fg xs" x="16" y="356">ALARM-01 DT17 drivetrain fault</text>
+<text class="fg xs" x="266" y="356">17:30</text>
+<text class="fg xs" x="316" y="356">CTRL-DAY</text>
+<text class="fg xs" x="406" y="356">clears when DT17 recovered</text>
+<circle class="ok" cx="700" cy="352" r="4.5"/>
+<text class="fg xs" x="710" y="356">18:13 by CTRL-NIGHT</text>
+<rect class="box" x="860" y="60" width="400" height="482" rx="8"/>
+<text class="fg tb" x="872" y="86">Checks run by the generator</text>
+<text class="fg sm" x="872" y="108">- object without an owner</text>
+<text class="fg sm" x="872" y="130">- object without review or expiry</text>
+<text class="fg sm" x="872" y="152">- object not acknowledged</text>
+<text class="fg sm" x="872" y="174">- acknowledged object that does not exist</text>
+<text class="fg tb" x="872" y="196">18:15, this handover: all four lists empty</text>
+<text class="fg sm" x="872" y="218"></text>
+<text class="fg tb" x="872" y="240">What the same checks catch (lab cases):</text>
+<text class="fg sm" x="872" y="262">C1  typed list of three situations</text>
+<text class="fg xs" x="872" y="284">      -&gt; not acknowledged: PERMISSION-02, ALARM-01</text>
+<text class="fg sm" x="872" y="306">C2  restriction entered without review</text>
+<text class="fg xs" x="872" y="328">      -&gt; no review: RESTRICTION-01</text>
+<text class="fg sm" x="872" y="350">C3  outgoing session lost</text>
+<text class="fg xs" x="872" y="372">      -&gt; no owner: PERMISSION-01; alarm; area locked</text>
+<text class="fg sm" x="872" y="394">C4  item 3 acknowledged before the 18:10 update</text>
+<text class="fg xs" x="872" y="416">      -&gt; not acknowledged: STOPPED_TRUCK-01</text>
+<text class="fg sm" x="872" y="438">C5  paper list adds an old closure</text>
+<text class="fg xs" x="872" y="460">      -&gt; acknowledged unknown: CLOSURE-01</text>
+<text class="fg sm" x="872" y="482"></text>
+<text class="fg tb" x="872" y="504">Log-out of CTRL-DAY: refused at 18:10 (owns 3 objects),</text>
+<text class="fg tb" x="872" y="526">allowed from 18:13</text>
+<text class="mu ti" x="10" y="570">From LAB-16-02-01 (ahs_sim.control_room handover_items / handover_check / transfer_permission). Times and IDs [A].</text>
+</svg>
+<figcaption><span class="fig-no">Figure 2</span> Structure of the generated handover checklist for SCN-SHIFT-HANDOVER <span class="fig-id">FIG-16-02-03</span></figcaption></figure>
+<p>Grouping is for people; acknowledgement is per object <code>[H]</code>. The technician's permission has its own holder, area,
+window and cost, and ends at a different time from DT17's recovery. In the lab's case C1 a typed list of the three
+situations, acknowledged item by item, leaves PERMISSION-02 and ALARM-01 unacknowledged — visible only because the
+list is generated.</p>
+<p><strong>The cost the item carries.</strong> The technician's permission was cleared under the area rules of ch-10-06 (section 6.5
+there): the lock includes R03 and the technician's route from AP-01, and D01 can be reached only over R03 and R04.
+<code>ahs_sim.fms.fleet_times</code> confirms that with R03 locked only EX01 and EX02 have a route to their destination. With DT17
+out of the allocation, <code>simulate_fleet</code> gives 101 420 t of ore and 88 000 t of waste per shift on the open network, and
+101 420 t of ore and no waste with R03 locked. The permission therefore costs 88 000 / 12 = 7333.3 t of waste per hour
+and holds 18 trucks (DLY-OD-04). The model locks whole segments, so this is an upper bound for a lock on R03; whether
+one lane can stay open past a stopped truck is a work-zone design question (ch-14-03, ch-16-05). For the handover the
+lesson is that the smallest-looking line can be the most expensive, so the snapshot must show the held circuits beside
+the object (REQ-16-02-009).</p>
+<p>The fleet overview at T+60 s comes from the same state: 39 trucks scheduled (DT40 not scheduled), 36 available, DT17,
+DT29 and DT39 down (<code>equipment.yaml</code> baseline allocation; ch-01-06 section 6.2).</p>
+<h3 id="s-4-4">4.4 Checking the snapshot: four lists that must be empty</h3>
+<p><code>handover_check</code> compares the objects with the incoming controller's acknowledgements and returns four lists <code>[H]</code>:</p>
+<table>
+<thead>
+<tr>
+<th>List</th>
+<th>Meaning</th>
+<th>Lab case that fills it</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>no_owner</code></td>
+<td>An object nobody answers for</td>
+<td>C3: the outgoing session was lost; PERMISSION-01 has no owner</td>
+</tr>
+<tr>
+<td><code>no_review</code></td>
+<td>An object with no expiry and no review condition</td>
+<td>C2: the R05 restriction was entered without a review time</td>
+</tr>
+<tr>
+<td><code>not_acknowledged</code></td>
+<td>An object the incoming controller has not (validly) acknowledged</td>
+<td>C1: typed list; C4: acknowledgement before an update</td>
+</tr>
+<tr>
+<td><code>acknowledged_unknown</code></td>
+<td>An acknowledgement of an object that does not exist</td>
+<td>C5: a paper list adds a closure of R07 reopened at 15:00</td>
+</tr>
+</tbody>
+</table>
+<p>The handover is complete only when all four are empty. At T+900 s in the scenario they are.</p>
+<p>The fourth list is easily overlooked. It means the incoming controller is working from another list — a paper sheet,
+a note, memory — and believes in a state the AMS no longer holds: here a harmless closure of R07, elsewhere a road
+believed closed to trucks that is open.</p>
+<p><strong>Acknowledgements refer to a version.</strong> The snapshot is taken at T−600 s; the state goes on changing. At T+600 s the
+Field Technician reports that the fault cannot be cleared, and at T+660 s the night Pit Supervisor approves manual
+recovery to the MIA workshop. The lab's <code>diff</code> between the 17:50 list and the live list at 18:10 returns exactly one
+changed object, STOPPED_TRUCK-01. In the scenario item 3 is acknowledged at T+780 s, after the change, so the
+acknowledgement is valid. In case C4 the incoming controller acknowledged item 3 early, at T+300 s; the update at
+T+600 s voids the acknowledgement of STOPPED_TRUCK-01 — but not of PERMISSION-02 or ALARM-01, which did not change —
+and the object returns to <code>not_acknowledged</code>. The rule <code>[H]</code>: an acknowledgement given before the object last changed
+does not count, and the handover view marks changed objects since the snapshot (REQ-16-02-003).</p>
+<h3 id="s-4-5">4.5 Transferring ownership of an active permission</h3>
+<p>Ownership of an ordinary object moves when the incoming controller acknowledges it. A permission needs one step more,
+because a person in the field depends on it: the holder must know who in CR1 now answers for them, and the incoming
+controller must have heard from the holder where they are and what they are doing. ch-10-06 (REQ-10-06-010) set the
+rule at the machine side: every non-terminal permission is listed and passed to the incoming controller by explicit
+acknowledgement, without cancelling or re-issuing it. This section adds what the transfer must and must not do.</p>
+<p><strong>What changes: the owner, nothing else.</strong> <code>transfer_permission(owner, incoming, acknowledged)</code> returns the incoming
+controller as owner only when the acknowledgement has been given; otherwise the outgoing controller remains owner and
+an alarm is raised. The lab follows PERM-LV07-0001 as an <code>ahs_sim.ams.Permission</code> object through the handover: its
+state is ACTIVE and its area locked at every scenario time from T+0 s to T+900 s. Ownership is a property of the
+permission record, not a state of the permission machine. The area, the validity window and the lock are untouched.</p>
+<p><strong>Why not cancel and re-issue.</strong> Re-issuing to the new owner looks tidy, but between cancellation and new grant LV07
+would be inside AA-North with no permission: the area is either unlocked (unsafe) or locked under nothing. A transfer
+ends nothing, so there is no gap.</p>
+<p><strong>No silent extension.</strong> The transfer must not reset the validity window: LV07's permission expires at 18:40 whoever
+owns it. More time is an extension — agreed by radio, entered by the owner, read back (ch-10-06 section 4.8) — recorded
+as such. A quiet new window would leave a person working beyond what anyone decided.</p>
+<p><strong>The read-back belongs to the transfer.</strong> The incoming controller calls the holder, names themselves as the
+controller now responsible, and accepts ownership only after the holder has confirmed position and task and read back
+the permission (ch-01-06 section 8.3). At T+366 s in ch-04-10 the controller misheard the expiry, asked for a repeat and
+only then accepted, so the lab moves PERMISSION-01 at T+366 s. The wording follows the rules of ch-16-03 section 4.4
+(call sign first, one permission one identifier, no new information in a read-back) <code>[H]</code>: the incoming controller
+&quot;LV07, CR1 night controller now holds PERM-LV07-0001, AA-North R05 and R06, expiry 18:40, confirm position and task&quot;;
+the driver &quot;LV07 at R06 windrow, inspecting, PERM-LV07-0001, AA-North R05 and R06, expiry 18:40&quot;; the controller
+&quot;correct&quot; — and only then acknowledges the object on the HMI.</p>
+<p><strong>No owner fails closed.</strong> If the outgoing controller's session is lost before the transfer — a workstation fails, the
+controller is called away — the permission must not lapse. In case C3 the permission has no recorded owner:
+<code>handover_check</code> lists it under <code>no_owner</code>, <code>transfer_permission(None, …)</code> returns no owner and an alarm, and the
+permission object stays ACTIVE with its area locked; the session loss is not an event of the permission machine and
+changes nothing. Another authorised controller takes the permission over through the same read-back with the holder.
+A permission with no owner keeps the trucks out; it never lets them in (REQ-01-06-003, REQ-16-02-004).</p>
+<h3 id="s-4-6">4.6 Sessions, log-out and the transfer as one transaction</h3>
+<p>FIG-16-02-02 shows the lifecycle of an open object across a handover: raised and owned with its state, listed in the
+snapshot, acknowledged against the live system, transferred, and closed — with the two paths that must not end the
+object: a change, which sends it back to <em>listed</em>, and a lost session, which leaves it <em>without owner</em> but in force.</p>
+<figure id="FIG-16-02-02" class="fig"><pre class="mermaid">stateDiagram-v2
+  direction TB
+  RAISED : Raised - a state created in AMS or FMS
+  OWNED : Owned - exactly one controller answers for it
+  LISTED : Listed - generated into the handover summary
+  ACKNOWLEDGED : Acknowledged - incoming controller checked it in the live system
+  TRANSFERRED : Transferred - incoming controller recorded as owner
+  UNOWNED : No owner - alarm raised, area stays locked
+  CLOSED : Closed - state ended, records complete
+  [*] --&gt; RAISED
+  RAISED --&gt; OWNED : owner set with the state
+  OWNED --&gt; LISTED : summary generated at T-600 s
+  LISTED --&gt; LISTED : item changed - earlier acknowledgement void
+  LISTED --&gt; ACKNOWLEDGED : found live, context understood
+  ACKNOWLEDGED --&gt; LISTED : item changed before transfer
+  ACKNOWLEDGED --&gt; TRANSFERRED : accepted - for a permission after the holder&#x27;s read-back
+  TRANSFERRED --&gt; OWNED : carried on by the new owner
+  OWNED --&gt; CLOSED : released, lifted or recovered
+  OWNED --&gt; UNOWNED : owner session lost
+  UNOWNED --&gt; OWNED : another authorised controller takes it over
+  CLOSED --&gt; [*]
+  classDef danger stroke:#c0392b,stroke-width:3px
+  class UNOWNED danger
+  note right of LISTED
+    Until the transfer the outgoing controller
+    stays owner and cannot log out
+    while owning any item.
+  end note
+</pre><figcaption><span class="fig-no">Figure 3</span> Open-item lifecycle across a handover (raised, owned, transferred, closed) <span class="fig-id">FIG-16-02-02</span></figcaption></figure>
+<p>Ownership is attached to the person's session, not the workstation (ch-01-06 section 7.1). Two consequences follow.</p>
+<p>The <strong>log-out rule</strong> (REQ-01-06-005) is evaluated per object. In the lab the outgoing controller owns five objects at
+T+0 s, four after the restriction at T+180 s, three after LV07's permission at T+366 s and none after item 3 at
+T+780 s (18:13). Log-out is refused at T+600 s, when the Field Technician calls, because the outgoing controller still
+owns item 3 — which is exactly why they are the right person to answer the call. The handover record closes at
+T+900 s.</p>
+<p>Each <strong>transfer is atomic</strong>: at no instant does an object belong to nobody or to both. For a permission the transaction
+is: incoming controller selects the object; the AMS shows the holder, area, validity remaining and held circuits; the
+holder's read-back is confirmed; the AMS writes the new owner, the old owner, the time and &quot;read-back confirmed&quot; in one
+record. If any step fails, the old owner remains.</p>
+<h3 id="s-4-7">4.7 Shift-start checks</h3>
+<p>The open items say what is unfinished. They do not say whether the system as a whole is fit to run the next twelve
+hours. That is the job of the shift-start checks, made after the handover (FIG-16-02-01, 18:15 to 18:30). Some the
+system can make and report; others need a person <code>[H]</code>.</p>
+<table>
+<thead>
+<tr>
+<th>Check</th>
+<th>Automatic?</th>
+<th>Finding in the lab's synthetic 18:00 state <code>[A]</code></th>
+<th>Blocking?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Every truck in autonomous mode carries the active AHS map version</td>
+<td>yes</td>
+<td>DT08 still on the previous version</td>
+<td>yes: DT08 is not dispatched until updated</td>
+</tr>
+<tr>
+<td>Trucks not in autonomous mode on an old version</td>
+<td>yes (information)</td>
+<td>DT29, DT39 (planned maintenance)</td>
+<td>no: checked before they return</td>
+</tr>
+<tr>
+<td>Mode of every truck agrees with its FMS status</td>
+<td>yes</td>
+<td>none</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Comms sites CT1–CT3 up</td>
+<td>yes</td>
+<td>all up</td>
+<td>—</td>
+</tr>
+<tr>
+<td>GNSS base station GB1 up, corrections current</td>
+<td>yes</td>
+<td>up</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Approved map version not yet deployed</td>
+<td>yes</td>
+<td>none</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Every open object has an owner and a review condition</td>
+<td>yes</td>
+<td>none</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Radio check with every permission holder</td>
+<td>no</td>
+<td>LV07, Field Technician at DT17</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Briefing by the Pit Supervisor: planned work, shovel moves, people expected in the pit</td>
+<td>no</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Road and weather conditions seen from the field</td>
+<td>no</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Second controller and Pit Supervisor reachable for the shift</td>
+<td>no</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Remote-stop console RST-CR1 and portable transmitter RST-P2 present</td>
+<td>no (function test per site procedure)</td>
+<td>—</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<p>The principle: the system checks <strong>the consistency of its own data</strong> — versions, modes, site status, ownership —
+because it can do so completely every time; people check <strong>what the data cannot show</strong> — plans, road conditions, who
+can be reached, where the stop transmitters are. A map-version mismatch is blocking on a truck in autonomous mode,
+because the truck may follow geometry that no longer matches the road (Volume 12); on a truck in maintenance mode it is
+information to resolve before the truck returns.</p>
+<h3 id="s-4-8">4.8 Handover during an active event: the deferral rule</h3>
+<p>During an emergency, moving responsibility object by object is wrong: the controller who started the response holds
+the picture, and splitting it at the most uncertain moment creates the gap the handover is meant to prevent. ch-01-06
+section 6.3 set the convention for a fire; this chapter states it as a rule <code>[H]</code>.</p>
+<p><strong>Defer the handover</strong> — do not start it, or stop it — while any event is in its first-response phase: fire or
+suppression activation, a person or unauthorised vehicle in an autonomous area, a collision or injury, a remote stop
+before every truck is confirmed stopped, an area-wide loss of communication before its common cause has been
+identified. The outgoing controller keeps everything not yet transferred and runs the event; the incoming controller,
+directed by the Pit Supervisor, takes the rest of the fleet as a second controller.</p>
+<p><strong>Resume</strong> when the Pit Supervisor declares the event <em>stabilised</em>: the protective state is in place (trucks stopped
+or held, exclusion zone or work zone set), the people needed have been called (ERT, Field Technician), and the Pit
+Supervisor has decided who runs the event from now on. The event then becomes an open object with an owner and a
+review condition, and is handed over like any other — usually last, so that its owner can answer questions until the
+end.</p>
+<p>Deferral keeps a tired person on duty longer. How long that may be is a fatigue-management question this handbook does
+not answer <code>[TBV]</code>; the procedure only requires the Pit Supervisor to decide it explicitly.</p>
+<h3 id="s-4-9">4.9 End-of-shift records</h3>
+<p>The handover out at 06:00 is only as good as the records the night controller completes before it. Three records
+matter <code>[H]</code>.</p>
+<p><strong>The shift log</strong> holds decisions and reasons: why R05 was kept or lifted at 20:00 and on whose authority, what the
+technician found, when DT17 left R03, who approved the extension of a permission. The event log already has the
+commands; the shift log explains them.</p>
+<p><strong>Delay coding</strong> applies the codes of <code>delay-codes.yml</code> (defined in ch-01-05, analysed in ch-22-07; this chapter does
+not redefine them). Two rules are specific to the shift boundary. A running delay event is <strong>split at the boundary,
+not closed</strong>: DT17's breakdown (DLY-DN-01) is 0.5 h on the DAY shift and 5.5 h on the NIGHT shift if DT17 returns at
+23:30 (ch-01-06 example 3). And each open object carries its delay codes with it: while PERMISSION-02 locks R03, the
+eighteen waste trucks are DLY-OD-04 and so are EX03 and EX04 as loading units left without trucks (coding rules
+in <code>delay-codes.yml</code>). The lab computes the effect of getting the first rule wrong with <code>ahs_sim.kpi</code>: on the NIGHT shift, with 39
+trucks scheduled and DT29 and DT39 in planned maintenance, Physical Availability is 0.9370 with the breakdown coded and
+0.9487 if the event is closed at 18:00 and not reopened — overstated by 1.2 percentage points.</p>
+<p><strong>The open-item list</strong> is not written by the night controller: the system generates it at 05:50. The controller
+writes the context for each object and closes what can be closed. The best preparation for a short handover is fewer
+objects open at 05:50.</p>
+<h3 id="s-4-10">4.10 Trade-offs and model limits</h3>
+<ul>
+<li><strong>Generated versus typed.</strong> A generated snapshot cannot omit an object the system holds, but it can only list what
+is a system object. A conversation with the Shovel Operator about a wet floor at EX02 is context, not an object; it
+belongs in the shift log and in the context of the nearest object, or it is lost.</li>
+<li><strong>Grouping versus completeness.</strong> Grouping linked objects makes the list readable; acknowledging per object keeps
+it complete. A view that only lets the controller acknowledge the group would trade the second for the first.</li>
+<li><strong>Strict versus usable acknowledgement.</strong> The lab voids an acknowledgement on a change of owner, review condition or
+detail; a site may choose fewer fields <code>[A]</code>, but not none.</li>
+<li><strong>Model limits.</strong> The lab's snapshot is a fixed list built from ch-01-06's scenario, not a running AMS; the
+grouping rule reads a <code>linked:</code> marker in the object detail; the shift-start state is synthetic, with one injected
+mismatch; the production cost is a steady-state upper bound from a segment-level lock.</li>
+</ul>
+<h2 id="s-5">5. Responsibilities and interface boundaries</h2>
+<table>
+<thead>
+<tr>
+<th>Element</th>
+<th>Responsibility at shift start, handover and end of shift</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>FMS</td>
+<td>Supplies stopped and down trucks, equipment status and running delay records to the snapshot; shows the production cost of held circuits; splits delay records at the shift boundary</td>
+</tr>
+<tr>
+<td>AMS</td>
+<td>Holds every permission, restriction, closure, standing alarm and pending map version with its owner; generates the snapshot; runs the four checks; records acknowledgements, ownership transfers and read-back confirmations; refuses log-out while a session owns objects; keeps a permission and its lock when its owner session is lost; runs the automatic shift-start checks</td>
+</tr>
+<tr>
+<td>ADS</td>
+<td>Not involved in the handover; keeps its own map version and mode, which the shift-start checks read</td>
+</tr>
+<tr>
+<td>VCS</td>
+<td>Reports faults (DT17) that become stopped-truck objects</td>
+</tr>
+<tr>
+<td>Independent safety functions</td>
+<td>Unaffected by the handover; the remote-stop console and portable transmitters are part of the human shift-start check</td>
+</tr>
+<tr>
+<td>Onboard safety-related systems</td>
+<td>Their alarms can be standing alarms carried across the handover</td>
+</tr>
+<tr>
+<td>Manned-vehicle devices</td>
+<td>PRU and radio let the incoming controller confirm each holder's position and read-back</td>
+</tr>
+<tr>
+<td>People</td>
+<td>Outgoing AHS Controller: adds context, remains owner until transfer, runs any event that defers the handover. Incoming AHS Controller: acknowledges each object live, calls each holder, accepts ownership, runs the shift-start checks. Pit Supervisor: accountable for the handover, decides deferral and resumption, confirms decisions that need authority. Holders (LV07, Field Technician): confirm position and task, read back. Maintenance Planner: reads the end-of-shift records</td>
+</tr>
+</tbody>
+</table>
+<p>The key boundary runs between <strong>what the system lists</strong> and <strong>what people explain</strong>: the AMS must never need a person
+to remember that an object exists, and nobody should expect the AMS to explain why.</p>
+<h2 id="s-6">6. Normal, abnormal and degraded operation</h2>
+<h3 id="s-6-1">6.1 Normal operation — the 18:00 handover (shared timeline for sections 7 and 8)</h3>
+<p>T+0 s is 18:00:00, the registry's &quot;handover begins; checklist opened&quot;; T+900 s is the registry's &quot;incoming controller
+confirms each open item; handover signed&quot;. The rows between them come from ch-01-06 section 6.2 and ch-04-10
+section 4.4; rows marked <code>[A]</code> are added in this chapter.</p>
+<table>
+<thead>
+<tr>
+<th>Time</th>
+<th>Event</th>
+<th>Objects owned by CTRL-DAY</th>
+<th>People</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>T−600 s (17:50)</td>
+<td>Snapshot generated: five objects in three items; outgoing controller adds reason, next action, review condition</td>
+<td>5</td>
+<td>Outgoing controller</td>
+</tr>
+<tr>
+<td>T+0 s (18:00)</td>
+<td>Handover begins; incoming controller logged in at workstation 2; checklist opened</td>
+<td>5</td>
+<td>Both controllers</td>
+</tr>
+<tr>
+<td>T+60 s</td>
+<td>Fleet overview: 36 of 39 scheduled trucks available; no unacknowledged alarms</td>
+<td>5</td>
+<td>Incoming controller</td>
+</tr>
+<tr>
+<td>T+180 s</td>
+<td>Item 1, RESTRICTION-01, acknowledged: active at 20 km/h, review at 20:00 with Survey</td>
+<td>4</td>
+<td>Incoming controller</td>
+</tr>
+<tr>
+<td>T+360 s</td>
+<td>Item 2: incoming controller calls LV07; driver gives position and task and reads back</td>
+<td>4</td>
+<td>Incoming controller, LV07's driver</td>
+</tr>
+<tr>
+<td>T+366 s <code>[A]</code></td>
+<td>Expiry misheard, &quot;say again&quot;, corrected; PERMISSION-01 acknowledged and transferred</td>
+<td>3</td>
+<td>Incoming controller, LV07's driver</td>
+</tr>
+<tr>
+<td>T+600 s (18:10)</td>
+<td>Field Technician: fault cannot be cleared; outgoing controller (still owner) answers and updates STOPPED_TRUCK-01; log-out refused</td>
+<td>3</td>
+<td>Outgoing controller, Field Technician</td>
+</tr>
+<tr>
+<td>T+660 s</td>
+<td>Night Pit Supervisor approves manual recovery; Maintenance Planner informed</td>
+<td>3</td>
+<td>Pit Supervisor, Maintenance Planner</td>
+</tr>
+<tr>
+<td>T+780 s (18:13)</td>
+<td>Item 3: STOPPED_TRUCK-01, PERMISSION-02 (after the technician's read-back) and ALARM-01 acknowledged and transferred</td>
+<td>0</td>
+<td>Incoming controller, Field Technician</td>
+</tr>
+<tr>
+<td>T+900 s (18:15)</td>
+<td>Four checks empty; handover record closed; outgoing controller logs out</td>
+<td>0</td>
+<td>Both controllers</td>
+</tr>
+<tr>
+<td>T+900 s to T+1800 s <code>[A]</code></td>
+<td>Shift-start checks (section 4.7)</td>
+<td>—</td>
+<td>Night controller, Pit Supervisor</td>
+</tr>
+<tr>
+<td>T+2400 s (18:40)</td>
+<td>LV07 leaves through AP-02; release confirmed by the night controller as owner</td>
+<td>—</td>
+<td>Night controller, LV07's driver</td>
+</tr>
+<tr>
+<td>T+7200 s (20:00)</td>
+<td>R05 restriction reaches its review time and is flagged; reviewed with Survey; Pit Supervisor decides</td>
+<td>—</td>
+<td>Night controller, Survey, Pit Supervisor</td>
+</tr>
+</tbody>
+</table>
+<p>Two details are deliberate: the fleet is reviewed before the first item (T+60 s), so each item is read against the
+whole picture; and item 3, the one most likely to change, comes last, so its owner stays owner while it does.</p>
+<h3 id="s-6-2">6.2 Abnormal operation — a fire during the handover (deferral)</h3>
+<p>Suppose that on another evening, at T+300 s, DT11 reports fire detection and suppression activation while climbing
+R05 loaded (SCN-FIRE-DT17 with a different truck, <code>[A]</code>). Item 1 has been transferred; items 2 and 3 have not.</p>
+<table>
+<thead>
+<tr>
+<th>Time <code>[A]</code></th>
+<th>Event</th>
+<th>Who</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>T+300 s</td>
+<td>Fire alarm (P1); handover stopped at once</td>
+<td>Outgoing controller</td>
+</tr>
+<tr>
+<td>T+305 s to T+400 s</td>
+<td>First response: alarm acknowledged, exclusion zone confirmed, traffic held or rerouted via R24, ERT and Pit Supervisor called (ch-04-07, ch-16-06)</td>
+<td>Outgoing controller</td>
+</tr>
+<tr>
+<td>T+320 s</td>
+<td>Pit Supervisor directs the incoming controller to take AA-Central and AA-South as second controller</td>
+<td>Pit Supervisor, incoming controller</td>
+</tr>
+<tr>
+<td>T+1500 s</td>
+<td>ERT in attendance; zone stable; Pit Supervisor declares the event stabilised and names the night controller as its owner from the next transfer</td>
+<td>Pit Supervisor</td>
+</tr>
+<tr>
+<td>T+1500 s onward</td>
+<td>Handover resumes: items 2 and 3, then the fire as a new object with owner and review condition (&quot;ERT scene safe report&quot;)</td>
+<td>Both controllers</td>
+</tr>
+</tbody>
+</table>
+<p>During the deferral the outgoing controller still owns LV07's permission; if the fire takes all their attention, the
+Pit Supervisor tells the driver to hold position under the permission. Nobody transfers it during the fire.</p>
+<h3 id="s-6-3">6.3 Abnormal operation — the outgoing session is lost before item 2</h3>
+<p>At T+300 s workstation 1 freezes and the outgoing session ends (<code>[A]</code>). The AMS raises a &quot;no owner&quot; alarm for each
+untransferred object; PERM-LV07-0001 stays ACTIVE with R05 and R06 locked, PERMISSION-02 keeps R03 locked. The incoming
+controller takes over each permission by read-back with its holder (section 4.5). Nothing in the field changes.</p>
+<h3 id="s-6-4">6.4 Degraded operation — handover without a generated snapshot, and a failed shift-start check</h3>
+<p>If the snapshot cannot be generated, the controllers fall back to the manual handover of ch-01-06 section 6.4 (live
+AMS lists, every holder called, ownership transferred in the AMS as soon as possible). Completeness depends on people
+again and the four checks cannot run; the degraded handover is recorded and reported to the Pit Supervisor.</p>
+<p>A failed shift-start check is different: the handover is complete, but not every truck is fit. In the lab DT08
+carries the previous map version; the night controller holds it out of autonomous dispatch, has it updated and records
+the finding. Had CT3 been down at 18:15, the check would have pointed to SCN-COMMS-R05 and its playbook (ch-16-07).</p>
+<h2 id="s-7">7. Engineering view</h2>
+<h3 id="s-7-1">7.1 Design decisions and trade-offs</h3>
+<p><strong>Objects, not notes.</strong> Every state that can outlive a shift is a first-class object with an owner and a review
+condition (ch-01-06 section 7.1); linked objects are recognisable as linked for grouping but stay separate for
+ownership and acknowledgement.</p>
+<p><strong>A snapshot plus a live diff.</strong> A snapshot taken ten minutes early gives the outgoing controller time to add context.
+The cost is that it ages. The design keeps both: the snapshot for context, the live list for acknowledgement, and a diff
+that marks every object changed since the snapshot.</p>
+<p><strong>Ownership is a field, not a state.</strong> Ownership changes are records on the permission, never transitions of the
+permission state machine of ch-10-06. That keeps the fail-closed invariants of the machine untouched: no handover
+action, and no handover failure, can move a permission into or out of a locked state.</p>
+<p><strong>Read-back gates the transfer.</strong> The AMS accepts a new permission owner only with a recorded read-back: slower, but
+it puts a voice check exactly where ch-04-10 found the human error point.</p>
+<p><strong>No timer releases anything at handover either.</strong> The handover adds no timeout that could end a permission, release a
+restriction or close an object. If a handover runs long, objects stay with their owners.</p>
+<p><strong>System checks for consistency, people for reality.</strong> Map versions, modes, site status and ownership are checked by
+the system; plans, conditions, reachability and the presence of stop transmitters are checked by people (section 4.7).</p>
+<h3 id="s-7-2">7.2 Failure modes and mitigations</h3>
+<table>
+<thead>
+<tr>
+<th>Failure mode</th>
+<th>Effect if unmitigated</th>
+<th>Mitigation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Situation transferred, linked object not</td>
+<td>Technician's permission or a standing alarm without an owner who knows it</td>
+<td>Generated objects; per-object acknowledgement (REQ-16-02-001, -002); lab case C1</td>
+</tr>
+<tr>
+<td>Object without a review condition</td>
+<td>Restriction or closure outlives its cause</td>
+<td><code>no_review</code> check; review condition mandatory at creation (REQ-01-06-008, REQ-16-02-001)</td>
+</tr>
+<tr>
+<td>Acknowledgement of an outdated version</td>
+<td>Incoming controller signs for a state that has changed</td>
+<td>Ack void on change; changed objects marked (REQ-16-02-003); lab case C4</td>
+</tr>
+<tr>
+<td>Acknowledgement of an object that does not exist</td>
+<td>Controller believes in a closure or permission that ended</td>
+<td><code>acknowledged_unknown</code> check (REQ-16-02-003); lab case C5</td>
+</tr>
+<tr>
+<td>Permission cancelled and re-issued at handover</td>
+<td>Gap with a person inside and no permission</td>
+<td>Transfer without changing the permission (REQ-10-06-010, REQ-16-02-004)</td>
+</tr>
+<tr>
+<td>Validity window reset at transfer</td>
+<td>Work continues beyond what anyone agreed</td>
+<td>Transfer leaves the window unchanged; extension is a separate recorded act (REQ-16-02-004)</td>
+</tr>
+<tr>
+<td>Owner session lost before transfer</td>
+<td>Permission orphaned or released with the holder inside</td>
+<td>No-owner alarm; permission and lock unchanged; takeover by read-back (REQ-16-02-004); lab case C3</td>
+</tr>
+<tr>
+<td>Handover during an emergency</td>
+<td>Response split between two people at its most uncertain moment</td>
+<td>Deferral rule (REQ-16-02-005)</td>
+</tr>
+<tr>
+<td>Truck on an old map version dispatched</td>
+<td>Truck follows outdated geometry</td>
+<td>Automatic shift-start check, blocking for autonomous mode (REQ-16-02-006)</td>
+</tr>
+<tr>
+<td>Delay event closed at shift end</td>
+<td>NIGHT Physical Availability overstated (1.2 points in the lab)</td>
+<td>Split at the boundary, never closed by the shift change (REQ-16-02-007)</td>
+</tr>
+<tr>
+<td>Cost of an object invisible</td>
+<td>Waste circuits held for hours unnoticed</td>
+<td>Held circuits and cost shown beside each object (REQ-16-02-009)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="s-7-3">7.3 Interface and timing considerations</h3>
+<p>Walk the shared timeline of section 6.1 and ask what each interface must carry <code>[H]</code>:</p>
+<ul>
+<li><strong>T−600 s.</strong> AMS and FMS → view: each object with kind, subject, owner, since, review condition, links, held
+circuits and attached delay records; HMI → AMS: context per object with author and time.</li>
+<li><strong>T+0 s.</strong> Session start of the incoming controller (person, role, workstation, time); the live list replaces the
+snapshot as the basis for acknowledgement.</li>
+<li><strong>T+180 s and T+780 s.</strong> Acknowledgements, each with the object version it refers to.</li>
+<li><strong>T+360 s to T+366 s.</strong> Radio call and read-back; read-back confirmed (with a corrected-read-back flag, ch-04-10);
+ownership transfer record for PERM-LV07-0001.</li>
+<li><strong>T+600 s to T+660 s.</strong> Owner's update of STOPPED_TRUCK-01, object marked changed, earlier acknowledgements void,
+log-out refused with the list of owned objects; FMS decision record for the manual recovery.</li>
+<li><strong>T+900 s onward.</strong> Four checks on the live list; record closed with both persons; automatic shift-start results
+and recorded human checks.</li>
+</ul>
+<p>Three timing requirements follow. The <strong>clock</strong> of the AMS, FMS and voice recorder must agree (ch-01-06 section 7.3),
+or the order of the update at T+600 s and an acknowledgement near it cannot be established. <strong>Transfers are atomic</strong>
+(section 4.6). And <strong>objects persist across an AMS failover</strong>: owners and acknowledgements must survive a restart in
+the middle of a handover (ch-10-08), or the handover must restart from the beginning.</p>
+<h2 id="s-8">8. Operations view</h2>
+<h3 id="s-8-1">8.1 What the control room sees</h3>
+<p>The handover view <code>[H]</code> shows the generated list as in FIG-16-02-03: one block per item, one row per object, with
+owner, start time, review condition, held circuits, cost and acknowledgement state. Changed objects are marked; void
+acknowledgements are struck through, not removed. A header shows the four checks — the record closes only when all
+read zero — and what the outgoing session still owns. Permission rows show the holder's PRU position and age, to
+compare with what the driver says.</p>
+<p>The shift-start view lists the automatic checks with pass, finding or information, and the human checks with a field
+for who confirmed them and when.</p>
+<h3 id="s-8-2">8.2 Who decides what</h3>
+<table>
+<thead>
+<tr>
+<th>Decision</th>
+<th>Responsible</th>
+<th>Accountable</th>
+<th>Consulted</th>
+<th>Informed</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Add context to each object before the handover</td>
+<td>Outgoing AHS Controller</td>
+<td>Pit Supervisor</td>
+<td>Field Technician, Survey</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Acknowledge an object</td>
+<td>Incoming AHS Controller</td>
+<td>Pit Supervisor</td>
+<td>Outgoing AHS Controller</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Accept ownership of an active permission</td>
+<td>Incoming AHS Controller</td>
+<td>Pit Supervisor</td>
+<td>Holder (read-back)</td>
+<td>Outgoing AHS Controller</td>
+</tr>
+<tr>
+<td>Defer or stop the handover for an event</td>
+<td>Pit Supervisor</td>
+<td>Pit Supervisor</td>
+<td>Both controllers</td>
+<td>ERT, Shovel Operators</td>
+</tr>
+<tr>
+<td>Declare the event stabilised and resume</td>
+<td>Pit Supervisor</td>
+<td>Pit Supervisor</td>
+<td>Outgoing AHS Controller</td>
+<td>Incoming AHS Controller</td>
+</tr>
+<tr>
+<td>Keep the outgoing controller on beyond the roster</td>
+<td>Pit Supervisor</td>
+<td>Pit Supervisor</td>
+<td>Outgoing AHS Controller</td>
+<td>Site management</td>
+</tr>
+<tr>
+<td>Hold a truck that fails a shift-start check</td>
+<td>Incoming AHS Controller</td>
+<td>Pit Supervisor</td>
+<td>Maintenance Planner</td>
+<td>FMS</td>
+</tr>
+<tr>
+<td>Close the handover record</td>
+<td>Incoming AHS Controller</td>
+<td>Pit Supervisor</td>
+<td>—</td>
+<td>Outgoing AHS Controller</td>
+</tr>
+<tr>
+<td>Complete the shift log and delay coding</td>
+<td>AHS Controller (each shift)</td>
+<td>Pit Supervisor</td>
+<td>Maintenance Planner</td>
+<td>Planner <code>[A]</code></td>
+</tr>
+</tbody>
+</table>
+<p>The Planner appears here as a handbook role used in ch-01-06 <code>[A]</code>; it is not a <code>mine.yaml</code> role.</p>
+<h3 id="s-8-3">8.3 Procedure excerpts</h3>
+<p><strong>(a) Handover in — keyed to the timeline of section 6.1</strong> <code>[H]</code></p>
+<ol>
+<li><strong>Outgoing AHS Controller (T−600 s):</strong> open the generated list. For each object add reason, approval, next action and
+review condition. Do not start non-urgent work that would create new objects.</li>
+<li><strong>Incoming AHS Controller (T+0 s):</strong> log in under your own identity. Review the fleet area by area and the alarm
+list before taking any item.</li>
+<li><strong>Both (T+60 s onward):</strong> take the items in the order of the list, item 3 last. For each object, find it in the live
+system, ask until the context is clear, then acknowledge it.</li>
+<li><strong>Incoming AHS Controller (each permission):</strong> call the holder; give your name as the controller now responsible;
+have the holder confirm position and task and read back the permission, including its expiry. Accept ownership only
+after a correct read-back. Do not change the expiry as part of the transfer; if more time is needed, extend it
+afterwards as a separate step.</li>
+<li><strong>Outgoing AHS Controller:</strong> answer every call about an object you still own, update the object and tell the
+incoming controller. Re-acknowledge any object marked changed.</li>
+<li><strong>Pit Supervisor:</strong> confirm the decisions that need your authority before the objects are transferred.</li>
+<li><strong>Incoming AHS Controller (T+900 s):</strong> check that the four lists are empty and close the record. <strong>Outgoing AHS
+Controller:</strong> log out.</li>
+</ol>
+<p><strong>(b) Deferral — decision tree</strong> <code>[H]</code></p>
+<ul>
+<li>Is any event in its first-response phase (fire, person or unauthorised vehicle in an area, collision or injury,
+remote stop not yet confirmed, area-wide comms loss with cause not yet identified)?
+<ul>
+<li><strong>Yes:</strong> stop the handover. Outgoing controller runs the event and keeps all untransferred objects. Pit Supervisor
+assigns the rest of the fleet to the incoming controller as second controller. Go to the next question when the Pit
+Supervisor declares the event stabilised.</li>
+<li><strong>No:</strong> continue.</li>
+</ul>
+</li>
+<li>Is the event stabilised (protective state in place, people called, owner decided)?
+<ul>
+<li><strong>Yes:</strong> resume; hand over the event as an object with owner and review condition, last.</li>
+<li><strong>No:</strong> keep the handover stopped; the Pit Supervisor decides how long the outgoing controller stays.</li>
+</ul>
+</li>
+</ul>
+<p><strong>(c) Shift-start checks (T+900 s to T+1800 s)</strong> <code>[H]</code></p>
+<ol>
+<li>Read the automatic check results. Hold out of autonomous dispatch any truck with a blocking finding; record it.</li>
+<li>Call every permission holder not already called during the handover.</li>
+<li>Take the Pit Supervisor's briefing: planned work, shovel moves, people expected in the pit.</li>
+<li>Confirm road and weather conditions from the field.</li>
+<li>Confirm that the Pit Supervisor and a second controller can be reached, and that RST-CR1 and RST-P2 are present.</li>
+<li>Enter the inherited review times (LV07 at 18:40, R05 at 20:00) as reminders and act on them when due.</li>
+</ol>
+<p><strong>(d) End of shift (05:20 to 05:50)</strong> <code>[H]</code></p>
+<ol>
+<li>Close what can be closed: release permissions whose holders are out; lift or confirm restrictions at their review.</li>
+<li>Complete the shift log: decisions, reasons, who authorised them.</li>
+<li>Check every running delay record: it continues across 06:00; nothing is closed by the shift change.</li>
+<li>Add context to every object that will appear in the 05:50 snapshot.</li>
+</ol>
+<h3 id="s-8-4">8.4 KPIs and delay codes affected</h3>
+<p>The handover is not a delay for the autonomous trucks, which keep running (ch-01-06 section 8.4). What moves the KPIs
+are the open objects and the records <code>[H]</code>:</p>
+<table>
+<thead>
+<tr>
+<th>Situation</th>
+<th>Machine</th>
+<th>Code</th>
+<th>Time category</th>
+<th>KPI that moves</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>DT17 broken down, across the boundary</td>
+<td>truck</td>
+<td>DLY-DN-01 (split, not closed)</td>
+<td>Downtime</td>
+<td>Physical Availability</td>
+</tr>
+<tr>
+<td>Waste trucks held while R03 is locked</td>
+<td>truck</td>
+<td>DLY-OD-04</td>
+<td>Operating Delay</td>
+<td>Operating Efficiency</td>
+</tr>
+<tr>
+<td>EX03 and EX04 left without trucks while R03 is locked</td>
+<td>loading unit</td>
+<td>DLY-OD-04 (coding rule)</td>
+<td>Operating Delay</td>
+<td>Operating Efficiency of the unit</td>
+</tr>
+<tr>
+<td>Longer cycles under the R05 restriction</td>
+<td>truck</td>
+<td>none (in-cycle time)</td>
+<td>Productive Time</td>
+<td>productivity</td>
+</tr>
+<tr>
+<td>Shovel crew change at EX02</td>
+<td>loading unit</td>
+<td>DLY-SO-01</td>
+<td>Operating Standby</td>
+<td>Use of Availability</td>
+</tr>
+<tr>
+<td>Trucks waiting meanwhile at EX02</td>
+<td>truck</td>
+<td>DLY-OD-11</td>
+<td>Operating Delay</td>
+<td>Operating Efficiency</td>
+</tr>
+</tbody>
+</table>
+<p>Handover quality can be measured as well <code>[R]</code>: objects handed over, time taken, acknowledgements made void, corrected
+read-backs, deferrals, and objects found after a handover that were not on it — the last should be zero, and with a
+generated snapshot any non-zero value points to a state that is not yet a system object.</p>
+<h3 id="s-8-5">8.5 Training and competency implications</h3>
+<p>Controllers practise the handover as a task on a simulator: a generated list, a change injected at T+600 s, a
+misheard read-back at T+366 s, a lost session, an emergency that forces a deferral. They learn to read linked objects
+and held circuits. Pit Supervisors learn the deferral decision; field roles learn to expect an unfamiliar voice at
+18:06 and what to read back. Assessment and records are the subject of ch-16-09.</p>
+<h2 id="s-9">9. Requirements and acceptance criteria</h2>
+<p>REQ-16-02-001 [H]
+At each shift handover the AMS and FMS shall generate, from their own state, a list containing one object for every
+non-terminal access permission, stopped or down truck, speed restriction, closed segment, approved but undeployed map
+version and acknowledged-but-active alarm, each with its kind, subject, owner, start time, review condition or expiry,
+links to other objects and attached delay records. No object shall be creatable without an owner and a review
+condition.
+Rationale: an open item must not exist only in a controller's memory (sections 4.2 and 4.3).
+Verification: test (LAB-16-02-01: five objects from the SCN-SHIFT-HANDOVER state; case C2 flags a missing review
+condition); inspection of the object schema.</p>
+<p>REQ-16-02-002 [H]
+The handover view shall group linked objects under one checklist item and shall require a separate acknowledgement,
+and for permissions a separate ownership transfer, for each object.
+Rationale: a typed or grouped transfer can carry the situation forward and drop a linked object (section 4.3).
+Verification: test (LAB-16-02-01 case C1: PERMISSION-02 and ALARM-01 reported not acknowledged); demonstration.</p>
+<p>REQ-16-02-003 [H]
+An acknowledgement shall refer to the version of the object it was given for; when the owner, review condition or
+detail of an object changes, the AMS shall void earlier acknowledgements and mark the object as changed. The handover
+record shall be closed only when no object lacks an owner, a review condition or a valid acknowledgement and no
+acknowledgement refers to an object that does not exist.
+Rationale: the incoming controller must sign for the live state, not for a snapshot or a paper list (section 4.4).
+Verification: test (LAB-16-02-01: diff 17:50 → 18:10 marks STOPPED_TRUCK-01; case C4 voids its early acknowledgement;
+case C5 reports CLOSURE-01; complete handover returns four empty lists).</p>
+<p>REQ-16-02-004 [H]
+Ownership of an active permission shall move to the incoming controller only after their acknowledgement and a
+recorded read-back by the holder, in one atomic record, and shall not change the permission's state, area, lock or
+validity window. If the owner's session ends before a transfer, the permission and its area lock shall remain
+unchanged, the AMS shall alarm that the permission has no owner, and only an authorised controller shall take it over,
+by the same read-back.
+Rationale: cancelling, re-issuing or silently extending a permission at handover leaves a person without a valid
+permission or beyond what was agreed (section 4.5; REQ-10-06-010).
+Verification: test (LAB-16-02-01: PERM-LV07-0001 ACTIVE and locked throughout; case C3: no owner, alarm, area locked,
+permission unchanged); exercise.</p>
+<p>REQ-16-02-005 [H]
+Site procedures shall defer or stop a handover while an event is in its first-response phase; the outgoing controller
+shall keep every untransferred object and run the event; the handover shall resume only when the Pit Supervisor
+declares the event stabilised, and the event shall then be handed over as an object with owner and review condition.
+Rationale: splitting a response between two people at its most uncertain moment creates the gap the handover is meant
+to close (section 4.8).
+Verification: exercise (fire during handover, section 6.2); inspection of the procedure and the handover record.</p>
+<p>REQ-16-02-006 [H]
+At the start of each shift the AMS shall check automatically and report: the AHS map version of every truck against
+the active version, the mode of every truck against its FMS status, the status of CT1–CT3 and GB1, undeployed map
+versions, and objects without owner or review condition. A truck in autonomous mode with a map-version mismatch shall
+not be dispatched until resolved. The checks that need a person shall be recorded with who confirmed them and when.
+Rationale: the system can check the consistency of its own data completely; people check what the data cannot show
+(section 4.7).
+Verification: test (LAB-16-02-01: DT08 blocking, DT29 and DT39 information); inspection of the shift-start record.</p>
+<p>REQ-16-02-007 [H]
+A running delay event shall continue across the shift boundary and be split between the shifts in reporting; no delay
+event shall be closed by the shift change itself.
+Rationale: an event closed at 18:00 overstates the next shift's availability (section 4.9).
+Verification: test (LAB-16-02-01: DLY-DN-01 0.5 h and 5.5 h; Physical Availability 0.9370 against 0.9487); inspection
+of shift reports.</p>
+<p>REQ-16-02-008 [H]
+The handover record shall hold, for each object, the acknowledging person and time, the version acknowledged, and for
+permissions the read-back confirmation, including whether a read-back had to be corrected.
+Rationale: a corrected read-back is the most informative event of a handover and is lost unless recorded (ch-04-10;
+section 4.5).
+Verification: inspection of the record after the SCN-SHIFT-HANDOVER exercise (correction at T+366 s present).</p>
+<p>REQ-16-02-009 [H]
+The handover view shall show beside each object the loading units and trucks held because of it and its estimated
+production cost per hour.
+Rationale: the cost of an open object does not follow from how it sounds; the technician's permission on R03 holds
+every waste circuit (section 4.3).
+Verification: test (LAB-16-02-01: R03 lock holds EX03 and EX04, 18 trucks, 7333.3 t of waste per hour); demonstration.</p>
+<h2 id="s-10">10. Verification and validation</h2>
+<p><strong>Verification</strong> (<code>make test CH=ch-16-02</code>): from the registry key events of SCN-SHIFT-HANDOVER (T+0 s, T+900 s) the
+lab generates the five objects and three items, follows ownership with <code>transfer_permission</code> (the LV07 permission stays
+ACTIVE and locked), finds one object changed between 17:50 and 18:10, returns four empty lists for the complete
+handover and the expected list for each failure case, reports DT08 as the only blocking shift-start finding, and
+reproduces the R03 cost (<code>ahs_sim.fms</code>) and the boundary coding (<code>ahs_sim.kpi</code>).</p>
+<p><strong>Validation</strong> needs what the fictional mine lacks: observation of real handovers, records of objects found after
+handovers, timings of handovers with different numbers of objects, and controllers' judgement of whether the generated
+view helps or distracts. Simulator drills built on SCN-SHIFT-HANDOVER with injected changes, a lost session and a
+deferral are the closest substitute. Fatigue and shift-length aspects cannot be validated in this handbook at all
+<code>[TBV]</code>.</p>
+<h2 id="s-11">11. Common mistakes</h2>
+<h3 id="s-11-1">11.1 Design mistakes</h3>
+<ul>
+<li><strong>A free-text handover field as the only record.</strong> It gives context and guarantees nothing.</li>
+<li><strong>Acknowledging a group.</strong> One tick for &quot;DT17&quot; loses the technician's permission.</li>
+<li><strong>Ownership as a permission state.</strong> A &quot;transferring&quot; state would touch the fail-closed machine of ch-10-06.</li>
+<li><strong>Re-issuing the permission to the new owner.</strong> It opens a gap with a person inside.</li>
+<li><strong>Resetting the validity window at transfer.</strong> It is an extension nobody agreed.</li>
+<li><strong>Shift-start checks as a tick list.</strong> The system should check its own data; people should not tick that for it.</li>
+</ul>
+<h3 id="s-11-2">11.2 Operational mistakes</h3>
+<ul>
+<li><strong>Handing over situations instead of objects.</strong> Read the list, not your memory.</li>
+<li><strong>Accepting a permission without hearing the holder.</strong> The read-back is part of the transfer.</li>
+<li><strong>Taking the most volatile item first.</strong> It will change during the handover; take it last.</li>
+<li><strong>Handing over in the middle of an event.</strong> Defer; finish the first response; hand over the event as an object.</li>
+<li><strong>Closing delay records at 06:00 &quot;to start clean&quot;.</strong> They continue across the boundary.</li>
+</ul>
+<h2 id="s-12">12. Worked examples</h2>
+<p>All values are illustrative <code>[A]</code>; the numbers come from LAB-16-02-01 unless stated.</p>
+<p><strong>Example 1 — how long.</strong> ch-01-06 example 4 estimated about 210 s per item. Here five objects took 900 s; item 3,
+three objects and one radio call, took 120 s once the decision was made. Length follows the radio calls (one per
+permission) more than the number of objects.</p>
+<p><strong>Example 2 — the cost of the technician's permission.</strong> With R03 locked, EX03 and EX04 have no route to D01: 18
+trucks held (DLY-OD-04) and 7333.3 t of waste lost per hour, upper bound. If the permission runs from 17:45 to its
+expiry at 19:45, the cost is 2 h × 7333.3 t/h = 14 666.7 t of waste and 18 × 2 = 36 truck-hours of DLY-OD-04, of which
+1.75 h × 7333.3 = 12 833.3 t falls on the NIGHT shift. This is why the item needs a review condition and its cost on
+the view, and why the Pit Supervisor, not only the controller, should know it at 18:00.</p>
+<p><strong>Example 3 — the boundary coding error.</strong> NIGHT shift: 39 trucks scheduled × 12 h = 468 truck-hours; DT29 and DT39 in
+planned maintenance (24 h of Downtime). With DT17's 5.5 h coded, Physical Availability = (468 − 24 − 5.5) / 468 =
+0.9370; with the event closed at 18:00, (468 − 24) / 468 = 0.9487. The difference, 1.2 percentage points, is the
+availability that would be reported for a truck that was in the workshop.</p>
+<p><strong>Example 4 — an early acknowledgement.</strong> The incoming controller acknowledges item 3 at T+300 s to save time. At
+T+600 s the outgoing controller records the technician's report. The view marks STOPPED_TRUCK-01 changed and voids its
+acknowledgement; PERMISSION-02 and ALARM-01 are unchanged and stay acknowledged. The handover cannot close until
+STOPPED_TRUCK-01 is acknowledged again — which costs one more look and prevents the night controller signing for a
+truck whose recovery plan they have not seen.</p>
+<p><strong>Example 5 — the log-out clock.</strong> CTRL-DAY owns 5 objects at T+0 s, 4 at T+180 s, 3 at T+366 s and 0 at T+780 s:
+log-out is refused at 18:10 and possible from 18:13. Taking item 3 first would have left the night controller answering
+the technician's call at 18:10 about a fault they had known for three minutes.</p>
+<h2 id="s-13">13. Hands-on labs</h2>
+<p>One lab reproduces every number in this chapter; instructions, expected results and the operations interpretation are
+in labs/README.md. No browser widget is planned.</p>
+<ul>
+<li><strong>LAB-16-02-01 — Handover checklist generator.</strong> Builds the 18:00 snapshot of SCN-SHIFT-HANDOVER with
+<code>ahs_sim.control_room</code> (<code>Snapshot</code>, <code>handover_items</code>), groups linked objects into checklist items, checks the
+handover with <code>handover_check</code> and five failure cases, follows ownership with <code>transfer_permission</code> and an
+<code>ahs_sim.ams.Permission</code>, prices the R03 lock with <code>ahs_sim.fms</code>, runs synthetic shift-start checks and codes DT17's
+breakdown across the boundary with <code>ahs_sim.kpi</code>.</li>
+</ul>
+<h2 id="s-14">14. Discussion questions and assignments</h2>
+<h3 id="s-14-1">14.1 Engineering assignments</h3>
+<ol>
+<li>Extend the object schema of section 4.2 with the fields a MAP_PENDING object needs for SCN-MAP-R05, and show how the
+shift-start check of section 4.7 would treat a map approved at 17:30 and deployed to half the fleet by 18:00.</li>
+<li>Specify the atomic ownership-transfer record for a permission (fields, preconditions, failure behaviour) and show
+that no sequence of failures leaves the permission with two owners.</li>
+<li>LAB-16-02-01 voids an acknowledgement on any change of owner, review condition or detail. Propose a narrower rule,
+and construct a case in which your rule would let a material change pass unacknowledged.</li>
+</ol>
+<h3 id="s-14-2">14.2 Operations assignments</h3>
+<ol>
+<li>Write the context notes for all five objects of section 4.3 as the outgoing controller would at 17:50, including
+held circuits and the next action for each.</li>
+<li>Write the radio call at T+360 s and the corrected read-back at T+366 s, and mark which words the incoming controller
+must check against the HMI (the wording will be checked against ch-16-03).</li>
+<li>At 05:50 the generated list shows nine objects. Identify which of them you could have closed before 05:20, and
+estimate how much shorter the 06:00 handover would have been.</li>
+<li>A remote stop of AA-North is issued at 17:58, two minutes before the handover (SCN-RSTOP-AANORTH). Apply the
+decision tree of section 8.3 (b) and state who runs the restart and when the handover resumes.</li>
+</ol>
+<h2 id="s-15">15. Key takeaways</h2>
+<ul>
+<li>A handover transfers objects, not situations: three items at 18:00 are five objects in the AMS.</li>
+<li>The system generates the list; people add context; the incoming controller acknowledges each object in the live
+system; the four checks must be empty before the record closes.</li>
+<li>An acknowledgement refers to a version; a change voids it.</li>
+<li>An active permission changes owner, never state, area or validity window; without an owner it keeps the trucks out.</li>
+<li>Defer the handover during the first response to an event; hand the event over afterwards as an object.</li>
+<li>Shift-start checks: the system checks its own data, people check what the data cannot show.</li>
+<li>Delay records cross the boundary; an object's cost belongs on the handover view (7333.3 t of waste per hour for a
+technician's permission on R03).</li>
+</ul>
+<h2 id="s-16">16. Glossary terms introduced</h2>
+<p><code>handover-snapshot</code>, <code>review-condition</code>, <code>shift-start-check</code>, <code>handover-deferral</code></p>
+<p>Used from the glossary: <code>shift</code>, <code>shift-handover</code>, <code>open-item</code>, <code>handover-record</code>, <code>shift-log</code>, <code>event-log</code>,
+<code>permission-owner</code>, <code>situational-awareness</code>, <code>digital-access-permission</code>, <code>read-back</code>, <code>speed-restriction</code>,
+<code>map-version</code>, <code>comms-site</code>, <code>base-station</code>, <code>delay-code</code>, <code>fail-closed</code>, <code>controller-workload</code>.</p>
+<nav aria-label="Introductory chapters"><p><a href="ch-16-01.en.html">Previous chapter</a> · <a href="../handbook.html">Handbook contents</a></p></nav>
+</main>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.1/dist/mermaid.min.js"></script>
+<script>if(window.ahsRenderMermaid){window.ahsRenderMermaid();}</script>
+</body>
+</html>

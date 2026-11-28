@@ -5,79 +5,121 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="generator" content="ahs-handbook build_index">
 <title>Autonomous Haulage Systems Handbook — Contents</title>
-<meta name="description" content="Browse 23 volumes and 187 chapters on autonomous haulage systems, from mine operations and vehicle autonomy to fleet dispatch and deployment.">
+<meta name="description" content="Search the contents of the Autonomous Haulage Systems Handbook across 23 volumes and 187 chapter titles.">
 <link rel="canonical" href="https://thomas-21.github.io/ahs_engineering_handbook/handbook.html">
 <link rel="stylesheet" href="assets/site.css">
-<script>
-document.addEventListener("DOMContentLoaded", function () {
-  var q = document.getElementById("q");
-  function apply() {
-    var term = q.value.trim().toLowerCase();
-    document.querySelectorAll("details.vol").forEach(function (v) {
-      var shown = 0;
-      v.querySelectorAll("tr.ch").forEach(function (r) {
-        var chapter = r.cells[0].textContent + " " + r.cells[1].textContent;
-        var ok = !term || chapter.toLowerCase().includes(term);
-        r.classList.toggle("hidden", !ok); if (ok) shown++;
-      });
-      v.classList.toggle("hidden", shown === 0);
-      if (term && shown) v.open = true;
-    });
-  }
-  q.addEventListener("input", apply);
-  // A reading-path link opens the volume it points to.
-  function openTarget() {
-    var el = location.hash && document.getElementById(location.hash.slice(1));
-    if (el && el.tagName === "DETAILS") el.open = true;
-  }
-  window.addEventListener("hashchange", openTarget); openTarget();
-});
+<script src="assets/handbook.js" defer></script>
 
-</script>
 </head>
 <body>
-  <header class="site-header">
-    <nav class="wrap navigation" aria-label="Main navigation">
-      <a class="wordmark" href="./"><span aria-hidden="true">AHS</span> Engineering Handbook</a>
-      <div class="nav-links">
-        <a href="./#project">The project</a>
-        <a href="./#demo">Simulator demo</a>
-        <a href="handbook.html" aria-current="page">Handbook</a>
-        <a href="./#sponsorship">Sponsorship</a>
-      </div>
-    </nav>
-  </header>
-<main>
+<a class="skip-link" href="#main">Skip to content</a>
+<header class="site-header">
+  <nav class="wrap navigation" aria-label="Main navigation">
+    <a class="wordmark" href="./"><span aria-hidden="true">AHS</span> Engineering Handbook</a>
+    <div class="nav-links">
+      <a href="handbook.html" aria-current="page">Handbook</a>
+      <a href="./#demo">Simulator</a>
+      <a href="./#sponsorship">Sponsorship</a>
+    </div>
+  </nav>
+</header>
+<main id="main">
   <section class="hero handbook-hero" aria-labelledby="handbook-title">
     <div class="wrap">
       <p class="eyebrow">Autonomous haulage systems</p>
       <h1 id="handbook-title">Engineering &amp; Operations Handbook</h1>
-      <p>Browse 23 volumes and 187 chapters on autonomous haulage systems.</p>
+      <p>Search 187 chapter titles across 23 volumes, from open-pit mine operations to fleet integration. The first two chapters of each volume are available to read. The index shows the rest of the handbook.</p>
     </div>
   </section>
   <div class="wrap section handbook-contents">
-<section class="guide" aria-labelledby="how-to-read">
-<h2 id="how-to-read">Suggested reading by role</h2>
-<table class="paths"><tbody><tr><td>Newcomers</td><td><a href="#v01" title="AHS Fundamentals &amp; Mine Operations">V01</a> (mine, haul cycle, reference mine, architecture) → <a href="#v04" title="Functional Safety, Emergency Stop, Fire &amp; Cybersecurity">V04</a> (ODD and stopping, overview) → <a href="#v16" title="Control Room Operations &amp; Procedures">V16</a> (operating situations)</td></tr><tr><td>Systems engineers</td><td><a href="#v01" title="AHS Fundamentals &amp; Mine Operations">V01</a> → <a href="#v02" title="Systems Architecture &amp; Interoperability">V02</a> → <a href="#v03" title="Systems Engineering &amp; Development Lifecycle">V03</a>, <a href="#v04" title="Functional Safety, Emergency Stop, Fire &amp; Cybersecurity">V04</a> (read together) → <a href="#v10" title="Fleet Management, Dispatch &amp; Traffic Coordination">V10</a> → <a href="#v11" title="Site Network, Edge Computing &amp; Teleoperation">V11</a>, <a href="#v12" title="Surveying, Mapping, 3DMG &amp; Digital Twin">V12</a> (network and maps) → <a href="#v18" title="Testing, Commissioning, Maintenance &amp; Reliability">V18</a> → <a href="#v19" title="Deployment Project Lifecycle">V19</a></td></tr><tr><td>Controllers and site managers</td><td><a href="#v01" title="AHS Fundamentals &amp; Mine Operations">V01</a> (roles and KPIs) → <a href="#v16" title="Control Room Operations &amp; Procedures">V16</a> → <a href="#v14" title="Ancillary Equipment &amp; Mixed-Fleet Interaction">V14</a> → <a href="#v13" title="Shovel &amp; Excavator Integration">V13</a>, <a href="#v15" title="Crusher, Dump Station &amp; Conveyor Integration">V15</a> (the tasks that apply) → <a href="#v17" title="Mine Planning, Production &amp; Operational Transformation">V17</a> → <a href="#v22" title="AHS Data Management &amp; Operations Analytics">V22</a> (data and analytics)</td></tr><tr><td>Vehicle and autonomy engineers</td><td><a href="#v02" title="Systems Architecture &amp; Interoperability">V02</a>, <a href="#v04" title="Functional Safety, Emergency Stop, Fire &amp; Cybersecurity">V04</a> (boundaries and safety principles) → <a href="#v05" title="GNSS, IMU &amp; Localisation">V05</a>, <a href="#v06" title="LiDAR, Camera &amp; Perception">V06</a>, <a href="#v07" title="Vehicle Dynamics, Planning &amp; Control">V07</a>, <a href="#v08" title="Vehicle Platform &amp; Machine Interfaces">V08</a> → <a href="#v09" title="Battery &amp; Energy Management">V09</a> (as needed) → <a href="#v12" title="Surveying, Mapping, 3DMG &amp; Digital Twin">V12</a> (maps) → <a href="#v18" title="Testing, Commissioning, Maintenance &amp; Reliability">V18</a></td></tr><tr><td>Deployment leads and product owners</td><td><a href="#v01" title="AHS Fundamentals &amp; Mine Operations">V01</a>, <a href="#v02" title="Systems Architecture &amp; Interoperability">V02</a> (overviews) → <a href="#v18" title="Testing, Commissioning, Maintenance &amp; Reliability">V18</a> → <a href="#v19" title="Deployment Project Lifecycle">V19</a> → <a href="#v17" title="Mine Planning, Production &amp; Operational Transformation">V17</a> → <a href="#v20" title="Business Strategy, Product Management &amp; Go-to-Market">V20</a>, <a href="#v21" title="Fleet Optimisation, Economics &amp; Sustainability">V21</a> (business case and economics)</td></tr><tr><td>Simulation and analytics</td><td><a href="#v01" title="AHS Fundamentals &amp; Mine Operations">V01</a> (reference mine) → <a href="#v10" title="Fleet Management, Dispatch &amp; Traffic Coordination">V10</a> → <a href="#v21" title="Fleet Optimisation, Economics &amp; Sustainability">V21</a> → <a href="#v22" title="AHS Data Management &amp; Operations Analytics">V22</a> → <a href="#v23" title="Integrated Autonomous Mine Simulator">V23</a> (integrated simulator)</td></tr></tbody></table>
+<section class="guide preview-reading" aria-labelledby="intro-heading">
+  <h2 id="intro-heading">Start with the fundamentals</h2>
+  <ol>
+      <li><a href="vol-01/ch-01-01.en.html">The load–haul cycle</a></li>
+      <li><a href="vol-01/ch-01-02.en.html">What autonomy changes</a></li>
+  </ol>
+  <p><a href="vol-01/ch-01-01.en.html#WGT-01-01-01-root">Try the haul-cycle calculator</a></p>
+  <p><a href="appendix/glossary.en.html">Glossary</a> · <a href="appendix/reference-mine.en.html">Reference mine</a></p>
 </section>
-<div class="controls">
-  <input id="q" type="search" placeholder="Search by chapter ID or title" aria-label="Search by chapter ID or title">
+<section class="guide" aria-labelledby="how-to-read">
+  <h2 id="how-to-read">Find a route by role</h2>
+  <div class="reading-routes">
+    <div class="route">
+      <h3>New to autonomous haulage</h3>
+      <ol>
+        <li><a href="#v01">Mine operations</a></li>
+        <li><a href="#v04">Safety</a></li>
+        <li><a href="#v16">Control room</a></li>
+      </ol>
+    </div>
+    <div class="route">
+      <h3>Systems engineering</h3>
+      <ol>
+        <li><a href="#v02">Architecture</a></li>
+        <li><a href="#v03">Systems engineering</a></li>
+        <li><a href="#v18">Validation</a></li>
+        <li><a href="#v19">Deployment</a></li>
+      </ol>
+    </div>
+    <div class="route">
+      <h3>Mine operations</h3>
+      <ol>
+        <li><a href="#v10">Fleet coordination</a></li>
+        <li><a href="#v14">Mixed fleets</a></li>
+        <li><a href="#v16">Control room</a></li>
+        <li><a href="#v17">Production planning</a></li>
+      </ol>
+    </div>
+    <div class="route">
+      <h3>Vehicle autonomy</h3>
+      <ol>
+        <li><a href="#v05">Localisation</a></li>
+        <li><a href="#v06">Perception</a></li>
+        <li><a href="#v07">Vehicle control</a></li>
+        <li><a href="#v08">Vehicle interfaces</a></li>
+      </ol>
+    </div>
+    <div class="route">
+      <h3>Business and deployment</h3>
+      <ol>
+        <li><a href="#v19">Deployment</a></li>
+        <li><a href="#v20">Business strategy</a></li>
+        <li><a href="#v21">Fleet economics</a></li>
+      </ol>
+    </div>
+    <div class="route">
+      <h3>Simulation and data</h3>
+      <ol>
+        <li><a href="#v22">Operations analytics</a></li>
+        <li><a href="#v23">Integrated simulator</a></li>
+      </ol>
+    </div>
+  </div>
+</section>
+<div class="controls" id="volumes">
+  <h2>Browse by volume</h2>
+  <div id="chapter-search" hidden>
+    <label for="q">Search chapter titles and IDs</label>
+    <input id="q" type="search" placeholder="e.g. dispatch or ch-10-01" aria-describedby="search-status">
+    <p id="search-status" role="status"></p>
+  </div>
 </div>
+<div id="volume-list">
 <h2 class="part">Part I — Foundations</h2>
 <details class="vol" id="v01" open><summary>V01 — AHS Fundamentals &amp; Mine Operations</summary>
 <table class="chapters"><tbody>
-<tr class="ch"><td class="cid">ch-01-01</td><td class="titles">Open-pit mining and the load–haul cycle</td></tr>
-<tr class="ch"><td class="cid">ch-01-02</td><td class="titles">What autonomy changes: from manned to autonomous haulage</td></tr>
+<tr class="ch"><td class="cid">ch-01-01</td><td class="titles"><a href="vol-01/ch-01-01.en.html">Open-pit mining and the load–haul cycle</a></td></tr>
+<tr class="ch"><td class="cid">ch-01-02</td><td class="titles"><a href="vol-01/ch-01-02.en.html">What autonomy changes: from manned to autonomous haulage</a></td></tr>
 <tr class="ch"><td class="cid">ch-01-03</td><td class="titles">The reference mine</td></tr>
 <tr class="ch"><td class="cid">ch-01-04</td><td class="titles">Reference architecture overview: FMS–AMS–ADS–VCS</td></tr>
 <tr class="ch"><td class="cid">ch-01-05</td><td class="titles">Production KPIs: cycle time, availability, utilisation, productivity</td></tr>
 <tr class="ch"><td class="cid">ch-01-06</td><td class="titles">Operational roles and the control room</td></tr>
 <tr class="ch"><td class="cid">ch-01-07</td><td class="titles">Exceptions, delays and recovery — an overview</td></tr>
 </tbody></table></details>
-<details class="vol" id="v02" open><summary>V02 — Systems Architecture &amp; Interoperability</summary>
+<details class="vol" id="v02"><summary>V02 — Systems Architecture &amp; Interoperability</summary>
 <table class="chapters"><tbody>
-<tr class="ch"><td class="cid">ch-02-01</td><td class="titles">System-of-systems architecture</td></tr>
-<tr class="ch"><td class="cid">ch-02-02</td><td class="titles">Logical and physical deployment</td></tr>
+<tr class="ch"><td class="cid">ch-02-01</td><td class="titles"><a href="vol-02/ch-02-01.en.html">System-of-systems architecture</a></td></tr>
+<tr class="ch"><td class="cid">ch-02-02</td><td class="titles"><a href="vol-02/ch-02-02.en.html">Logical and physical deployment</a></td></tr>
 <tr class="ch"><td class="cid">ch-02-03</td><td class="titles">Responsibility allocation across FMS, AMS, ADS and VCS</td></tr>
 <tr class="ch"><td class="cid">ch-02-04</td><td class="titles">Independent safety functions, onboard safety systems and manned-vehicle devices</td></tr>
 <tr class="ch"><td class="cid">ch-02-05</td><td class="titles">Interoperability and ISO 23725</td></tr>
@@ -85,10 +127,10 @@ document.addEventListener("DOMContentLoaded", function () {
 <tr class="ch"><td class="cid">ch-02-07</td><td class="titles">Messaging semantics: request / grant / acknowledge, idempotency, staleness</td></tr>
 <tr class="ch"><td class="cid">ch-02-08</td><td class="titles">Distributed state, restart and reconciliation</td></tr>
 </tbody></table></details>
-<details class="vol" id="v03" open><summary>V03 — Systems Engineering &amp; Development Lifecycle</summary>
+<details class="vol" id="v03"><summary>V03 — Systems Engineering &amp; Development Lifecycle</summary>
 <table class="chapters"><tbody>
-<tr class="ch"><td class="cid">ch-03-01</td><td class="titles">Stakeholder needs and ConOps</td></tr>
-<tr class="ch"><td class="cid">ch-03-02</td><td class="titles">Requirements engineering</td></tr>
+<tr class="ch"><td class="cid">ch-03-01</td><td class="titles"><a href="vol-03/ch-03-01.en.html">Stakeholder needs and ConOps</a></td></tr>
+<tr class="ch"><td class="cid">ch-03-02</td><td class="titles"><a href="vol-03/ch-03-02.en.html">Requirements engineering</a></td></tr>
 <tr class="ch"><td class="cid">ch-03-03</td><td class="titles">Traceability</td></tr>
 <tr class="ch"><td class="cid">ch-03-04</td><td class="titles">Use cases and operational scenarios</td></tr>
 <tr class="ch"><td class="cid">ch-03-05</td><td class="titles">MBSE</td></tr>
@@ -97,10 +139,10 @@ document.addEventListener("DOMContentLoaded", function () {
 <tr class="ch"><td class="cid">ch-03-08</td><td class="titles">Configuration and change management</td></tr>
 <tr class="ch"><td class="cid">ch-03-09</td><td class="titles">Engineering roles and leadership</td></tr>
 </tbody></table></details>
-<details class="vol" id="v04" open><summary>V04 — Functional Safety, Emergency Stop, Fire &amp; Cybersecurity</summary>
+<details class="vol" id="v04"><summary>V04 — Functional Safety, Emergency Stop, Fire &amp; Cybersecurity</summary>
 <table class="chapters"><tbody>
-<tr class="ch"><td class="cid">ch-04-01</td><td class="titles">Hazard identification and risk assessment</td></tr>
-<tr class="ch"><td class="cid">ch-04-02</td><td class="titles">Operational design domain and operational boundaries</td></tr>
+<tr class="ch"><td class="cid">ch-04-01</td><td class="titles"><a href="vol-04/ch-04-01.en.html">Hazard identification and risk assessment</a></td></tr>
+<tr class="ch"><td class="cid">ch-04-02</td><td class="titles"><a href="vol-04/ch-04-02.en.html">Operational design domain and operational boundaries</a></td></tr>
 <tr class="ch"><td class="cid">ch-04-03</td><td class="titles">Safety standards landscape</td></tr>
 <tr class="ch"><td class="cid">ch-04-04</td><td class="titles">Safety architecture and independent safety functions</td></tr>
 <tr class="ch"><td class="cid">ch-04-05</td><td class="titles">Stop categories, emergency stop and remote stop</td></tr>
@@ -111,29 +153,29 @@ document.addEventListener("DOMContentLoaded", function () {
 <tr class="ch"><td class="cid">ch-04-10</td><td class="titles">Human factors and safety-case evidence</td></tr>
 </tbody></table></details>
 <h2 class="part">Part II — Vehicle &amp; Autonomy</h2>
-<details class="vol" id="v05" open><summary>V05 — GNSS, IMU &amp; Localisation</summary>
+<details class="vol" id="v05"><summary>V05 — GNSS, IMU &amp; Localisation</summary>
 <table class="chapters"><tbody>
-<tr class="ch"><td class="cid">ch-05-01</td><td class="titles">Coordinate systems and datums</td></tr>
-<tr class="ch"><td class="cid">ch-05-02</td><td class="titles">GNSS and RTK</td></tr>
+<tr class="ch"><td class="cid">ch-05-01</td><td class="titles"><a href="vol-05/ch-05-01.en.html">Coordinate systems and datums</a></td></tr>
+<tr class="ch"><td class="cid">ch-05-02</td><td class="titles"><a href="vol-05/ch-05-02.en.html">GNSS and RTK</a></td></tr>
 <tr class="ch"><td class="cid">ch-05-03</td><td class="titles">Inertial navigation</td></tr>
 <tr class="ch"><td class="cid">ch-05-04</td><td class="titles">Kalman filtering</td></tr>
 <tr class="ch"><td class="cid">ch-05-05</td><td class="titles">Sensor fusion and map matching</td></tr>
 <tr class="ch"><td class="cid">ch-05-06</td><td class="titles">Localisation integrity and GNSS degradation in operation</td></tr>
 </tbody></table></details>
-<details class="vol" id="v06" open><summary>V06 — LiDAR, Camera &amp; Perception</summary>
+<details class="vol" id="v06"><summary>V06 — LiDAR, Camera &amp; Perception</summary>
 <table class="chapters"><tbody>
-<tr class="ch"><td class="cid">ch-06-01</td><td class="titles">Sensing requirements in mining</td></tr>
-<tr class="ch"><td class="cid">ch-06-02</td><td class="titles">LiDAR and point clouds</td></tr>
+<tr class="ch"><td class="cid">ch-06-01</td><td class="titles"><a href="vol-06/ch-06-01.en.html">Sensing requirements in mining</a></td></tr>
+<tr class="ch"><td class="cid">ch-06-02</td><td class="titles"><a href="vol-06/ch-06-02.en.html">LiDAR and point clouds</a></td></tr>
 <tr class="ch"><td class="cid">ch-06-03</td><td class="titles">Cameras and radar</td></tr>
 <tr class="ch"><td class="cid">ch-06-04</td><td class="titles">Object detection and tracking</td></tr>
 <tr class="ch"><td class="cid">ch-06-05</td><td class="titles">Terrain and free-space perception</td></tr>
 <tr class="ch"><td class="cid">ch-06-06</td><td class="titles">Multi-sensor fusion and machine learning</td></tr>
 <tr class="ch"><td class="cid">ch-06-07</td><td class="titles">Perception validation and nuisance stops</td></tr>
 </tbody></table></details>
-<details class="vol" id="v07" open><summary>V07 — Vehicle Dynamics, Planning &amp; Control</summary>
+<details class="vol" id="v07"><summary>V07 — Vehicle Dynamics, Planning &amp; Control</summary>
 <table class="chapters"><tbody>
-<tr class="ch"><td class="cid">ch-07-01</td><td class="titles">Haul-truck dynamics</td></tr>
-<tr class="ch"><td class="cid">ch-07-02</td><td class="titles">Traction, grade and braking</td></tr>
+<tr class="ch"><td class="cid">ch-07-01</td><td class="titles"><a href="vol-07/ch-07-01.en.html">Haul-truck dynamics</a></td></tr>
+<tr class="ch"><td class="cid">ch-07-02</td><td class="titles"><a href="vol-07/ch-07-02.en.html">Traction, grade and braking</a></td></tr>
 <tr class="ch"><td class="cid">ch-07-03</td><td class="titles">Graph-based route planning</td></tr>
 <tr class="ch"><td class="cid">ch-07-04</td><td class="titles">Behaviour planning</td></tr>
 <tr class="ch"><td class="cid">ch-07-05</td><td class="titles">Trajectory generation</td></tr>
@@ -141,10 +183,10 @@ document.addEventListener("DOMContentLoaded", function () {
 <tr class="ch"><td class="cid">ch-07-07</td><td class="titles">Model predictive control</td></tr>
 <tr class="ch"><td class="cid">ch-07-08</td><td class="titles">Control validation</td></tr>
 </tbody></table></details>
-<details class="vol" id="v08" open><summary>V08 — Vehicle Platform &amp; Machine Interfaces</summary>
+<details class="vol" id="v08"><summary>V08 — Vehicle Platform &amp; Machine Interfaces</summary>
 <table class="chapters"><tbody>
-<tr class="ch"><td class="cid">ch-08-01</td><td class="titles">Vehicle architecture</td></tr>
-<tr class="ch"><td class="cid">ch-08-02</td><td class="titles">CAN and J1939</td></tr>
+<tr class="ch"><td class="cid">ch-08-01</td><td class="titles"><a href="vol-08/ch-08-01.en.html">Vehicle architecture</a></td></tr>
+<tr class="ch"><td class="cid">ch-08-02</td><td class="titles"><a href="vol-08/ch-08-02.en.html">CAN and J1939</a></td></tr>
 <tr class="ch"><td class="cid">ch-08-03</td><td class="titles">Machine interfaces and drive-by-wire</td></tr>
 <tr class="ch"><td class="cid">ch-08-04</td><td class="titles">Actuation and command arbitration</td></tr>
 <tr class="ch"><td class="cid">ch-08-05</td><td class="titles">Onboard safety-related systems: fire suppression, payload, tyre monitoring</td></tr>
@@ -152,10 +194,10 @@ document.addEventListener("DOMContentLoaded", function () {
 <tr class="ch"><td class="cid">ch-08-07</td><td class="titles">Retrofit</td></tr>
 <tr class="ch"><td class="cid">ch-08-08</td><td class="titles">Platform reliability</td></tr>
 </tbody></table></details>
-<details class="vol" id="v09" open><summary>V09 — Battery &amp; Energy Management</summary>
+<details class="vol" id="v09"><summary>V09 — Battery &amp; Energy Management</summary>
 <table class="chapters"><tbody>
-<tr class="ch"><td class="cid">ch-09-01</td><td class="titles">Diesel, hybrid, trolley and battery-electric haulage</td></tr>
-<tr class="ch"><td class="cid">ch-09-02</td><td class="titles">Battery fundamentals</td></tr>
+<tr class="ch"><td class="cid">ch-09-01</td><td class="titles"><a href="vol-09/ch-09-01.en.html">Diesel, hybrid, trolley and battery-electric haulage</a></td></tr>
+<tr class="ch"><td class="cid">ch-09-02</td><td class="titles"><a href="vol-09/ch-09-02.en.html">Battery fundamentals</a></td></tr>
 <tr class="ch"><td class="cid">ch-09-03</td><td class="titles">BMS and state estimation</td></tr>
 <tr class="ch"><td class="cid">ch-09-04</td><td class="titles">Thermal management and thermal runaway</td></tr>
 <tr class="ch"><td class="cid">ch-09-05</td><td class="titles">Charging infrastructure</td></tr>
@@ -164,10 +206,10 @@ document.addEventListener("DOMContentLoaded", function () {
 <tr class="ch"><td class="cid">ch-09-08</td><td class="titles">Lifecycle economics</td></tr>
 </tbody></table></details>
 <h2 class="part">Part III — Fleet, Network &amp; Site Integration</h2>
-<details class="vol" id="v10" open><summary>V10 — Fleet Management, Dispatch &amp; Traffic Coordination</summary>
+<details class="vol" id="v10"><summary>V10 — Fleet Management, Dispatch &amp; Traffic Coordination</summary>
 <table class="chapters"><tbody>
-<tr class="ch"><td class="cid">ch-10-01</td><td class="titles">FMS dispatch</td></tr>
-<tr class="ch"><td class="cid">ch-10-02</td><td class="titles">Queueing at shovels and destinations</td></tr>
+<tr class="ch"><td class="cid">ch-10-01</td><td class="titles"><a href="vol-10/ch-10-01.en.html">FMS dispatch</a></td></tr>
+<tr class="ch"><td class="cid">ch-10-02</td><td class="titles"><a href="vol-10/ch-10-02.en.html">Queueing at shovels and destinations</a></td></tr>
 <tr class="ch"><td class="cid">ch-10-03</td><td class="titles">AMS mission execution</td></tr>
 <tr class="ch"><td class="cid">ch-10-04</td><td class="titles">Segment and intersection reservation</td></tr>
 <tr class="ch"><td class="cid">ch-10-05</td><td class="titles">Deadlock detection and resolution</td></tr>
@@ -175,20 +217,20 @@ document.addEventListener("DOMContentLoaded", function () {
 <tr class="ch"><td class="cid">ch-10-07</td><td class="titles">Shovel and crusher coordination</td></tr>
 <tr class="ch"><td class="cid">ch-10-08</td><td class="titles">Exception recovery and mission cancellation</td></tr>
 </tbody></table></details>
-<details class="vol" id="v11" open><summary>V11 — Site Network, Edge Computing &amp; Teleoperation</summary>
+<details class="vol" id="v11"><summary>V11 — Site Network, Edge Computing &amp; Teleoperation</summary>
 <table class="chapters"><tbody>
-<tr class="ch"><td class="cid">ch-11-01</td><td class="titles">Mine network architecture</td></tr>
-<tr class="ch"><td class="cid">ch-11-02</td><td class="titles">Wi-Fi / mesh, LTE / 5G, satellite</td></tr>
+<tr class="ch"><td class="cid">ch-11-01</td><td class="titles"><a href="vol-11/ch-11-01.en.html">Mine network architecture</a></td></tr>
+<tr class="ch"><td class="cid">ch-11-02</td><td class="titles"><a href="vol-11/ch-11-02.en.html">Wi-Fi / mesh, LTE / 5G, satellite</a></td></tr>
 <tr class="ch"><td class="cid">ch-11-03</td><td class="titles">Latency, loss and QoS</td></tr>
 <tr class="ch"><td class="cid">ch-11-04</td><td class="titles">Coverage planning</td></tr>
 <tr class="ch"><td class="cid">ch-11-05</td><td class="titles">Edge computing</td></tr>
 <tr class="ch"><td class="cid">ch-11-06</td><td class="titles">Teleoperation</td></tr>
 <tr class="ch"><td class="cid">ch-11-07</td><td class="titles">Monitoring and failover in operation</td></tr>
 </tbody></table></details>
-<details class="vol" id="v12" open><summary>V12 — Surveying, Mapping, 3DMG &amp; Digital Twin</summary>
+<details class="vol" id="v12"><summary>V12 — Surveying, Mapping, 3DMG &amp; Digital Twin</summary>
 <table class="chapters"><tbody>
-<tr class="ch"><td class="cid">ch-12-01</td><td class="titles">Surveying for autonomous mines</td></tr>
-<tr class="ch"><td class="cid">ch-12-02</td><td class="titles">Photogrammetry and drones</td></tr>
+<tr class="ch"><td class="cid">ch-12-01</td><td class="titles"><a href="vol-12/ch-12-01.en.html">Surveying for autonomous mines</a></td></tr>
+<tr class="ch"><td class="cid">ch-12-02</td><td class="titles"><a href="vol-12/ch-12-02.en.html">Photogrammetry and drones</a></td></tr>
 <tr class="ch"><td class="cid">ch-12-03</td><td class="titles">Mobile and aerial LiDAR</td></tr>
 <tr class="ch"><td class="cid">ch-12-04</td><td class="titles">Terrain models</td></tr>
 <tr class="ch"><td class="cid">ch-12-05</td><td class="titles">Haul-road design geometry</td></tr>
@@ -198,10 +240,10 @@ document.addEventListener("DOMContentLoaded", function () {
 <tr class="ch"><td class="cid">ch-12-09</td><td class="titles">Map change management and versioning</td></tr>
 <tr class="ch"><td class="cid">ch-12-10</td><td class="titles">Digital twin</td></tr>
 </tbody></table></details>
-<details class="vol" id="v13" open><summary>V13 — Shovel &amp; Excavator Integration</summary>
+<details class="vol" id="v13"><summary>V13 — Shovel &amp; Excavator Integration</summary>
 <table class="chapters"><tbody>
-<tr class="ch"><td class="cid">ch-13-01</td><td class="titles">Loading productivity</td></tr>
-<tr class="ch"><td class="cid">ch-13-02</td><td class="titles">Loading spots and spotting</td></tr>
+<tr class="ch"><td class="cid">ch-13-01</td><td class="titles"><a href="vol-13/ch-13-01.en.html">Loading productivity</a></td></tr>
+<tr class="ch"><td class="cid">ch-13-02</td><td class="titles"><a href="vol-13/ch-13-02.en.html">Loading spots and spotting</a></td></tr>
 <tr class="ch"><td class="cid">ch-13-03</td><td class="titles">Truck–shovel communication</td></tr>
 <tr class="ch"><td class="cid">ch-13-04</td><td class="titles">Payload</td></tr>
 <tr class="ch"><td class="cid">ch-13-05</td><td class="titles">Shovel relocation and face changes</td></tr>
@@ -209,10 +251,10 @@ document.addEventListener("DOMContentLoaded", function () {
 <tr class="ch"><td class="cid">ch-13-07</td><td class="titles">Integration testing</td></tr>
 <tr class="ch"><td class="cid">ch-13-08</td><td class="titles">Spotting at the loading unit: designation, manoeuvres and sensing</td></tr>
 </tbody></table></details>
-<details class="vol" id="v14" open><summary>V14 — Ancillary Equipment &amp; Mixed-Fleet Interaction</summary>
+<details class="vol" id="v14"><summary>V14 — Ancillary Equipment &amp; Mixed-Fleet Interaction</summary>
 <table class="chapters"><tbody>
-<tr class="ch"><td class="cid">ch-14-01</td><td class="titles">Ancillary fleet roles in an autonomous mine</td></tr>
-<tr class="ch"><td class="cid">ch-14-02</td><td class="titles">Position reporting and awareness for manned vehicles</td></tr>
+<tr class="ch"><td class="cid">ch-14-01</td><td class="titles"><a href="vol-14/ch-14-01.en.html">Ancillary fleet roles in an autonomous mine</a></td></tr>
+<tr class="ch"><td class="cid">ch-14-02</td><td class="titles"><a href="vol-14/ch-14-02.en.html">Position reporting and awareness for manned vehicles</a></td></tr>
 <tr class="ch"><td class="cid">ch-14-03</td><td class="titles">Work zones and road-maintenance reservations</td></tr>
 <tr class="ch"><td class="cid">ch-14-04</td><td class="titles">Dozers and graders in autonomous areas</td></tr>
 <tr class="ch"><td class="cid">ch-14-05</td><td class="titles">Water trucks and dust suppression</td></tr>
@@ -220,10 +262,10 @@ document.addEventListener("DOMContentLoaded", function () {
 <tr class="ch"><td class="cid">ch-14-07</td><td class="titles">Road closures and handover</td></tr>
 <tr class="ch"><td class="cid">ch-14-08</td><td class="titles">Failure modes of mixed-fleet awareness</td></tr>
 </tbody></table></details>
-<details class="vol" id="v15" open><summary>V15 — Crusher, Dump Station &amp; Conveyor Integration</summary>
+<details class="vol" id="v15"><summary>V15 — Crusher, Dump Station &amp; Conveyor Integration</summary>
 <table class="chapters"><tbody>
-<tr class="ch"><td class="cid">ch-15-01</td><td class="titles">Crushing and tipping operations</td></tr>
-<tr class="ch"><td class="cid">ch-15-02</td><td class="titles">Dump operations and edge protection</td></tr>
+<tr class="ch"><td class="cid">ch-15-01</td><td class="titles"><a href="vol-15/ch-15-01.en.html">Crushing and tipping operations</a></td></tr>
+<tr class="ch"><td class="cid">ch-15-02</td><td class="titles"><a href="vol-15/ch-15-02.en.html">Dump operations and edge protection</a></td></tr>
 <tr class="ch"><td class="cid">ch-15-03</td><td class="titles">PLC / SCADA interfaces</td></tr>
 <tr class="ch"><td class="cid">ch-15-04</td><td class="titles">Conveyors and stockpiles</td></tr>
 <tr class="ch"><td class="cid">ch-15-05</td><td class="titles">Material tracking</td></tr>
@@ -232,10 +274,10 @@ document.addEventListener("DOMContentLoaded", function () {
 <tr class="ch"><td class="cid">ch-15-08</td><td class="titles">Spotting at the dump and the crusher: designation, manoeuvres and sensing</td></tr>
 </tbody></table></details>
 <h2 class="part">Part IV — Operations</h2>
-<details class="vol" id="v16" open><summary>V16 — Control Room Operations &amp; Procedures</summary>
+<details class="vol" id="v16"><summary>V16 — Control Room Operations &amp; Procedures</summary>
 <table class="chapters"><tbody>
-<tr class="ch"><td class="cid">ch-16-01</td><td class="titles">Control room organisation and roles</td></tr>
-<tr class="ch"><td class="cid">ch-16-02</td><td class="titles">Shift start, handover and end of shift</td></tr>
+<tr class="ch"><td class="cid">ch-16-01</td><td class="titles"><a href="vol-16/ch-16-01.en.html">Control room organisation and roles</a></td></tr>
+<tr class="ch"><td class="cid">ch-16-02</td><td class="titles"><a href="vol-16/ch-16-02.en.html">Shift start, handover and end of shift</a></td></tr>
 <tr class="ch"><td class="cid">ch-16-03</td><td class="titles">Positive communication: principles and radio protocol</td></tr>
 <tr class="ch"><td class="cid">ch-16-04</td><td class="titles">Access control, isolation and entering autonomous areas</td></tr>
 <tr class="ch"><td class="cid">ch-16-05</td><td class="titles">Approaching and recovering stopped autonomous trucks</td></tr>
@@ -245,30 +287,30 @@ document.addEventListener("DOMContentLoaded", function () {
 <tr class="ch"><td class="cid">ch-16-09</td><td class="titles">Training, competency and authorisation</td></tr>
 <tr class="ch"><td class="cid">ch-16-10</td><td class="titles">Controller workload, alarms and HMI design</td></tr>
 </tbody></table></details>
-<details class="vol" id="v17" open><summary>V17 — Mine Planning, Production &amp; Operational Transformation</summary>
+<details class="vol" id="v17"><summary>V17 — Mine Planning, Production &amp; Operational Transformation</summary>
 <table class="chapters"><tbody>
-<tr class="ch"><td class="cid">ch-17-01</td><td class="titles">Mine planning horizons</td></tr>
-<tr class="ch"><td class="cid">ch-17-02</td><td class="titles">Drill–blast–load–haul interfaces</td></tr>
+<tr class="ch"><td class="cid">ch-17-01</td><td class="titles"><a href="vol-17/ch-17-01.en.html">Mine planning horizons</a></td></tr>
+<tr class="ch"><td class="cid">ch-17-02</td><td class="titles"><a href="vol-17/ch-17-02.en.html">Drill–blast–load–haul interfaces</a></td></tr>
 <tr class="ch"><td class="cid">ch-17-03</td><td class="titles">Short-interval control</td></tr>
 <tr class="ch"><td class="cid">ch-17-04</td><td class="titles">Road handover and area management</td></tr>
 <tr class="ch"><td class="cid">ch-17-05</td><td class="titles">Transition to mixed and fully autonomous operations</td></tr>
 <tr class="ch"><td class="cid">ch-17-06</td><td class="titles">Organisational change</td></tr>
 <tr class="ch"><td class="cid">ch-17-07</td><td class="titles">Control-room workflow design</td></tr>
 </tbody></table></details>
-<details class="vol" id="v18" open><summary>V18 — Testing, Commissioning, Maintenance &amp; Reliability</summary>
+<details class="vol" id="v18"><summary>V18 — Testing, Commissioning, Maintenance &amp; Reliability</summary>
 <table class="chapters"><tbody>
-<tr class="ch"><td class="cid">ch-18-01</td><td class="titles">Verification strategy</td></tr>
-<tr class="ch"><td class="cid">ch-18-02</td><td class="titles">SIL and HIL</td></tr>
+<tr class="ch"><td class="cid">ch-18-01</td><td class="titles"><a href="vol-18/ch-18-01.en.html">Verification strategy</a></td></tr>
+<tr class="ch"><td class="cid">ch-18-02</td><td class="titles"><a href="vol-18/ch-18-02.en.html">SIL and HIL</a></td></tr>
 <tr class="ch"><td class="cid">ch-18-03</td><td class="titles">Vehicle and site testing</td></tr>
 <tr class="ch"><td class="cid">ch-18-04</td><td class="titles">Commissioning</td></tr>
 <tr class="ch"><td class="cid">ch-18-05</td><td class="titles">Operational readiness</td></tr>
 <tr class="ch"><td class="cid">ch-18-06</td><td class="titles">Maintenance of autonomous fleets</td></tr>
 <tr class="ch"><td class="cid">ch-18-07</td><td class="titles">RAMS and incident investigation</td></tr>
 </tbody></table></details>
-<details class="vol" id="v19" open><summary>V19 — Deployment Project Lifecycle</summary>
+<details class="vol" id="v19"><summary>V19 — Deployment Project Lifecycle</summary>
 <table class="chapters"><tbody>
-<tr class="ch"><td class="cid">ch-19-01</td><td class="titles">Opportunity assessment and feasibility</td></tr>
-<tr class="ch"><td class="cid">ch-19-02</td><td class="titles">Site readiness: roads, network, survey, infrastructure</td></tr>
+<tr class="ch"><td class="cid">ch-19-01</td><td class="titles"><a href="vol-19/ch-19-01.en.html">Opportunity assessment and feasibility</a></td></tr>
+<tr class="ch"><td class="cid">ch-19-02</td><td class="titles"><a href="vol-19/ch-19-02.en.html">Site readiness: roads, network, survey, infrastructure</a></td></tr>
 <tr class="ch"><td class="cid">ch-19-03</td><td class="titles">Regulatory engagement and approvals</td></tr>
 <tr class="ch"><td class="cid">ch-19-04</td><td class="titles">Project organisation, contracts and customer interfaces</td></tr>
 <tr class="ch"><td class="cid">ch-19-05</td><td class="titles">Workforce transition and change management</td></tr>
@@ -277,10 +319,10 @@ document.addEventListener("DOMContentLoaded", function () {
 <tr class="ch"><td class="cid">ch-19-08</td><td class="titles">Lessons learned and case studies</td></tr>
 </tbody></table></details>
 <h2 class="part">Part V — Business, Economics &amp; Data</h2>
-<details class="vol" id="v20" open><summary>V20 — Business Strategy, Product Management &amp; Go-to-Market</summary>
+<details class="vol" id="v20"><summary>V20 — Business Strategy, Product Management &amp; Go-to-Market</summary>
 <table class="chapters"><tbody>
-<tr class="ch"><td class="cid">ch-20-01</td><td class="titles">Market structure</td></tr>
-<tr class="ch"><td class="cid">ch-20-02</td><td class="titles">Customer needs</td></tr>
+<tr class="ch"><td class="cid">ch-20-01</td><td class="titles"><a href="vol-20/ch-20-01.en.html">Market structure</a></td></tr>
+<tr class="ch"><td class="cid">ch-20-02</td><td class="titles"><a href="vol-20/ch-20-02.en.html">Customer needs</a></td></tr>
 <tr class="ch"><td class="cid">ch-20-03</td><td class="titles">Product strategy and positioning</td></tr>
 <tr class="ch"><td class="cid">ch-20-04</td><td class="titles">Roadmaps</td></tr>
 <tr class="ch"><td class="cid">ch-20-05</td><td class="titles">MVP and prioritisation</td></tr>
@@ -288,20 +330,20 @@ document.addEventListener("DOMContentLoaded", function () {
 <tr class="ch"><td class="cid">ch-20-07</td><td class="titles">Competition and sales engineering</td></tr>
 <tr class="ch"><td class="cid">ch-20-08</td><td class="titles">Product leadership</td></tr>
 </tbody></table></details>
-<details class="vol" id="v21" open><summary>V21 — Fleet Optimisation, Economics &amp; Sustainability</summary>
+<details class="vol" id="v21"><summary>V21 — Fleet Optimisation, Economics &amp; Sustainability</summary>
 <table class="chapters"><tbody>
-<tr class="ch"><td class="cid">ch-21-01</td><td class="titles">Fleet sizing</td></tr>
-<tr class="ch"><td class="cid">ch-21-02</td><td class="titles">Dispatch optimisation</td></tr>
+<tr class="ch"><td class="cid">ch-21-01</td><td class="titles"><a href="vol-21/ch-21-01.en.html">Fleet sizing</a></td></tr>
+<tr class="ch"><td class="cid">ch-21-02</td><td class="titles"><a href="vol-21/ch-21-02.en.html">Dispatch optimisation</a></td></tr>
 <tr class="ch"><td class="cid">ch-21-03</td><td class="titles">Utilisation and availability economics</td></tr>
 <tr class="ch"><td class="cid">ch-21-04</td><td class="titles">Total cost of ownership</td></tr>
 <tr class="ch"><td class="cid">ch-21-05</td><td class="titles">ROI and sensitivity analysis</td></tr>
 <tr class="ch"><td class="cid">ch-21-06</td><td class="titles">Emissions and energy</td></tr>
 <tr class="ch"><td class="cid">ch-21-07</td><td class="titles">Long-term planning</td></tr>
 </tbody></table></details>
-<details class="vol" id="v22" open><summary>V22 — AHS Data Management &amp; Operations Analytics</summary>
+<details class="vol" id="v22"><summary>V22 — AHS Data Management &amp; Operations Analytics</summary>
 <table class="chapters"><tbody>
-<tr class="ch"><td class="cid">ch-22-01</td><td class="titles">Data architecture</td></tr>
-<tr class="ch"><td class="cid">ch-22-02</td><td class="titles">Telemetry</td></tr>
+<tr class="ch"><td class="cid">ch-22-01</td><td class="titles"><a href="vol-22/ch-22-01.en.html">Data architecture</a></td></tr>
+<tr class="ch"><td class="cid">ch-22-02</td><td class="titles"><a href="vol-22/ch-22-02.en.html">Telemetry</a></td></tr>
 <tr class="ch"><td class="cid">ch-22-03</td><td class="titles">Streaming</td></tr>
 <tr class="ch"><td class="cid">ch-22-04</td><td class="titles">Storage</td></tr>
 <tr class="ch"><td class="cid">ch-22-05</td><td class="titles">Governance and data ownership</td></tr>
@@ -312,10 +354,10 @@ document.addEventListener("DOMContentLoaded", function () {
 <tr class="ch"><td class="cid">ch-22-10</td><td class="titles">Advanced analytics</td></tr>
 </tbody></table></details>
 <h2 class="part">Part VI — Integration</h2>
-<details class="vol" id="v23" open><summary>V23 — Integrated Autonomous Mine Simulator</summary>
+<details class="vol" id="v23"><summary>V23 — Integrated Autonomous Mine Simulator</summary>
 <table class="chapters"><tbody>
-<tr class="ch"><td class="cid">ch-23-01</td><td class="titles">Simulator architecture</td></tr>
-<tr class="ch"><td class="cid">ch-23-02</td><td class="titles">Road network model</td></tr>
+<tr class="ch"><td class="cid">ch-23-01</td><td class="titles"><a href="vol-23/ch-23-01.en.html">Simulator architecture</a></td></tr>
+<tr class="ch"><td class="cid">ch-23-02</td><td class="titles"><a href="vol-23/ch-23-02.en.html">Road network model</a></td></tr>
 <tr class="ch"><td class="cid">ch-23-03</td><td class="titles">Equipment models</td></tr>
 <tr class="ch"><td class="cid">ch-23-04</td><td class="titles">FMS model</td></tr>
 <tr class="ch"><td class="cid">ch-23-05</td><td class="titles">AMS model</td></tr>
@@ -325,6 +367,7 @@ document.addEventListener("DOMContentLoaded", function () {
 <tr class="ch"><td class="cid">ch-23-09</td><td class="titles">Safety functions and operational procedures</td></tr>
 <tr class="ch"><td class="cid">ch-23-10</td><td class="titles">Analytics, optimisation and final integration</td></tr>
 </tbody></table></details>
+</div>
   </div>
 </main>
 <footer class="wrap site-footer">

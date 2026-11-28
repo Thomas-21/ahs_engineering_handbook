@@ -10,108 +10,99 @@
   <link rel="stylesheet" href="assets/site.css">
 </head>
 <body>
-  <header class="site-header">
-    <nav class="wrap navigation" aria-label="Main navigation">
-      <a class="wordmark" href="./"><span aria-hidden="true">AHS</span> Engineering Handbook</a>
-      <div class="nav-links">
-        <a href="#project">The project</a>
-        <a href="#demo">Simulator demo</a>
-        <a href="handbook.html">Handbook</a>
-        <a href="#sponsorship">Sponsorship</a>
-      </div>
-    </nav>
-  </header>
-
-  <main>
-    <section class="hero" aria-labelledby="project-title">
-      <div class="wrap hero-grid">
-        <div class="hero-copy">
-          <p class="eyebrow">Autonomous haulage systems</p>
-          <h1 id="project-title">From truck behavior to mine production.</h1>
-          <p>The AHS Engineering &amp; Operations Handbook project is building an English-language handbook and a companion simulator for learning how autonomous haulage works in open-pit mines.</p>
-          <div class="actions">
-            <a class="button" href="#project">Explore the project</a>
-            <a href="#demo">Watch the demo</a>
-          </div>
+<a class="skip-link" href="#main">Skip to content</a>
+<header class="site-header">
+  <nav class="wrap navigation" aria-label="Main navigation">
+    <a class="wordmark" href="./"><span aria-hidden="true">AHS</span> Engineering Handbook</a>
+    <div class="nav-links">
+      <a href="handbook.html">Handbook</a>
+      <a href="./#demo">Simulator</a>
+      <a href="./#sponsorship">Sponsorship</a>
+    </div>
+  </nav>
+</header>
+<main id="main">
+  <section class="hero" aria-labelledby="project-title">
+    <div class="wrap hero-grid">
+      <div class="hero-copy">
+        <h1 id="project-title">Autonomous haulage in open-pit mines</h1>
+        <p>Follow a haul truck from the shovel to its dump point. Explore how vehicle control, fleet dispatch, and mine operations shape production.</p>
+        <div class="actions">
+          <a class="button" href="vol-01/ch-01-01.en.html">Start with the haul cycle</a>
+          <a class="text-link" href="#demo">Watch the simulator demo <span aria-hidden="true">↓</span></a>
         </div>
-        <figure class="hero-visual">
-          <img src="assets/images/simulator.webp" width="1280" height="652" alt="Simulator map showing haul routes and truck states alongside production metrics" fetchpriority="high">
-          <figcaption>Simulator view of haul routes, truck states, and production metrics</figcaption>
-        </figure>
       </div>
-    </section>
+      <figure class="hero-visual">
+        <img src="assets/images/simulator.webp" width="1280" height="652" alt="Simulator map of the reference mine, with truck states and production metrics" fetchpriority="high">
+        <figcaption>The reference mine in the Autonomous Mine Simulator</figcaption>
+      </figure>
+    </div>
+  </section>
 
-    <section class="wrap section project" id="project" aria-labelledby="project-heading">
-      <div class="section-intro">
-        <h2 id="project-heading">What we’re building</h2>
-        <p>The handbook explains the engineering and operating decisions behind AHS. The simulator shows how those decisions play out across a fleet in a reference open-pit mine.</p>
-      </div>
-      <div class="project-grid">
-        <article class="project-card">
-          <h3>Engineering &amp; Operations Handbook</h3>
-          <p>Explore mine operations, systems architecture, vehicle autonomy, fleet dispatch, and deployment through a searchable outline of 23 volumes and 187 chapters.</p>
-          <a href="handbook.html">Browse the handbook contents</a>
-        </article>
-        <article class="project-card">
-          <h3>Autonomous Mine Simulator</h3>
-          <p>Follow trucks between loading and dumping locations as they respond to dispatch decisions and traffic permissions.</p>
-          <a href="#demo">See the recorded walkthrough</a>
-        </article>
-      </div>
-    </section>
+  <section class="wrap section" id="project" aria-labelledby="project-heading">
+    <div class="section-intro">
+      <h2 id="project-heading">Explore the handbook</h2>
+      <p>Read the first two chapters of each of the 23 volumes, or use the index to explore the full scope of the handbook.</p>
+    </div>
+    <div class="project-grid">
+      <article class="project-card">
+        <h3>Mine operations</h3>
+        <p>Start with the load–haul cycle, the reference mine, and the production measures used throughout the handbook.</p>
+        <a class="text-link" href="handbook.html#v01">Browse the introductory chapters <span aria-hidden="true">→</span></a>
+      </article>
+      <article class="project-card">
+        <h3>Systems engineering</h3>
+        <p>Trace responsibilities across fleet management, autonomy management, the automated driving system, and vehicle control.</p>
+        <a class="text-link" href="handbook.html#v02">Find the architecture topics <span aria-hidden="true">→</span></a>
+      </article>
+      <article class="project-card">
+        <h3>Dispatch and traffic</h3>
+        <p>See where the handbook covers truck assignments, traffic permissions, and the queues that form on a haul route.</p>
+        <a class="text-link" href="handbook.html#v10">Find fleet coordination topics <span aria-hidden="true">→</span></a>
+      </article>
+    </div>
+  </section>
 
-    <section class="demo section" id="demo" aria-labelledby="demo-heading">
-      <div class="wrap demo-grid">
-        <div>
-          <h2 id="demo-heading">Simulator demo</h2>
-          <p>In Live mode, change fleet size and dispatch policy to compare congestion, wait times, and production.</p>
-          <p>Select a truck to inspect its speed, driving and braking forces, granted path, and reasons for slowing or stopping.</p>
-        </div>
-        <video id="simulator-preview" data-src="assets/videos/simulator-preview.mp4"
-               poster="assets/images/simulator.webp" controls playsinline preload="metadata" hidden
-               aria-label="Simulator recording">
-          Your browser does not support HTML5 video.
+  <section class="demo section" id="demo" aria-labelledby="demo-heading">
+    <div class="wrap demo-grid">
+      <div>
+        <h2 id="demo-heading">Simulator walkthrough</h2>
+        <p>A 33-second walkthrough of a simulated shift at the fictional reference mine, with English on-screen captions.</p>
+        <ol class="demo-notes">
+          <li><strong>0:00</strong> Fleet map and truck states</li>
+          <li><strong>0:08</strong> Live production indicators</li>
+          <li><strong>0:16</strong> Events and queues</li>
+          <li><strong>0:25</strong> Truck speed and driving forces</li>
+        </ol>
+        <p class="scope-note">The full simulator runs locally as an educational model. This site hosts the recording.</p>
+      </div>
+      <figure class="demo-video">
+        <video poster="assets/images/simulator-walkthrough.webp" controls playsinline preload="none" aria-label="Simulator walkthrough">
+          <source src="assets/videos/simulator-preview.mp4" type="video/mp4">
         </video>
+        <figcaption><a href="assets/videos/simulator-preview.mp4">Open the MP4 recording</a></figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section class="wrap section" id="sponsorship" aria-labelledby="sponsor-heading">
+    <div class="sponsor-panel">
+      <div>
+        <h2 id="sponsor-heading">Support the project</h2>
+        <p>Sponsorship supports handbook chapters, practical exercises, and simulator scenarios for studying dispatch and production.</p>
       </div>
-    </section>
-
-    <section class="wrap section" id="sponsorship" aria-labelledby="sponsor-heading">
-      <div class="sponsor-panel">
-        <div class="sponsor-copy">
-          <h2 id="sponsor-heading">Sponsorship</h2>
-          <p>Help develop practical learning materials for autonomous haulage in open-pit mines.</p>
-          <ul class="sponsor-priorities">
-            <li><strong>Handbook development.</strong> Expand the English handbook with chapters and exercises on AHS engineering and operations.</li>
-            <li><strong>Simulator scenarios.</strong> Develop examples for studying fleet size, dispatch policies, congestion, and production.</li>
-          </ul>
-        </div>
-        <div class="sponsor-details">
-          <dl class="sponsor-fee">
-            <dt>Contribute through GitHub Sponsors</dt>
-            <dd><a class="button sponsor-button" href="https://github.com/sponsors/Thomas-21">Sponsor on GitHub</a></dd>
-          </dl>
-          <p><strong>Sponsorship inquiries</strong><br>
-            <a href="mailto:thomas3821mi@gmail.com">thomas3821mi@gmail.com</a>
-          </p>
-        </div>
+      <div class="sponsor-details">
+        <a class="button" href="https://github.com/sponsors/Thomas-21">Sponsor on GitHub</a>
+        <a href="mailto:thomas3821mi@gmail.com">Email about sponsorship</a>
       </div>
-    </section>
-  </main>
+    </div>
+  </section>
+</main>
 
-  <footer class="wrap site-footer">
-    <span>AHS Engineering &amp; Operations Handbook · <a href="CONTENT-LICENSE.md">Licensing</a></span>
-    <a href="#project-title">Back to top</a>
-  </footer>
-
-  <script>
-    const preview = document.getElementById("simulator-preview");
-    const source = preview.dataset.src.trim();
-    if (source) {
-      preview.addEventListener("loadedmetadata", () => { preview.hidden = false; });
-      preview.addEventListener("error", () => { preview.hidden = true; });
-      preview.src = source;
-    }
-  </script>
+<footer class="wrap site-footer">
+  <span>AHS Engineering &amp; Operations Handbook · <a href="CONTENT-LICENSE.md">Licensing</a></span>
+  <a href="#project-title">Back to top</a>
+</footer>
 <!-- Cloudflare Web Analytics -->
 <script type="module" src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token": "0adef0a1f24c460d8c45cd7f7b6184db"}'></script>
 </body>

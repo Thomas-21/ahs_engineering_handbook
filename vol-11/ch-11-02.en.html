@@ -1,0 +1,1577 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="generator" content="ahs-handbook build_articles 2.0.0">
+<meta name="ahs:id" content="ch-11-02">
+<meta name="ahs:version" content="0.1.2">
+<meta name="ahs:status" content="approved">
+<meta name="ahs:source-sha256" content="d302869a821a1d81">
+<title>Wi-Fi / mesh, LTE / 5G, satellite</title>
+<style>
+:root {
+  --bg: #fbfaf7;
+  --fg: #1d1f21;
+  --muted: #5d6166;
+  --accent: #1f6f8b;
+  --accent-soft: #e3f0f4;
+  --border: #d9d6cf;
+  --code-bg: #f1efea;
+  --warn-bg: #fff6e0;
+  --warn-border: #e2b54a;
+  --watermark: rgba(200, 60, 60, 0.07);
+  --font-body: system-ui, -apple-system, "Segoe UI", "Hiragino Sans", "Hiragino Kaku Gothic ProN",
+    "Noto Sans JP", "Yu Gothic", Meiryo, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #15171a;
+    --fg: #e6e4df;
+    --muted: #a3a7ad;
+    --accent: #6cc3de;
+    --accent-soft: #1d3440;
+    --border: #33373d;
+    --code-bg: #1f2226;
+    --warn-bg: #2e2716;
+    --warn-border: #8c7330;
+    --watermark: rgba(255, 120, 120, 0.06);
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #15171a;
+  --fg: #e6e4df;
+  --muted: #a3a7ad;
+  --accent: #6cc3de;
+  --accent-soft: #1d3440;
+  --border: #33373d;
+  --code-bg: #1f2226;
+  --warn-bg: #2e2716;
+  --warn-border: #8c7330;
+  --watermark: rgba(255, 120, 120, 0.06);
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0 auto;
+  max-width: 52rem;
+  padding: 1.25rem 16px 3rem;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-body);
+  font-size: 1.0625rem;
+  line-height: 1.7;
+  overflow-wrap: anywhere;
+}
+h1 { font-size: 1.9rem; line-height: 1.3; margin: 0.6rem 0 1rem; }
+h2 { font-size: 1.4rem; margin-top: 2.4rem; border-bottom: 1px solid var(--border); padding-bottom: 0.2rem; }
+h3 { font-size: 1.15rem; margin-top: 1.8rem; }
+a { color: var(--accent); }
+code { font-family: var(--font-mono); background: var(--code-bg); padding: 0.05rem 0.3rem; border-radius: 3px; font-size: 0.92em; }
+pre { background: var(--code-bg); padding: 0.8rem 1rem; overflow-x: auto; border-radius: 6px; line-height: 1.45; }
+pre code { background: none; padding: 0; }
+table { border-collapse: collapse; width: 100%; display: block; overflow-x: auto; margin: 1rem 0; }
+th, td { border: 1px solid var(--border); padding: 0.35rem 0.6rem; text-align: left; vertical-align: top; }
+/* Never break inside numbers or IDs in table cells; wide tables scroll horizontally instead. */
+th, td { overflow-wrap: normal; word-break: normal; }
+th { background: var(--accent-soft); }
+blockquote { margin: 1rem 0; padding: 0.2rem 1rem; border-left: 4px solid var(--accent); color: var(--muted); }
+.article-header .meta-row { display: flex; flex-wrap: wrap; gap: 0.4rem 0.9rem; align-items: center; font-size: 0.85rem; color: var(--muted); }
+.chapter-id { font-family: var(--font-mono); font-weight: 600; color: var(--fg); }
+.status { padding: 0.05rem 0.5rem; border: 1px solid var(--border); border-radius: 999px; }
+.status-draft, .status-revision, .status-in-review { border-color: var(--warn-border); background: var(--warn-bg); }
+.theme-toggle { font: inherit; font-size: 0.8rem; color: var(--fg); background: transparent; border: 1px solid var(--border); border-radius: 4px; padding: 0.1rem 0.5rem; cursor: pointer; }
+.disclaimer { background: var(--warn-bg); border: 1px solid var(--warn-border); border-radius: 6px; padding: 0.6rem 0.9rem; font-size: 0.9rem; }
+.disclaimer p { margin: 0.25rem 0; }
+.toc { border: 1px solid var(--border); border-radius: 6px; padding: 0.6rem 1rem; margin: 1.2rem 0; font-size: 0.92rem; }
+.toc ol { margin: 0.3rem 0 0; padding-left: 1.2rem; }
+.fig { margin: 1.6rem 0; text-align: center; }
+.fig img, .fig svg { max-width: 100%; height: auto; }
+.fig pre.mermaid { background: transparent; text-align: center; }
+figcaption { font-size: 0.9rem; color: var(--muted); margin-top: 0.5rem; }
+.fig-no { font-weight: 600; color: var(--fg); }
+.fig-id { font-family: var(--font-mono); font-size: 0.75rem; opacity: 0.7; }
+.math-block { overflow-x: auto; margin: 1rem 0; }
+math { font-size: 1.1em; }
+.widget { border: 1px solid var(--border); border-radius: 8px; padding: 1rem; margin: 1.5rem 0; background: var(--accent-soft); }
+.widget label { display: block; margin: 0.4rem 0; font-size: 0.95rem; }
+.widget select, .widget input { font: inherit; color: var(--fg); background: var(--bg); border: 1px solid var(--border); border-radius: 4px; padding: 0.15rem 0.3rem; max-width: 100%; }
+.widget .result { font-size: 1.05rem; margin-top: 0.7rem; }
+.widget table { font-size: 0.88rem; }
+.watermark { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; pointer-events: none; font-size: 22vw; font-weight: 800; color: var(--watermark); transform: rotate(-24deg); z-index: 0; }
+.article-header, .toc, .article-body, .article-footer { position: relative; z-index: 1; }
+.article-footer { margin-top: 3rem; font-size: 0.8rem; color: var(--muted); border-top: 1px solid var(--border); padding-top: 0.6rem; }
+@media (max-width: 600px) {
+  body { font-size: 1rem; }
+  h1 { font-size: 1.55rem; }
+}
+@media print { .watermark { color: rgba(0, 0, 0, 0.06); } .theme-toggle { display: none; } }
+
+</style>
+<script>
+(function () {
+  var root = document.documentElement;
+  try {
+    var saved = localStorage.getItem("ahs-theme");
+    if (saved === "dark" || saved === "light") root.dataset.theme = saved;
+  } catch (e) {}
+  var mq = window.matchMedia ? window.matchMedia("(prefers-color-scheme: dark)") : null;
+  // No explicit choice: follow the system theme (CSS does the same through prefers-color-scheme).
+  function isDark() {
+    return root.dataset.theme ? root.dataset.theme === "dark" : !!(mq && mq.matches);
+  }
+  // Mermaid diagrams keep their original definition in data-source and are re-rendered with the theme that
+  // matches the page whenever the theme changes (review 2026-11-14, R22).
+  window.ahsRenderMermaid = function () {
+    if (!window.mermaid) return;
+    var nodes = Array.prototype.slice.call(document.querySelectorAll("pre.mermaid"));
+    if (!nodes.length) return;
+    nodes.forEach(function (el) {
+      if (el.getAttribute("data-source") === null) {
+        el.setAttribute("data-source", el.textContent);
+      } else {
+        el.removeAttribute("data-processed");
+        el.textContent = el.getAttribute("data-source");
+      }
+    });
+    window.mermaid.initialize({ startOnLoad: false, securityLevel: "strict", theme: isDark() ? "dark" : "default" });
+    var done = window.mermaid.run({ nodes: nodes });
+    if (done && done.catch) done.catch(function (err) { if (window.console) console.error(err); });
+  };
+  function syncButton(btn) {
+    btn.setAttribute("aria-pressed", isDark() ? "true" : "false");
+  }
+  document.addEventListener("DOMContentLoaded", function () {
+    var btn = document.querySelector(".theme-toggle");
+    if (btn) syncButton(btn);
+    if (mq) {
+      var onSystemChange = function () {
+        if (root.dataset.theme) return;
+        if (btn) syncButton(btn);
+        window.ahsRenderMermaid();
+      };
+      if (mq.addEventListener) mq.addEventListener("change", onSystemChange);
+      else if (mq.addListener) mq.addListener(onSystemChange);
+    }
+    if (!btn) return;
+    btn.addEventListener("click", function () {
+      root.dataset.theme = isDark() ? "light" : "dark";
+      try { localStorage.setItem("ahs-theme", root.dataset.theme); } catch (e) {}
+      syncButton(btn);
+      window.ahsRenderMermaid();
+    });
+  });
+})();
+
+</script>
+<link rel="canonical" href="https://thomas-21.github.io/ahs_engineering_handbook/vol-11/ch-11-02.en.html">
+</head>
+<body data-chapter-id="ch-11-02" data-status="approved">
+<header class="article-header">
+  <div class="meta-row">
+    <a class="home-link" href="../handbook.html">All chapters</a>
+    <span class="chapter-id">ch-11-02</span>
+    <button type="button" class="theme-toggle" aria-label="Theme">Theme</button>
+  </div>
+  <h1>Wi-Fi / mesh, LTE / 5G, satellite</h1>
+</header>
+<nav class="toc" aria-label="Contents"><strong>Contents</strong><ol><li><a href="#s-1">1. Overview</a></li><li><a href="#s-2">2. Operational motivation: the problem at the reference mine</a></li><li><a href="#s-3">3. Terminology and foundations</a></li><li><a href="#s-4">4. Technical explanation</a></li><li><a href="#s-5">5. Responsibilities and interface boundaries</a></li><li><a href="#s-6">6. Normal, abnormal and degraded operation</a></li><li><a href="#s-7">7. Engineering view</a></li><li><a href="#s-8">8. Operations view</a></li><li><a href="#s-9">9. Requirements and acceptance criteria</a></li><li><a href="#s-10">10. Verification and validation</a></li><li><a href="#s-11">11. Common mistakes</a></li><li><a href="#s-12">12. Worked examples</a></li><li><a href="#s-13">13. Hands-on labs</a></li><li><a href="#s-14">14. Discussion questions and assignments</a></li><li><a href="#s-15">15. Key takeaways</a></li><li><a href="#s-16">16. Glossary terms introduced</a></li></ol></nav>
+<main class="article-body">
+<h2 id="s-1">1. Overview</h2>
+<h3 id="s-1-1">1.1 Why this chapter matters</h3>
+<p>Late on a DAY shift the AHS Controller notices a pattern on the network-health page. Over the last hour, several empty
+trucks descending R05 have shown a short &quot;link degraded&quot; flag, never long enough to stop them, and always at about the
+same place: some 1000 m below the crest P1. Loaded trucks climbing past the same point show it too, but rarely. Nothing
+has stopped. Then the Pit Supervisor calls with two items for next week: the pit-floor trailer CT3 must move to follow
+the floor, and Survey wants R05 closed for a windrow rework, which will send the whole pit over the west ramp R24.</p>
+<p>The controller's flag and the supervisor's two plans are the same subject seen from three sides: how the radio network
+of an open pit hands trucks from one site to the next, how it is rebuilt as the pit moves, and how much it must carry
+when traffic concentrates on one ramp. The questions are:</p>
+<ul>
+<li>Is the flag at 1000 m a fault, a coverage hole, or the normal signature of a handover?</li>
+<li>Would a different radio technology — Wi-Fi mesh, private LTE or 5G, satellite — remove it, or move it?</li>
+<li>How long may a handover interrupt AMS traffic before trucks slow down or stop?</li>
+<li>What does moving CT3 do to the AHS, and how should the move be planned?</li>
+<li>How much capacity does a cell need for 40 trucks, the ancillary fleet, voice and occasional video, and what changes
+when R24 carries all pit traffic?</li>
+</ul>
+<p>This chapter covers:</p>
+<ul>
+<li>what the AHS asks of any radio technology, and a qualitative comparison of Wi-Fi / mesh, private cellular and
+satellite links for the reference mine, without vendor or performance figures;</li>
+<li>the <strong>handover model</strong> of the reference mine (<code>network.yaml</code>): where hard handovers lie on M-20481 and on the
+west-ramp detour, how long their gaps are, and how the gap relates to the granted-path horizon of ch-10-04;</li>
+<li>how to tell a handover from a coverage hole and from a site failure in the data a control room has;</li>
+<li>options for serving a moving pit face, and the planned relocation of CT3 (SCN-COMMS-CT3-MOVE) as the walkthrough;</li>
+<li>a capacity worked example and the concentration on R24 during an R05 closure (SCN-MAP-R05).</li>
+</ul>
+<p>Coverage estimation, drive tests and coverage attributes are the subject of ch-11-04; latency, loss and QoS of
+ch-11-03. Every rate, size, gap, horizon and threshold in this chapter is an illustrative assumption <code>[A]</code>, not a
+recommended value. Statements about how a radio technology behaves are <code>[TBV]</code>: they must be verified for the system a
+site actually chooses.</p>
+<h3 id="s-1-2">1.2 Learning objectives — Engineering</h3>
+<p>After this chapter an engineering reader will be able to:</p>
+<ol>
+<li>Compare Wi-Fi mesh, private LTE / 5G and satellite links for an open pit on coverage, capacity, latency behaviour,
+mobility handling and deployment effort, without quoting vendor performance figures.</li>
+<li>Explain how handover between cells affects a truck descending R05 from CT2 to CT3 coverage, and model the resulting
+communication gap <code>[A]</code>.</li>
+<li>Assess options for serving a moving pit face (mobile trailers, mesh relays, vehicle-mounted nodes) against the
+reference mine's pit progression.</li>
+<li>Calculate the capacity a cell must provide for the reference fleet (40 trucks, ancillary devices, voice and
+occasional video) as a worked example with stated <code>[A]</code> inputs.</li>
+<li>Explain how cell or mesh design must change when the west ramp R24 becomes the only pit exit during an R05 closure
+and carries the whole pit's traffic.</li>
+</ol>
+<h3 id="s-1-3">1.3 Learning objectives — Operations</h3>
+<p>After this chapter an operations reader will be able to:</p>
+<ol>
+<li>Distinguish the symptoms of handover problems from those of coverage holes in controller and network tools for
+trucks on R05.</li>
+<li>Plan, with the network team, the relocation of a mobile comms trailer as the pit advances, including the AHS impact
+window and the areas affected.</li>
+<li>Request network checks on R24 before a planned R05 closure diverts pit traffic onto the west ramp.</li>
+<li>Record and escalate repeated link drops at the same location so that they are treated as a coverage defect rather
+than as individual truck faults.</li>
+</ol>
+<h2 id="s-2">2. Operational motivation: the problem at the reference mine</h2>
+<p>The reference mine has three comms sites (<code>mine.yaml</code>, <code>network.yaml</code>) <code>[A]</code>:</p>
+<table>
+<thead>
+<tr>
+<th>Site</th>
+<th>Position</th>
+<th>Mast</th>
+<th>Backhaul</th>
+<th>Power</th>
+<th>Serves</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CT1</td>
+<td>MIA tower, RL 435</td>
+<td>30 m</td>
+<td>fibre to the core in CR1</td>
+<td>site supply</td>
+<td>MIA roads R13–R16; R12 together with CT2</td>
+</tr>
+<tr>
+<td>CT2</td>
+<td>Pit crest tower, 54 m from P1, RL 440</td>
+<td>30 m</td>
+<td>fibre to CT1</td>
+<td>own supply at the crest</td>
+<td>every segment not listed otherwise, incl. upper R05 (0–1000 m from P1), R24, R25, the haul roads and both destinations</td>
+</tr>
+<tr>
+<td>CT3</td>
+<td>Mobile trailer on the pit floor, RL 305</td>
+<td>15 m</td>
+<td>radio link to CT2</td>
+<td>trailer generator</td>
+<td>lower R05 (1000 m to P2), R09–R11, R19, R20; the pit floor R06–R08, R17, R18 together with CT2</td>
+</tr>
+</tbody>
+</table>
+<p>Three facts follow from this table and drive the chapter.</p>
+<p><strong>Every haul cycle crosses a hard handover.</strong> Where two sites both serve a road, a truck can change site without a
+break. Where they do not, it cannot. On R05 CT2 serves the upper 1000 m and CT3 the rest; no site serves both sides, so
+every truck on R05 changes site at one point. With R05 open the baseline fleet passes it 155.5 times an hour, the same
+count of ramp passes that ch-01-07 found. <code>network.yaml</code> assumes that the AMS hears nothing from a truck for 1.5 s while
+it changes site <code>[A]</code>.</p>
+<p><strong>The pit floor moves; CT3 must follow.</strong> CT3 is on a trailer because the floor advances. Each move takes it off air.
+While it is off air, the segments only it serves have no AMS authority. Those include lower R05 and R09, the starts of
+both pit exits, so a move done naively stops the whole pit (section 6.2).</p>
+<p><strong>Closing R05 concentrates traffic on one site.</strong> With R05 closed for rework (SCN-MAP-R05) the pit drives over R09, W,
+R24, P3 and R25. R24 is served by CT2 alone (<code>network.yaml</code>) and is classed marginal. It then carries 145.5
+passes an hour, with about 9.6 trucks on it at any moment, and every truck changes site at Intersection W, where it may
+also be waiting for an intersection grant.</p>
+<p>None of this depends on the radio technology. Any technology faces the same walls, the same moving floor and the same
+concentration on R24; it changes <em>how</em> the problems are solved and what that costs.</p>
+<h2 id="s-3">3. Terminology and foundations</h2>
+<p><strong>Access network and backhaul.</strong> The access network is the radio link between a vehicle or field device and a comms
+site. The backhaul carries a site's traffic to the network core in CR1 (ch-11-01). At the reference mine CT3's backhaul
+is a radio link to CT2, so CT3 depends on CT2 (<code>network.yaml</code>; <code>Network.backhaul_chain</code>).</p>
+<p><strong>Comms site and mobile comms trailer.</strong> A comms site is a fixed or mobile radio site (glossary <code>comms-site</code>). A
+<strong>mobile comms trailer</strong> is a comms site built on a trailer so that it can be moved as the pit changes; CT3 is one.</p>
+<p><strong>Serving site.</strong> The site that carries a vehicle's traffic at a given place. <code>network.yaml</code> assigns serving sites per
+segment, either as a list (each site can serve the whole segment) or as spans along the segment <code>[A]</code>.</p>
+<p><strong>Wi-Fi and mesh.</strong> Wireless LAN equipment built to the IEEE 802.11 family of standards; the current revision is
+IEEE 802.11-2024 (SRC-STD-IEEE80211, catalogue level only) <code>[F]</code>. In a <strong>mesh network</strong> nodes relay traffic for each
+other (glossary <code>mesh-network</code>), so a node far from any wired point can still reach the core over several radio hops.</p>
+<p><strong>Private cellular network.</strong> A cellular radio system (LTE or 5G) operated for one site's own use rather than as a
+public service. LTE and 5G are specified by 3GPP in numbered releases (SRC-STD-3GPP, catalogue level only) <code>[F]</code>. No
+feature of any release is relied on in this chapter.</p>
+<p><strong>Satellite link.</strong> A link through a satellite, used at mines mainly where no terrestrial route exists. Its behaviour
+depends on the orbit and the service <code>[TBV]</code>.</p>
+<p><strong>Cell.</strong> The area one site (or one sector of a site) serves, for any technology.</p>
+<p><strong>Handover (radio).</strong> The change of a moving vehicle's serving site. In <code>ahs_sim.network</code> a handover is <strong>hard</strong> where
+the set of serving sites changes so that no site serves both sides: the truck must leave one site before the next one
+carries its traffic. Where coverage overlaps — a site common to both sides — the model counts no handover.</p>
+<p><strong>Handover gap.</strong> The time during which a vehicle has no usable link while it changes site. <code>network.yaml</code> assumes
+1.5 s with no AMS traffic <code>[A]</code>. Real gaps depend on the technology, its configuration and the radio conditions at the
+boundary <code>[TBV]</code>.</p>
+<p><strong>Link drop.</strong> In this chapter, a run of consecutive lost messages long enough to be counted by the network-health tool;
+LAB-11-02-01 counts three or more lost 0.5 s message slots (1.5 s) <code>[A]</code>. A link drop is not the same as the vehicle's
+<strong>link-loss detection</strong>, after which the truck stops within its granted path (3 s in SCN-COMMS-R05, <code>[A]</code>).</p>
+<p><strong>Granted path, horizon, class C stop.</strong> From ch-10-04: the granted path is what a truck may drive; the AMS extends it
+so that it reaches a horizon <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>H</mi></mrow></math> ahead; the truck must always be able to stop within it, here with the class C stopping
+distance of ch-04-05.</p>
+<p><strong>Capacity and demand.</strong> Demand is the traffic a cell must carry (kbit/s); capacity is what a designed system can carry.
+This chapter calculates demand only.</p>
+<h2 id="s-4">4. Technical explanation</h2>
+<h3 id="s-4-1">4.1 What the AHS asks of a radio network</h3>
+<p>Before any technology is compared, the AHS's demands should be written down, because they do not change with the
+technology. The handbook's architecture (ch-02-02, ch-02-07, ch-02-08) gives six of them:</p>
+<ol>
+<li><strong>Authority must be continuous where trucks drive.</strong> Every reservation extension and every digital access
+permission crosses the network. Where the network is lost, the AMS cannot extend authority; the truck stops within its
+granted path, at the latest at its end. That the truck stays within its grant is set by design (ch-10-04), but it
+costs production.</li>
+<li><strong>Vehicle-side safety must not depend on the network.</strong> A truck that loses its link stops within its granted path on
+its own (ch-02-08). The independent remote stop uses its own stop radio RSR, not the AHS data network (ch-04-04,
+<code>equipment.yaml</code>). A radio design may make the network better; it must never become a safety function.</li>
+<li><strong>Permissions fail closed.</strong> A lost, stale or unacknowledged permission is not granted (ch-02-07, ch-10-06). A radio
+network that delays messages turns into stops, never into unsafe grants.</li>
+<li><strong>Coverage must hold where people and trucks wait.</strong> Queue points, intersections, park-up PK1 and the access points
+AP-02 and AP-04 are where trucks and field crews spend time and request permissions (ch-11-04).</li>
+<li><strong>Capacity must hold where traffic concentrates.</strong> The ramps, the pit floor and, during an R05 closure, R24.</li>
+<li><strong>The network must follow the mine plan.</strong> The pit changes shape every week; a design that cannot be moved and
+re-verified cheaply will drift away from the roads it serves.</li>
+</ol>
+<p>GB1's RTK corrections reach the trucks over the same sites (<code>network.yaml</code>), so wherever the AHS link is lost, RTK
+corrections are lost too. A site that fails therefore removes authority and degrades positioning in the same area — a
+common cause the design must expect (ch-05-02 treats GNSS and RTK).</p>
+<h3 id="s-4-2">4.2 Three families of radio technology</h3>
+<p>FIG-11-02-01 compares the three families on the criteria of the learning objectives. It is qualitative on purpose.
+Published figures for real equipment depend on configuration, spectrum and site conditions, and quoting them would turn a
+teaching comparison into an unverified product claim.</p>
+<figure id="FIG-11-02-01" class="fig"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1050 512" role="img" aria-label="Qualitative comparison of Wi-Fi mesh, private LTE or 5G and satellite links for the reference mine">
+<style>
+.t{fill:var(--fg,#1d1f21);font-size:13px}
+.tb{fill:var(--fg,#1d1f21);font-size:13px;font-weight:600}
+.h{fill:var(--fg,#1d1f21);font-size:15px;font-weight:700}
+.m{fill:var(--muted,#5d6166);font-size:11.5px}
+.s{fill:var(--fg,#1d1f21);font-size:12px}
+.grid{stroke:var(--muted,#5d6166);stroke-width:0.6;fill:none}
+.head{fill:var(--accent-soft,#e3f0f4)}
+.road{fill:none;stroke:var(--muted,#5d6166);stroke-width:1.2}
+.ct2{fill:#2a78d6;opacity:0.85}
+.ct3{fill:#eb6834;opacity:0.85}
+.gap{fill:#c43d2b}
+.ho{stroke:#c43d2b;stroke-width:2;stroke-dasharray:5 3}
+.arrow{stroke:var(--fg,#1d1f21);stroke-width:1.4;fill:none}
+.barA{fill:#2a78d6}
+.barB{fill:#86b6ef}
+.barC{fill:#c43d2b}
+.lim{stroke:var(--fg,#1d1f21);stroke-width:1.6}
+.lim2{stroke:var(--muted,#5d6166);stroke-width:1.6;stroke-dasharray:4 3}
+</style>
+<text class="h" x="20" y="30">Radio options for the reference mine: where the design effort goes (qualitative, no performance figures)</text>
+<rect class="head" x="20" y="70" width="1010" height="30"/>
+<text class="tb" x="230" y="90">Wi-Fi / mesh</text>
+<text class="tb" x="500" y="90">Private LTE / 5G</text>
+<text class="tb" x="770" y="90">Satellite</text>
+<line class="grid" x1="20" y1="100" x2="1030" y2="100"/>
+<text class="tb" x="30" y="118">Role at the reference</text>
+<text class="tb" x="30" y="134">mine</text>
+<text class="s" x="230" y="118">Access and relay in the pit</text>
+<text class="s" x="500" y="118">Access over wider cells</text>
+<text class="s" x="770" y="118">Backhaul or remote link; not</text>
+<text class="s" x="770" y="134">per-truck AMS control [R]</text>
+<line class="grid" x1="20" y1="146" x2="1030" y2="146"/>
+<text class="tb" x="30" y="164">Coverage approach</text>
+<text class="s" x="230" y="164">Many nodes; relays can follow the</text>
+<text class="s" x="230" y="180">pit</text>
+<text class="s" x="500" y="164">Fewer sites; trailers still needed</text>
+<text class="s" x="500" y="180">below the walls</text>
+<text class="s" x="770" y="164">Needs a clear view of the sky [A]</text>
+<line class="grid" x1="20" y1="192" x2="1030" y2="192"/>
+<text class="tb" x="30" y="210">Capacity</text>
+<text class="s" x="230" y="210">Shared per node; relaying shares it</text>
+<text class="s" x="230" y="226">again [A]</text>
+<text class="s" x="500" y="210">Shared by all users of a cell [TBV]</text>
+<text class="s" x="770" y="210">Per terminal or per service [TBV]</text>
+<line class="grid" x1="20" y1="238" x2="1030" y2="238"/>
+<text class="tb" x="30" y="256">Latency behaviour</text>
+<text class="s" x="230" y="256">Grows with hops and load [A]</text>
+<text class="s" x="500" y="256">Depends on configuration and core</text>
+<text class="s" x="500" y="272">placement [TBV]</text>
+<text class="s" x="770" y="256">Depends on orbit; long path [TBV]</text>
+<line class="grid" x1="20" y1="284" x2="1030" y2="284"/>
+<text class="tb" x="30" y="302">Mobility (trucks moving)</text>
+<text class="s" x="230" y="302">Client roams between nodes; gaps</text>
+<text class="s" x="230" y="318">possible</text>
+<text class="s" x="500" y="302">Network-controlled handover [TBV]</text>
+<text class="s" x="770" y="302">Not used for moving trucks here</text>
+<line class="grid" x1="20" y1="330" x2="1030" y2="330"/>
+<text class="tb" x="30" y="348">Spectrum</text>
+<text class="s" x="230" y="348">Licence-exempt or licensed [TBV]</text>
+<text class="s" x="500" y="348">Licensed or shared arrangements</text>
+<text class="s" x="500" y="364">[TBV]</text>
+<text class="s" x="770" y="348">Managed by the provider [TBV]</text>
+<line class="grid" x1="20" y1="376" x2="1030" y2="376"/>
+<text class="tb" x="30" y="394">Deployment and operation</text>
+<text class="s" x="230" y="394">Many nodes to power, place and move</text>
+<text class="s" x="500" y="394">Core network and device identities</text>
+<text class="s" x="500" y="410">to run</text>
+<text class="s" x="770" y="394">Terminals and a service contract</text>
+<line class="grid" x1="20" y1="422" x2="1030" y2="422"/>
+<text class="tb" x="30" y="440">Standards topic</text>
+<text class="s" x="230" y="440">IEEE 802.11 [TBV]</text>
+<text class="s" x="500" y="440">3GPP releases [TBV]</text>
+<text class="s" x="770" y="440">—</text>
+<line class="grid" x1="20" y1="452" x2="1030" y2="452"/>
+<text class="m" x="20" y="474">Design considerations [H]; statements about a technology&#x27;s behaviour are [TBV] and must be checked for the chosen system. No vendor product or figure</text>
+<text class="m" x="20" y="489">is implied.</text>
+</svg>
+<figcaption><span class="fig-no">Figure 1</span> Technology comparison matrix: Wi-Fi mesh, private LTE / 5G, satellite <span class="fig-id">FIG-11-02-01</span></figcaption></figure>
+<p><strong>Wi-Fi / mesh.</strong> Many small nodes, each with a short reach, some relaying for others. The attraction for an open pit is
+flexibility: a relay node on a trailer, a light tower or a vehicle can be placed at a new face in hours, and the mesh
+finds a path back to a wired node. The cost is that every relay hop shares airtime with the hops before it, so capacity
+and latency at the end of a long chain depend on everything upstream <code>[A]</code>. Mobility is handled by the client moving
+from node to node; how quickly it does so, and whether a gap occurs, depends on the equipment and its settings <code>[TBV]</code>.
+Whether the bands used are licence-exempt or licensed is a spectrum question for the site (section 4.9) <code>[TBV]</code>.</p>
+<p><strong>Private LTE / 5G.</strong> Fewer, larger cells from high sites, a core network that keeps track of every device, and
+handovers that the network controls <code>[TBV]</code>. The attraction is a planned, managed system with fewer sites to power. The
+cost is a core network to run (identities, subscriptions, software) and the same physics: a crest tower cannot see
+below a pit wall, so trailers or relays are still needed on the floor. Spectrum arrangements — licensed, shared or
+otherwise — are again a site question <code>[TBV]</code>.</p>
+<p><strong>Satellite.</strong> At the reference mine a satellite link is not a candidate for per-truck AMS traffic <code>[R]</code>: a truck below
+a pit wall may not see the sky, and the path is long <code>[TBV]</code>. It is a candidate for backhaul from a remote installation
+or for non-control traffic.</p>
+<p>A site may combine families — for example cellular access from the crest with mesh relays at the face, or a satellite
+backhaul for a remote dump — <code>[A]</code>. The combination does not change the six demands of section 4.1; it changes where
+the handovers lie and who operates which part.</p>
+<h3 id="s-4-3">4.3 The handover model of the reference mine</h3>
+<p><code>network.yaml</code> encodes the serving sites; <code>ahs_sim.network.handovers_along</code> walks a route and reports every point at which
+the set of serving sites changes with no site common to both sides. <code>handover_gaps_s</code> turns each into a time window
+using per-leg speeds. LAB-11-02-01 runs both on M-20481 and on the detour of SCN-MAP-R05, with the steady-state speeds
+of <code>ahs_sim.haul_cycle</code> and the class C stops of ch-10-04:</p>
+<table>
+<thead>
+<tr>
+<th>Route</th>
+<th>Handover</th>
+<th>Distance along route</th>
+<th>Sites</th>
+<th>Speed</th>
+<th>Gap starts</th>
+<th>Driven in 1.5 s gap</th>
+<th>Class C stop</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>M-20481 loaded, EX02-L → C01 (4500.5 m)</td>
+<td>R05, 1000.0 m from P1</td>
+<td>1773.9 m</td>
+<td>CT3 → CT2</td>
+<td>11.4 km/h</td>
+<td>T+280.3 s</td>
+<td>4.8 m</td>
+<td>10.7 m</td>
+</tr>
+<tr>
+<td>M-20481 empty, C01 → EX02-L</td>
+<td>R05, 1000.0 m from P1</td>
+<td>2726.6 m</td>
+<td>CT2 → CT3</td>
+<td>40.0 km/h</td>
+<td>T+299.1 s</td>
+<td>16.7 m</td>
+<td>84.0 m</td>
+</tr>
+<tr>
+<td>Detour loaded, R05 closed (5865.1 m)</td>
+<td>W, start of R24</td>
+<td>1115.3 m</td>
+<td>CT3 → CT2</td>
+<td>14.7 km/h</td>
+<td>T+212.3 s</td>
+<td>6.1 m</td>
+<td>16.5 m</td>
+</tr>
+<tr>
+<td>Detour empty, R05 closed</td>
+<td>W, end of R09</td>
+<td>4749.8 m</td>
+<td>CT2 → CT3</td>
+<td>30.0 km/h</td>
+<td>T+475.9 s</td>
+<td>12.5 m</td>
+<td>51.4 m</td>
+</tr>
+</tbody>
+</table>
+<p>Times are from the start of the loaded or empty trip; the speed is that of the leg on which the handover lies.</p>
+<p>Three points are worth noticing.</p>
+<ul>
+<li><strong>One handover per trip, at a fixed place.</strong> The overlap on the pit floor (R06–R08 are served by CT2 and CT3) means
+trucks pick up CT3 without a break on the floor; the hard boundary is only where the CT3-only part of R05 meets the
+CT2-only part. That is a design choice of the serving map, not a property of the radio.</li>
+<li><strong>The empty descent is the critical case.</strong> At 40 km/h the truck covers 16.7 m in the gap and needs 84.0 m to stop.</li>
+<li><strong>On the detour the handover is at an intersection.</strong> R09 is CT3-only and R24 CT2-only, so the change happens exactly
+at W — where ch-10-04 found the reservation demand of the detour concentrated (W held 78.5 % of the time). A truck
+waiting at the W stop line for a movement grant that is delayed by a handover waits 1.5 s longer; a truck that has
+its grant crosses W without traffic.</li>
+</ul>
+<p>FIG-11-02-02 draws the R05 case to scale along the segment.</p>
+<figure id="FIG-11-02-02" class="fig"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1060 498" role="img" aria-label="Handover along R05 from CT2 to CT3 at the CT2/CT3 boundary, gap distances and the granted path needed through the gap">
+<style>
+.t{fill:var(--fg,#1d1f21);font-size:13px}
+.tb{fill:var(--fg,#1d1f21);font-size:13px;font-weight:600}
+.h{fill:var(--fg,#1d1f21);font-size:15px;font-weight:700}
+.m{fill:var(--muted,#5d6166);font-size:11.5px}
+.s{fill:var(--fg,#1d1f21);font-size:12px}
+.grid{stroke:var(--muted,#5d6166);stroke-width:0.6;fill:none}
+.head{fill:var(--accent-soft,#e3f0f4)}
+.road{fill:none;stroke:var(--muted,#5d6166);stroke-width:1.2}
+.ct2{fill:#2a78d6;opacity:0.85}
+.ct3{fill:#eb6834;opacity:0.85}
+.gap{fill:#c43d2b}
+.ho{stroke:#c43d2b;stroke-width:2;stroke-dasharray:5 3}
+.arrow{stroke:var(--fg,#1d1f21);stroke-width:1.4;fill:none}
+.barA{fill:#2a78d6}
+.barB{fill:#86b6ef}
+.barC{fill:#c43d2b}
+.lim{stroke:var(--fg,#1d1f21);stroke-width:1.6}
+.lim2{stroke:var(--muted,#5d6166);stroke-width:1.6;stroke-dasharray:4 3}
+</style>
+<text class="h" x="20" y="28">R05 (P1 → P2, 1339.6 m): CT2 serves 0–1000 m, CT3 1000 m to P2; one hard handover [A]</text>
+<rect class="ct2" x="60.0" y="70" width="701.7" height="16"/>
+<rect class="ct3" x="761.7" y="70" width="238.3" height="16"/>
+<text class="t" x="410.9" y="62" text-anchor="middle">served by CT2</text>
+<text class="t" x="880.9" y="62" text-anchor="middle">served by CT3</text>
+<text class="tb" x="52" y="83" text-anchor="end">P1</text>
+<text class="tb" x="1008" y="83">P2</text>
+<text class="m" x="60.0" y="102" text-anchor="middle">0 m</text>
+<text class="m" x="200.3" y="102" text-anchor="middle">200 m</text>
+<text class="m" x="340.7" y="102" text-anchor="middle">400 m</text>
+<text class="m" x="481.0" y="102" text-anchor="middle">600 m</text>
+<text class="m" x="621.4" y="102" text-anchor="middle">800 m</text>
+<text class="m" x="902.0" y="102" text-anchor="middle">1200 m</text>
+<line class="ho" x1="761.7" y1="68" x2="761.7" y2="230"/>
+<text class="t" x="753.7" y="228" text-anchor="end">hard handover, 1000 m from P1 (gap 1.5 s, no AMS traffic)</text>
+<line class="road" x1="60" y1="140" x2="1000" y2="140"/>
+<line class="road" x1="60" y1="185" x2="1000" y2="185"/>
+<rect class="gap" x="761.7" y="134" width="11.7" height="12"/>
+<rect class="gap" x="758.4" y="179" width="3.3" height="12"/>
+<path class="arrow" d="M453.0 140 L551.2 140 M544.2 135 L551.2 140 L544.2 145"/>
+<path class="arrow" d="M649.4 185 L551.2 185 M558.2 180 L551.2 185 L558.2 190"/>
+<text class="t" x="60" y="128">Empty, descending at 40.0 km/h: 16.7 m driven in the gap</text>
+<text class="t" x="60" y="173">Loaded, climbing at 11.4 km/h: 4.8 m driven in the gap</text>
+<text class="tb" x="20" y="280">Empty descent at the handover: granted path needed vs horizon</text>
+<rect class="barA" x="60" y="302" width="302.2" height="22"/>
+<rect class="barB" x="364.2" y="302" width="38.0" height="22"/>
+<rect class="barC" x="404.2" y="302" width="58.0" height="22"/>
+<rect class="barA" x="60" y="333" width="10" height="10"/>
+<text class="s" x="76" y="342">class C stop 84.0 m</text>
+<rect class="barB" x="60" y="349" width="10" height="10"/>
+<text class="s" x="76" y="358">one extension period 11.1 m</text>
+<rect class="barC" x="60" y="365" width="10" height="10"/>
+<text class="s" x="76" y="374">gap 16.7 m</text>
+<text class="tb" x="470.2" y="318">needed 111.7 m</text>
+<line class="lim" x1="780.0" y1="292" x2="780.0" y2="382"/>
+<text class="s" x="774.0" y="398" text-anchor="end">200 m horizon: margin 88.3 m</text>
+<line class="lim2" x1="402.2" y1="292" x2="402.2" y2="414"/>
+<text class="s" x="396.2" y="426" text-anchor="start">speed-adaptive horizon 95.1 m (ch-10-04): short by 16.7 m</text>
+<text class="m" x="20" y="458">A gap of 3.0 s or more is detected as link loss and stops the truck (SCN-COMMS-R05, T+3 s); with a 200 m horizon the granted path itself would run</text>
+<text class="m" x="20" y="473">short only after 9.44 s.</text>
+</svg>
+<figcaption><span class="fig-no">Figure 2</span> Handover along R05 from CT2 to CT3 <span class="fig-id">FIG-11-02-02</span></figcaption></figure>
+<h3 id="s-4-4">4.4 The handover gap and the granted path</h3>
+<p>A handover gap is harmless if the truck still has enough granted path when it ends. Let the AMS extend the grant so
+that its end lies <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>H</mi></mrow></math> ahead at every extension, let the worst case be that the last extension arrived one extension
+period <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>t</mi><mrow><mtext>e</mtext></mrow></msub></mrow></math> before the gap began, and let the gap last <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>T</mi><mrow><mtext>g</mtext></mrow></msub></mrow></math>. At the end of the gap the granted path
+ahead is <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>H</mi><mo>&#x02212;</mo><mi>v</mi><mspace width="0.167em" /><mo stretchy="false">&#x00028;</mo><msub><mi>t</mi><mrow><mtext>e</mtext></mrow></msub><mo>&#x0002B;</mo><msub><mi>T</mi><mrow><mtext>g</mtext></mrow></msub><mo stretchy="false">&#x00029;</mo></mrow></math>. The truck needs at least its class C stopping distance <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>s</mi><mrow><mtext>C</mtext></mrow></msub><mo stretchy="false">&#x00028;</mo><mi>v</mi><mo stretchy="false">&#x00029;</mo></mrow></math>
+there, so the margin is</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>m</mi><mo>&#x0003D;</mo><mi>H</mi><mo>&#x02212;</mo><mi>v</mi><mspace width="0.167em" /><mo stretchy="false">&#x00028;</mo><msub><mi>t</mi><mrow><mtext>e</mtext></mrow></msub><mo>&#x0002B;</mo><msub><mi>T</mi><mrow><mtext>g</mtext></mrow></msub><mo stretchy="false">&#x00029;</mo><mo>&#x02212;</mo><msub><mi>s</mi><mrow><mtext>C</mtext></mrow></msub><mo stretchy="false">&#x00028;</mo><mi>v</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0002C;</mo><mspace width="2em" /><msub><mi>T</mi><mrow><mtext>crit</mtext></mrow></msub><mo>&#x0003D;</mo><mfrac><mrow><mi>H</mi><mo>&#x02212;</mo><msub><mi>s</mi><mrow><mtext>C</mtext></mrow></msub><mo stretchy="false">&#x00028;</mo><mi>v</mi><mo stretchy="false">&#x00029;</mo></mrow><mrow><mi>v</mi></mrow></mfrac><mo>&#x02212;</mo><msub><mi>t</mi><mrow><mtext>e</mtext></mrow></msub></mrow></math></div>
+<p>where <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>T</mi><mrow><mtext>crit</mtext></mrow></msub></mrow></math> is the longest gap that needs no slowing. If <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>m</mi><mo>&#x0003C;</mo><mn>0</mn></mrow></math> the ADS must begin to slow before the gap
+ends; it never drives beyond what it can stop within (ch-10-04). LAB-11-02-01 uses <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>t</mi><mrow><mtext>e</mtext></mrow></msub><mo>&#x0003D;</mo><mn>1.0</mn></mrow></math> s and the
+class C stops of ch-04-05 and ch-10-04 <code>[A]</code>, and compares two horizons: the 200 m horizon of the ch-10-04 R05 snapshot,
+and the speed-adaptive horizon <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>H</mi><mrow><mtext>req</mtext></mrow></msub><mo>&#x0003D;</mo><msub><mi>s</mi><mrow><mtext>C</mtext></mrow></msub><mo>&#x0002B;</mo><mi>v</mi><mspace width="0.167em" /><msub><mi>t</mi><mrow><mtext>e</mtext></mrow></msub></mrow></math> that ch-10-04 recommends to avoid
+holding road that is not needed.</p>
+<table>
+<thead>
+<tr>
+<th>Handover</th>
+<th>Margin, 200 m horizon</th>
+<th><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>T</mi><mrow><mtext>crit</mtext></mrow></msub></mrow></math>, 200 m</th>
+<th>Speed-adaptive horizon</th>
+<th>Its margin in a 1.5 s gap</th>
+<th>Horizon with gap allowance</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>R05, empty descent</td>
+<td>88.3 m</td>
+<td>9.44 s</td>
+<td>95.1 m</td>
+<td>−16.7 m</td>
+<td>111.7 m</td>
+</tr>
+<tr>
+<td>R05, loaded climb</td>
+<td>181.4 m</td>
+<td>58.57 s</td>
+<td>13.8 m</td>
+<td>−4.8 m</td>
+<td>18.6 m</td>
+</tr>
+<tr>
+<td>W → R24, loaded</td>
+<td>173.3 m</td>
+<td>43.89 s</td>
+<td>20.6 m</td>
+<td>−6.1 m</td>
+<td>26.7 m</td>
+</tr>
+<tr>
+<td>W → R09, empty</td>
+<td>127.8 m</td>
+<td>16.83 s</td>
+<td>59.7 m</td>
+<td>−12.5 m</td>
+<td>72.2 m</td>
+</tr>
+</tbody>
+</table>
+<p>Two lessons follow.</p>
+<p><strong>The vehicle's link-loss detection binds first.</strong> With a 200 m horizon the granted path would run short only for gaps
+longer than 9.44 s on the empty descent. Long before that, at 3 s, the truck detects link loss and stops within its
+granted path (SCN-COMMS-R05, <code>LinkLossParams.detect_s</code>) <code>[A]</code>. The lab's gap sweep shows it plainly: for gaps of 0.5,
+1.0, 1.5 and 2.0 s no truck is affected; at 3.0 s and above, every truck at every handover makes a link-loss stop. A
+handover gap that grows past the detection time — through a misconfiguration, interference at the boundary or an
+overloaded target site — turns into a DLY-OD-05 stop at the same chainage on every pass.</p>
+<p><strong>A horizon tuned for efficiency must include the handover.</strong> The speed-adaptive horizon of ch-10-04 holds exactly the
+class C stop plus one extension period. Through any handover gap, however short, it runs short by the distance driven
+in the gap: 16.7 m on the empty descent. The truck would slow at every pass. A speed-adaptive horizon must therefore
+add <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>v</mi><mspace width="0.167em" /><msub><mi>T</mi><mrow><mtext>g</mtext></mrow></msub></mrow></math> where a hard handover lies ahead — 111.7 m instead of 95.1 m on the R05 descent — or the AMS must
+know the handover chainages and extend early before them <code>[R]</code>. Either way, the AMS needs the handover locations as data,
+which is one reason the serving map belongs in the AHS's configuration and not only in the network team's tools.</p>
+<h3 id="s-4-5">4.5 Handover, coverage hole or site failure?</h3>
+<p>The control room sees symptoms, not causes. Three network causes produce stops or link flags on R05, and each has a
+different signature in data the control room already has:</p>
+<table>
+<thead>
+<tr>
+<th>Cause</th>
+<th>Where</th>
+<th>When</th>
+<th>Which trucks</th>
+<th>Typical duration</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Handover problem</td>
+<td>At one chainage (a serving-map boundary), both directions</td>
+<td>On every pass, or on passes at a certain speed</td>
+<td>Any truck</td>
+<td>Short and similar each time</td>
+</tr>
+<tr>
+<td>Coverage hole or marginal span</td>
+<td>Over a span of road</td>
+<td>Randomly, more often in bad conditions</td>
+<td>Any truck</td>
+<td>Variable</td>
+</tr>
+<tr>
+<td>Comms-site failure</td>
+<td>Every segment the site alone serves</td>
+<td>All at once</td>
+<td>All trucks in that area</td>
+<td>Until the site is back</td>
+</tr>
+<tr>
+<td>Truck fault</td>
+<td>Wherever that truck is</td>
+<td>Follows the truck</td>
+<td>One truck</td>
+<td>Variable</td>
+</tr>
+</tbody>
+</table>
+<p>LAB-11-02-01 makes the first two concrete. It simulates 50 empty descents of R05 with the marginal-class burst-loss
+model of <code>network.yaml</code> (<code>GilbertElliott.for_class</code>) for every 0.5 s message slot, forces the 1.5 s handover gap at
+1000 m, and counts link drops (three or more consecutive lost slots) per 100 m bin of chainage <code>[A]</code>:</p>
+<table>
+<thead>
+<tr>
+<th>Chainage bin (m from P1)</th>
+<th>0</th>
+<th>100</th>
+<th>200</th>
+<th>300</th>
+<th>400</th>
+<th>500</th>
+<th>600</th>
+<th>700</th>
+<th>800</th>
+<th>900</th>
+<th><strong>1000</strong></th>
+<th>1100</th>
+<th>1200</th>
+<th>1300</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Handover only</td>
+<td>8</td>
+<td>11</td>
+<td>10</td>
+<td>9</td>
+<td>9</td>
+<td>6</td>
+<td>6</td>
+<td>3</td>
+<td>10</td>
+<td>5</td>
+<td><strong>57</strong></td>
+<td>5</td>
+<td>10</td>
+<td>5</td>
+</tr>
+<tr>
+<td>Handover + poor span 500–700 m <code>[A]</code></td>
+<td>10</td>
+<td>8</td>
+<td>14</td>
+<td>5</td>
+<td>7</td>
+<td>40</td>
+<td>29</td>
+<td>7</td>
+<td>11</td>
+<td>13</td>
+<td><strong>43</strong></td>
+<td>8</td>
+<td>15</td>
+<td>2</td>
+</tr>
+<tr>
+<td>Handover only, detector ≥ 4 slots (2 s)</td>
+<td>5</td>
+<td>6</td>
+<td>6</td>
+<td>5</td>
+<td>4</td>
+<td>3</td>
+<td>2</td>
+<td>3</td>
+<td>4</td>
+<td>1</td>
+<td><strong>9</strong></td>
+<td>1</td>
+<td>9</td>
+<td>3</td>
+</tr>
+</tbody>
+</table>
+<p>The handover is a spike in one bin: 57 drops in 50 passes, against 3 to 11 in every other bin, which is the background
+of a marginal link. A coverage hole is a raised plateau over its span (40 and 29). And the detector matters: a tool that
+counts only drops of 2 s or more does not see a 1.5 s handover as a spike (9 drops, no more than the 1200 m bin). A network-health
+tool whose threshold was set to suppress nuisance flags can hide the one problem that is the same on every pass.</p>
+<p>The operations lesson is to look at <strong>where</strong> drops happen, accumulated over many trucks and passes, not at each drop
+on its own. Ten single &quot;link degraded&quot; events on ten different trucks are not ten truck faults when they all lie in the
+same 100 m. ch-16-07 made the same point for comms-loss alarms: grouped by the site that serves the segment, eight trucks
+form one group; grouped by truck, eight unrelated events.</p>
+<h3 id="s-4-6">4.6 Serving a moving pit face</h3>
+<p>The pit floor, the RL 330 bench and the faces of EX01–EX04 move. The options for keeping them covered are:</p>
+<table>
+<thead>
+<tr>
+<th>Option</th>
+<th>How it follows the pit</th>
+<th>What it depends on</th>
+<th>Main cost</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Mobile comms trailer (CT3 today)</td>
+<td>Moved to a new pad, re-aimed, re-verified</td>
+<td>Its backhaul (radio link to CT2) and its generator</td>
+<td>Each move takes it off air; the move is an AHS change</td>
+</tr>
+<tr>
+<td>Mesh relay nodes (on trailers or light towers)</td>
+<td>Added or moved near the face</td>
+<td>The relay chain back to a wired node</td>
+<td>Capacity and latency through the chain; many nodes to maintain</td>
+</tr>
+<tr>
+<td>Vehicle-mounted node <code>[A]</code> (e.g. on a shovel)</td>
+<td>Moves with the machine</td>
+<td>The machine's power and position, and a relay path</td>
+<td>The network moves when the machine does; a parked or tramming shovel changes coverage</td>
+</tr>
+<tr>
+<td>Additional fixed site on a crest</td>
+<td>Not at all; covers by reach</td>
+<td>Line of sight into the pit</td>
+<td>Shadow below the walls remains</td>
+</tr>
+</tbody>
+</table>
+<p>Each option puts part of the AHS's authority on a moving object. The segments only CT3 serves are the AHS's exposure to
+the trailer: when it is off air, they have no authority. Choosing a trailer position is therefore an AHS decision as
+much as a network one; ch-11-04 estimates coverage from candidate positions, this chapter covers what the move does to
+operations.</p>
+<p><strong>What CT3 off air does.</strong> <code>ahs_sim.network.affected_segments(net, [&quot;CT3&quot;])</code> gives R05 (from 1000 m), R09, R10, R11, R19
+and R20. Because lower R05 and R09 are the beginnings of both pit exits, <code>usable_exits</code> finds neither R05-P1 nor R24-P3
+usable from the pit floor. LAB-11-02-01 checks which loading units can still reach their destination:</p>
+<table>
+<thead>
+<tr>
+<th>Case</th>
+<th>Segments without authority</th>
+<th>Pit exits usable</th>
+<th>Loading units cut off</th>
+<th>Free-cycle rate cut off</th>
+<th>Not moved in 3.5 h</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CT3 off air, <code>network.yaml</code> as is</td>
+<td>R05, R09, R10, R11, R19, R20</td>
+<td>none</td>
+<td>EX01, EX02, EX03, EX04</td>
+<td>17 101.5 t/h</td>
+<td>59 855 t</td>
+</tr>
+<tr>
+<td>CT3 off air, lower R05 temporarily covered by CT2 <code>[A]</code></td>
+<td>R09, R10, R11, R19, R20</td>
+<td>R05-P1</td>
+<td>EX03, EX04</td>
+<td>7507.4 t/h</td>
+<td>26 276 t</td>
+</tr>
+</tbody>
+</table>
+<p>The rates are free-cycle upper bounds for the baseline allocation (no queueing, as in ch-01-07); realised rates are
+lower. The window of 3.5 h runs from the restriction at T−3600 s to the start of the staged lift at T+9000 s of
+SCN-COMMS-CT3-MOVE <code>[A]</code>.</p>
+<p>The first line is the trap: taking CT3 off air without preparation stops every loading unit, because no truck can climb
+out of the pit. The registered scenario reassigns the trucks of EX03 and EX04 and keeps the rest of the pit working.
+That is only possible if lower R05 keeps a serving site while CT3 moves — a temporary relay, or a CT2 sector re-aimed
+for the window <code>[A]</code>. In other words, the relocation must be <strong>make-before-break</strong>: whatever will carry lower R05 during
+the move must be on air and verified before CT3 goes off air <code>[R]</code>. Without it, the move is a planned whole-pit outage
+and should be scheduled as one.</p>
+<h3 id="s-4-7">4.7 Capacity: how much must a cell carry?</h3>
+<p>The capacity a cell needs depends on how many devices it serves at once and what each sends. Both are estimated here
+with stated assumptions; the method matters more than the numbers.</p>
+<p><strong>How many trucks a site serves.</strong> By Little's law, the expected number of trucks in an area is the sum over loading
+units of trucks × (time per cycle in the area) / (cycle time). LAB-11-02-01 applies it to the free cycles of the
+baseline allocation (37 producing trucks), with loading and dumping times placed on the loading and dump links, and
+counts for each site the trucks it <em>may</em> have to serve (every segment where it is a serving site) and those <em>only</em> it can
+serve:</p>
+<table>
+<thead>
+<tr>
+<th>Site</th>
+<th>May serve, R05 open</th>
+<th>Only it serves, R05 open</th>
+<th>May serve, R05 closed</th>
+<th>Only it serves, R05 closed</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CT1</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>2.6</td>
+<td>0.0</td>
+</tr>
+<tr>
+<td>CT2</td>
+<td>29.6</td>
+<td>22.0</td>
+<td>31.8</td>
+<td>25.2</td>
+</tr>
+<tr>
+<td>CT3</td>
+<td>15.0</td>
+<td>7.4</td>
+<td>9.2</td>
+<td>5.2</td>
+</tr>
+</tbody>
+</table>
+<p>CT2 is the busy site in both states; the closure moves about two trucks' worth of demand onto it. Design should use
+the bound — all 40 trucks in one cell — where a cell can plausibly hold them, for example at park-up or during a
+site-wide restart, and the expected value for normal operation.</p>
+<p><strong>What each device sends</strong> <code>[A]</code>:</p>
+<table>
+<thead>
+<tr>
+<th>Device</th>
+<th>Uplink</th>
+<th>Downlink</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Autonomous truck</td>
+<td>position and state report 2 × 300 B/s; telemetry 1 × 2000 B/s → 20.8 kbit/s</td>
+<td>AMS grant, extension and acknowledgement 1 × 500 B/s → 4.0 kbit/s</td>
+</tr>
+<tr>
+<td>RTK corrections from GB1</td>
+<td>—</td>
+<td>1 × 1000 B/s per stream → 8.0 kbit/s</td>
+</tr>
+<tr>
+<td>Manned vehicle (12 light vehicles, 4 dozers, 3 water trucks)</td>
+<td>position report 1 × 200 B/s; field-terminal messages 0.1 × 500 B/s</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Shovel (4)</td>
+<td>loading interface 1 × 300 B/s</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Voice, if carried on the AHS network</td>
+<td>4 calls × 32 kbit/s</td>
+<td>4 calls × 32 kbit/s</td>
+</tr>
+<tr>
+<td>Occasional video (one stream)</td>
+<td>4000 kbit/s</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<p>The demand of a cell is then</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>D</mi><mo>&#x0003D;</mo><msub><mo>&#x02211;</mo><mrow><mi>i</mi></mrow></msub><msub><mi>n</mi><mi>i</mi></msub><mspace width="0.167em" /><msub><mi>r</mi><mi>i</mi></msub><mspace width="0.167em" /><msub><mi>b</mi><mi>i</mi></msub><mi>&#x000B7;</mi><mn>8</mn><mi>&#x000B7;</mi><msup><mn>10</mn><mrow><mo>&#x02212;</mo><mn>3</mn></mrow></msup><mtext>&#x000A0;</mtext><mtext>kbit/s</mtext><mo>&#x0002C;</mo><mspace width="2em" /><msub><mi>D</mi><mrow><mtext>design</mtext></mrow></msub><mo>&#x0003D;</mo><mi>D</mi><mi>&#x000B7;</mi><msub><mi>k</mi><mrow><mtext>oh</mtext></mrow></msub><mi>&#x000B7;</mi><msub><mi>k</mi><mrow><mtext>head</mtext></mrow></msub></mrow></math></div>
+<p>with <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>n</mi><mi>i</mi></msub></mrow></math> devices of class <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>i</mi></mrow></math> sending <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>r</mi><mi>i</mi></msub></mrow></math> messages per second of <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>b</mi><mi>i</mi></msub></mrow></math> bytes, a protocol overhead factor
+<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>k</mi><mrow><mtext>oh</mtext></mrow></msub><mo>&#x0003D;</mo><mn>1.3</mn></mrow></math> and a headroom factor <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>k</mi><mrow><mtext>head</mtext></mrow></msub><mo>&#x0003D;</mo><mn>2</mn></mrow></math> <code>[A]</code>. Section 12 works it through for 40 trucks. Its
+result is the main design lesson: one video stream is 79.9 % of the uplink demand, and the AHS control and position
+traffic of the whole fleet is 17.6 %. A cell sized for video has ample room for control traffic by volume. The danger
+for control traffic is not volume but <strong>priority</strong>: a video stream that is allowed to queue ahead of AMS messages adds
+delay to every extension (ch-11-03). Capacity planning and QoS design are two halves of one decision.</p>
+<p>One configuration choice moves the downlink a long way: RTK corrections sent once per cell (broadcast or multicast) cost
+8.0 kbit/s; sent separately to each of 40 trucks and 19 manned vehicles they cost 472.0 kbit/s <code>[A]</code>. Whether a given
+technology and its configuration support a shared stream is <code>[TBV]</code>.</p>
+<h3 id="s-4-8">4.8 When R24 is the only exit</h3>
+<p>During SCN-MAP-R05 the west ramp carries the pit. Four things change for the radio design, and each should be checked
+before the closure, not during it (section 8.3):</p>
+<ol>
+<li><strong>Concentration.</strong> R24 carries 145.5 passes an hour; about 9.6 trucks are on it at any moment, against 11.7 on R05
+when R05 is open. CT2 may have to serve 31.8 trucks instead of 29.6. The capacity of the CT2 cell or sector facing
+R24 must hold that number with headroom, including any video that the closure work itself brings (for example a
+camera at the rework).</li>
+<li><strong>Single server on a marginal ramp.</strong> R24 is served by CT2 alone and is classed marginal. With R05 closed, a
+degradation of CT2's coverage on R24 has no detour left; it stops the pit's only exit. ch-11-04 evaluates a second
+server for R24 (a relay at P3 or at W <code>[A]</code>) and shows that CT3, which also sees R24 in the coverage estimate, is a
+poor choice for that role: CT3 already carries the start of the detour on R09, so adding it to R24 does not remove the
+common cause.</li>
+<li><strong>A handover at an intersection.</strong> Every truck changes site at W. A handover where trucks may be waiting for an
+intersection grant adds its gap to the grant's delivery time. Moving the CT2/CT3 boundary off the intersection —
+for example so that CT2 also serves the upper part of R09, or CT3 the first part of R24 — would put the handover on
+open road, where a 1.5 s gap costs nothing (section 4.4) <code>[A]</code>.</li>
+<li><strong>RTK and permissions.</strong> Field crews who work on the R05 rework enter through AP-02 and request permissions there;
+the light vehicles that support the detour use AP-04 at P3. Both access points must have coverage good enough for
+field-terminal acknowledgements (ch-11-03), or the controller must fall back to voice confirmation as ch-10-06
+describes.</li>
+</ol>
+<h3 id="s-4-9">4.9 Spectrum and regulation</h3>
+<p>Every radio technology uses spectrum, and in Australia the use of radio spectrum is regulated <code>[TBV]</code>. Which
+arrangements apply to a private network at a mine — licensed, shared, licence-exempt with conditions — and what they
+require of the operator are regulatory questions this handbook does not answer (SRC-REG-AU-SPECTRUM-LICENSING, <code>[TBV]</code>).
+The handbook's rule is procedural <code>[H]</code>: the spectrum basis of every radio link that carries AHS traffic must be
+identified and checked during site readiness (ch-19-02), and any change of band, power or site location is a change to
+be assessed against it.</p>
+<h3 id="s-4-10">4.10 Trade-offs and model limits</h3>
+<ul>
+<li><strong>Serving map, not radio.</strong> <code>network.yaml</code> says which site serves which span; it models no signal level, interference
+or load, and its handover point does not move with conditions.</li>
+<li><strong>One gap value</strong> of 1.5 s for every handover <code>[A]</code>; below the detection time the result is insensitive to it, above
+it binary.</li>
+<li><strong>Steady speeds</strong> from <code>ahs_sim.haul_cycle</code>; a truck braking for W is slower than the leg speed in the table.</li>
+<li><strong>Demand only.</strong> The loss model per class and the device rates are <code>[A]</code>; no technology's capacity is modelled, and
+queueing inside the network is ch-11-03's subject.</li>
+</ul>
+<h2 id="s-5">5. Responsibilities and interface boundaries</h2>
+<table>
+<thead>
+<tr>
+<th>Element</th>
+<th>Responsible for</th>
+<th>Not responsible for</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>FMS</td>
+<td>Reassigning trucks and loading units for a planned relocation or closure; recomputing cycle times (ch-10-01)</td>
+<td>Deciding where authority can be granted</td>
+</tr>
+<tr>
+<td>AMS</td>
+<td>Knowing which segments have a serving site (the serving map as configuration); not granting into segments without one; extending grants early before known handovers; freezing reservations of communication-lost trucks; restoring the area in stages after a relocation</td>
+<td>Running the radio network; overriding a vehicle-side stop</td>
+</tr>
+<tr>
+<td>ADS</td>
+<td>Driving within its acknowledged granted path; detecting link loss and stopping within the path; reporting link quality and position</td>
+<td>Choosing a serving site; treating a late extension as valid</td>
+</tr>
+<tr>
+<td>VCS</td>
+<td>Executing speed and braking commands</td>
+<td>Any network function</td>
+</tr>
+<tr>
+<td>Independent safety functions</td>
+<td>Remote stop over the separate stop radio RSR, independent of the AHS data network (ch-04-04)</td>
+<td>Depending on CT1–CT3</td>
+</tr>
+<tr>
+<td>Onboard safety-related systems</td>
+<td>Requesting safe states wherever the truck is</td>
+<td>Waiting for the network</td>
+</tr>
+<tr>
+<td>Site network (network team, a site function <code>[A]</code>)</td>
+<td>Sites, backhaul, power, serving configuration, handover settings, monitoring, relocations</td>
+<td>Deciding production or AHS restrictions</td>
+</tr>
+<tr>
+<td>People</td>
+<td>Pit Supervisor: accountable for relocation windows, closures and their production impact. AHS Controller: applies restrictions, watches link-drop locations, lifts restrictions in stages, records delay codes. Field Technician: moves and restarts CT3 under positive communication. Survey: drive test and coverage attributes (ch-11-04). Maintenance Planner: trailer generator and site maintenance in the plan</td>
+<td>Lifting an AHS restriction on the network team's word alone</td>
+</tr>
+</tbody>
+</table>
+<h2 id="s-6">6. Normal, abnormal and degraded operation</h2>
+<h3 id="s-6-1">6.1 Normal operation — handovers on every pass</h3>
+<p>Every truck on R05 crosses the CT2/CT3 boundary at 1000 m once per direction; with a 200 m horizon none slows (section
+4.4). The network-health tool records a spike of short link drops at that chainage (section 4.5). That spike is normal
+and should be on the controller's reference picture of the shift, so that a change in it — longer gaps, more drops, a
+shift in position — is noticed.</p>
+<h3 id="s-6-2">6.2 Abnormal operation — SCN-COMMS-CT3-MOVE: planned relocation of CT3 (shared timeline for sections 7 and 8)</h3>
+<p>The registry gives five key events. This chapter adds <code>[A]</code> intermediate times where the walkthrough needs them, and
+assumes, as section 4.6 explains, that lower R05 is covered temporarily so that EX01 and EX02 keep working <code>[A]</code>.</p>
+<table>
+<thead>
+<tr>
+<th>Time</th>
+<th>Event</th>
+<th>Element</th>
+<th>People</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>T−7 d <code>[A]</code></td>
+<td>Relocation planned: new position chosen from coverage estimates (ch-11-04); temporary cover of lower R05 designed; window agreed in the weekly plan</td>
+<td>—</td>
+<td>Pit Supervisor, network team, Survey, AHS Controller</td>
+</tr>
+<tr>
+<td>T−1 d <code>[A]</code></td>
+<td>Temporary cover installed and verified on lower R05 by drive test (make-before-break)</td>
+<td>Site network</td>
+<td>Network team, Survey</td>
+</tr>
+<tr>
+<td>T−3600 s</td>
+<td>Relocation window agreed on shift; FMS reassigns the EX03 / EX04 trucks; AMS restricts R09, R10, R11, R19, R20 (no new grants)</td>
+<td>FMS, AMS</td>
+<td>Pit Supervisor (decides), AHS Controller (applies)</td>
+</tr>
+<tr>
+<td>T−600 s <code>[A]</code></td>
+<td>Last truck has left the restricted segments; controller confirms none inside and no active permission there</td>
+<td>AMS</td>
+<td>AHS Controller</td>
+</tr>
+<tr>
+<td>T+0 s</td>
+<td>CT3 taken off air; no truck in the affected segments</td>
+<td>Site network</td>
+<td>Field Technician (under permission in AA-North)</td>
+</tr>
+<tr>
+<td>T+0 to T+5400 s <code>[A]</code></td>
+<td>Trailer moved to its new pad, mast raised, power and backhaul set up</td>
+<td>—</td>
+<td>Field Technician, network team</td>
+</tr>
+<tr>
+<td>T+5400 s</td>
+<td>CT3 on air at the new position; backhaul to CT2 confirmed</td>
+<td>Site network</td>
+<td>Field Technician reports</td>
+</tr>
+<tr>
+<td>T+5400 to T+7200 s <code>[A]</code></td>
+<td>Drive test of the affected segments by a light vehicle under permission</td>
+<td>—</td>
+<td>Survey, AHS Controller</td>
+</tr>
+<tr>
+<td>T+7200 s</td>
+<td>Drive test recorded; coverage attributes updated (ch-11-04)</td>
+<td>—</td>
+<td>Survey</td>
+</tr>
+<tr>
+<td>T+7500 s <code>[A]</code></td>
+<td>Serving map updated in the AHS configuration (CT3's new spans), checked against the drive-test result</td>
+<td>AMS</td>
+<td>Network team proposes, AHS Controller checks, Pit Supervisor approves</td>
+</tr>
+<tr>
+<td>T+9000 s</td>
+<td>Restrictions lifted in stages; first truck reconciled and granted on R09</td>
+<td>AMS</td>
+<td>AHS Controller</td>
+</tr>
+<tr>
+<td>after T+9000 s <code>[A]</code></td>
+<td>Temporary cover of lower R05 removed only after CT3's new coverage of lower R05 is confirmed</td>
+<td>Site network</td>
+<td>Network team, AHS Controller</td>
+</tr>
+</tbody>
+</table>
+<p>The relocation is the opposite of SCN-COMMS-R05 in one respect only: it is planned. The AMS still loses authority over
+the same segments; what planning buys is that no truck is inside them when it happens.</p>
+<h3 id="s-6-3">6.3 Degraded operation — SCN-COMMS-R05: the same segments, unplanned</h3>
+<p>When CT3 loses power (registry: T+0 s CT3 down; T+3 s trucks detect link loss and stop within their granted paths;
+T+10 s marked communication-lost, reservations frozen; T+900 s CT3 restored, reconciliation), eight trucks are inside
+the area (ch-02-08, ch-16-07). Without the temporary cover of section 6.2, lower R05 and R09 are lost together and no
+exit remains (ch-01-03, ch-16-07). The technology does not change this: any single site that alone serves the starts of
+both exits is a common cause. A design that gives lower R05 or R09 a second server that does not depend on CT3 (not
+through CT3's backhaul or power) would keep one exit open in an unplanned CT3 failure as well.</p>
+<h3 id="s-6-4">6.4 Abnormal operation — SCN-MAP-R05: R24 carries the pit</h3>
+<p>From T−3600 s, when R05 is closed and the AMS replans over the west ramp (registry), until T+2700 s, when routes return
+to R05, every truck changes site at W and climbs R24 on CT2 alone. The checks of section 4.8 should have been done
+before T−3600 s. During the closure, link drops on R24 are the signal to watch: a drop pattern that was background on
+R24 when it carried only bench traffic becomes a production risk when it carries the pit.</p>
+<h2 id="s-7">7. Engineering view</h2>
+<h3 id="s-7-1">7.1 Design decisions and trade-offs</h3>
+<table>
+<thead>
+<tr>
+<th>Decision</th>
+<th>Options</th>
+<th>Handbook position</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Radio family for truck access</td>
+<td>Wi-Fi mesh, private cellular, a combination</td>
+<td>Choose against the six demands of section 4.1 and the site's spectrum basis; no family removes the need for pit-floor sites <code>[R]</code></td>
+</tr>
+<tr>
+<td>Where hard handovers lie</td>
+<td>Wherever coverage happens to end; on open road; away from intersections and queue points</td>
+<td>On open road, away from W, X, V, queue points and access points <code>[R]</code>; overlap where trucks wait</td>
+</tr>
+<tr>
+<td>Handover in the horizon</td>
+<td>Fixed long horizon; speed-adaptive plus allowance; AMS extends early before known handovers</td>
+<td>Speed-adaptive horizons must include <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>v</mi><mspace width="0.167em" /><msub><mi>T</mi><mrow><mtext>g</mtext></mrow></msub></mrow></math> at hard handovers <code>[R]</code> (section 4.4)</td>
+</tr>
+<tr>
+<td>Relocating a trailer</td>
+<td>Break-before-make (window is an outage); make-before-break (temporary cover)</td>
+<td>Make-before-break for any site that alone serves a pit exit <code>[R]</code></td>
+</tr>
+<tr>
+<td>RTK distribution</td>
+<td>Per-device streams; one stream per cell</td>
+<td>One stream per cell where the technology allows it <code>[R]</code> <code>[TBV]</code></td>
+</tr>
+<tr>
+<td>Capacity at concentration points</td>
+<td>Size for the expected value; size for the bound</td>
+<td>Bound where all trucks can be in one cell (park-up, restart), expected value plus headroom elsewhere <code>[R]</code></td>
+</tr>
+<tr>
+<td>R24 as the only exit</td>
+<td>Single server; second independent server</td>
+<td>Second server independent of CT3 before R24 is relied on as the only exit (ch-11-04) <code>[R]</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="s-7-2">7.2 Failure modes and mitigations</h3>
+<table>
+<thead>
+<tr>
+<th>Failure mode</th>
+<th>Effect</th>
+<th>Detection</th>
+<th>Mitigation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Handover gap grows above the detection time (3 s <code>[A]</code>)</td>
+<td>Link-loss stop at the same chainage on every pass (DLY-OD-05)</td>
+<td>Drop histogram: spike grows and lengthens; stops cluster at 1000 m</td>
+<td>Handover settings under change control; alarm on spike growth</td>
+</tr>
+<tr>
+<td>Repeated handovers at a boundary where both sites are weak <code>[A]</code></td>
+<td>Several short gaps in quick succession</td>
+<td>Drops spread around the boundary, both directions</td>
+<td>Move the boundary to where one site is clearly stronger (ch-11-04)</td>
+</tr>
+<tr>
+<td>Speed-adaptive horizon without gap allowance</td>
+<td>Slowdown at every handover; cycle time grows</td>
+<td>Speed dips at 1000 m on every descent</td>
+<td>Allowance <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>v</mi><mspace width="0.167em" /><msub><mi>T</mi><mrow><mtext>g</mtext></mrow></msub></mrow></math> or early extension</td>
+</tr>
+<tr>
+<td>CT3 off air during a move without temporary cover</td>
+<td>Whole pit cut off (no exit)</td>
+<td><code>usable_exits</code> before the window</td>
+<td>Make-before-break; or schedule as a planned outage</td>
+</tr>
+<tr>
+<td>CT3 backhaul to CT2 lost at the new position</td>
+<td>CT3 on air but carries no traffic</td>
+<td>Backhaul check at T+5400 s</td>
+<td>Line of sight for the backhaul in the position choice (ch-11-04)</td>
+</tr>
+<tr>
+<td>Serving map not updated after a move</td>
+<td>AMS believes segments are served that are not, or the reverse</td>
+<td>Drive test vs serving map at T+7500 s</td>
+<td>Serving map changed only with the drive-test record</td>
+</tr>
+<tr>
+<td>Video queued ahead of AMS traffic at R24</td>
+<td>Late extensions; stops on R24 during the closure</td>
+<td>Extension latency on R24</td>
+<td>QoS (ch-11-03); capacity with headroom</td>
+</tr>
+<tr>
+<td>RTK sent per device</td>
+<td>Downlink demand ×59</td>
+<td>Downlink load</td>
+<td>Shared stream where supported <code>[TBV]</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="s-7-3">7.3 Interface and timing considerations along SCN-COMMS-CT3-MOVE</h3>
+<ul>
+<li><strong>T−3600 s.</strong> The restriction is an AMS function: no new grants into R09–R11, R19, R20. Trucks already inside finish
+and leave; the AMS must not rely on the network team's schedule to know the area is clear.</li>
+<li><strong>T−600 s.</strong> &quot;Clear&quot; is a positive condition: no truck holds a reservation and no permission is active in the
+restricted segments. It is checked in the AMS, not assumed from the dispatch plan.</li>
+<li><strong>T+0 s.</strong> Taking CT3 off air is the network team's action, under the Field Technician's own digital access
+permission in AA-North (ch-10-06). From this moment the AMS treats the segments as having no serving site.</li>
+<li><strong>T+5400 s.</strong> &quot;On air&quot; is not &quot;in service&quot;. The site must pass its backhaul check (CT3 depends on CT2) before the
+drive test starts.</li>
+<li><strong>T+7200–7500 s.</strong> The serving map in the AHS configuration and the coverage attributes (ch-11-04) change together,
+under one change record, with the drive test as evidence. The AMS loads the new serving map before any grant in the
+area.</li>
+<li><strong>T+9000 s.</strong> The first grant on R09 goes to a truck whose state is reconciled; the area opens in stages, as after
+any restoration (ch-10-08). The handover points have moved with CT3; the controller's reference picture of drop
+locations must be refreshed.</li>
+</ul>
+<h2 id="s-8">8. Operations view</h2>
+<h3 id="s-8-1">8.1 What the control room sees</h3>
+<ul>
+<li><strong>Site status</strong> for CT1, CT2, CT3 (on air, backhaul, power) and the serving map: which segments each site alone serves.</li>
+<li><strong>Link-drop map</strong>: drops per 100 m of chainage per segment over the shift, with the handover points marked. The
+normal R05 spike at 1000 m is shown as expected; a growth of the spike, a new spike or a plateau is flagged.</li>
+<li><strong>Per-truck link flags</strong> (degraded, lost) with the segment and chainage.</li>
+<li><strong>Restrictions</strong> in force (segments with no new grants), with the reason and the responsible role.</li>
+<li><strong>Pit exits under valid authority</strong> — R05-P1 and R24-P3 — recalculated whenever a site's state or a restriction
+changes.</li>
+</ul>
+<h3 id="s-8-2">8.2 Who decides what — CT3 relocation</h3>
+<table>
+<thead>
+<tr>
+<th>Decision</th>
+<th>Responsible</th>
+<th>Accountable</th>
+<th>Consulted</th>
+<th>Informed</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Relocation window and its production impact</td>
+<td>Network team</td>
+<td>Pit Supervisor</td>
+<td>AHS Controller, Maintenance Planner, Shovel Operators of EX03/EX04</td>
+<td>Plant, CR1 shift</td>
+</tr>
+<tr>
+<td>New CT3 position</td>
+<td>Network team</td>
+<td>Pit Supervisor</td>
+<td>Survey (coverage estimate, ch-11-04), AHS Controller</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Temporary cover of lower R05 (make-before-break)</td>
+<td>Network team</td>
+<td>Pit Supervisor</td>
+<td>AHS Controller</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Restricting the affected segments</td>
+<td>AHS Controller</td>
+<td>Pit Supervisor</td>
+<td>Network team</td>
+<td>Shovel Operators</td>
+</tr>
+<tr>
+<td>Taking CT3 off air</td>
+<td>Field Technician</td>
+<td>Pit Supervisor</td>
+<td>AHS Controller (area clear)</td>
+<td>Network team</td>
+</tr>
+<tr>
+<td>Accepting drive-test results and updating attributes</td>
+<td>Survey</td>
+<td>Pit Supervisor</td>
+<td>Network team, AHS Controller</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Lifting restrictions in stages</td>
+<td>AHS Controller</td>
+<td>Pit Supervisor</td>
+<td>Survey, network team</td>
+<td>Shovel Operators</td>
+</tr>
+</tbody>
+</table>
+<h3 id="s-8-3">8.3 Procedure excerpts</h3>
+<p><strong>A. Planned relocation of CT3 (SCN-COMMS-CT3-MOVE).</strong></p>
+<ol>
+<li><strong>Pit Supervisor, network team (T−7 d <code>[A]</code>):</strong> agree the new position and the window. Ask the AHS Controller to run
+the exits check: with CT3 off air, which pit exits remain under valid authority? If none, either plan temporary cover
+of lower R05 or treat the window as a planned outage of AA-North.</li>
+<li><strong>Network team, Survey (T−1 d <code>[A]</code>):</strong> install and drive-test the temporary cover. Record the result.</li>
+<li><strong>Pit Supervisor (T−3600 s):</strong> confirm the window on shift. <strong>FMS / AHS Controller:</strong> reassign the EX03 and EX04
+trucks; restrict R09, R10, R11, R19, R20. Inform the Shovel Operators of EX03 and EX04 and the plant.</li>
+<li><strong>AHS Controller (T−600 s <code>[A]</code>):</strong> confirm no truck reservation and no active permission in the restricted
+segments. Tell the Field Technician &quot;area clear&quot; by radio and record the time.</li>
+<li><strong>Field Technician (T+0 s):</strong> take CT3 off air. Report by radio.</li>
+<li><strong>Field Technician (T+5400 s):</strong> report CT3 on air and the backhaul to CT2 confirmed.</li>
+<li><strong>Survey (T+5400–7200 s):</strong> drive the affected segments under permission; submit the drive-test record (ch-11-04).</li>
+<li><strong>Network team, AHS Controller (T+7500 s <code>[A]</code>):</strong> update the serving map from the record; the AHS Controller checks
+that every segment to be reopened has a serving site in the new map.</li>
+<li><strong>AHS Controller (T+9000 s):</strong> lift restrictions one segment group at a time, starting with R09; release the first
+truck only after its state is reconciled; inform the Shovel Operators.</li>
+<li><strong>AHS Controller (end of shift):</strong> refresh the reference drop map: the handover points have moved.</li>
+</ol>
+<p><strong>B. Before a planned R05 closure (SCN-MAP-R05).</strong> At least one shift before T−3600 s <code>[A]</code> the AHS Controller asks the
+network team for: CT2 status and recent drop map on R24 and at W; capacity headroom of the CT2 cell or sector facing
+R24 with 31.8 trucks expected; coverage at AP-04 and AP-02 for field terminals. A plateau of drops on R24, or no
+headroom, is reported to the Pit Supervisor as a reason to delay the closure or to add a second server first (ch-11-04).</p>
+<p><strong>C. Repeated link drops at one place.</strong> When the drop map shows three or more trucks <code>[A]</code> dropping in the same 100 m
+bin in one shift, or a known spike growing, the AHS Controller records a coverage defect (location, segment, chainage,
+directions, times, trucks) in the network team's queue instead of a truck fault for each truck, and tells the
+Maintenance Planner so that the trucks are not taken out of service for radio checks they do not need.</p>
+<h3 id="s-8-4">8.4 KPIs and delay codes affected</h3>
+<ul>
+<li><strong>CT3 relocation.</strong> EX03 and EX04 left without trucks while their circuit is restricted: coded DLY-OD-04 (held for a
+work zone, extended to a loading unit left without trucks by a held circuit, <code>coding_rules</code>) <code>[H]</code>. Reassigned trucks
+waiting at EX01 or EX02: DLY-NP-01. A truck that stops in the area because it was not clear in time: DLY-OD-05.
+Physical Availability does not change — no truck is down — but Operating Delay rises and production falls for the
+window. Planned network work that holds trucks or starves loading units is coded DLY-OD-04 (<code>coding_rules</code>).</li>
+<li><strong>Handover problems.</strong> Stops at a handover are DLY-OD-05 (stopped on communication loss); they are coded as the
+same cause on every truck and linked to one coverage-defect record.</li>
+<li><strong>Unplanned CT3 loss.</strong> DLY-OD-05 inside the dead zone; DLY-OD-04 for trucks held short of its frozen reservations
+(<code>coding_rules</code>, ch-10-04).</li>
+<li><strong>Site-wide loss.</strong> DLY-SE-02 (site-wide loss of wireless network) only if the whole site is affected, not for one
+comms site.</li>
+</ul>
+<h3 id="s-8-5">8.5 Training and competency implications</h3>
+<p>Controllers learn to read the link-drop map and tell the four signatures of section 4.5 apart, to run the exits check
+before planned site work, and to treat &quot;on air&quot; and &quot;in service&quot; as different states. Pit Supervisors learn that a
+trailer move is an AHS change with a production window and that make-before-break is their planning choice. Network-team
+members learn the AHS consequences of a serving-map change and the entry rules for the pit (ch-10-06).</p>
+<h2 id="s-9">9. Requirements and acceptance criteria</h2>
+<p>REQ-11-02-001 [H]
+The AMS shall hold the serving map (which comms site serves which segment span) as controlled configuration, and shall
+not grant a reservation or permission in a segment span that has no serving site in service.
+Rationale: authority cannot be maintained where no site serves; the AMS must know this before granting, not learn it
+from a stop.
+Verification: test (LAB-11-02-01, <code>affected_segments</code> and <code>usable_exits</code> for CT3 off air), inspection of configuration
+control</p>
+<p>REQ-11-02-002 [H]
+Where a reservation horizon is adapted to speed, the AMS shall add the distance driven during the assumed handover gap
+at every hard handover ahead within the horizon, or shall extend the granted path before the handover so that the same
+margin is obtained.
+Rationale: without it, every truck slows at every handover (section 4.4: −16.7 m on the R05 descent).
+Verification: test (LAB-11-02-01 margin table), analysis</p>
+<p>REQ-11-02-003 [H]
+The site network design shall keep the handover gap at every hard handover on a haul route below the vehicles'
+link-loss detection time with a margin defined by the site <code>[A]</code>, and the handover settings shall be under change control.
+Rationale: a gap above the detection time stops every truck at the same place on every pass.
+Verification: test (drive test with gap measurement at each handover), inspection</p>
+<p>REQ-11-02-004 [H]
+Hard handovers shall not be placed at intersections, queue points, access points or park-up areas unless no
+alternative exists and the reason is recorded.
+Rationale: at these places trucks wait for grants and people request permissions; a gap there adds delay to the
+messages that matter most (section 4.8, W on the detour).
+Verification: inspection of the serving map against the AHS map</p>
+<p>REQ-11-02-005 [H]
+A planned outage of a comms site shall be preceded by an exits check (which pit exits remain under valid authority) and,
+for a site that alone serves a pit exit, either by verified temporary cover of that exit (make-before-break) or by
+scheduling the window as a planned outage of the area.
+Rationale: CT3 off air without preparation leaves no pit exit and stops every loading unit (section 4.6).
+Verification: inspection of the relocation plan; test (LAB-11-02-01 <code>relocation_case</code>)</p>
+<p>REQ-11-02-006 [H]
+After a comms site is moved or reconfigured, the AMS shall reopen affected segments only after the serving map has been
+updated from a drive-test record of those segments and the first truck to enter has been reconciled.
+Rationale: &quot;on air&quot; is not &quot;in service&quot;; a serving map that does not match the radio would grant authority where none
+can be maintained.
+Verification: inspection (change record with drive-test evidence), test (SCN-COMMS-CT3-MOVE walkthrough)</p>
+<p>REQ-11-02-007 [H]
+The network-health tools available to the control room shall accumulate link drops by segment and chainage across
+trucks and passes, with a detection threshold no longer than the shortest handover gap expected.
+Rationale: a handover is visible only as a location spike; a 2 s detector misses a 1.5 s gap (section 4.5).
+Verification: test (LAB-11-02-01 drop histograms), inspection</p>
+<p>REQ-11-02-008 [H]
+Capacity planning for each cell shall state the device counts (expected and bound), per-device demand, overhead and
+headroom assumptions, and shall include the concentration on R24 during an R05 closure.
+Rationale: capacity is a design decision; undeclared assumptions cannot be checked when the fleet or the routes change.
+Verification: inspection; analysis (section 12, Example 2)</p>
+<p>REQ-11-02-009 [H]
+The spectrum basis of every radio link that carries AHS traffic shall be identified and checked during site readiness,
+and a change of band, transmit power or site location shall be assessed against it.
+Rationale: regulatory requirements for spectrum use are not stated in this handbook <code>[TBV]</code>; the check must happen.
+Verification: inspection (site-readiness record, ch-19-02)</p>
+<h2 id="s-10">10. Verification and validation</h2>
+<ul>
+<li><strong>Model checks.</strong> LAB-11-02-01's tests reproduce shared numbers from other chapters: 155.5 passes per hour on R05 and
+145.5 on R24 (ch-01-07), the 84.0 m and 10.7 m class C stops and the 95.1 m and 13.8 m horizons (ch-10-04), the
+5865.1 m detour (SCN-MAP-R05: about 5.87 km). Agreement shows the lab uses the same mine and models; it does not
+validate the radio assumptions.</li>
+<li><strong>What must be measured on site.</strong> Handover gap at each hard handover in both directions and at operating speed;
+drop locations over a representative period; demand at concentration points with the actual message rates; backhaul
+behaviour from each candidate trailer position. These replace the <code>[A]</code> values.</li>
+<li><strong>Operational claims.</strong> That controllers tell handover spikes from coverage plateaus is validated in training with
+recorded or synthetic drop maps.</li>
+<li><strong>Technology claims.</strong> Every <code>[TBV]</code> statement of FIG-11-02-01 is to be verified for the system a site selects
+(SRC-PUB-RADIO-TECH-BEHAVIOUR); the handbook does not verify vendor claims.</li>
+</ul>
+<h2 id="s-11">11. Common mistakes</h2>
+<h3 id="s-11-1">11.1 Design mistakes</h3>
+<ul>
+<li>Choosing a radio technology before writing down the AHS's demands (section 4.1), and then discovering that the pit
+floor still needs a trailer.</li>
+<li>Treating a handover as a network-internal detail: placing the boundary at an intersection, or tuning horizons without
+a gap allowance.</li>
+<li>Planning a trailer move as a network task and finding at T+0 s that neither pit exit has a serving site.</li>
+<li>Sizing capacity from the average truck count and ignoring that one video stream dominates the uplink.</li>
+<li>Giving a marginal ramp a second server that shares the first server's common cause (CT3 on R24, section 4.8).</li>
+</ul>
+<h3 id="s-11-2">11.2 Operational mistakes</h3>
+<ul>
+<li>Logging each short link flag as a truck fault and sending trucks to the workshop for radio checks.</li>
+<li>Reading &quot;CT3 on air&quot; as &quot;area open&quot; and lifting restrictions before the drive test and serving-map update.</li>
+<li>Raising the drop-detector threshold to silence nuisance flags, and with it hiding the handover spike.</li>
+<li>Closing R05 without asking for the R24 checks; finding the marginal span when 9.6 trucks are on it.</li>
+</ul>
+<h2 id="s-12">12. Worked examples</h2>
+<p><strong>Example 1 — Handover margin on the R05 descent.</strong> DT16, empty, at 40 km/h = 11.11 m/s. Class C stop 84.0 m (ch-04-05).
+Horizon 200 m, extension period 1.0 s, gap 1.5 s <code>[A]</code>. Granted path at the end of the gap:
+200 − 11.11 × 2.5 = 172.2 m; margin 172.2 − 83.95 = 88.3 m (lab: 88.3 m). Longest gap without slowing:
+(200 − 84.0) / 11.11 − 1.0 = 9.44 s. With the speed-adaptive horizon 84.0 + 11.1 = 95.1 m, the margin is
+95.1 − 11.11 × 2.5 − 84.0 = −16.7 m: DT16 would have to slow. Adding the allowance 11.11 × 1.5 = 16.7 m gives
+111.7 m. The detection time of 3 s is below 9.44 s, so with a 200 m horizon it is the link-loss detection, not the
+granted path, that limits the tolerable gap.</p>
+<p><strong>Example 2 — Cell demand for 40 trucks</strong> <code>[A]</code>. Uplink per truck: 2 × 300 × 8 = 4800 bit/s plus 1 × 2000 × 8 =
+16 000 bit/s = 20.8 kbit/s; 40 trucks 832.0 kbit/s. Manned vehicles: 19 × (1 × 200 + 0.1 × 500) × 8 = 38.0 kbit/s.
+Shovels: 4 × 300 × 8 = 9.6 kbit/s. Voice 4 × 32 = 128.0 kbit/s. Video 4000 kbit/s. Uplink total 5007.6 kbit/s; with
+overhead 1.3 and headroom 2: 13 019.8 kbit/s. Downlink: trucks 40 × 500 × 8 = 160.0 kbit/s, RTK 8.0 kbit/s (one stream),
+voice 128.0 kbit/s; total 296.0 kbit/s, design 769.6 kbit/s. Video is 79.9 % of the uplink, control and position traffic
+17.6 %. Without voice and video the uplink is 879.6 kbit/s. With RTK sent per device (59 streams) the RTK downlink alone
+is 472.0 kbit/s.</p>
+<p><strong>Example 3 — Production at stake in a CT3 move.</strong> Free-cycle rates of the baseline allocation (ch-01-07 method): EX01
+5036.8 t/h, EX02 4557.4 t/h, EX03 3722.8 t/h, EX04 3784.6 t/h; total 17 101.5 t/h <code>[A]</code>. With CT3 off air and no
+temporary cover, all four are cut off: over the 3.5 h window, 59 855 t not moved (upper bound). With lower R05 covered,
+only EX03 and EX04 are cut off: 7507.4 t/h, 26 276 t. The difference, 33 579 t, is what make-before-break is worth in
+this window — before counting the risk of a CT3 failure while the trailer is being reinstalled.</p>
+<p><strong>Example 4 — Handover rate.</strong> With R05 open the R05 boundary sees 155.5 passes an hour, so 155.5 handovers an hour at
+one place, one every 23 s; in a 12 h shift 1866. A 1 % chance per handover of a gap long enough to stop the truck <code>[A]</code>
+would mean about 19 link-loss stops a shift at the same chainage — a pattern the drop map shows long before the stops
+do.</p>
+<h2 id="s-13">13. Hands-on labs</h2>
+<p><strong>LAB-11-02-01 — Handover gap along R05 and along the west-ramp detour</strong> (labs/README.md). Using
+<code>ahs_sim.network</code>, <code>ahs_sim.mine</code>, <code>ahs_sim.haul_cycle</code> and the class C stops of LAB-10-04-01, the lab finds the hard
+handovers on M-20481 and on the detour, computes gap windows and margins against a fixed and a speed-adaptive horizon,
+sweeps the gap length, builds drop-location histograms for a handover and a coverage hole, estimates trucks per site
+and cell demand, and evaluates CT3 off air with and without temporary cover. Nine automated tests check every value
+quoted in this chapter.</p>
+<h2 id="s-14">14. Discussion questions and assignments</h2>
+<h3 id="s-14-1">14.1 Engineering assignments</h3>
+<ol>
+<li>Move the CT2/CT3 boundary on R05 from 1000 m to 800 m and to 1200 m in a copy of the serving map. How do the gap
+windows and margins change? Which position keeps the handover furthest from a place where trucks wait?</li>
+<li>Propose a serving map for the detour that moves the handover off Intersection W. Which sites must then serve which
+spans, and what does that require of coverage (ch-11-04)?</li>
+<li>Re-run the drop histogram with a 1.0 s and a 3.0 s handover gap. At what gap does the spike also become visible to a
+2 s detector, and what happens to the trucks at that gap?</li>
+<li>Repeat the capacity calculation for the CT2 cell during the R05 closure (31.8 trucks expected) with two video
+streams. Which assumption would you most want measured on site, and why?</li>
+</ol>
+<h3 id="s-14-2">14.2 Operations assignments</h3>
+<ol>
+<li>Draft the shift plan for SCN-COMMS-CT3-MOVE: who is told what at T−7 d, T−3600 s, T+0 s, T+5400 s, T+9000 s.</li>
+<li>A controller logs four &quot;link degraded&quot; flags on four trucks within 50 m on R24 in one hour. Write the coverage-defect
+record and the message to the Maintenance Planner.</li>
+<li>Write the request to the network team before an R05 closure (procedure B). What answer would make you advise the
+Pit Supervisor to delay the closure?</li>
+</ol>
+<h2 id="s-15">15. Key takeaways</h2>
+<ul>
+<li>No radio technology removes the pit's geometry: crest sites cannot see below the walls, so the floor needs moving
+sites, whichever family is used.</li>
+<li>At the reference mine every haul cycle crosses one hard handover: at 1000 m on R05, or at Intersection W on the detour.</li>
+<li>With a 200 m horizon, a 1.5 s gap costs nothing; at 3 s the truck's link-loss detection stops it — the detection time,
+not the horizon, is the binding limit. Speed-adaptive horizons need a gap allowance.</li>
+<li>A handover shows as a spike of drops at one chainage, a coverage hole as a plateau, a site failure as all trucks at
+once. Look at where drops happen, across trucks.</li>
+<li>Taking CT3 off air without temporary cover leaves no pit exit. Relocations of sites that alone serve an exit must be
+make-before-break.</li>
+<li>Video dominates capacity; control traffic needs priority more than bandwidth. R24 during an R05 closure is the
+concentration point to check in advance.</li>
+<li>Spectrum use is regulated; the basis is checked during site readiness, not assumed <code>[TBV]</code>.</li>
+</ul>
+<h2 id="s-16">16. Glossary terms introduced</h2>
+<ul>
+<li><code>radio-handover</code> — Handover (radio)</li>
+<li><code>handover-gap</code> — Handover gap</li>
+<li><code>private-cellular-network</code> — Private cellular network</li>
+<li><code>mobile-comms-trailer</code> — Mobile comms trailer</li>
+<li><code>serving-site</code> — Serving site</li>
+<li><code>link-drop</code> — Link drop</li>
+<li><code>make-before-break</code> — Make-before-break</li>
+</ul>
+<p>Existing terms used: <code>comms-site</code>, <code>mesh-network</code>, <code>coverage-class</code>, <code>granted-path</code>, <code>reservation-horizon</code>,
+<code>communication-lost-truck</code>, <code>latency</code>, <code>packet-loss</code>, <code>telemetry</code>, <code>site-readiness</code>, <code>staged-restart</code>.</p>
+<nav aria-label="Introductory chapters"><p><a href="ch-11-01.en.html">Previous chapter</a> · <a href="../handbook.html">Handbook contents</a></p></nav>
+</main>
+</body>
+</html>

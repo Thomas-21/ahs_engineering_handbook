@@ -1,32 +1,29 @@
 # AHS Engineering & Operations Handbook
 
-The project overview, simulator demo, and English handbook index are prepared for a static GitHub Pages project site. The handbook index is at `handbook.html`.
+This repository hosts the public site for the Autonomous Haulage Systems Handbook. The first release includes the first two chapters of each of the 23 volumes. Readers can browse 46 chapters, search the full chapter index, try the haul-cycle calculator, and watch the simulator walkthrough.
 
-## GitHub Pages setup
+## Site files
 
-1. Push this site to the `main` branch of a public GitHub repository.
-2. In the repository, open **Settings → Pages**. Under **Build and deployment**, set **Source** to **Deploy from a branch**.
-3. Select **main** and **/(root)**, then click **Save**. The root `.nojekyll` file tells GitHub Pages to serve the static files directly.
-4. Once the Pages deployment succeeds, open the project URL shown in **Settings → Pages**. The default project URL format is `https://<owner>.github.io/<repository-name>/`.
+- `index.html` is the landing page and simulator walkthrough.
+- `handbook.html` is the chapter index. The suggested routes open volumes within the index.
+- `vol-01/` through `vol-23/` contain the published chapters.
+- `appendix/` contains the glossary and reference mine.
+- `assets/` contains the shared stylesheet, handbook search, simulator image, and MP4 recording.
 
-Keep local assets and page links relative to the HTML file so they resolve under `/<repository-name>/`. The supplied index includes chapter, appendix, and lab entries whose destination files were unavailable. The handbook page lists the chapter titles.
+## Preview locally
+
+Run `python3 -m http.server 8000 --bind 127.0.0.1` from the repository root and open `http://127.0.0.1:8000/`. Check that a route opens its volume, that search works by chapter ID and topic, and that the video plays.
+
+## GitHub Pages
+
+The site is prepared for branch deployment from `main` and `/(root)`. In the repository, open **Settings → Pages** to verify the publishing source and find the site URL. Keep internal links relative so they work under the repository path. The root `.nojekyll` file lets GitHub Pages serve the static files directly.
 
 [GitHub Pages publishing source documentation](https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site)
 
 ## Simulator recording
 
-Replace `assets/videos/simulator-preview.mp4` to update the recording. If the filename changes, update the video element's `data-src` in `index.html` with the new relative path. Clear `data-src` to omit the player. The player appears when the browser can read the recording's metadata.
-
-The supplied recording was encoded as 30 fps H.264 with browser-compatible pixel format and fast-start metadata. The optimized MP4 is approximately 13 MiB. If a future replacement is too large, re-encode at a lower bitrate or resolution, or publish a shorter excerpt on the same Pages site.
-
-```sh
-ffmpeg -i input.mov -vf fps=30 -c:v libx264 -preset fast -crf 21 \
-  -pix_fmt yuv420p -c:a aac -b:a 128k -movflags +faststart \
-  assets/videos/simulator-preview.mp4
-```
+Replace `assets/videos/simulator-preview.mp4` to update the video. If the filename changes, update both the video source and the MP4 link on the landing page. Encode the recording as an H.264 MP4 with fast-start metadata for browser playback.
 
 ## Sponsorship
 
-Use **Sponsor on GitHub** in the site's Sponsorship section to open the project's
-GitHub Sponsors profile. The repository's Sponsor button is configured in
-`.github/FUNDING.yml`.
+The landing page links to GitHub Sponsors. The repository's Sponsor button is configured in `.github/FUNDING.yml`.

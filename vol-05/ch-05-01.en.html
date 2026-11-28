@@ -1,0 +1,1502 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="generator" content="ahs-handbook build_articles 2.0.0">
+<meta name="ahs:id" content="ch-05-01">
+<meta name="ahs:version" content="0.1.2">
+<meta name="ahs:status" content="approved">
+<meta name="ahs:source-sha256" content="5ca3cb139d6cbf44">
+<title>Coordinate systems and datums</title>
+<style>
+:root {
+  --bg: #fbfaf7;
+  --fg: #1d1f21;
+  --muted: #5d6166;
+  --accent: #1f6f8b;
+  --accent-soft: #e3f0f4;
+  --border: #d9d6cf;
+  --code-bg: #f1efea;
+  --warn-bg: #fff6e0;
+  --warn-border: #e2b54a;
+  --watermark: rgba(200, 60, 60, 0.07);
+  --font-body: system-ui, -apple-system, "Segoe UI", "Hiragino Sans", "Hiragino Kaku Gothic ProN",
+    "Noto Sans JP", "Yu Gothic", Meiryo, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #15171a;
+    --fg: #e6e4df;
+    --muted: #a3a7ad;
+    --accent: #6cc3de;
+    --accent-soft: #1d3440;
+    --border: #33373d;
+    --code-bg: #1f2226;
+    --warn-bg: #2e2716;
+    --warn-border: #8c7330;
+    --watermark: rgba(255, 120, 120, 0.06);
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #15171a;
+  --fg: #e6e4df;
+  --muted: #a3a7ad;
+  --accent: #6cc3de;
+  --accent-soft: #1d3440;
+  --border: #33373d;
+  --code-bg: #1f2226;
+  --warn-bg: #2e2716;
+  --warn-border: #8c7330;
+  --watermark: rgba(255, 120, 120, 0.06);
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0 auto;
+  max-width: 52rem;
+  padding: 1.25rem 16px 3rem;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-body);
+  font-size: 1.0625rem;
+  line-height: 1.7;
+  overflow-wrap: anywhere;
+}
+h1 { font-size: 1.9rem; line-height: 1.3; margin: 0.6rem 0 1rem; }
+h2 { font-size: 1.4rem; margin-top: 2.4rem; border-bottom: 1px solid var(--border); padding-bottom: 0.2rem; }
+h3 { font-size: 1.15rem; margin-top: 1.8rem; }
+a { color: var(--accent); }
+code { font-family: var(--font-mono); background: var(--code-bg); padding: 0.05rem 0.3rem; border-radius: 3px; font-size: 0.92em; }
+pre { background: var(--code-bg); padding: 0.8rem 1rem; overflow-x: auto; border-radius: 6px; line-height: 1.45; }
+pre code { background: none; padding: 0; }
+table { border-collapse: collapse; width: 100%; display: block; overflow-x: auto; margin: 1rem 0; }
+th, td { border: 1px solid var(--border); padding: 0.35rem 0.6rem; text-align: left; vertical-align: top; }
+/* Never break inside numbers or IDs in table cells; wide tables scroll horizontally instead. */
+th, td { overflow-wrap: normal; word-break: normal; }
+th { background: var(--accent-soft); }
+blockquote { margin: 1rem 0; padding: 0.2rem 1rem; border-left: 4px solid var(--accent); color: var(--muted); }
+.article-header .meta-row { display: flex; flex-wrap: wrap; gap: 0.4rem 0.9rem; align-items: center; font-size: 0.85rem; color: var(--muted); }
+.chapter-id { font-family: var(--font-mono); font-weight: 600; color: var(--fg); }
+.status { padding: 0.05rem 0.5rem; border: 1px solid var(--border); border-radius: 999px; }
+.status-draft, .status-revision, .status-in-review { border-color: var(--warn-border); background: var(--warn-bg); }
+.theme-toggle { font: inherit; font-size: 0.8rem; color: var(--fg); background: transparent; border: 1px solid var(--border); border-radius: 4px; padding: 0.1rem 0.5rem; cursor: pointer; }
+.disclaimer { background: var(--warn-bg); border: 1px solid var(--warn-border); border-radius: 6px; padding: 0.6rem 0.9rem; font-size: 0.9rem; }
+.disclaimer p { margin: 0.25rem 0; }
+.toc { border: 1px solid var(--border); border-radius: 6px; padding: 0.6rem 1rem; margin: 1.2rem 0; font-size: 0.92rem; }
+.toc ol { margin: 0.3rem 0 0; padding-left: 1.2rem; }
+.fig { margin: 1.6rem 0; text-align: center; }
+.fig img, .fig svg { max-width: 100%; height: auto; }
+.fig pre.mermaid { background: transparent; text-align: center; }
+figcaption { font-size: 0.9rem; color: var(--muted); margin-top: 0.5rem; }
+.fig-no { font-weight: 600; color: var(--fg); }
+.fig-id { font-family: var(--font-mono); font-size: 0.75rem; opacity: 0.7; }
+.math-block { overflow-x: auto; margin: 1rem 0; }
+math { font-size: 1.1em; }
+.widget { border: 1px solid var(--border); border-radius: 8px; padding: 1rem; margin: 1.5rem 0; background: var(--accent-soft); }
+.widget label { display: block; margin: 0.4rem 0; font-size: 0.95rem; }
+.widget select, .widget input { font: inherit; color: var(--fg); background: var(--bg); border: 1px solid var(--border); border-radius: 4px; padding: 0.15rem 0.3rem; max-width: 100%; }
+.widget .result { font-size: 1.05rem; margin-top: 0.7rem; }
+.widget table { font-size: 0.88rem; }
+.watermark { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; pointer-events: none; font-size: 22vw; font-weight: 800; color: var(--watermark); transform: rotate(-24deg); z-index: 0; }
+.article-header, .toc, .article-body, .article-footer { position: relative; z-index: 1; }
+.article-footer { margin-top: 3rem; font-size: 0.8rem; color: var(--muted); border-top: 1px solid var(--border); padding-top: 0.6rem; }
+@media (max-width: 600px) {
+  body { font-size: 1rem; }
+  h1 { font-size: 1.55rem; }
+}
+@media print { .watermark { color: rgba(0, 0, 0, 0.06); } .theme-toggle { display: none; } }
+
+</style>
+<script>
+(function () {
+  var root = document.documentElement;
+  try {
+    var saved = localStorage.getItem("ahs-theme");
+    if (saved === "dark" || saved === "light") root.dataset.theme = saved;
+  } catch (e) {}
+  var mq = window.matchMedia ? window.matchMedia("(prefers-color-scheme: dark)") : null;
+  // No explicit choice: follow the system theme (CSS does the same through prefers-color-scheme).
+  function isDark() {
+    return root.dataset.theme ? root.dataset.theme === "dark" : !!(mq && mq.matches);
+  }
+  // Mermaid diagrams keep their original definition in data-source and are re-rendered with the theme that
+  // matches the page whenever the theme changes (review 2026-11-14, R22).
+  window.ahsRenderMermaid = function () {
+    if (!window.mermaid) return;
+    var nodes = Array.prototype.slice.call(document.querySelectorAll("pre.mermaid"));
+    if (!nodes.length) return;
+    nodes.forEach(function (el) {
+      if (el.getAttribute("data-source") === null) {
+        el.setAttribute("data-source", el.textContent);
+      } else {
+        el.removeAttribute("data-processed");
+        el.textContent = el.getAttribute("data-source");
+      }
+    });
+    window.mermaid.initialize({ startOnLoad: false, securityLevel: "strict", theme: isDark() ? "dark" : "default" });
+    var done = window.mermaid.run({ nodes: nodes });
+    if (done && done.catch) done.catch(function (err) { if (window.console) console.error(err); });
+  };
+  function syncButton(btn) {
+    btn.setAttribute("aria-pressed", isDark() ? "true" : "false");
+  }
+  document.addEventListener("DOMContentLoaded", function () {
+    var btn = document.querySelector(".theme-toggle");
+    if (btn) syncButton(btn);
+    if (mq) {
+      var onSystemChange = function () {
+        if (root.dataset.theme) return;
+        if (btn) syncButton(btn);
+        window.ahsRenderMermaid();
+      };
+      if (mq.addEventListener) mq.addEventListener("change", onSystemChange);
+      else if (mq.addListener) mq.addListener(onSystemChange);
+    }
+    if (!btn) return;
+    btn.addEventListener("click", function () {
+      root.dataset.theme = isDark() ? "light" : "dark";
+      try { localStorage.setItem("ahs-theme", root.dataset.theme); } catch (e) {}
+      syncButton(btn);
+      window.ahsRenderMermaid();
+    });
+  });
+})();
+
+</script>
+<link rel="canonical" href="https://thomas-21.github.io/ahs_engineering_handbook/vol-05/ch-05-01.en.html">
+</head>
+<body data-chapter-id="ch-05-01" data-status="approved">
+<header class="article-header">
+  <div class="meta-row">
+    <a class="home-link" href="../handbook.html">All chapters</a>
+    <span class="chapter-id">ch-05-01</span>
+    <button type="button" class="theme-toggle" aria-label="Theme">Theme</button>
+  </div>
+  <h1>Coordinate systems and datums</h1>
+</header>
+<nav class="toc" aria-label="Contents"><strong>Contents</strong><ol><li><a href="#s-1">1. Overview</a></li><li><a href="#s-2">2. Operational motivation: the problem at the reference mine</a></li><li><a href="#s-3">3. Terminology and foundations</a></li><li><a href="#s-4">4. Technical explanation</a></li><li><a href="#s-5">5. Responsibilities and interface boundaries</a></li><li><a href="#s-6">6. Normal, abnormal and degraded operation</a></li><li><a href="#s-7">7. Engineering view</a></li><li><a href="#s-8">8. Operations view</a></li><li><a href="#s-9">9. Requirements and acceptance criteria</a></li><li><a href="#s-10">10. Verification and validation</a></li><li><a href="#s-11">11. Common mistakes</a></li><li><a href="#s-12">12. Worked examples</a></li><li><a href="#s-13">13. Hands-on labs</a></li><li><a href="#s-14">14. Discussion questions and assignments</a></li><li><a href="#s-15">15. Key takeaways</a></li><li><a href="#s-16">16. Glossary terms introduced</a></li></ol></nav>
+<main class="article-body">
+<h2 id="s-1">1. Overview</h2>
+<h3 id="s-1-1">1.1 Why this chapter matters</h3>
+<p>Monday, DAY shift, a little after the hour. EX02 has moved to its new face and the AMS has just activated the new
+loading area. DT17 reverses in for the first load and stops. The Shovel Operator radios, puzzled rather than alarmed:
+&quot;Your truck is short — half a metre short and off to my left. The bucket reaches, but that's not where
+the spot should be.&quot; The AHS Controller looks at the HMI. DT17 reports a healthy RTK fix, no localisation alarm, and a
+final position exactly on the loading spot of the new map version.</p>
+<p>Both people are right. The truck is exactly where the map says; the map is not exactly where the face is. Somewhere
+between the surveyor's rover, the mine grid, the map and the truck's own antenna, one link in a chain of coordinate
+frames was converted the wrong way — and nothing on the truck can see it.</p>
+<p>The scene raises the questions of this chapter:</p>
+<ul>
+<li>Which coordinate frames does an autonomous truck use between its antenna and the AHS map, and who owns each link?</li>
+<li>What is the relation between a geodetic datum, a map projection and the local mine grid REFMINE-GRID — and why is the
+reference mine's grid deliberately not tied to the Earth?</li>
+<li>How is a Helmert transformation between a projected grid and the mine grid fitted, and what do its residuals tell?</li>
+<li>What happens when a conversion leaves out the scale, or when a height is in the wrong vertical datum?</li>
+<li>How do reduced-level errors reach the grades of R05 and R24, and the speed and retarding calculations built on them?</li>
+<li>What does the control room do when a survey pickup and the AHS map disagree at a loading spot?</li>
+</ul>
+<p>This chapter covers:</p>
+<ul>
+<li>the <strong>frame chain</strong> of an autonomous truck — sensor frames, body frame, local mine grid, AHS map — and the owner of
+each transformation (FIG-05-01-01);</li>
+<li><strong>datums, projections and the local grid</strong>, as concepts, and what the reference mine leaves out by design
+(FIG-05-01-02);</li>
+<li>the <strong>Helmert link</strong> between a teaching projected grid and REFMINE-GRID, fitted with <code>ahs_sim.localisation</code>, its
+residuals, and two mistaken scale-free conversions (LAB-05-01-01, FIG-05-01-03);</li>
+<li><strong>heights and grades</strong>: how RL and vertical-datum errors propagate into the grades of R05 and R24 and into the
+dynamics of ch-07-01 and ch-07-02;</li>
+<li>the <strong>SCN-SHOVEL-EX02-MOVE</strong> walkthrough: a loading spot issued in the wrong conversion, and how operations finds and
+fixes it.</li>
+</ul>
+<p>Survey control, the site transformation of survey instruments, error propagation from control marks and the GB1 check
+are the subject of ch-12-01; this chapter builds on them and does not repeat them. GNSS and RTK themselves are
+ch-05-02. Every scale, rotation, offset, lever arm and error value in this chapter is an illustrative assumption <code>[A]</code>;
+geodetic facts are topics only <code>[TBV]</code>.</p>
+<h3 id="s-1-2">1.2 Learning objectives — Engineering</h3>
+<p>After this chapter an engineering reader will be able to:</p>
+<ol>
+<li>Explain the relationship between geodetic datums, map projections and the local mine grid REFMINE-GRID, including
+why the reference mine's grid is deliberately not tied to a geodetic coordinate reference system.</li>
+<li>Calculate a 2D similarity (Helmert) transformation between a projected grid and the local mine grid from <code>[A]</code>
+control points, and quantify the residuals.</li>
+<li>Specify the coordinate frames in the AHS chain (vehicle body frame, sensor frames, local mine grid, AHS map) and which
+organisation or role owns each transformation.</li>
+<li>Analyse how reduced-level and vertical-datum errors propagate into the grades computed for R05 and the west ramp R24,
+and into the speed and retarding calculations that use them.</li>
+</ol>
+<h3 id="s-1-3">1.3 Learning objectives — Operations</h3>
+<p>After this chapter an operations reader will be able to:</p>
+<ol>
+<li>Recognise symptoms of a datum or grid mismatch (map offset, trucks stopping short of EX02-L, survey pickups not
+matching the AHS map) and escalate to Survey.</li>
+<li>Explain why grid and reduced-level conventions must be identical across survey, mine planning, FMS and the AHS map,
+and who signs off a change.</li>
+<li>Verify with Survey that new nodes and roads, such as the west ramp crest P3 and R24, are issued in the mine grid and
+appear consistently in the FMS, the AHS map and planning tools before they are used.</li>
+<li>Follow the control-room steps when the AHS map and a survey pickup disagree at a loading spot such as EX02-L,
+including holding trucks from the affected spot until Survey confirms.</li>
+</ol>
+<h2 id="s-2">2. Operational motivation: the problem at the reference mine</h2>
+<p>Every position in the AHS is a number in some frame: the lanes the AMS grants, the position the ADS estimates, the node
+coordinates from which the FMS derives lengths and grades. The system works only if all these numbers share origin,
+axes, scale and height reference. When they do not, nothing breaks loudly: the truck follows the map perfectly and is
+still in the wrong place.</p>
+<p>The reference mine makes the frame simple on purpose. All positions are easting, northing and reduced level in
+REFMINE-GRID, a local engineering grid in metres with its origin at the crusher C01 (0, 0, RL 424) (<code>mine.yaml</code>). Its
+note says it is &quot;not a geodetic CRS&quot;, and that <code>road-network.geojson</code> is therefore not RFC 7946 compliant: the fictional
+mine must not be mistakable for a real place (ch-01-03). RL is the height above a fictional local datum; the
+surface is at RL 420 and the pit floor at RL 300. GB1, the RTK base station, stands at the MIA at (−1450, 250, RL 425).</p>
+<p>Three pieces of work in the coming weeks touch the frames:</p>
+<ul>
+<li><strong>SCN-SHOVEL-EX02-MOVE.</strong> EX02 moves to a new face; the AMS activates the new loading area at T+3600 s (registry). The
+loading spot is only as right as the coordinates Survey issues for it — in the frame the trucks use.</li>
+<li><strong>SCN-MAP-R05.</strong> R05 is reworked and re-surveyed; its crest P1 and toe P2 carry RLs from which the AHS map, the FMS and
+the ADS derive the 9 % grade that sets the loaded climb speed and the descent braking (ch-07-01, ch-07-02).</li>
+<li><strong>A contractor's survey.</strong> A drill-and-blast contractor and a regional mapping job deliver data in a projected grid of
+their own, not in REFMINE-GRID. Someone has to convert it, and the conversion has a scale.</li>
+</ul>
+<p>What makes them hard is that the error they create is systematic: the same offset on every truck, every pass, with
+every receiver reporting a healthy fix.</p>
+<h2 id="s-3">3. Terminology and foundations</h2>
+<p><strong>Geodetic datum</strong> (glossary <code>geodetic-datum</code>). A reference frame for positions on the Earth, usually defined by a
+reference ellipsoid and realised by marks whose coordinates are published for a stated epoch <code>[TBV]</code>
+(SRC-PUB-GEODETIC-DATUM-EPOCH). It gives latitude, longitude and ellipsoidal height.</p>
+<p><strong>Map projection.</strong> A mathematical mapping from latitude and longitude on the ellipsoid to plane easting and northing
+<code>[TBV]</code>. A projected grid is convenient — plane, in metres — but its scale is not exactly one and changes from place to
+place, and its grid north differs from true north by an angle that also changes <code>[TBV]</code>.</p>
+<p><strong>Grid scale factor.</strong> The ratio of a distance measured in a projected grid to the same distance on the ground. On a real
+site it combines the projection's scale at that place with a reduction for height <code>[TBV]</code>; in LAB-05-01-01 the
+<strong>combined scale factor</strong> is 0.999760 <code>[A]</code>: a grid distance is 240 ppm shorter than the ground distance.</p>
+<p><strong>Local mine grid</strong> (glossary <code>local-mine-grid</code>). A plane grid chosen by the site, with an origin and orientation that
+suit the mine and a scale of one at the site. REFMINE-GRID is one. Real sites relate their local grid to a national datum
+and projection by a documented transformation <code>[TBV]</code>; the reference mine does not, by design.</p>
+<p><strong>Similarity (Helmert) transformation</strong> (glossary <code>similarity-transformation</code>). The 2D conversion with one scale, one
+rotation and two shifts. Between a projected grid and a local grid it is the <strong>link</strong> this chapter fits. A
+<strong>coordinate transformation</strong> in general is any rule that converts coordinates from one frame to another.</p>
+<p><strong>Reduced level and vertical datum.</strong> RL (glossary <code>reduced-level</code>) is the height above the site's vertical datum, a
+reference surface for heights. GNSS gives heights above the ellipsoid; turning them into RL needs a height model or a
+fitted offset <code>[TBV]</code> (ch-12-01 fits an offset on control). Two heights are comparable only if they refer to the same
+vertical datum.</p>
+<p><strong>Body frame and vehicle reference point.</strong> The body frame is fixed to the truck: x forward, y left, z up, with its
+origin at a <strong>vehicle reference point</strong> — in this handbook the centre of the rear axle on the ground <code>[H]</code>, the point
+whose position the ADS reports and that the path-tracking controller steers (ch-07-06).</p>
+<p><strong>Sensor frame and lever arm.</strong> Each sensor — GNSS antenna, IMU, LiDAR, radar — measures in a frame of its own. The
+<strong>lever arm</strong> is the position of a sensor's reference point (for the GNSS antenna, its phase centre) in the body frame.
+The rotation between a sensor frame and the body frame is the sensor's mounting alignment; together they are its
+extrinsic calibration (glossary <code>calibration</code>).</p>
+<p><strong>Pose and attitude.</strong> The pose is the position and heading of the body frame in the grid; attitude adds pitch (nose up
+or down) and roll (side to side). On R05 a truck is pitched by the grade; on a cambered road it is rolled by the
+crossfall.</p>
+<p><strong>Residual and check point</strong> (glossary <code>check-point</code>). As in ch-12-01: a residual is the difference between a published
+coordinate and its fitted position; a check point is a point of known coordinates not used in the fit and observed to
+test it.</p>
+<p><strong>The frame chain</strong> <code>[H]</code>. The ordered set of transformations that carries a measurement from a sensor to a position on
+the AHS map (section 4.1). Each link has an owner, a version and a way of being checked.</p>
+<h2 id="s-4">4. Technical explanation</h2>
+<h3 id="s-4-1">4.1 The frame chain of an autonomous truck</h3>
+<p>FIG-05-01-01 shows the frames an autonomous truck uses and who owns each link.</p>
+<figure id="FIG-05-01-01" class="fig"><pre class="mermaid">flowchart TB
+  subgraph TRUCK[&quot;On the truck — owned by the ADS (calibration verified by the Field Technician)&quot;]
+    ANT[&quot;GNSS antenna frame&lt;br/&gt;phase centre&quot;]
+    IMU[&quot;IMU frame&quot;]
+    LID[&quot;LiDAR / radar frames&quot;]
+    BODY[&quot;Body frame&lt;br/&gt;x forward, y left, z up&lt;br/&gt;origin: rear-axle centre (reference point)&quot;]
+    ANT -- &quot;lever arm (3.0, 1.2, 7.0) m [A]&quot; --&gt; BODY
+    IMU -- &quot;mounting offset and misalignment&quot; --&gt; BODY
+    LID -- &quot;extrinsic calibration&quot; --&gt; BODY
+  end
+  subgraph SITE[&quot;Site frame — owned by Survey&quot;]
+    GRID[&quot;REFMINE-GRID and RL&lt;br/&gt;local mine grid (not a geodetic CRS)&quot;]
+    GB1[&quot;GB1 coordinate in the grid&lt;br/&gt;(control register)&quot;]
+    PRJ[&quot;Projected grid, e.g. PRJ-TEACH [A]&lt;br/&gt;only at the boundary: contractor and regional data&quot;]
+  end
+  subgraph USERS[&quot;Users of the grid — same grid, no transformation&quot;]
+    MAP[&quot;AHS map (map team [A])&lt;br/&gt;lanes, zones, loading spots, grades&quot;]
+    FMS[&quot;FMS and mine planning&lt;br/&gt;designs, routes, cycle times&quot;]
+  end
+  BODY -- &quot;pose: position + heading (+ pitch, roll)&lt;br/&gt;estimated online by the ADS (Volume 05)&quot; --&gt; GRID
+  GB1 -- &quot;RTK corrections make rover positions&lt;br/&gt;relative to GB1&#x27;s coordinate (ch-05-02)&quot; --&gt; GRID
+  PRJ -- &quot;Helmert link: scale, rotation, two shifts&lt;br/&gt;+ height model [A] (LAB-05-01-01)&quot; --&gt; GRID
+  GRID -- &quot;identity: built in the grid&quot; --&gt; MAP
+  GRID -- &quot;identity: designed in the grid&quot; --&gt; FMS
+</pre><figcaption><span class="fig-no">Figure 1</span> Frame tree: sensor frames, body frame, local mine grid, AHS map <span class="fig-id">FIG-05-01-01</span></figcaption></figure>
+<p>Read it from the top. The GNSS antenna measures where its phase centre is. The ADS knows where the antenna sits on the
+truck — the lever arm, (3.0, 1.2, 7.0) m in LAB-05-01-01 <code>[A]</code>: 3.0 m ahead of the rear axle, 1.2 m left of the centre
+line, 7.0 m above the ground. With the truck's heading (and, if it models them, pitch and roll) the ADS turns the antenna
+position into the position of the reference point. That is the pose the AMS sees and the controller steers.</p>
+<p>The antenna's position is in the grid because of RTK: the rover measures its position relative to GB1, and GB1's
+coordinate is a grid coordinate held in Survey's control register (ch-12-01, ch-05-02). The AHS map is built in the same
+grid. The FMS and the mine planning tools design and compute in it too. Between grid, map, FMS and planning there is
+deliberately <strong>no transformation at all</strong> <code>[H]</code>: the cheapest transformation to get right is the one that does not
+exist.</p>
+<p>The only conversion into the grid that remains is at the boundary: data arriving in some other frame — a contractor's
+projected grid, a regional survey — must be converted once, by Survey, with a versioned link, before anyone else uses
+it. Section 4.3 fits such a link.</p>
+<p>Each link fails in its own way <code>[H]</code>:</p>
+<table>
+<thead>
+<tr>
+<th>Link</th>
+<th>Owner</th>
+<th>How it fails</th>
+<th>What it looks like downstream</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Sensor → body (lever arm, alignment)</td>
+<td>ADS supplier defines; the site keeps the values per truck and the Field Technician checks them after maintenance <code>[A]</code></td>
+<td>Antenna or bracket replaced and the old lever arm kept; bracket bent</td>
+<td>One truck, a constant offset everywhere it goes (section 4.6)</td>
+</tr>
+<tr>
+<td>Body → grid (pose)</td>
+<td>ADS localisation, online</td>
+<td>Attitude ignored on a grade; heading error</td>
+<td>Offsets that depend on the road, the same on every truck of the class (section 4.6)</td>
+</tr>
+<tr>
+<td>GB1 coordinate</td>
+<td>Survey</td>
+<td>GB1 moved and given a wrong coordinate</td>
+<td>Every truck and every rover shifted by the same vector (ch-12-01)</td>
+</tr>
+<tr>
+<td>Projected grid → mine grid (link)</td>
+<td>Survey</td>
+<td>Scale left out; wrong version; one-point conversion</td>
+<td>Survey data off by an amount that grows with distance (section 4.4)</td>
+</tr>
+<tr>
+<td>GNSS height → RL</td>
+<td>Survey</td>
+<td>Wrong height model or offset; heights mixed from two datums</td>
+<td>Grades and vertical positions wrong (section 4.5)</td>
+</tr>
+<tr>
+<td>Grid → AHS map, FMS, planning</td>
+<td>Map team <code>[A]</code>, FMS and planning owners; Survey signs off coordinates</td>
+<td>A second frame allowed into one of them</td>
+<td>The three systems disagree about the same node (section 8.3 B)</td>
+</tr>
+</tbody>
+</table>
+<p>The last row is not a mathematical link but an organisational one, and it is where most frame errors enter.</p>
+<h3 id="s-4-2">4.2 Datum, projection and local grid</h3>
+<p>FIG-05-01-02 places the three on one page.</p>
+<figure id="FIG-05-01-02" class="fig"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 640" role="img" aria-label="Conceptual relation between a geodetic datum, a map projection, the local mine grid and reduced level">
+<style>
+.t{fill:var(--fg,#1d1f21);font-size:13px}
+.h{fill:var(--fg,#1d1f21);font-size:15px;font-weight:700}
+.b{fill:var(--fg,#1d1f21);font-size:14px;font-weight:700}
+.m{fill:var(--muted,#5d6166);font-size:11.5px}
+.box{fill:var(--bg,#ffffff);stroke:var(--fg,#1d1f21);stroke-width:1.4}
+.ln{stroke:var(--fg,#1d1f21);stroke-width:1.6;fill:none}
+.gl{stroke:var(--muted,#5d6166);stroke-width:0.7;fill:none}
+.ell{stroke:#2a78d6;stroke-width:2;fill:none}
+.geo{stroke:#1baf7a;stroke-width:2;fill:none;stroke-dasharray:6 4}
+.loc{stroke:#eb6834;stroke-width:2;fill:none}
+.gnd{stroke:var(--fg,#1d1f21);stroke-width:2.2;fill:none}
+.warn{fill:none;stroke:#eb6834;stroke-width:1.4;stroke-dasharray:5 4}
+</style>
+<defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--fg,#1d1f21)"/></marker></defs>
+<text class="h" x="20" y="28">From the Earth to the mine grid — and what the reference mine leaves out</text>
+<rect class="box" x="20" y="50" width="280" height="250" rx="8"/>
+<text class="b" x="34" y="74">1  Geodetic datum</text>
+<rect class="box" x="340" y="50" width="280" height="250" rx="8"/>
+<text class="b" x="354" y="74">2  Map projection</text>
+<rect class="box" x="660" y="50" width="280" height="250" rx="8"/>
+<text class="b" x="674" y="74">3  Local mine grid</text>
+<ellipse class="ell" cx="160" cy="165" rx="100" ry="78"/>
+<ellipse class="gl" cx="160" cy="165" rx="100" ry="24"/>
+<line class="gl" x1="160" y1="87" x2="160" y2="243"/>
+<circle cx="215" cy="120" r="5" style="fill:#eb6834"/>
+<text class="m" x="34" y="262">reference ellipsoid, realised by marks, at an epoch [TBV]</text>
+<text class="m" x="34" y="282">latitude, longitude, ellipsoidal height h</text>
+<line class="gl" x1="370" y1="90" x2="370" y2="230"/>
+<line class="gl" x1="410" y1="90" x2="410" y2="230"/>
+<line class="gl" x1="450" y1="90" x2="450" y2="230"/>
+<line class="gl" x1="490" y1="90" x2="490" y2="230"/>
+<line class="gl" x1="530" y1="90" x2="530" y2="230"/>
+<line class="gl" x1="570" y1="90" x2="570" y2="230"/>
+<line class="gl" x1="370" y1="90" x2="570" y2="90"/>
+<line class="gl" x1="370" y1="125" x2="570" y2="125"/>
+<line class="gl" x1="370" y1="160" x2="570" y2="160"/>
+<line class="gl" x1="370" y1="195" x2="570" y2="195"/>
+<line class="gl" x1="370" y1="230" x2="570" y2="230"/>
+<circle cx="470" cy="160" r="5" style="fill:#eb6834"/>
+<text class="m" x="560" y="86">N</text>
+<text class="m" x="354" y="252">projected grid E, N (metres)</text>
+<text class="m" x="354" y="270">scale factor k varies across</text>
+<text class="m" x="354" y="288">the zone; grid north ≠ true north [TBV]</text>
+<g transform="rotate(-8 790 160)">
+<line class="gl" x1="690" y1="95" x2="690" y2="225" style="stroke:#eb6834"/>
+<line class="gl" x1="730" y1="95" x2="730" y2="225" style="stroke:#eb6834"/>
+<line class="gl" x1="770" y1="95" x2="770" y2="225" style="stroke:#eb6834"/>
+<line class="gl" x1="810" y1="95" x2="810" y2="225" style="stroke:#eb6834"/>
+<line class="gl" x1="850" y1="95" x2="850" y2="225" style="stroke:#eb6834"/>
+<line class="gl" x1="890" y1="95" x2="890" y2="225" style="stroke:#eb6834"/>
+<line class="gl" x1="690" y1="95.0" x2="890" y2="95.0" style="stroke:#eb6834"/>
+<line class="gl" x1="690" y1="127.5" x2="890" y2="127.5" style="stroke:#eb6834"/>
+<line class="gl" x1="690" y1="160.0" x2="890" y2="160.0" style="stroke:#eb6834"/>
+<line class="gl" x1="690" y1="192.5" x2="890" y2="192.5" style="stroke:#eb6834"/>
+<line class="gl" x1="690" y1="225.0" x2="890" y2="225.0" style="stroke:#eb6834"/>
+</g>
+<circle cx="790" cy="160" r="5" style="fill:#eb6834"/>
+<text class="m" x="798" y="176">C01</text>
+<text class="m" x="674" y="252">REFMINE-GRID: e, n, RL</text>
+<text class="m" x="674" y="270">origin C01 (0, 0, RL 424)</text>
+<text class="m" x="674" y="288">plane, local, fictional by design</text>
+<line class="ln" x1="300" y1="140" x2="338" y2="140" marker-end="url(#ah)"/>
+<text class="m" x="319" y="334" text-anchor="middle">projection formulas [TBV]</text>
+<text class="m" x="20" y="352" style="fill:#eb6834">dashed: not defined for the reference mine</text>
+<line class="ln" x1="620" y1="140" x2="658" y2="140" marker-end="url(#ah)"/>
+<text class="m" x="640" y="334" text-anchor="middle">Helmert link: s, θ, t_e, t_n</text>
+<text class="m" x="640" y="350" text-anchor="middle">fitted on control (LAB-05-01-01)</text>
+<rect class="warn" x="12" y="42" width="616" height="266" rx="10"/>
+<rect class="box" x="20" y="360" width="920" height="200" rx="8"/>
+<text class="b" x="34" y="384">Heights</text>
+<path class="gnd" d="M 60 430 C 200 410, 320 455, 460 435 S 700 420, 900 440"/>
+<line class="loc" x1="60" y1="480" x2="900" y2="480"/>
+<path class="geo" d="M 60 500 C 300 492, 600 510, 900 502"/>
+<line class="ell" x1="60" y1="535" x2="900" y2="535"/>
+<text class="m" x="906" y="444" text-anchor="end" dy="-12">ground point</text>
+<text class="m" x="70" y="475">local vertical datum (RL 0)</text>
+<text class="m" x="70" y="496" dy="-2">geoid / height model [TBV]</text>
+<text class="m" x="70" y="530">reference ellipsoid</text>
+<circle cx="560" cy="430" r="5" style="fill:#eb6834"/>
+<line class="ln" x1="560" y1="535" x2="560" y2="436" marker-end="url(#ah)"/>
+<text class="t" x="568" y="520">h  ellipsoidal height (GNSS)</text>
+<line class="ln" x1="500" y1="480" x2="500" y2="432" marker-end="url(#ah)" style="stroke:#eb6834"/>
+<text class="t" x="492" y="460" text-anchor="end">RL  reduced level (mine)</text>
+<line class="ln" x1="760" y1="535" x2="760" y2="506" marker-end="url(#ah)" style="stroke:#1baf7a"/>
+<text class="m" x="768" y="526">separation [TBV]</text>
+<text class="m" x="34" y="554">GNSS heights become RL only through a height model or a fitted offset — ch-12-01 fits an offset on control</text>
+<text class="t" x="20" y="588">Real sites: the mine grid is linked to a national datum and projection by a documented transformation that Survey owns.</text>
+<text class="t" x="20" y="608" style="fill:#eb6834">Reference mine: REFMINE-GRID is deliberately NOT linked (mine.yaml). PRJ-TEACH in LAB-05-01-01 is a teaching frame only.</text>
+<text class="m" x="20" y="630">Conceptual illustration, not to scale. Geodetic content is a topic [TBV] (SRC-PUB-GEODETIC-DATUM-EPOCH).</text>
+</svg><figcaption><span class="fig-no">Figure 2</span> Datum, projection and local grid relationship <span class="fig-id">FIG-05-01-02</span></figcaption></figure>
+<p>On a real site positions are traceable to the Earth in three steps <code>[TBV]</code> (SRC-PUB-GEODETIC-DATUM-EPOCH). A geodetic
+datum fixes latitude, longitude and ellipsoidal height. A map projection turns latitude and longitude into plane
+easting and northing; it cannot do so without distortion, so its scale factor and grid convergence vary across the zone
+it covers. A local mine grid is then related to the projection by a transformation the site documents: the mine grid is
+rotated to suit the pit, shifted to a convenient origin, and scaled so that a grid metre is a ground metre at the mine.
+Heights follow a parallel path: GNSS measures heights above the ellipsoid, a height model relates them to a vertical
+datum, and the mine's RL is defined against that datum or against a local one.</p>
+<p>Why the trouble? A plane grid at ground scale makes everyday work simple: distances, volumes and grades are read
+straight from coordinates. A projected grid a few hundred ppm off ground scale does not — over the 4500.5 m loaded leg
+of M-20481, 240 ppm is 1.080 m (LAB-05-01-01) — and a geodetic frame is not plane at all.</p>
+<p>The reference mine keeps only the last box. REFMINE-GRID and RL are the only frame: there is no datum, no projection and
+no published link (dashed in FIG-05-01-02). This is deliberate <code>[H]</code>: the mine is fictional and must not be placeable on the Earth, and the AHS needs nothing else, because every system on site uses the grid. What the reference mine
+leaves out is the work a real site does once, at the boundary, and controls thereafter. LAB-05-01-01 therefore invents a
+<strong>teaching projected grid, PRJ-TEACH</strong> <code>[A]</code>, with a combined scale factor of 0.999760, a rotation of 1.10° and C01 at
+PRJ-TEACH (52 000, 18 000). These numbers describe no real projection and place the mine nowhere; they are chosen to be
+of a plausible size so that the errors in section 4.4 are too.</p>
+<h3 id="s-4-3">4.3 The Helmert link</h3>
+<p>The 2D similarity transformation converts PRJ-TEACH coordinates <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo>&#x0002C;</mo><mi>y</mi><mo stretchy="false">&#x00029;</mo></mrow></math> to grid coordinates <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">&#x00028;</mo><mi>e</mi><mo>&#x0002C;</mo><mi>n</mi><mo stretchy="false">&#x00029;</mo></mrow></math>:</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>e</mi><mo>&#x0003D;</mo><mi>a</mi><mspace width="0.167em" /><mi>x</mi><mo>&#x02212;</mo><mi>b</mi><mspace width="0.167em" /><mi>y</mi><mo>&#x0002B;</mo><msub><mi>t</mi><mi>e</mi></msub><mo>&#x0002C;</mo><mspace width="2em" /><mi>n</mi><mo>&#x0003D;</mo><mi>b</mi><mspace width="0.167em" /><mi>x</mi><mo>&#x0002B;</mo><mi>a</mi><mspace width="0.167em" /><mi>y</mi><mo>&#x0002B;</mo><msub><mi>t</mi><mi>n</mi></msub><mo>&#x0002C;</mo><mspace width="2em" /><mi>a</mi><mo>&#x0003D;</mo><mi>s</mi><mi>cos</mi><mi>&#x003B8;</mi><mo>&#x0002C;</mo><mspace width="0.278em" /><mi>b</mi><mo>&#x0003D;</mo><mi>s</mi><mi>sin</mi><mi>&#x003B8;</mi></mrow></math></div>
+<p>In this form the four unknowns <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>a</mi><mo>&#x0002C;</mo><mi>b</mi><mo>&#x0002C;</mo><msub><mi>t</mi><mi>e</mi></msub><mo>&#x0002C;</mo><msub><mi>t</mi><mi>n</mi></msub></mrow></math> appear linearly. Each control mark observed in both frames adds two
+equations; with two marks the link is determined, with more it is fitted by least squares and the residuals measure how
+well the marks agree with it. <code>ahs_sim.localisation.fit_similarity</code> (reused from <code>ahs_sim.mapping</code>, the function
+ch-12-01 used) does exactly this and returns the scale <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>s</mi><mo>&#x0003D;</mo><msqrt><mrow><msup><mi>a</mi><mn>2</mn></msup><mo>&#x0002B;</mo><msup><mi>b</mi><mn>2</mn></msup></mrow></msqrt></mrow></math>, the rotation <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x003B8;</mi><mo>&#x0003D;</mo><mo /><mrow><mi>a</mi><mi>t</mi><mi>a</mi><mi>n</mi><mn>2</mn></mrow><mo stretchy="false">&#x00028;</mo><mi>b</mi><mo>&#x0002C;</mo><mi>a</mi><mo stretchy="false">&#x00029;</mo></mrow></math>
+and the residuals.</p>
+<p>LAB-05-01-01 uses the six control marks CM1–CM6 of ch-12-01's network A — around the pit and the MIA, near D01 — with
+their published grid coordinates, and observes them in PRJ-TEACH with a per-axis error of 0.02 m <code>[A]</code> (seed 501). The
+fit:</p>
+<table>
+<thead>
+<tr>
+<th>Quantity</th>
+<th>True <code>[A]</code></th>
+<th>Fitted</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Scale (PRJ-TEACH → grid)</td>
+<td>+240.1 ppm</td>
+<td>+231.9 ppm</td>
+</tr>
+<tr>
+<td>Rotation</td>
+<td>1.10°</td>
+<td>1.1002°</td>
+</tr>
+<tr>
+<td>RMS residual at the six marks</td>
+<td>—</td>
+<td>0.0167 m</td>
+</tr>
+<tr>
+<td>Largest residual</td>
+<td>—</td>
+<td>0.0246 m at CM5</td>
+</tr>
+</tbody>
+</table>
+<p>The residuals per mark are 0.0098 m (CM1), 0.0135 m (CM2), 0.0206 m (CM3), 0.0065 m (CM4), 0.0246 m (CM5) and 0.0179 m
+(CM6) — all of the size of the observation noise, none standing out (FIG-05-01-03 a). Applied to every node of
+<code>mine.yaml</code> and to GB1, the fitted link puts each point within 25.9 mm of its published coordinate, the largest at D01.
+The 8.2 ppm by which the fitted scale misses the true one is the noise of
+six marks, not a mistake; over the mine it amounts to the centimetres just quoted. The behaviour of such a fit with
+distance from the control, and with clustered control, is ch-12-01's subject (its section 4.4) and is not repeated here.</p>
+<p>The shifts <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>t</mi><mi>e</mi></msub></mrow></math> and <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>t</mi><mi>n</mi></msub></mrow></math> are tens of kilometres because PRJ-TEACH has a false origin far from the mine, so a scale
+or rotation acts about a distant point and small parameter differences become large position differences. And a link
+has a <strong>version</strong>: re-established control gives a new fit, and every delivery must name the version it used (ch-12-01's
+hand-off package).</p>
+<h3 id="s-4-4">4.4 Leaving out the scale</h3>
+<p>The mistake that matters is not a slightly wrong parameter but a missing one. Two scale-free conversions are examples
+of this mistake, and the lab computes both against the same PRJ-TEACH observations:</p>
+<ul>
+<li><strong>Rigid fit.</strong> Rotation and shifts fitted by least squares on the six marks, scale held at 1 — for instance because a
+software default assumes the projected grid is already at ground scale.</li>
+<li><strong>One-point conversion.</strong> Rotation taken from the link, scale 1, and the shift set so that one mark — CM1, near the
+MIA — matches exactly. This is what remains when a job set up for a small area near one mark is reused elsewhere.</li>
+</ul>
+<p>Both leave out the 240 ppm. The results, as horizontal error of the converted position against the published grid
+coordinate (FIG-05-01-03 b and c):</p>
+<table>
+<thead>
+<tr>
+<th>Point</th>
+<th>Fitted link</th>
+<th>Rigid fit, scale 1</th>
+<th>One-point, scale 1 (CM1)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>GB1</td>
+<td>21.7 mm</td>
+<td>0.671 m</td>
+<td>0.054 m</td>
+</tr>
+<tr>
+<td>C01</td>
+<td>15.5 mm</td>
+<td>0.461 m</td>
+<td>0.303 m</td>
+</tr>
+<tr>
+<td>X</td>
+<td>5.8 mm</td>
+<td>0.193 m</td>
+<td>0.470 m</td>
+</tr>
+<tr>
+<td>P1</td>
+<td>0.4 mm</td>
+<td>0.113 m</td>
+<td>0.549 m</td>
+</tr>
+<tr>
+<td>P2</td>
+<td>11.9 mm</td>
+<td>0.208 m</td>
+<td>0.847 m</td>
+</tr>
+<tr>
+<td>P3</td>
+<td>8.5 mm</td>
+<td>0.333 m</td>
+<td>0.471 m</td>
+</tr>
+<tr>
+<td>EX02-L</td>
+<td>15.7 mm</td>
+<td>0.365 m</td>
+<td>0.964 m</td>
+</tr>
+<tr>
+<td>D01</td>
+<td>25.9 mm</td>
+<td>0.588 m</td>
+<td>1.077 m</td>
+</tr>
+</tbody>
+</table>
+<p>The pattern follows from the equation. Leaving out a scale <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>s</mi></mrow></math> moves a point by approximately <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">&#x00028;</mo><mi>s</mi><mo>&#x02212;</mo><mn>1</mn><mo stretchy="false">&#x00029;</mo></mrow></math> times its
+distance from the point about which the conversion is pinned: the centroid of the marks for the rigid fit, CM1 for the
+one-point conversion. EX02-L lies 4067.2 m from CM1, and <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>240</mn><mi>&#x000D7;</mi><msup><mn>10</mn><mrow><mo>&#x02212;</mo><mn>6</mn></mrow></msup><mi>&#x000D7;</mi><mn>4067.2</mn><mo>&#x02248;</mo><mn>0.98</mn></mrow></math> m; the lab gives
+0.964 m, the difference being the rotation and noise taken from the fit.</p>
+<p><strong>The rigid fit announces itself; the one-point conversion does not.</strong> Fitted on six marks, the rigid fit's residuals are
+0.4396 m RMS, largest 0.6469 m at CM1, the mark farthest from the centroid: twenty-six times the residuals of the proper
+fit. A surveyor who reads the residuals per mark (ch-12-01's rule) sees at once that a parameter is missing. The
+one-point conversion has no residuals to read — it fits one mark exactly by construction — and its error grows quietly
+with distance from the mark. Only a check point far from the anchor reveals it: re-observed with the same job, CM5 on the
+north rim beyond EX02 comes out 1.051 m from its published coordinate, against 19.1 mm with the fitted link.</p>
+<p><strong>Lengths are almost unaffected, positions are not.</strong> A scale error of 240 ppm changes the length of R05 by 0.321 m and
+the loaded leg of M-20481 by 1.080 m, which no cycle-time calculation will notice. The same scale error moves a loading
+spot four kilometres from the anchor by almost a metre, which a Shovel Operator notices on the first truck (section 6.2).
+That asymmetry is why frame errors survive so long: they do not show in any production number.</p>
+<h3 id="s-4-5">4.5 Heights, grades and the dynamics that use them</h3>
+<p>The AHS uses heights in two ways: directly, for vertical positions such as dump crest heights and windrow heights, and
+indirectly, through the grade of every segment. <code>mine.yaml</code> defines grades from node coordinates: for R05, from the RL
+of P1 (420) and P2 (300) over a horizontal run of 1334.2 m, 8.994 %; for R24, from W (330) and P3 (420) over 1422.1 m,
+6.328 %. If the RL of the lower end carries an error <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>&#x003B5;</mi><mi>a</mi></msub></mrow></math> and that of the upper end <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>&#x003B5;</mi><mi>b</mi></msub></mrow></math>, the
+map's grade is</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mi>G</mi><mrow><mtext>map</mtext></mrow></msub><mo>&#x0003D;</mo><mfrac><mrow><mi>&#x00394;</mi><mi>R</mi><mi>L</mi><mo>&#x0002B;</mo><msub><mi>&#x003B5;</mi><mi>b</mi></msub><mo>&#x02212;</mo><msub><mi>&#x003B5;</mi><mi>a</mi></msub></mrow><mrow><msub><mi>L</mi><mi>h</mi></msub></mrow></mfrac><mo>&#x0002C;</mo><mspace width="2em" /><mi>&#x003B4;</mi><mi>G</mi><mo>&#x0003D;</mo><mfrac><mrow><msub><mi>&#x003B5;</mi><mi>b</mi></msub><mo>&#x02212;</mo><msub><mi>&#x003B5;</mi><mi>a</mi></msub></mrow><mrow><msub><mi>L</mi><mi>h</mi></msub></mrow></mfrac></mrow></math></div>
+<p>which is <code>ahs_sim.localisation.grade_with_rl_error</code>. Two consequences follow at once. A <strong>common offset</strong> of both ends —
+the whole mine on a vertical datum that is a constant off — leaves every grade unchanged (the lab checks it). A
+<strong>difference</strong> between the ends changes the grade by 0.0750 % per metre on R05 and 0.0703 % per metre on R24.</p>
+<p>Where do grades enter the system? ch-07-01 and ch-07-02 give the answers: the loaded climb speed is set by power
+against grade plus rolling resistance, <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>v</mi><mo>&#x0003D;</mo><mi>&#x003B7;</mi><mi>P</mi><mo>&#x0002F;</mo><mo stretchy="false">&#x00028;</mo><mi>m</mi><mi>g</mi><mo stretchy="false">&#x00028;</mo><mi>G</mi><mo>&#x0002B;</mo><mi>R</mi><mi>R</mi><mo stretchy="false">&#x00029;</mo><mo stretchy="false">&#x00029;</mo></mrow></math>; the retarding power on an empty descent is
+<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>m</mi><mi>g</mi><mo stretchy="false">&#x00028;</mo><mi>G</mi><mo>&#x02212;</mo><mi>R</mi><mi>R</mi><mo stretchy="false">&#x00029;</mo><mspace width="0.167em" /><mi>v</mi></mrow></math>; and the stopping distance on a descent depends on the grade through the downhill force. The ADS plans
+speeds and brakes with the map's grade; the FMS estimates cycle times with it; the truck itself climbs and stops on the
+true grade. LAB-05-01-01 recomputes these quantities with <code>ahs_sim.dynamics</code> on the map grade for a range of RL errors at
+the lower end of each ramp (a positive <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x003B5;</mi></mrow></math> means the map holds P2 or W too high):</p>
+<table>
+<thead>
+<tr>
+<th>RL error at P2 (map)</th>
+<th>R05 grade (map)</th>
+<th>Loaded climb speed</th>
+<th>Climb time</th>
+<th>Empty-descent retarding power at 40 km/h</th>
+<th>Empty stop from 40 km/h, dry</th>
+<th>Same, wet</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>none (true)</td>
+<td>8.994 %</td>
+<td>11.44 km/h</td>
+<td>421.4 s</td>
+<td>1078.1 kW</td>
+<td>25.20 m</td>
+<td>56.23 m</td>
+</tr>
+<tr>
+<td>+0.05 m</td>
+<td>8.991 %</td>
+<td>11.45 km/h</td>
+<td>421.3 s</td>
+<td>1077.4 kW</td>
+<td>25.19 m</td>
+<td>56.22 m</td>
+</tr>
+<tr>
+<td>+0.5 m</td>
+<td>8.957 %</td>
+<td>11.48 km/h</td>
+<td>420.1 s</td>
+<td>1071.3 kW</td>
+<td>25.17 m</td>
+<td>56.08 m</td>
+</tr>
+<tr>
+<td>+2.0 m</td>
+<td>8.844 %</td>
+<td>11.59 km/h</td>
+<td>416.1 s</td>
+<td>1051.1 kW</td>
+<td>25.10 m</td>
+<td>55.64 m</td>
+</tr>
+<tr>
+<td>+12.0 m</td>
+<td>8.095 %</td>
+<td>12.37 km/h</td>
+<td>389.8 s</td>
+<td>916.3 kW</td>
+<td>24.61 m</td>
+<td>52.82 m</td>
+</tr>
+<tr>
+<td>−2.0 m</td>
+<td>9.144 %</td>
+<td>11.30 km/h</td>
+<td>426.7 s</td>
+<td>1105.0 kW</td>
+<td>25.30 m</td>
+<td>56.85 m</td>
+</tr>
+<tr>
+<td>−12.0 m</td>
+<td>9.894 %</td>
+<td>10.65 km/h</td>
+<td>453.0 s</td>
+<td>1239.9 kW</td>
+<td>25.81 m</td>
+<td>60.12 m</td>
+</tr>
+</tbody>
+</table>
+<p>The first row reproduces the numbers of ch-07-01 and ch-07-02: 11.44 km/h and 421.4 s (ch-07-01), 1078.1 kW, 25.2 m and 56.2 m
+(ch-07-02, dry and wet adhesion 0.45 and 0.20 <code>[A]</code>). R24 behaves alike at a smaller scale: its true row is 14.71 km/h,
+348.6 s and 598.6 kW; with +12.0 m at W the map grade becomes 5.485 % and the predicted climb 16.18 km/h; with −12.0 m,
+7.172 % and 13.49 km/h.</p>
+<p>Three readings carry the message.</p>
+<ol>
+<li><strong>Survey-sized RL errors do not matter to the dynamics.</strong> Five centimetres at P2 changes the predicted climb speed in
+the second decimal and the stopping distance by a centimetre. Even half a metre moves the climb time by about a
+second. The sensitivity is <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo>&#x02202;</mo><mi>v</mi><mo>&#x0002F;</mo><mo>&#x02202;</mo><mi>G</mi><mo>&#x0003D;</mo><mo>&#x02212;</mo><mi>v</mi><mo>&#x0002F;</mo><mo stretchy="false">&#x00028;</mo><mi>G</mi><mo>&#x0002B;</mo><mi>R</mi><mi>R</mi><mo stretchy="false">&#x00029;</mo></mrow></math>: −0.095 km/h per 0.1 % of grade on R05.</li>
+<li><strong>A vertical-datum mix does matter.</strong> If P2's RL is taken from one height system and P1's from another — here offset
+by 12.0 m <code>[A]</code>, the size of ch-12-01's teaching height offset — the map grade is off by 0.9 percentage points. The
+FMS then predicts a climb 31.6 s faster than the truck can make (389.8 s against 421.4 s) and an M-20481 cycle of
+1532.5 s against 1564.1 s; more importantly, a stopping distance computed on the map grade is 52.82 m on a wet
+descent while the truck needs 56.23 m. An error that makes the map <em>flatter</em> than the road is the non-conservative
+direction for braking.</li>
+<li><strong>The error is in what was planned, not in what the truck does.</strong> The truck's power and brakes act on the real slope.
+What goes wrong is everything computed in advance from the map: the speed profile and its feed-forward (ch-07-06), the
+cycle time the FMS dispatches on, and the stopping distance against which speeds and horizons are set.</li>
+</ol>
+<p>The cure is not more precise heights but <strong>one</strong> vertical datum and a validation that compares segment grades between
+map versions (REQ-05-01-007). A grade that jumps by 0.9 points after an as-built survey of R05 is a frame error until
+proved otherwise. Short segments are more sensitive than long ones — the same metre on the 461 m bench ramp R09 is
+about three times the grade change on R05 — and vertical positions of dump crests, windrows and loading floors use RL
+directly, without the averaging of a long run.</p>
+<h3 id="s-4-6">4.6 From antenna to reference point</h3>
+<p>The last link of the chain is on the truck. The ADS knows the antenna's grid position; it wants the reference point's.
+In the level, two-dimensional case this is <code>body_to_grid</code> run backwards: subtract the lever arm, rotated by the heading.
+Three things make it less simple.</p>
+<p><strong>Attitude.</strong> The antenna is 7.0 m above the ground <code>[A]</code>. When the truck is pitched, the antenna moves horizontally by
+about <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>h</mi><mi>sin</mi><mi>&#x003B8;</mi></mrow></math>; when it is rolled, sideways by <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>h</mi><mi>sin</mi><mi>&#x003D5;</mi></mrow></math>. On R05 the truck is pitched by the grade, 5.14°; on a
+road with 2 % crossfall <code>[A]</code> it is rolled by 1.15°. If the ADS ignores attitude, LAB-05-01-01 gives:</p>
+<table>
+<thead>
+<tr>
+<th>Case on R05</th>
+<th>Error of the reference point</th>
+<th>Direction</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Pitch ignored, climbing</td>
+<td>0.639 m</td>
+<td>along track, placed further down the ramp</td>
+</tr>
+<tr>
+<td>Pitch ignored, descending</td>
+<td>0.615 m</td>
+<td>along track, placed further down the ramp</td>
+</tr>
+<tr>
+<td>2 % crossfall ignored</td>
+<td>0.140 m</td>
+<td>lateral</td>
+</tr>
+<tr>
+<td>Lever arm recorded 0.25 m wrong (left) <code>[A]</code></td>
+<td>0.250 m</td>
+<td>lateral, constant everywhere</td>
+</tr>
+<tr>
+<td>Heading error 1° <code>[A]</code></td>
+<td>0.056 m</td>
+<td>mostly lateral</td>
+</tr>
+</tbody>
+</table>
+<p><strong>The signature tells the cause.</strong> Pitch-related errors appear on ramps only and are the same for every truck of the
+class; they matter at loading and dumping spots on grades and in along-track stopping positions. A wrong lever arm
+follows one truck everywhere and is a constant lateral bias — exactly the kind of error ch-07-06 showed the
+tracking monitor cannot see, because the controller follows it (its section 4.9: a 0.5 m bias left the truck 0.500 m off
+the path with a measured error of 0.000 m). A heading error scales with the length of the horizontal lever arm, which is
+one reason to mount antennas near the reference point where the truck allows it <code>[A]</code>.</p>
+<p><strong>Ownership.</strong> The ADS supplier defines the body frame, reference point and lever arms; their values per truck are site
+configuration records that change with hardware <code>[A]</code>. After work on an antenna, a bracket or the cab, the Field
+Technician verifies the lever arm before the truck returns to autonomous operation (REQ-05-01-003), confirmed by a static
+check on a surveyed point <code>[R]</code>.</p>
+<h3 id="s-4-7">4.7 Who owns which transformation</h3>
+<p>Pulling sections 4.1 to 4.6 together <code>[H]</code>:</p>
+<table>
+<thead>
+<tr>
+<th>Transformation or convention</th>
+<th>Owner</th>
+<th>Signs off a change</th>
+<th>Changes when</th>
+<th>Checked by</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Lever arms and sensor alignments</td>
+<td>ADS supplier (definition); site configuration per truck <code>[A]</code></td>
+<td>ADS support function <code>[A]</code> with the Maintenance Planner</td>
+<td>Hardware work on sensors, brackets, cab</td>
+<td>Field Technician check; static check on a surveyed point</td>
+</tr>
+<tr>
+<td>Pose estimation (attitude handling, filtering)</td>
+<td>ADS supplier</td>
+<td>Change management of ADS software (ch-18-01)</td>
+<td>Software release</td>
+<td>Integrity monitoring (ch-05-06); site tests</td>
+</tr>
+<tr>
+<td>REFMINE-GRID and RL definition</td>
+<td>Survey</td>
+<td>Survey, with the Pit Supervisor informed of production effects</td>
+<td>Practically never</td>
+<td>Control register</td>
+</tr>
+<tr>
+<td>GB1 coordinate</td>
+<td>Survey</td>
+<td>Survey (ch-12-01 GB1 check)</td>
+<td>GB1 moved or replaced</td>
+<td>Check points with GB1's corrections</td>
+</tr>
+<tr>
+<td>Link to any other frame (e.g. PRJ-TEACH) and height model</td>
+<td>Survey</td>
+<td>Survey</td>
+<td>New or re-established control</td>
+<td>Residuals per mark; check points far from the marks</td>
+</tr>
+<tr>
+<td>AHS map in the grid</td>
+<td>Map team <code>[A]</code></td>
+<td>Map change process (ch-12-09)</td>
+<td>Every map change</td>
+<td>Map frame record (ch-12-01 REQ-12-01-008)</td>
+</tr>
+<tr>
+<td>FMS and planning nodes in the grid</td>
+<td>FMS and planning owners <code>[A]</code></td>
+<td>Survey confirms coordinates</td>
+<td>New nodes, roads, faces</td>
+<td>Three-way consistency check (section 8.3 B)</td>
+</tr>
+</tbody>
+</table>
+<p>Who signs off a change of grid or RL convention? Survey, because Survey owns the frame — but the map team, the FMS and
+planning owners, the ADS support function and the AHS Controller must hear of it first. A change to the grid itself
+would make every coordinate in every system wrong at once; the handbook treats it as a change to the whole AHS <code>[H]</code>.</p>
+<h3 id="s-4-8">4.8 Trade-offs and model limits</h3>
+<ul>
+<li>PRJ-TEACH, the lever arm, antenna height, crossfall and every error input are assumptions <code>[A]</code>; real projections,
+height models and truck geometries are site matters <code>[TBV]</code>. The link is 2D plus a separate height.</li>
+<li>Nodes are converted without observation noise, so only the conversion error shows.</li>
+<li>Attitude is a simple rotation of the lever arm; grade effects use the <code>ahs_sim</code> dynamics of ch-07-01 and ch-07-02.</li>
+</ul>
+<h2 id="s-5">5. Responsibilities and interface boundaries</h2>
+<table>
+<thead>
+<tr>
+<th>Element</th>
+<th>Responsible for</th>
+<th>Not responsible for</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>FMS</td>
+<td>Holding nodes, routes and loading areas in REFMINE-GRID; computing lengths and grades from them; showing the coordinate source of a new face</td>
+<td>Converting coordinates from other frames</td>
+</tr>
+<tr>
+<td>AMS</td>
+<td>Holding the AHS map in the grid with its map frame record; activating and suspending loading areas; granting only on the deployed version</td>
+<td>Checking survey coordinates against the ground</td>
+</tr>
+<tr>
+<td>ADS</td>
+<td>Converting antenna position to the reference point with the lever arm and attitude; estimating the pose in the grid; reporting position and solution state</td>
+<td>Detecting a wrong lever arm, a wrong link or a wrong map coordinate — all look like a healthy fix</td>
+</tr>
+<tr>
+<td>VCS</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Independent safety functions</td>
+<td>Remote stop, independent of any frame</td>
+<td>Relying on map or position data</td>
+</tr>
+<tr>
+<td>Onboard safety-related systems</td>
+<td>Safe-state requests anywhere</td>
+<td>—</td>
+</tr>
+<tr>
+<td>People</td>
+<td>Survey: the grid, RL, GB1 coordinate, links to other frames, check points, sign-off of coordinates. Map team <code>[A]</code>: map in the grid, rejecting packages without frame and check results. Field Technician: lever-arm checks after maintenance. AHS Controller: holds trucks from a suspect spot; calls Survey. Shovel Operator: reports where trucks spot. Pit Supervisor: decides production trade-offs of holds. Maintenance Planner: schedules sensor checks</td>
+<td>No one but Survey converts coordinates into the grid; no one edits the map to &quot;move it to where the trucks stop&quot;</td>
+</tr>
+</tbody>
+</table>
+<p>The last cell is the operational rule of this chapter. When trucks and the face disagree, the temptation is to nudge the
+map until the trucks stop where the shovel wants them. That fixes the symptom at one spot and leaves the wrong
+conversion in place for the next delivery.</p>
+<h2 id="s-6">6. Normal, abnormal and degraded operation</h2>
+<h3 id="s-6-1">6.1 Normal operation</h3>
+<p>All systems hold the grid and RL; Survey issues every new coordinate with its control, link and GB1 versions and a check
+point result (ch-12-01's hand-off package). Lever arms are verified after maintenance and at intervals the site sets
+<code>[A]</code>. Map validation compares grades between versions. Nothing about frames appears on the HMI in normal operation
+except the map frame record next to the map version.</p>
+<h3 id="s-6-2">6.2 Abnormal operation — SCN-SHOVEL-EX02-MOVE: a loading spot in the wrong conversion (shared timeline for sections 7 and 8)</h3>
+<p>SCN-SHOVEL-EX02-MOVE was chosen over SCN-MAP-R05 for the walkthrough for three reasons. A loading spot is where a frame
+error shows directly — a truck spotting against a shovel has little to spare, a truck on a 30 m road has metres.
+The new loading area is a single point issued by Survey in one delivery, so the chain from rover to truck is short and
+complete. And ch-12-01 has already walked SCN-MAP-R05 in detail from the survey side; section 6.3 adds what this chapter
+contributes to it.</p>
+<p>The registry gives T+0 s (EX02 relocating, assignments moved) and T+3600 s (new loading area activated). The other rows
+are <code>[A]</code>: the error is the one-point conversion of section 4.4, and its size at EX02-L comes from LAB-05-01-01. The face
+advance keeps EX02-L as the node of the loading area; the new spot is issued at its coordinates.</p>
+<table>
+<thead>
+<tr>
+<th>Time</th>
+<th>Event</th>
+<th>System</th>
+<th>People</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>T−1 d <code>[A]</code></td>
+<td>New face design issued in REFMINE-GRID; pickup of the new floor and face toe booked</td>
+<td>FMS (plan)</td>
+<td>Survey, Pit Supervisor</td>
+</tr>
+<tr>
+<td>T+0 s</td>
+<td>EX02 set to relocating; its trucks reassigned</td>
+<td>FMS</td>
+<td>Shovel Operator, AHS Controller</td>
+</tr>
+<tr>
+<td>T+900 s <code>[A]</code></td>
+<td>Survey picks up the floor and toe with an RTK rover; the rover job still carries a one-point, scale-1 conversion anchored on CM1, left from contractor work</td>
+<td>—</td>
+<td>Survey</td>
+</tr>
+<tr>
+<td>T+1500 s <code>[A]</code></td>
+<td>Hand-off package delivered; the &quot;transformation check&quot; field has no check-point result; the map team accepts it (should have rejected it, REQ-12-01-004)</td>
+<td>—</td>
+<td>Survey, map team</td>
+</tr>
+<tr>
+<td>T+2400 s <code>[A]</code></td>
+<td>New loading area validated against the package and included in a new map version</td>
+<td>—</td>
+<td>Map team</td>
+</tr>
+<tr>
+<td>T+3600 s</td>
+<td>New loading area activated</td>
+<td>AMS</td>
+<td>AHS Controller</td>
+</tr>
+<tr>
+<td>T+3700 s <code>[A]</code></td>
+<td>DT17 spots on the map's loading spot: 0.521 m short of the true spot along its approach and 0.811 m to the left (0.964 m in all)</td>
+<td>ADS</td>
+<td>—</td>
+</tr>
+<tr>
+<td>T+3730 s <code>[A]</code></td>
+<td>Shovel Operator reports &quot;spotting short and to my left&quot;; DT17 is within reach and is loaded</td>
+<td>—</td>
+<td>Shovel Operator, AHS Controller</td>
+</tr>
+<tr>
+<td>T+3760 s <code>[A]</code></td>
+<td>Controller suspends the new loading area; trucks already at EX02-Q held; FMS reassigns EX02's trucks; Survey called; Pit Supervisor informed</td>
+<td>AMS, FMS</td>
+<td>AHS Controller</td>
+</tr>
+<tr>
+<td>T+3900 s <code>[A]</code></td>
+<td>Survey re-observes CM5 with the same rover job: 1.051 m from its published coordinate (with the site link: 19.1 mm) — the job is wrong, not the truck</td>
+<td>—</td>
+<td>Survey</td>
+</tr>
+<tr>
+<td>T+4500 s <code>[A]</code></td>
+<td>Pickup reprocessed with the current link; check point within the site's limit; package re-issued with the check result</td>
+<td>—</td>
+<td>Survey</td>
+</tr>
+<tr>
+<td>T+5100 s <code>[A]</code></td>
+<td>Corrected loading area validated; new map version deployed</td>
+<td>AMS</td>
+<td>Map team, AHS Controller</td>
+</tr>
+<tr>
+<td>T+5400 s <code>[A]</code></td>
+<td>Corrected loading area activated; hold released; trucks reassigned to EX02</td>
+<td>AMS, FMS</td>
+<td>AHS Controller</td>
+</tr>
+<tr>
+<td>T+5450 s <code>[A]</code></td>
+<td>First truck spots; Shovel Operator confirms the position</td>
+<td>ADS</td>
+<td>Shovel Operator</td>
+</tr>
+</tbody>
+</table>
+<p>Seen from the frames, the scenario has one cause and three missed barriers. The cause is a conversion without scale. The
+barriers are the residual check (none possible for a one-point conversion), the check point (not observed), and the
+package rule (not applied). The truck could not be a barrier: its fix was healthy, its position matched the map, and its
+tracking error was zero.</p>
+<h3 id="s-6-3">6.3 Abnormal operation — SCN-MAP-R05: heights in the as-built</h3>
+<p>ch-12-01 walks SCN-MAP-R05 from the survey side: detour surveyed before the closure, R05 surveyed during it, the as-built
+submitted at T+0 s, validated at T+1800 s, deployed at T+2400 s (registry). This chapter adds one check to the
+validation step <code>[H]</code>: the map change compares the grade of every changed segment with the previous version. A windrow
+and edge rework does not change the RL of P1 or P2 by metres; if the new R05 grade differs from 8.994 % by more than the
+site's threshold <code>[A]</code>, the heights of the as-built are suspected of a vertical-datum or height-model error before the
+map is deployed. With a 12.0 m mix the change would be 0.9 percentage points — unmissable if anyone looks, invisible if
+no one does.</p>
+<h3 id="s-6-4">6.4 Degraded operation — a truck with a wrong lever arm</h3>
+<p>After a cab repair a truck returns with its antenna bracket refitted 0.25 m further left and the lever arm unchanged
+<code>[A]</code>. With a healthy fix and a small tracking error it drives 0.25 m to one side of every lane (section 4.6). The
+pattern — one truck, every road, the same side — routes it to the Field Technician and the Maintenance Planner, not to
+Survey. The barrier is the lever-arm check (REQ-05-01-003); if it fails, a static check on a surveyed point or a Shovel
+Operator who sees one truck always spot off-line finds it.</p>
+<h2 id="s-7">7. Engineering view</h2>
+<h3 id="s-7-1">7.1 Design decisions and trade-offs</h3>
+<table>
+<thead>
+<tr>
+<th>Decision</th>
+<th>Options</th>
+<th>Handbook position</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>How many frames the AHS uses</td>
+<td>One per system; one grid for all</td>
+<td>One grid and one RL datum for survey, planning, FMS, AMS map and ADS <code>[H]</code></td>
+</tr>
+<tr>
+<td>Where conversions from other frames happen</td>
+<td>In each consuming system; once at the boundary</td>
+<td>Once, by Survey, with a versioned link (REQ-05-01-001) <code>[H]</code></td>
+</tr>
+<tr>
+<td>Link model</td>
+<td>Shift only; rigid; 4-parameter; more</td>
+<td>At least 4 parameters fitted on control around the area; no scale-free or one-point conversion for AHS data (REQ-05-01-005) <code>[H]</code></td>
+</tr>
+<tr>
+<td>Heights</td>
+<td>Each delivery as received; one vertical datum</td>
+<td>One vertical datum; grades compared between map versions (REQ-05-01-007) <code>[H]</code></td>
+</tr>
+<tr>
+<td>Attitude in the antenna-to-reference conversion</td>
+<td>Ignore; model pitch and roll</td>
+<td>Model it, or carry the error (<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>h</mi><mi>sin</mi><mi>&#x003B8;</mi></mrow></math>) in the error budget explicitly (REQ-05-01-004) <code>[H]</code></td>
+</tr>
+<tr>
+<td>Lever arms</td>
+<td>Set at commissioning; versioned per truck and checked after maintenance</td>
+<td>Versioned and checked (REQ-05-01-003) <code>[H]</code></td>
+</tr>
+<tr>
+<td>What to do when the map and the face disagree</td>
+<td>Edit the map to where trucks stop; find the conversion</td>
+<td>Find the conversion; never move the map to fit the trucks <code>[H]</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="s-7-2">7.2 Failure modes and mitigations</h3>
+<table>
+<thead>
+<tr>
+<th>Failure mode</th>
+<th>Effect</th>
+<th>Mitigation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Scale left out (rigid fit)</td>
+<td>Positions off by up to 0.708 m across the mine (lab); residuals 0.44 m RMS</td>
+<td>Read residuals per mark (ch-12-01); REQ-05-01-005</td>
+</tr>
+<tr>
+<td>One-point conversion reused</td>
+<td>Error grows with distance from the anchor: 0.964 m at EX02-L, 1.077 m at D01; no residuals to read</td>
+<td>Check point far from the anchor (REQ-05-01-006)</td>
+</tr>
+<tr>
+<td>Wrong link version</td>
+<td>Systematic offset of a delivery</td>
+<td>Version in the hand-off package; map frame record</td>
+</tr>
+<tr>
+<td>Heights from two vertical datums</td>
+<td>Grades wrong by metres / run: 0.9 points on R05 for 12.0 m; non-conservative stopping distance</td>
+<td>One datum; grade comparison between map versions (REQ-05-01-007)</td>
+</tr>
+<tr>
+<td>Attitude ignored</td>
+<td>0.64 m along track on R05; 0.14 m laterally on 2 % crossfall</td>
+<td>Attitude in the conversion or in the error budget (REQ-05-01-004)</td>
+</tr>
+<tr>
+<td>Lever arm wrong after maintenance</td>
+<td>Constant bias on one truck, invisible to the tracking monitor</td>
+<td>Lever-arm check before return to autonomy (REQ-05-01-003)</td>
+</tr>
+<tr>
+<td>Map edited to where trucks stop</td>
+<td>Symptom hidden; the wrong conversion stays for the next delivery</td>
+<td>Rule in section 5; procedure 8.3 A</td>
+</tr>
+<tr>
+<td>A node in FMS, map and planning from different conversions</td>
+<td>Systems disagree by decimetres; dispatch and map out of step</td>
+<td>Three-way check before use (REQ-05-01-008)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="s-7-3">7.3 Interface and timing considerations along SCN-SHOVEL-EX02-MOVE</h3>
+<ul>
+<li><strong>T+900 s.</strong> The rover's job is configuration, not data: it carries the link. A rover job that is not the site's current
+link is a frame error waiting for a delivery. The rover should report the link version it used into the delivery
+automatically <code>[R]</code>.</li>
+<li><strong>T+1500 s.</strong> The hand-off package is the interface that should have stopped the error: frame, link version and a
+check-point result are mandatory fields (ch-12-01 section 4.8). A missing check-point result is a reason to reject.</li>
+<li><strong>T+2400 s and T+3600 s.</strong> The map change and the activation are correct operations on wrong data; the AMS cannot know.
+The map frame record (REQ-12-01-008) can show the link version of the deliveries a version rests on, which lets a
+validation tool flag a delivery made with a version other than the current one <code>[R]</code>.</li>
+<li><strong>T+3700 s.</strong> The truck's report is consistent: healthy fix, final position on the map's spot, tracking error near
+zero. The first independent observation is a person's: the Shovel Operator.</li>
+<li><strong>T+3900 to T+4500 s.</strong> The check point discriminates in one observation: 1.051 m against a 19.1 mm expectation is not
+noise. The reprocessing does not need a new pickup; the raw observations are re-converted with the right link.</li>
+<li><strong>T+5100 to T+5400 s.</strong> The correction is a new map version through the normal change process (ch-12-09).</li>
+</ul>
+<h2 id="s-8">8. Operations view</h2>
+<h3 id="s-8-1">8.1 What the control room sees</h3>
+<p>Almost nothing, and that is the point of the chapter. A frame error produces no alarm: the trucks report healthy RTK
+fixes, positions on their map spots and small tracking errors. What the control room does see:</p>
+<ul>
+<li><strong>Reports from people.</strong> A Shovel Operator whose trucks spot short, long or to one side; a Survey pickup that does not
+match the map.</li>
+<li><strong>The pattern of those reports.</strong> All trucks at one new spot → the spot (a conversion or a survey error). One truck at
+all spots → the truck (lever arm, antenna). All trucks on ramps only, along track → attitude handling (ADS).</li>
+<li><strong>The map frame record</strong> next to the map version (ch-12-01 REQ-12-01-008): control register, link and GB1 versions on
+which the map rests, and — with this chapter — the link version of the latest deliveries.</li>
+<li><strong>Grade changes</strong> reported by map validation between versions.</li>
+</ul>
+<h3 id="s-8-2">8.2 Who decides what</h3>
+<table>
+<thead>
+<tr>
+<th>Decision</th>
+<th>Responsible</th>
+<th>Accountable</th>
+<th>Consulted</th>
+<th>Informed</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Hold trucks from a suspect loading spot</td>
+<td>AHS Controller</td>
+<td>Pit Supervisor</td>
+<td>Shovel Operator</td>
+<td>FMS, Survey</td>
+</tr>
+<tr>
+<td>Is it the spot or the truck?</td>
+<td>AHS Controller (pattern)</td>
+<td>AHS Controller</td>
+<td>Shovel Operator, Survey</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Coordinates of a new or corrected spot</td>
+<td>Survey</td>
+<td>Survey</td>
+<td>Map team <code>[A]</code></td>
+<td>AHS Controller</td>
+</tr>
+<tr>
+<td>Release of the corrected loading area</td>
+<td>AHS Controller</td>
+<td>Pit Supervisor</td>
+<td>Survey, map team</td>
+<td>Shovel Operator</td>
+</tr>
+<tr>
+<td>A change of grid, RL convention or link</td>
+<td>Survey</td>
+<td>Survey</td>
+<td>Map team, FMS and planning owners, ADS support function <code>[A]</code></td>
+<td>AHS Controller, Pit Supervisor</td>
+</tr>
+<tr>
+<td>Lever-arm check after maintenance</td>
+<td>Field Technician</td>
+<td>Maintenance Planner</td>
+<td>ADS support function <code>[A]</code></td>
+<td>AHS Controller</td>
+</tr>
+</tbody>
+</table>
+<h3 id="s-8-3">8.3 Procedure excerpts</h3>
+<p><strong>A. The AHS map and the face disagree at a loading spot (AHS Controller, Shovel Operator, Survey) — SCN-SHOVEL-EX02-MOVE.</strong></p>
+<ol>
+<li><strong>Shovel Operator (T+3730 s):</strong> report by radio where the truck spotted relative to where it should be: short or
+long, left or right, roughly how far. Load the truck only if it is safely within reach; otherwise ask for it to be
+moved off.</li>
+<li><strong>AHS Controller (T+3760 s):</strong> check the pattern: is this the first truck at a new spot, and have other trucks spotted
+correctly elsewhere today? Check the truck's solution state and localisation status.</li>
+<li><strong>AHS Controller:</strong> if the spot is new or recently changed, suspend the loading area in the AMS (an AMS operation); hold trucks already
+at the queue point; have the FMS reassign EX02's trucks. Inform the Pit Supervisor of
+the hold and the expected cost.</li>
+<li><strong>AHS Controller → Survey:</strong> &quot;Trucks spotting about half a metre short and to the left at the new EX02 spot, first
+truck after activation at T+3600 s. Map version …; delivery ID …. Please check the spot's coordinates with a check
+point.&quot;</li>
+<li><strong>Survey (T+3900 s):</strong> re-observe a check point near the face with the same equipment and job; compare with its
+published coordinate. A difference far above the expected noise points to the conversion; check the job's link
+version.</li>
+<li><strong>Survey (T+4500 s):</strong> reprocess the pickup with the current link; observe the check point again; re-issue the
+package with the check result.</li>
+<li><strong>Map team <code>[A]</code> (T+5100 s):</strong> validate the corrected loading area; deploy through the map change process.</li>
+<li><strong>AHS Controller (T+5400 s):</strong> activate the corrected loading area; release the hold; ask the Shovel Operator to
+confirm the first truck's spot.</li>
+<li><strong>AHS Controller:</strong> record the event, the cause (conversion), the delay codes and the barrier that failed (the package
+accepted without a check-point result).</li>
+</ol>
+<p>Never: edit the spot in the map &quot;to where the trucks stop&quot;; let trucks continue to the spot &quot;because the bucket reaches&quot;;
+or close the event without knowing why the coordinates were wrong.</p>
+<p><strong>B. New nodes and roads before use — e.g. P3 and R24 (Survey, map team, FMS and planning owners).</strong></p>
+<ol>
+<li><strong>Survey:</strong> issue the coordinates of every new or changed node (here P3, W and the R24 edge strings) in REFMINE-GRID
+and RL, with link, control and GB1 versions and a check-point result.</li>
+<li><strong>Map team <code>[A]</code>, FMS owner <code>[A]</code>, planning owner <code>[A]</code>:</strong> each loads the coordinates into their system from the same
+delivery — not from each other's systems.</li>
+<li><strong>Survey:</strong> compare the node coordinates as held in the three systems; any difference above the site's limit <code>[A]</code>
+stops the release. For scale: if one system held P3 from a rigid, scale-1 conversion, it would be 0.333 m off; from
+the one-point conversion, 0.471 m (LAB-05-01-01).</li>
+<li><strong>Survey:</strong> compare the grades derived in the FMS and the map for every changed segment (R24 6.328 %).</li>
+<li><strong>AHS Controller:</strong> use the new road only when Survey has confirmed steps 3 and 4 (REQ-05-01-008).</li>
+</ol>
+<p><strong>C. A truck returns from work on its antenna or cab (Field Technician, Maintenance Planner).</strong></p>
+<ol>
+<li><strong>Field Technician:</strong> verify the antenna and sensor lever arms against the truck's configuration record with the
+supplier's procedure <code>[A]</code>.</li>
+<li><strong>Field Technician:</strong> run a static check on a surveyed point <code>[R]</code>: the reported reference point against the point's
+published coordinate.</li>
+<li><strong>Maintenance Planner:</strong> release the truck to autonomous operation only with both results recorded.</li>
+</ol>
+<h3 id="s-8-4">8.4 KPIs and delay codes affected</h3>
+<table>
+<thead>
+<tr>
+<th>Interval in SCN-SHOVEL-EX02-MOVE</th>
+<th>Who</th>
+<th>Code</th>
+<th>Category</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>T+0 to T+3600 s, face change</td>
+<td>EX02</td>
+<td>DLY-OD-07</td>
+<td>Operating Delay</td>
+</tr>
+<tr>
+<td>T+3760 s until reassigned, trucks held at EX02-Q because the loading area is suspended for survey and map work</td>
+<td>trucks at EX02-Q</td>
+<td>DLY-OD-04 (map and survey work that holds trucks)</td>
+<td>Operating Delay</td>
+</tr>
+<tr>
+<td>T+3760 to T+5400 s, EX02 without trucks because its loading area is suspended</td>
+<td>EX02</td>
+<td>DLY-OD-04 (<code>coding_rules</code>)</td>
+<td>Operating Delay</td>
+</tr>
+<tr>
+<td>Reassigned trucks working elsewhere</td>
+<td>trucks</td>
+<td>none</td>
+<td>Working Time</td>
+</tr>
+</tbody>
+</table>
+<p>The production cost is that of a loading unit without a valid loading area: 3960 t per hour in ch-12-01's fleet model,
+so the 1640 s hold from T+3760 s to T+5400 s costs about 1804.0 t. Two non-GMG indicators help <code>[R]</code>: the number of
+deliveries rejected for a missing frame or check result (a barrier working) and the number of spot corrections after
+activation (a barrier failing).</p>
+<h3 id="s-8-5">8.5 Training and competency implications</h3>
+<p>AHS Controllers learn that a healthy fix and a zero tracking error do not prove the truck is in the right place, and to
+read the pattern of spotting reports. Shovel Operators report spotting offsets early, with direction and size. Surveyors
+learn why a one-point job must never leave the area it was set up for, and to observe a check point far from any anchor.
+Map-team members reject packages without a check-point result; Field Technicians learn the lever-arm check.</p>
+<h2 id="s-9">9. Requirements and acceptance criteria</h2>
+<p>REQ-05-01-001 [H]
+Every position exchanged between Survey, mine planning, the FMS, the AHS map and the ADS shall be in REFMINE-GRID and
+RL; data in any other frame shall be converted once, by Survey, with the current versioned link, before any other system
+uses it.
+Rationale: there is no transformation between grid, map, FMS and planning; conversion errors enter only at the boundary
+(section 4.1).
+Verification: inspection of data interfaces and hand-off packages</p>
+<p>REQ-05-01-002 [H]
+The site shall keep a frame-chain record naming, for each transformation from sensor to AHS map, its owner, its current
+version or values, what changes it and how it is checked.
+Rationale: every link in FIG-05-01-01 fails in its own way and has a different owner (section 4.7).
+Verification: inspection</p>
+<p>REQ-05-01-003 [H]
+After any work that may move a GNSS antenna or another positioning sensor relative to the body, the truck's lever arms
+shall be verified and recorded before it returns to autonomous operation.
+Rationale: a 0.25 m lever-arm error is a constant lateral bias on every lane that neither the receiver nor the tracking
+monitor reports (sections 4.6, 6.4; ch-07-06).
+Verification: inspection of maintenance records; demonstration of the static check</p>
+<p>REQ-05-01-004 [H]
+The ADS shall account for pitch and roll when converting the antenna position to the reference point, or the site's
+localisation error budget shall include the resulting error for the steepest grade and crossfall in the ODD.
+Rationale: ignoring pitch on R05 places the reference point 0.64 m along track; ignoring 2 % crossfall, 0.14 m laterally
+(LAB-05-01-01).
+Verification: analysis (LAB-05-01-01); test on a ramp with a surveyed point</p>
+<p>REQ-05-01-005 [H]
+A conversion between another frame and REFMINE-GRID used for AHS data shall be a link with at least scale, rotation and
+two shifts, fitted on control marks around the area of use, with residuals reported per mark; a scale-free or one-point
+conversion shall not be used.
+Rationale: leaving out a 240 ppm scale gives 0.44 m RMS residuals in a rigid fit and, in a one-point conversion,
+0.964 m at EX02-L with no residual to warn (section 4.4).
+Verification: analysis (LAB-05-01-01); inspection of link records</p>
+<p>REQ-05-01-006 [H]
+A new or changed loading spot, dump spot or road shall be accepted into the AHS map only with a check point observed
+near it with the same equipment and job, within the site's limit <code>[A]</code>.
+Rationale: the check point is the only barrier against a conversion error that leaves no residual (CM5: 1.051 m against
+19.1 mm).
+Verification: inspection of hand-off packages; test (LAB-05-01-01)</p>
+<p>REQ-05-01-007 [H]
+Map validation shall compare the grade of every changed segment with the previous map version and flag a change above a
+site threshold <code>[A]</code> for Survey to confirm before deployment.
+Rationale: a 12.0 m vertical-datum mix changes the R05 grade by 0.9 percentage points and makes a wet stopping distance
+computed on the map 52.82 m instead of 56.23 m (section 4.5).
+Verification: test of the map validation tool; analysis (LAB-05-01-01)</p>
+<p>REQ-05-01-008 [H]
+A new or changed node shall be used for autonomous operation only after Survey has confirmed that its coordinates in the
+FMS, the AHS map and the planning tools agree within the site's limit <code>[A]</code> and come from the same delivery.
+Rationale: systems loaded from different conversions disagree by decimetres (P3: 0.333 m from a rigid fit) without any
+alarm (section 8.3 B).
+Verification: inspection; demonstration before a new road is opened</p>
+<p>REQ-05-01-009 [H]
+When spotting reports show a systematic offset at a loading spot, the AHS Controller shall suspend the loading area and
+hold trucks from it until Survey has confirmed or corrected its coordinates; the map shall not be edited to match where
+trucks stop.
+Rationale: the trucks follow the map exactly; only a survey check separates a wrong spot from a wrong truck
+(section 6.2).
+Verification: drill; inspection of event records</p>
+<h2 id="s-10">10. Verification and validation</h2>
+<ul>
+<li><strong>The lab verifies its arithmetic.</strong> Seven tests in LAB-05-01-01 check the link round trip and an exact fit, the fit on
+six marks, the conversion errors at every node (fitted, rigid and one-point), the check point and hold cost, route
+lengths, the grade sweep against the Volume 07 numbers, the M-20481 cycle with grade errors, and the
+frame-chain cases.</li>
+<li><strong>The lab does not validate a site.</strong> PRJ-TEACH and all error inputs are assumptions <code>[A]</code>. A site validates its link
+with check points not used in the fit, spread over the area of use, in plan and height.</li>
+<li><strong>Validation of the whole chain on site.</strong> Park trucks on surveyed points — at a loading spot, on a ramp, on a flat
+road — and compare the reported reference point with the published coordinate <code>[R]</code>; on a ramp this also checks
+attitude handling.</li>
+<li><strong>Procedural validation.</strong> Drills: a package with a deliberately wrong link version (the map team must reject it); a
+spotting report at a new spot (the controller must suspend and call Survey, not edit the map); a truck returned from
+cab work (the lever-arm record must exist before release).</li>
+</ul>
+<h2 id="s-11">11. Common mistakes</h2>
+<h3 id="s-11-1">11.1 Design mistakes</h3>
+<ul>
+<li>Allowing each system to hold its own frame and convert &quot;on import&quot;.</li>
+<li>Using a one-point or scale-free conversion because &quot;the site is small&quot;.</li>
+<li>Treating lever arms as installation constants rather than versioned configuration per truck.</li>
+<li>Ignoring attitude in the antenna-to-reference conversion on a ramp mine.</li>
+<li>Validating map changes on geometry only, without comparing grades.</li>
+</ul>
+<h3 id="s-11-2">11.2 Operational mistakes</h3>
+<ul>
+<li>Reading a healthy fix and a zero tracking error as proof that the truck is in the right place.</li>
+<li>Moving a loading spot in the map &quot;by half a metre&quot; to where the trucks stop.</li>
+<li>Loading a new road into the FMS from the planning tool instead of from Survey's delivery.</li>
+<li>Releasing a truck after cab work without the lever-arm check because &quot;the antenna wasn't touched&quot;.</li>
+<li>Accepting a survey package without a check-point result because the shovel is waiting.</li>
+</ul>
+<h2 id="s-12">12. Worked examples</h2>
+<p><strong>Example 1 — The scale-free one-point error at EX02-L.</strong> Scale error <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>s</mi><mo>&#x02212;</mo><mn>1</mn><mo>&#x0003D;</mo><mn>240</mn><mi>&#x000D7;</mi><msup><mn>10</mn><mrow><mo>&#x02212;</mo><mn>6</mn></mrow></msup></mrow></math> <code>[A]</code>. EX02-L is
+4067.2 m from CM1. Error <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo>&#x02248;</mo><mn>240</mn><mi>&#x000D7;</mi><msup><mn>10</mn><mrow><mo>&#x02212;</mo><mn>6</mn></mrow></msup><mi>&#x000D7;</mi><mn>4067.2</mn><mo>&#x0003D;</mo><mn>0.976</mn></mrow></math> m; the lab gives 0.964 m because its rotation
+and anchor come from noisy observations. Decomposed along DT17's approach from EX02-Q: 0.521 m short and 0.811 m to the
+left. At GB1, 141 m from CM1, the same conversion is only 0.054 m off — which is why it looked fine where it was set
+up.</p>
+<p><strong>Example 2 — Why the rigid fit shows its error.</strong> Without scale the residual at a mark is about <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">&#x00028;</mo><mi>s</mi><mo>&#x02212;</mo><mn>1</mn><mo stretchy="false">&#x00029;</mo><msub><mi>r</mi><mi>i</mi></msub></mrow></math>, with
+<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>r</mi><mi>i</mi></msub></mrow></math> its distance from the centroid. For network A, <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo>&#x02211;</mo><msubsup><mi>r</mi><mi>i</mi><mn>2</mn></msubsup><mo>&#x0003D;</mo><mn>21</mn><mspace width="0.167em" /><mn>548</mn><mspace width="0.167em" /><mn>333</mn></mrow></math> m² (ch-12-01), so the RMS distance is
+<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msqrt><mrow><mn>21</mn><mspace width="0.167em" /><mn>548</mn><mspace width="0.167em" /><mn>333</mn><mo>&#x0002F;</mo><mn>6</mn></mrow></msqrt><mo>&#x0003D;</mo><mn>1895.1</mn></mrow></math> m and the expected RMS residual <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>240.1</mn><mi>&#x000D7;</mi><msup><mn>10</mn><mrow><mo>&#x02212;</mo><mn>6</mn></mrow></msup><mi>&#x000D7;</mi><mn>1895.1</mn><mo>&#x0003D;</mo><mn>0.455</mn></mrow></math> m. The
+lab's 0.4396 m differs because the fit absorbs part of the error into rotation and shift and the observations carry
+noise. Against 0.0167 m with the scale, it is unmistakable.</p>
+<p><strong>Example 3 — Grade from a height-system mix.</strong> R05: <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x00394;</mi><mi>R</mi><mi>L</mi><mo>&#x0003D;</mo><mn>120</mn></mrow></math> m, <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>L</mi><mi>h</mi></msub><mo>&#x0003D;</mo><mn>1334.2</mn></mrow></math> m, 8.994 %. With P2 12.0 m too
+high in the map: <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">&#x00028;</mo><mn>120</mn><mo>&#x02212;</mo><mn>12</mn><mo stretchy="false">&#x00029;</mo><mo>&#x0002F;</mo><mn>1334.2</mn><mo>&#x0003D;</mo><mn>8.095</mn></mrow></math> %. Loaded climb speed on the map grade: <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x003B7;</mi><mi>P</mi><mo>&#x0002F;</mo><mo stretchy="false">&#x00028;</mo><mi>m</mi><mi>g</mi><mo stretchy="false">&#x00028;</mo><mi>G</mi><mo>&#x0002B;</mo><mi>R</mi><mi>R</mi><mo stretchy="false">&#x00029;</mo><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>1</mn><mspace width="0.167em" /><mn>440</mn><mspace width="0.167em" /><mn>000</mn><mo>&#x0002F;</mo><mo stretchy="false">&#x00028;</mo><mn>385</mn><mspace width="0.167em" /><mn>000</mn><mi>&#x000D7;</mi><mn>9.81</mn><mi>&#x000D7;</mi><mn>0.11095</mn><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>3.437</mn></mrow></math> m/s = 12.37 km/h, against 11.44 km/h on the true grade. Climb time on
+1339.6 m: 389.8 s against 421.4 s.</p>
+<p><strong>Example 4 — Attitude on R05.</strong> Antenna height 7.0 m <code>[A]</code>, pitch <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>arctan</mi><mo stretchy="false">&#x00028;</mo><mn>0.08994</mn><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>5.14</mn><mi>°</mi></mrow></math>:
+<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>7.0</mn><mi>sin</mi><mn>5.14</mn><mi>°</mi><mo>&#x0003D;</mo><mn>0.627</mn></mrow></math> m, plus <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>3.0</mn><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo>&#x02212;</mo><mi>cos</mi><mn>5.14</mn><mi>°</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>0.012</mn></mrow></math> m from the forward lever arm: 0.639 m along track, as the
+lab gives for the climb.</p>
+<h2 id="s-13">13. Hands-on labs</h2>
+<p><strong>LAB-05-01-01 — Local grid transformation</strong> (labs/README.md). The lab fits the link between the
+teaching projected grid PRJ-TEACH and REFMINE-GRID on the six control marks of ch-12-01 with
+<code>ahs_sim.localisation.fit_similarity</code>, applies it to every reference-mine node and to GB1, compares it with a rigid and a
+one-point scale-free conversion, checks CM5 as a check point, propagates RL errors into the grades of R05 and R24 and
+into the climb, retarding and stopping calculations of <code>ahs_sim.dynamics</code>, recomputes the M-20481 cycle, and quantifies
+the frame-chain errors of attitude, lever arm and heading with <code>body_to_grid</code>. Seven tests check every value quoted in
+this chapter.</p>
+<h2 id="s-14">14. Discussion questions and assignments</h2>
+<h3 id="s-14-1">14.1 Engineering assignments</h3>
+<ol>
+<li>Change the combined scale factor to 0.999950 and to 0.999500 and rerun the lab. At what scale error does the
+one-point conversion at EX02-L exceed half the lateral margin of a loading spot that your site would accept <code>[A]</code>?</li>
+<li>Replace CM1 as the anchor of the one-point conversion by CM5. Which points are now worst, and why?</li>
+<li>Extend <code>frame_chain_cases</code> to a truck on the R18 loading link (medium multipath, 4 % rolling resistance) and decide
+whether attitude handling matters for Spotting there.</li>
+</ol>
+<h3 id="s-14-2">14.2 Operations assignments</h3>
+<ol>
+<li>A Shovel Operator reports that &quot;trucks are spotting a bit long&quot; at EX04 after a face move, but only every second
+truck. What patterns would you look for before calling Survey, and what might &quot;every second truck&quot; mean?</li>
+<li>Write the radio message and the HMI record for step 4 of procedure 8.3 A.</li>
+<li>Survey proposes to re-issue all node coordinates after a refit of the link to the national grid. Who must be told,
+in which order, and what must be checked before the first truck drives on the new coordinates?</li>
+</ol>
+<h2 id="s-15">15. Key takeaways</h2>
+<ul>
+<li>The truck follows the map; a frame error moves the map, so the truck is precisely wrong with every indicator healthy.</li>
+<li>One grid and one RL datum for every system; conversions only at the boundary, once, by Survey, with a versioned link.</li>
+<li>A link without scale is the classic error: a rigid fit shows it in its residuals (0.44 m RMS); a one-point conversion
+hides it until a distant check point (EX02-L 0.964 m; CM5 1.051 m).</li>
+<li>Lengths barely notice a scale error (1.080 m over M-20481); positions far from the anchor do.</li>
+<li>RL errors of centimetres do not matter to grades and dynamics; a vertical-datum mix of metres does — and flatter in the
+map is the non-conservative direction for braking.</li>
+<li>On the truck, a wrong lever arm is a constant bias that no monitor sees; attitude moves the reference point by
+<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>h</mi><mi>sin</mi><mi>&#x003B8;</mi></mrow></math> on every ramp.</li>
+<li>When the face and the map disagree: suspend, hold, call Survey, find the conversion — never move the map to the trucks.</li>
+</ul>
+<h2 id="s-16">16. Glossary terms introduced</h2>
+<ul>
+<li><code>map-projection</code> — Map projection</li>
+<li><code>grid-scale-factor</code> — Grid scale factor</li>
+<li><code>coordinate-transformation</code> — Coordinate transformation</li>
+<li><code>vertical-datum</code> — Vertical datum</li>
+<li><code>body-frame</code> — Body frame</li>
+<li><code>sensor-frame</code> — Sensor frame</li>
+<li><code>lever-arm</code> — Lever arm</li>
+<li><code>vehicle-reference-point</code> — Vehicle reference point</li>
+<li><code>frame-chain</code> — Frame chain</li>
+</ul>
+<p>Existing terms used: <code>geodetic-datum</code>, <code>local-mine-grid</code>, <code>reduced-level</code>, <code>similarity-transformation</code>, <code>check-point</code>,
+<code>control-register</code>, <code>survey-hand-off-package</code>, <code>site-transformation</code>, <code>real-time-kinematic</code>, <code>base-station</code>, <code>gnss</code>,
+<code>ahs-map</code>, <code>map-version</code>, <code>calibration</code>, <code>loading-spot</code>, <code>loading-area</code>, <code>spotting</code>, <code>grade-resistance</code>, <code>retarding</code>,
+<code>reassignment</code>, <code>survey-role</code>, <code>shovel-operator</code>.</p>
+<nav aria-label="Introductory chapters"><p><a href="../handbook.html">Handbook contents</a> · <a href="ch-05-02.en.html">Next chapter</a></p></nav>
+</main>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.1/dist/mermaid.min.js"></script>
+<script>if(window.ahsRenderMermaid){window.ahsRenderMermaid();}</script>
+</body>
+</html>

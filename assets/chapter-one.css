@@ -1,0 +1,31 @@
+body {
+  max-width: 54rem;
+  padding-inline: clamp(1rem, 4vw, 2rem);
+  font-size: clamp(1rem, 1.8vw, 1.125rem);
+}
+.article-header {
+  margin-block: 1rem 1.5rem;
+  padding-block: 1.1rem 1rem;
+  border-block: 1px solid var(--border);
+}
+.article-header h1 {
+  max-width: 22ch;
+  margin-block: 1rem .25rem;
+  font-size: clamp(2rem, 5.5vw, 3.65rem);
+  line-height: 1.08;
+  letter-spacing: -.04em;
+  text-wrap: balance;
+}
+.article-header .theme-toggle { margin-inline-start: auto; }
+.toc { padding: .75rem 1rem; }
+.toc summary { color: var(--fg); font-weight: 700; cursor: pointer; }
+.quick-link { margin-block: 1.1rem 1.6rem; font-weight: 650; }
+.article-body > nav:last-child {
+  margin-top: 2rem;
+  padding-top: .5rem;
+  border-top: 1px solid var(--border);
+}
+a:focus-visible, summary:focus-visible, button:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}

@@ -1,0 +1,1922 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="generator" content="ahs-handbook build_articles 2.0.0">
+<meta name="ahs:id" content="ch-23-01">
+<meta name="ahs:version" content="0.1.2">
+<meta name="ahs:status" content="approved">
+<meta name="ahs:source-sha256" content="a8c75dd00ef7463c">
+<title>Simulator architecture</title>
+<style>
+:root {
+  --bg: #fbfaf7;
+  --fg: #1d1f21;
+  --muted: #5d6166;
+  --accent: #1f6f8b;
+  --accent-soft: #e3f0f4;
+  --border: #d9d6cf;
+  --code-bg: #f1efea;
+  --warn-bg: #fff6e0;
+  --warn-border: #e2b54a;
+  --watermark: rgba(200, 60, 60, 0.07);
+  --font-body: system-ui, -apple-system, "Segoe UI", "Hiragino Sans", "Hiragino Kaku Gothic ProN",
+    "Noto Sans JP", "Yu Gothic", Meiryo, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #15171a;
+    --fg: #e6e4df;
+    --muted: #a3a7ad;
+    --accent: #6cc3de;
+    --accent-soft: #1d3440;
+    --border: #33373d;
+    --code-bg: #1f2226;
+    --warn-bg: #2e2716;
+    --warn-border: #8c7330;
+    --watermark: rgba(255, 120, 120, 0.06);
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #15171a;
+  --fg: #e6e4df;
+  --muted: #a3a7ad;
+  --accent: #6cc3de;
+  --accent-soft: #1d3440;
+  --border: #33373d;
+  --code-bg: #1f2226;
+  --warn-bg: #2e2716;
+  --warn-border: #8c7330;
+  --watermark: rgba(255, 120, 120, 0.06);
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0 auto;
+  max-width: 52rem;
+  padding: 1.25rem 16px 3rem;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-body);
+  font-size: 1.0625rem;
+  line-height: 1.7;
+  overflow-wrap: anywhere;
+}
+h1 { font-size: 1.9rem; line-height: 1.3; margin: 0.6rem 0 1rem; }
+h2 { font-size: 1.4rem; margin-top: 2.4rem; border-bottom: 1px solid var(--border); padding-bottom: 0.2rem; }
+h3 { font-size: 1.15rem; margin-top: 1.8rem; }
+a { color: var(--accent); }
+code { font-family: var(--font-mono); background: var(--code-bg); padding: 0.05rem 0.3rem; border-radius: 3px; font-size: 0.92em; }
+pre { background: var(--code-bg); padding: 0.8rem 1rem; overflow-x: auto; border-radius: 6px; line-height: 1.45; }
+pre code { background: none; padding: 0; }
+table { border-collapse: collapse; width: 100%; display: block; overflow-x: auto; margin: 1rem 0; }
+th, td { border: 1px solid var(--border); padding: 0.35rem 0.6rem; text-align: left; vertical-align: top; }
+/* Never break inside numbers or IDs in table cells; wide tables scroll horizontally instead. */
+th, td { overflow-wrap: normal; word-break: normal; }
+th { background: var(--accent-soft); }
+blockquote { margin: 1rem 0; padding: 0.2rem 1rem; border-left: 4px solid var(--accent); color: var(--muted); }
+.article-header .meta-row { display: flex; flex-wrap: wrap; gap: 0.4rem 0.9rem; align-items: center; font-size: 0.85rem; color: var(--muted); }
+.chapter-id { font-family: var(--font-mono); font-weight: 600; color: var(--fg); }
+.status { padding: 0.05rem 0.5rem; border: 1px solid var(--border); border-radius: 999px; }
+.status-draft, .status-revision, .status-in-review { border-color: var(--warn-border); background: var(--warn-bg); }
+.theme-toggle { font: inherit; font-size: 0.8rem; color: var(--fg); background: transparent; border: 1px solid var(--border); border-radius: 4px; padding: 0.1rem 0.5rem; cursor: pointer; }
+.disclaimer { background: var(--warn-bg); border: 1px solid var(--warn-border); border-radius: 6px; padding: 0.6rem 0.9rem; font-size: 0.9rem; }
+.disclaimer p { margin: 0.25rem 0; }
+.toc { border: 1px solid var(--border); border-radius: 6px; padding: 0.6rem 1rem; margin: 1.2rem 0; font-size: 0.92rem; }
+.toc ol { margin: 0.3rem 0 0; padding-left: 1.2rem; }
+.fig { margin: 1.6rem 0; text-align: center; }
+.fig img, .fig svg { max-width: 100%; height: auto; }
+.fig pre.mermaid { background: transparent; text-align: center; }
+figcaption { font-size: 0.9rem; color: var(--muted); margin-top: 0.5rem; }
+.fig-no { font-weight: 600; color: var(--fg); }
+.fig-id { font-family: var(--font-mono); font-size: 0.75rem; opacity: 0.7; }
+.math-block { overflow-x: auto; margin: 1rem 0; }
+math { font-size: 1.1em; }
+.widget { border: 1px solid var(--border); border-radius: 8px; padding: 1rem; margin: 1.5rem 0; background: var(--accent-soft); }
+.widget label { display: block; margin: 0.4rem 0; font-size: 0.95rem; }
+.widget select, .widget input { font: inherit; color: var(--fg); background: var(--bg); border: 1px solid var(--border); border-radius: 4px; padding: 0.15rem 0.3rem; max-width: 100%; }
+.widget .result { font-size: 1.05rem; margin-top: 0.7rem; }
+.widget table { font-size: 0.88rem; }
+.watermark { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; pointer-events: none; font-size: 22vw; font-weight: 800; color: var(--watermark); transform: rotate(-24deg); z-index: 0; }
+.article-header, .toc, .article-body, .article-footer { position: relative; z-index: 1; }
+.article-footer { margin-top: 3rem; font-size: 0.8rem; color: var(--muted); border-top: 1px solid var(--border); padding-top: 0.6rem; }
+@media (max-width: 600px) {
+  body { font-size: 1rem; }
+  h1 { font-size: 1.55rem; }
+}
+@media print { .watermark { color: rgba(0, 0, 0, 0.06); } .theme-toggle { display: none; } }
+/* Layered chapters (review 2026-11-21 A04, WP-PILOT-3CH): only pages of chapters with front-matter `layers` load this. */
+.core-points { border: 2px solid var(--accent); background: var(--accent-soft); border-radius: 8px; padding: 0.5rem 1rem 0.6rem; margin: 1rem 0 1.6rem; }
+.core-points > p { margin: 0.4rem 0; }
+.core-points ol { margin: 0.3rem 0 0.5rem; padding-left: 1.4rem; }
+.core-points li { margin: 0.25rem 0; }
+.layer-tag { display: inline-block; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; line-height: 1.5; border: 1px solid currentColor; border-radius: 3px; padding: 0 0.35rem; margin-right: 0.45rem; vertical-align: 0.1em; }
+.layer-tag.layer-detail { color: var(--accent); }
+.layer-tag.layer-reference { color: var(--muted); }
+details.layer-fold { border-left: 3px solid var(--border); padding-left: 0.9rem; margin: 0.5rem 0 1.2rem; }
+details.layer-fold.layer-detail { border-left-color: var(--accent); }
+details.layer-fold > summary { cursor: pointer; color: var(--muted); font-size: 0.92rem; padding: 0.25rem 0; }
+details.layer-fold > summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+details.layer-fold[open] > summary { margin-bottom: 0.4rem; }
+.toc .toc-layer { margin-left: 0.4rem; font-size: 0.68rem; }
+.layer-legend { margin: 0.3rem 0 0.4rem; color: var(--muted); }
+.layer-toggle { font: inherit; font-size: 0.85rem; color: var(--fg); background: transparent; border: 1px solid var(--border); border-radius: 4px; padding: 0.05rem 0.5rem; cursor: pointer; }
+.layer-toggle[aria-pressed="true"] { background: var(--accent-soft); }
+@media print {
+  details.layer-fold { border-left: none; padding-left: 0; }
+  details.layer-fold > summary, .layer-toggle { display: none; }
+}
+
+</style>
+<script>
+(function () {
+  var root = document.documentElement;
+  try {
+    var saved = localStorage.getItem("ahs-theme");
+    if (saved === "dark" || saved === "light") root.dataset.theme = saved;
+  } catch (e) {}
+  var mq = window.matchMedia ? window.matchMedia("(prefers-color-scheme: dark)") : null;
+  // No explicit choice: follow the system theme (CSS does the same through prefers-color-scheme).
+  function isDark() {
+    return root.dataset.theme ? root.dataset.theme === "dark" : !!(mq && mq.matches);
+  }
+  // Mermaid diagrams keep their original definition in data-source and are re-rendered with the theme that
+  // matches the page whenever the theme changes (review 2026-11-14, R22).
+  window.ahsRenderMermaid = function () {
+    if (!window.mermaid) return;
+    var nodes = Array.prototype.slice.call(document.querySelectorAll("pre.mermaid"));
+    if (!nodes.length) return;
+    nodes.forEach(function (el) {
+      if (el.getAttribute("data-source") === null) {
+        el.setAttribute("data-source", el.textContent);
+      } else {
+        el.removeAttribute("data-processed");
+        el.textContent = el.getAttribute("data-source");
+      }
+    });
+    window.mermaid.initialize({ startOnLoad: false, securityLevel: "strict", theme: isDark() ? "dark" : "default" });
+    var done = window.mermaid.run({ nodes: nodes });
+    if (done && done.catch) done.catch(function (err) { if (window.console) console.error(err); });
+  };
+  function syncButton(btn) {
+    btn.setAttribute("aria-pressed", isDark() ? "true" : "false");
+  }
+  document.addEventListener("DOMContentLoaded", function () {
+    var btn = document.querySelector(".theme-toggle");
+    if (btn) syncButton(btn);
+    if (mq) {
+      var onSystemChange = function () {
+        if (root.dataset.theme) return;
+        if (btn) syncButton(btn);
+        window.ahsRenderMermaid();
+      };
+      if (mq.addEventListener) mq.addEventListener("change", onSystemChange);
+      else if (mq.addListener) mq.addListener(onSystemChange);
+    }
+    if (!btn) return;
+    btn.addEventListener("click", function () {
+      root.dataset.theme = isDark() ? "light" : "dark";
+      try { localStorage.setItem("ahs-theme", root.dataset.theme); } catch (e) {}
+      syncButton(btn);
+      window.ahsRenderMermaid();
+    });
+  });
+})();
+
+// Layered chapters (review 2026-11-21 A04, WP-PILOT-3CH): detail and reference sections are <details class="layer-fold">,
+// closed by default. A link or an address with a #fragment inside a folded section opens every enclosing fold first, and
+// a heading of a folded section (data-fold) opens its own fold. "Expand all" opens or folds every section. Printing
+// opens all folds and restores them afterwards. Without JavaScript the folds still open by their summary.
+(function () {
+  function folds() {
+    return Array.prototype.slice.call(document.querySelectorAll("details.layer-fold"));
+  }
+  function decode(id) {
+    try { return decodeURIComponent(id); } catch (e) { return id; }
+  }
+  function openTo(id) {
+    var el = id ? document.getElementById(id) : null;
+    if (!el) return null;
+    var own = el.getAttribute("data-fold");
+    if (own) {
+      var f = document.getElementById(own);
+      if (f) f.open = true;
+    }
+    for (var p = el.parentElement; p; p = p.parentElement) {
+      if (p.tagName === "DETAILS" && !p.open) p.open = true;
+    }
+    return el;
+  }
+  function fromHash() {
+    var el = openTo(decode(window.location.hash.slice(1)));
+    if (el) el.scrollIntoView();
+  }
+  window.ahsOpenTo = openTo;
+  document.addEventListener("DOMContentLoaded", function () {
+    var btn = document.querySelector(".layer-toggle");
+    if (btn) {
+      btn.hidden = false;
+      btn.addEventListener("click", function () {
+        var all = btn.getAttribute("aria-pressed") !== "true";
+        folds().forEach(function (d) { d.open = all; });
+        btn.setAttribute("aria-pressed", all ? "true" : "false");
+        btn.textContent = all ? "Fold detail and reference" : "Expand all";
+      });
+    }
+    document.addEventListener("click", function (ev) {
+      var a = ev.target && ev.target.closest ? ev.target.closest('a[href^="#"]') : null;
+      if (a) openTo(decode(a.getAttribute("href").slice(1)));
+    });
+    if (window.location.hash) fromHash();
+  });
+  window.addEventListener("hashchange", fromHash);
+  var saved = null;
+  window.addEventListener("beforeprint", function () {
+    saved = folds().map(function (d) { return d.open; });
+    folds().forEach(function (d) { d.open = true; });
+  });
+  window.addEventListener("afterprint", function () {
+    if (!saved) return;
+    var s = saved;
+    saved = null;
+    folds().forEach(function (d, i) { d.open = s[i]; });
+  });
+})();
+
+</script>
+<link rel="canonical" href="https://thomas-21.github.io/ahs_engineering_handbook/vol-23/ch-23-01.en.html">
+</head>
+<body data-chapter-id="ch-23-01" data-status="approved" data-layered="true">
+<header class="article-header">
+  <div class="meta-row">
+    <a class="home-link" href="../handbook.html">All chapters</a>
+    <span class="chapter-id">ch-23-01</span>
+    <button type="button" class="theme-toggle" aria-label="Theme">Theme</button>
+  </div>
+  <h1>Simulator architecture</h1>
+</header>
+<nav class="toc" aria-label="Contents"><strong>Contents</strong><p class="layer-legend">Core sections are open; <span class="layer-tag layer-detail">Detail</span> and <span class="layer-tag layer-reference">Reference</span> sections are folded: open one by its summary line or by following a link into it. <button type="button" class="layer-toggle" aria-pressed="false" hidden>Expand all</button></p><ol><li class="toc-core"><a href="#s-1">1. Overview</a></li><li class="toc-core"><a href="#s-2">2. Operational motivation: the problem at the reference mine</a></li><li class="toc-reference"><a href="#s-3">3. Terminology and foundations</a> <span class="layer-tag layer-reference toc-layer">Reference</span></li><li class="toc-core"><a href="#s-4">4. Technical explanation</a></li><li class="toc-detail"><a href="#s-5">5. Responsibilities and interface boundaries</a> <span class="layer-tag layer-detail toc-layer">Detail</span></li><li class="toc-core"><a href="#s-6">6. Normal, abnormal and degraded operation</a></li><li class="toc-detail"><a href="#s-7">7. Engineering view</a> <span class="layer-tag layer-detail toc-layer">Detail</span></li><li class="toc-core"><a href="#s-8">8. Operations view</a></li><li class="toc-reference"><a href="#s-9">9. Requirements and acceptance criteria</a> <span class="layer-tag layer-reference toc-layer">Reference</span></li><li class="toc-detail"><a href="#s-10">10. Verification and validation</a> <span class="layer-tag layer-detail toc-layer">Detail</span></li><li class="toc-detail"><a href="#s-11">11. Common mistakes</a> <span class="layer-tag layer-detail toc-layer">Detail</span></li><li class="toc-detail"><a href="#s-12">12. Worked examples</a> <span class="layer-tag layer-detail toc-layer">Detail</span></li><li class="toc-reference"><a href="#s-13">13. Hands-on labs</a> <span class="layer-tag layer-reference toc-layer">Reference</span></li><li class="toc-detail"><a href="#s-14">14. Discussion questions and assignments</a> <span class="layer-tag layer-detail toc-layer">Detail</span></li><li class="toc-core"><a href="#s-15">15. Key takeaways</a></li><li class="toc-reference"><a href="#s-16">16. Glossary terms introduced</a> <span class="layer-tag layer-reference toc-layer">Reference</span></li></ol></nav>
+<main class="article-body">
+<h2 id="s-1" class="layer-head layer-core" data-layer="core">1. Overview</h2>
+<aside class="core-points" aria-label="Core in five points">
+<p><strong>Core in five points.</strong> Read these first; each links to the section that develops it.</p>
+<ol>
+<li>The engine is event-driven: the clock jumps from one state change to the next, and time-stepped models run inside
+single events where motion is continuous. Fifteen events reproduce DT17's 1564.06 s cycle exactly; a 1 s loop
+needs 1565 steps and is still 0.94 s off (<a href="#s-4-1">section 4.1</a>).</li>
+<li>Events are ordered by time, priority and insertion sequence, so equal inputs give equal event logs; a list order is
+an input (<a href="#s-4-2">section 4.2</a>).</li>
+<li>Adapters mirror FMS, AMS, ADS, VCS, independent safety functions, onboard systems, manned-vehicle devices and
+people; they communicate only through events, and authority boundaries are inputs an adapter does not have
+(<a href="#s-4-3">section 4.3</a>).</li>
+<li>A run is reproducible from its configuration and identified by its run hash; two results are compared only when
+their summaries match, and different seeds are replications, not changes (<a href="#s-4-6">section 4.6</a>,
+<a href="#s-8-1">section 8.1</a>).</li>
+<li>The models give different &quot;baseline&quot; numbers for stated reasons: the 1564 s cycle, the fleet model's 184,140 t and
+the live world's production differ by fleet, queues, acceleration and traffic, not by error; every number is quoted
+with its model conditions (<a href="#s-4-10">section 4.10</a>).</li>
+</ol>
+<p><strong>Reading order.</strong> Core path: sections 1 and 2, 4.1 to 4.3, 4.6 and 4.10, the shared timeline in 6.1, the run summary
+and procedure in 8.1 and 8.3, and 15. Detail sections (adapter protocol, dependency graph, scenario runner, the
+Engineering view, verification, mistakes, worked examples) and reference sections (terms, requirements, labs,
+sources) are folded in the article and open from their summary line or from any link into them.</p>
+</aside>
+<h3 id="s-1-1" class="layer-head layer-core" data-layer="core">1.1 Why this chapter matters</h3>
+<p>On Monday the AHS Controller and the Pit Supervisor want to rehearse a cancellation before a planned C01 chute
+inspection: the FMS cancels M-20481 while DT17 is loaded on R01, and the crew should see, second by second, what the
+FMS, the AMS and the truck do and when each of them reports. They send the request to the site engineer, who runs
+the integrated simulator. The same morning the planner shows two runs of &quot;the baseline shift&quot; at the weekly review:
+one gives 184,140 t, the other 184,360 t. Nobody can say whether the 220 t difference means anything, because nobody
+can say how the two runs differ.</p>
+<p>Both requests raise the questions of this chapter. How does a simulator built from twenty-two volumes of separate
+models advance time, and in what order does it process two things that happen at the same instant? How are its parts
+cut so that the AMS model cannot override the truck? What must be written down so that a run can be repeated exactly
+and two results compared? And what must a request contain so that the engineer can run it without a second
+conversation?</p>
+<p>This chapter covers:</p>
+<ul>
+<li>the discrete-event engine of <code>ahs_sim.engine</code> (simulation clock, event queue, deterministic tie-breaking) and why it
+suits the reference mine better than a fixed time step;</li>
+<li>the module boundaries of the simulator, which mirror FMS, AMS, ADS, VCS, independent safety functions, onboard
+safety-related systems, manned-vehicle devices and people, and the adapter interface every earlier module uses;</li>
+<li>the module dependency graph: acyclic, free of visualisation imports, with one deferred function-level cycle reported;</li>
+<li>reproducibility: configuration, seed, versions and run hash, and the rule for comparing two runs;</li>
+<li>the scenario runner and the operations &quot;scenario request&quot;; people as scripted decision policies.</li>
+</ul>
+<h3 id="s-1-2" class="layer-head layer-core" data-layer="core">1.2 Learning objectives — Engineering</h3>
+<p>After this chapter an engineering reader will be able to:</p>
+<ol>
+<li>Explain the discrete-event simulation model (simulation clock, event queue, deterministic tie-breaking) and justify
+it against a fixed time-step design for the reference mine.</li>
+<li>Design the module boundaries of the integrated simulator so that they mirror FMS, AMS, ADS, VCS, independent safety
+functions, onboard safety-related systems, manned-vehicle devices and people, and show that the dependency graph is
+acyclic and free of visualisation imports.</li>
+<li>Specify the configuration, seed and version metadata that make a run reproducible, and verify that two runs with
+identical inputs produce identical event-log hashes.</li>
+<li>Define the adapter interface (inputs, outputs, emitted events) every earlier-volume module implements, and show how
+a module is replaced by a stub for testing.</li>
+</ol>
+<h3 id="s-1-3" class="layer-head layer-core" data-layer="core">1.3 Learning objectives — Operations</h3>
+<p>After this chapter an operations reader will be able to:</p>
+<ol>
+<li>State which operational questions the simulator can help answer (sequence, timing, relative throughput impact) and
+which it cannot (absolute safety assurance, real-mine forecasts).</li>
+<li>Write a scenario request for a rehearsal (scenario ID, shift, fleet state, injected events, outputs wanted) that an
+engineer can run without further clarification.</li>
+<li>Explain how roles (AHS Controller, Pit Supervisor, Shovel Operator, ERT) are represented as scripted decision
+policies and why simulated human response times are assumptions <code>[A]</code>.</li>
+<li>Check from two run summaries (configuration, seed, versions, KPIs) whether their results are comparable before
+using them in a discussion.</li>
+</ol>
+<h2 id="s-2" class="layer-head layer-core" data-layer="core">2. Operational motivation: the problem at the reference mine</h2>
+<p>Every volume of this handbook added a model to <code>ahs_sim</code>: DT17's 1564 s cycle on M-20481 (ch-01-01), the FMS
+dispatching 37 producing trucks (ch-01-07), AMS reservations and permissions (Volumes 02 and 10), a truck stopping on
+its grade (Volumes 05 to 08), the loss of CT3 (Volume 11), event logs and KPIs (Volume 22). Each answers its own
+chapter's question. None alone answers the questions of section 1.1: the cancellation involves three elements and a
+person, and a CT3 outage matters because the AMS, the trucks and the controller react to it at different times. The
+models must run together, on one clock, writing one log, under one configuration.</p>
+<p>Integration brings three risks that the separate models did not have.</p>
+<p><strong>Order.</strong> Two models may act at the same instant (a truck reaches a queue as the shovel finishes a load). If the
+simulator does not define which goes first, two runs of the same input can differ for no stated reason.</p>
+<p><strong>Authority.</strong> A simulator that lets the FMS model stop a truck, or the AMS model override a vehicle-side stop, teaches
+the wrong architecture; its parts must respect the boundaries of ch-01-04.</p>
+<p><strong>Trust.</strong> A result that cannot be reproduced cannot be discussed. Whether the 220 t of section 1.1 is a model change,
+a configuration change or a different seed must be visible from the run records, not from someone's memory.</p>
+<p>The simulator answers these risks with an architecture: a discrete-event engine with a fixed ordering rule, module
+adapters cut along the handbook architecture, a checked dependency graph, and a run configuration with a hash of every
+event log. None of this makes it a safety tool: the simulator is not safety-certified, a passing run or test campaign
+demonstrates model logic only, and no result is a basis for operational decisions. A rehearsal in it supplements, and
+never replaces, site training and authorisation (ch-16-09).</p>
+<h2 id="s-3" class="layer-head layer-reference" data-layer="reference" data-fold="fold-s-3">3. Terminology and foundations</h2>
+<details class="layer-fold layer-reference" id="fold-s-3" data-layer="reference"><summary><span class="layer-tag layer-reference">Reference</span>Show section 3</summary>
+<p><strong>Discrete-event simulation.</strong> A simulation in which the model state changes only at discrete event times; between two
+events nothing changes, so the simulation clock jumps from one event to the next. <code>ahs_sim.queueing.simulate_loop</code>
+(ch-01-05) was already a small discrete-event simulation of one loading loop; the engine of this volume generalises it
+to the whole mine.</p>
+<p><strong>Fixed time-step simulation.</strong> A simulation that advances the clock by a constant step <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x00394;</mi><mi>t</mi></mrow></math> and updates every
+model at every step. The dynamic truck model of ch-07-01 (<code>ahs_sim.dynamics</code>) integrates the equation of motion this
+way with 0.1 s steps.</p>
+<p><strong>Simulation clock.</strong> The engine's current time, in seconds of site time from 06:00 on day 0 <code>[H]</code>. It never runs
+backwards; an event may be scheduled at the current time or later, never earlier.</p>
+<p><strong>Event.</strong> One scheduled occurrence: time, priority, insertion sequence, kind, source, target and payload. Kinds of
+the handbook event schema (ch-22-01) are logged as telemetry records; kinds starting with an underscore are internal
+and only dispatched <code>[H]</code>.</p>
+<p><strong>Event queue and deterministic tie-breaking.</strong> The engine keeps events in a priority queue ordered by the key
+(time, priority, insertion sequence), so the order of simultaneous events depends only on the inputs <code>[H]</code>.</p>
+<p><strong>Entity.</strong> A simulated thing with a state history: a truck, a shovel, a plant, a light vehicle, a permission, a role.</p>
+<p><strong>Module adapter.</strong> The code that connects an earlier-volume module to the engine, declaring its inputs, outputs,
+emitted kinds and coupling level <code>[H]</code>.</p>
+<p><strong>Coupling level.</strong> <em>Wrapped run</em> — a whole-shift model runs once and its results become engine events;
+<em>event-level</em> — the adapter reacts to engine events one by one; <em>stub</em> — scripted behaviour behind the same interface
+<code>[H]</code>.</p>
+<p><strong>Run configuration and run hash.</strong> The run configuration lists what makes a run reproducible: reference-mine version,
+seed, module versions, scenarios and options. The run hash is a SHA-256 digest of the canonical event log (ch-22-01
+schema, times rounded to 10⁻⁶ s) <code>[H]</code>.</p>
+<p><strong>Reproducibility.</strong> The same configuration on the same code produces the same event log (equal run hashes). It is
+not evidence that the simulator is right.</p>
+<p><strong>Scenario runner and scenario request.</strong> The scenario runner (<code>ahs_sim.scenario_runner</code>) turns a scenario request
+(scenario ID, shift, fleet state, injected events, outputs, seed) into a plan, runs it on the engine and returns the
+log, KPIs, timeline, run hash and configuration <code>[H]</code>.</p>
+<p><strong>Scripted decision policy.</strong> The representation of a person in the simulator: a role performs a step a fixed,
+assumed time <code>[A]</code> after the event it depends on. It is not a model of human performance.</p>
+<p>The simulator is neither a digital twin, which is synchronised with the mine (ch-12-10), nor a training system that
+reproduces control-room functions (ch-16-09); it is an educational model with no link to the mine.</p>
+</details>
+<h2 id="s-4" class="layer-head layer-core" data-layer="core">4. Technical explanation</h2>
+<h3 id="s-4-1" class="layer-head layer-core" data-layer="core">4.1 Event-driven or fixed time step</h3>
+<p>The reference mine is a system in which most things are steady most of the time. DT17 hauls up R05 at a constant
+11.4 km/h for 421 s (ch-01-01); between leaving EX02 and arriving at C01 nothing in its state changes that a production
+question cares about. What matters happens at the boundaries: arrival at a queue, start of Spotting, end of loading, a
+reservation granted, an alarm, a message received.</p>
+<p>A fixed time-step design visits every truck at every step and asks whether anything has changed. LAB-23-01-01 runs
+DT17's M-20481 cycle both ways. The phases from <code>haul_cycle.compute_cycle</code> are 35 s Spotting at EX02, 132 s loading,
+803.96 s travel loaded, 40 s Spotting at C01, 50 s tipping and 503.11 s travel empty, 1564.06 s in all (steady-state
+model, ch-01-01). In a fixed-step loop a phase ends at the first step at or after its true end, so every phase is
+rounded up to a multiple of the step:</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mi>t</mi><mi>c</mi></msub><mo stretchy="false">&#x00028;</mo><mi>&#x00394;</mi><mi>t</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><msubsup><mo>&#x02211;</mo><mrow><mi>i</mi><mo>&#x0003D;</mo><mn>1</mn></mrow><mrow><mn>6</mn></mrow></msubsup><mi>&#x00394;</mi><mi>t</mi><mrow><mo stretchy="true" fence="true" form="prefix">&#x02308;</mo><mfrac><mrow><msub><mi>d</mi><mi>i</mi></msub></mrow><mrow><mi>&#x00394;</mi><mi>t</mi></mrow></mfrac><mo stretchy="true" fence="true" form="postfix">&#x02309;</mo></mrow><mo>&#x0002C;</mo><mspace width="2em" /><mn>0</mn><mo>&#x02264;</mo><msub><mi>t</mi><mi>c</mi></msub><mo stretchy="false">&#x00028;</mo><mi>&#x00394;</mi><mi>t</mi><mo stretchy="false">&#x00029;</mo><mo>&#x02212;</mo><msub><mi>t</mi><mi>c</mi></msub><mo>&#x02264;</mo><mn>6</mn><mspace width="0.167em" /><mi>&#x00394;</mi><mi>t</mi></mrow></math></div>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Cycle</th>
+<th>Error</th>
+<th>Work per cycle</th>
+<th>Work per shift (40 trucks, 12 h)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Event-driven engine</td>
+<td>1564.06 s</td>
+<td>2.3 × 10⁻¹³ s</td>
+<td>15 events (9 records, 6 internal)</td>
+<td>28,659 events (baseline shift)</td>
+</tr>
+<tr>
+<td>Fixed step 5 s</td>
+<td>1570.0 s</td>
+<td>+5.94 s</td>
+<td>314 steps</td>
+<td>345,600 truck-steps</td>
+</tr>
+<tr>
+<td>Fixed step 1 s</td>
+<td>1565.0 s</td>
+<td>+0.94 s</td>
+<td>1565 steps</td>
+<td>1,728,000 truck-steps</td>
+</tr>
+<tr>
+<td>Fixed step 0.1 s</td>
+<td>1564.2 s</td>
+<td>+0.14 s</td>
+<td>15,642 steps</td>
+<td>17,280,000 truck-steps</td>
+</tr>
+</tbody>
+</table>
+<p><em>Model conditions</em> (section 4.10): the six phases of model M1 (<code>haul_cycle.compute_cycle</code>) run through the engine and
+through lab-local fixed-step loops (LAB-23-01-01); one truck (DT17, EX02 → C01); one cycle; queues none; acceleration
+none; disturbances none; deterministic, no seed. The shift column counts 40 trucks × 12 h for the loops and the events
+of the SCN-BASELINE-SHIFT log (seed 0) for the engine.</p>
+<p>The engine reproduces the closed-form cycle to floating-point precision with 15 events per cycle. The 1 s loop needs
+1565 steps per cycle, is still 0.94 s off, and visits trucks about sixty times more often per shift than the engine
+processes events.</p>
+<p>The fixed time step is not wrong; it answers a different question. When the question is how speed changes inside a
+phase — acceleration out of a corner, a stop on a grade, a speed trace after a remote stop — the state changes
+continuously and a fixed step is the natural method; ch-07-01 finds the dynamic model 28.2 s (1.8 %) slower on
+M-20481. The simulator therefore combines the two <code>[H]</code>: the engine is event-driven, and an adapter may call a
+time-stepped model inside one event. The VCS adapter calls <code>dynamics.stop_on_grade</code> (0.01 s steps) and schedules one
+<code>stop</code> event at the computed standstill time. Events also fit the subject: messages between FMS, AMS and trucks are
+discrete, and the event log of Volume 22 is a list of discrete records that the KPI pipeline of ch-22-06 can read.</p>
+<h3 id="s-4-2" class="layer-head layer-core" data-layer="core">4.2 The engine loop and deterministic tie-breaking</h3>
+<p>FIG-23-01-02 shows the loop of <code>engine.Engine</code> <code>[H]</code>.</p>
+<figure id="FIG-23-01-02" class="fig"><pre class="mermaid">flowchart TD
+  S[&quot;Adapters and the scenario runner schedule events&lt;br/&gt;(time, priority, kind, source, target, payload)&quot;] --&gt; Q[&quot;Event queue&lt;br/&gt;ordered by time, then priority, then insertion sequence&quot;]
+  Q --&gt; P{&quot;Next event time at or before until_s?&quot;}
+  P -- &quot;no&quot; --&gt; E[&quot;End of run&lt;br/&gt;event log hashed: run hash&quot;]
+  P -- &quot;yes&quot; --&gt; POP[&quot;Pop the first event&lt;br/&gt;advance the simulation clock to its time&quot;]
+  POP --&gt; K{&quot;Telemetry kind?&quot;}
+  K -- &quot;yes&quot; --&gt; R[&quot;Append one telemetry record to the event log&lt;br/&gt;(wrapped-run records are logged unchanged)&quot;]
+  K -- &quot;no, internal kind&quot; --&gt; D[&quot;Dispatch to every adapter whose inputs include the kind&lt;br/&gt;in registration order&quot;]
+  R --&gt; D
+  D --&gt; A[&quot;Adapter changes entity states&lt;br/&gt;and schedules new events at now or later&quot;]
+  A --&gt; Q
+  X[&quot;Example from section 6.1: T+3.3 s _path_ack reaches the AMS adapter&lt;br/&gt;it schedules the release of R21 at T+4.0 s&quot;] -.-&gt; D
+  classDef core fill:#dbe9fa,stroke:#2a78d6,color:#0b0b0b
+  classDef note fill:#f4f4f2,stroke:#52514e,color:#0b0b0b
+  class Q,POP,D core
+  class X note
+</pre><figcaption><span class="fig-no">Figure 1</span> Discrete-event loop: schedule, pop, dispatch to module, emit log <span class="fig-id">FIG-23-01-02</span></figcaption></figure>
+<p>Adapters and the scenario runner schedule events; the queue orders them by (time, priority, insertion sequence). The
+engine pops the first event, advances the simulation clock to its time, appends a telemetry record to the event log if
+the kind belongs to the event schema, and dispatches the event to every adapter whose inputs include its kind, in the
+order the adapters were registered. Each adapter may change entity states and schedule new events at the current time
+or later. The loop ends when the next event lies beyond the requested end time; the event log is then hashed.</p>
+<p>Four rules keep the run deterministic <code>[H]</code>:</p>
+<ol>
+<li><strong>The queue key is total.</strong> Time, then priority, then an insertion counter, so events at the same time and priority
+keep the order in which the inputs scheduled them.</li>
+<li><strong>The clock never runs backwards.</strong> Scheduling before the current time, or at a NaN time, raises an error.</li>
+<li><strong>Adapters are called in registration order.</strong> The scenario runner registers the wrapped shift log first, then the
+recipe's adapters, then the procedure.</li>
+<li><strong>Randomness only through seeded generators.</strong> Every stochastic model takes an explicit seed (<code>ahs_sim.rng</code>); the
+seed is part of the run configuration.</li>
+</ol>
+<p>Priorities carry a convention: a record that describes a state change an adapter has just made is scheduled at
+priority −1, so it is logged before other events at the same instant that depend on it (a <code>cycle_state</code> before the next
+truck's reaction); a vehicle-side brake command from an independent path is scheduled at −2, ahead of everything else
+at that instant. Priorities never change the time of an event, only the order within one instant.</p>
+<p>LAB-23-01-01 lets DT17 and DT18 reach EX02-Q at the same instant. With DT17 listed first, DT17 is served first and
+DT18 queues for 167 s; with the list reversed, DT18 is served first. Both runs repeat exactly and their hashes differ:
+the list order is an input, and the rule makes its effect repeatable. A lab-local queue that breaks equal keys by a
+random draw serves DT17 first under three tie seeds and DT18 under three others, giving six different logs that nothing
+in the configuration explains. The rule does not make the order <em>correct</em>: which truck a real loading unit should serve
+first is a loading question (ch-13-02). Determinism makes the model's choice visible; it does not choose for the mine.</p>
+<h3 id="s-4-3" class="layer-head layer-core" data-layer="core">4.3 Module boundaries mirror the architecture</h3>
+<p>FIG-23-01-01 shows the simulator's parts. At the top, a scenario request goes to the scenario runner, which returns a
+scenario result. In the middle, the engine core holds the clock, the queue, the entity registry, adapter dispatch, the
+event log and the hash. Below it the module adapters are grouped like the handbook architecture: the FMS–AMS–ADS–VCS
+chain, the supporting elements outside the chain, and the site, network and fleet models.</p>
+<figure id="FIG-23-01-01" class="fig"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1120 700" role="img" aria-label="Integrated simulator: module adapters grouped like the handbook architecture">
+<style>
+.f{fill:var(--accent-soft,#e3f0f4);stroke:var(--accent,#1f6f8b);stroke-width:1.2}
+.g{fill:none;stroke:var(--muted,#5d6166);stroke-width:1;stroke-dasharray:5 4}
+.e{fill:var(--bg,#ffffff);stroke:var(--accent,#1f6f8b);stroke-width:1.6}
+.w{fill:var(--warn-bg,#fff6e0);stroke:var(--warn-border,#e2b54a);stroke-width:1.6}
+.s{fill:var(--bg,#ffffff);stroke:var(--muted,#5d6166);stroke-width:1.4;stroke-dasharray:3 3}
+.h{fill:var(--fg,#1d1f21);font-size:16px;font-weight:700}
+.n{fill:var(--fg,#1d1f21);font-size:12.5px;font-weight:700}
+.m{fill:var(--fg,#1d1f21);font-size:11.5px}
+.c{fill:var(--muted,#5d6166);font-size:11px}
+.k{fill:var(--accent,#1f6f8b);font-size:13px;font-weight:700}
+.a{stroke:var(--fg,#1d1f21);stroke-width:1.3}.ad{stroke:var(--muted,#5d6166);stroke-width:1.3;stroke-dasharray:5 4}.ah{fill:var(--fg,#1d1f21)}
+</style>
+<text class="h" x="20" y="26" text-anchor="start">Integrated simulator: module adapters grouped like the handbook architecture</text>
+<text class="c" x="20" y="46" text-anchor="start">ahs_sim 0.25.0, ahs_sim.engine adapter catalogue; coupling level per adapter</text>
+<rect class="f" x="40" y="62" width="250" height="52" rx="6"/>
+<text class="n" x="165" y="84" text-anchor="middle">Scenario request</text>
+<text class="c" x="165" y="102" text-anchor="middle">scenario, shift, fleet, events, outputs</text>
+<rect class="f" x="340" y="62" width="250" height="52" rx="6"/>
+<text class="n" x="465" y="84" text-anchor="middle">Scenario runner</text>
+<text class="c" x="465" y="102" text-anchor="middle">recipe → plan → run</text>
+<line class="a" x1="290.0" y1="88.0" x2="329.0" y2="88.0"/><polygon class="ah" points="338.0,88.0 329.0,83.5 329.0,92.5"/>
+<rect class="f" x="640" y="62" width="250" height="52" rx="6"/>
+<text class="n" x="765" y="84" text-anchor="middle">Scenario result</text>
+<text class="c" x="765" y="102" text-anchor="middle">log, KPIs, timeline, run hash, config</text>
+<line class="a" x1="590.0" y1="88.0" x2="629.0" y2="88.0"/><polygon class="ah" points="638.0,88.0 629.0,83.5 629.0,92.5"/>
+<rect class="g" x="920" y="62" width="190" height="60" rx="6"/>
+<text class="n" x="1015" y="79" text-anchor="middle">ahs_sim_viz</text>
+<text class="c" x="1015" y="96" text-anchor="middle">plots, dashboards; reads results</text>
+<text class="c" x="1015" y="112" text-anchor="middle">never imported by ahs_sim</text>
+<line class="ad" x1="892.0" y1="88.0" x2="909.0" y2="88.0"/><polygon class="ah" points="918.0,88.0 909.0,83.5 909.0,92.5"/>
+<rect class="f" x="40" y="140" width="1060" height="50" rx="6"/>
+<text class="n" x="56" y="160" text-anchor="start">Engine core</text>
+<text class="c" x="56" y="180" text-anchor="start">simulation clock · event queue (time, priority, sequence) · entity registry · adapter dispatch · event log (telemetry records) · run hash</text>
+<line class="a" x1="465.0" y1="114.0" x2="465.0" y2="129.0"/><polygon class="ah" points="465.0,138.0 469.5,129.0 460.5,129.0"/>
+<line class="a" x1="570.0" y1="190.0" x2="570.0" y2="205.0"/><polygon class="ah" points="570.0,214.0 574.5,205.0 565.5,205.0"/>
+<line class="a" x1="600.0" y1="214.0" x2="600.0" y2="201.0"/><polygon class="ah" points="600.0,192.0 595.5,201.0 604.5,201.0"/>
+<rect class="g" x="30" y="214" width="1080" height="196" rx="6"/>
+<text class="k" x="44" y="234" text-anchor="start">Handbook architecture chain</text>
+<text class="k" x="48" y="256" text-anchor="start">FMS</text>
+<rect class="w" x="44" y="266" width="255" height="62" rx="6"/>
+<text class="n" x="52" y="284" text-anchor="start">ShiftLogAdapter</text>
+<text class="c" x="52" y="301" text-anchor="start">wrapped run</text>
+<text class="m" x="52" y="318" text-anchor="start">fms, telemetry, haul_cycle, kpi</text>
+<rect class="e" x="44" y="336" width="255" height="62" rx="6"/>
+<text class="n" x="52" y="354" text-anchor="start">HaulLoopAdapter</text>
+<text class="c" x="52" y="371" text-anchor="start">event-level</text>
+<text class="m" x="52" y="388" text-anchor="start">haul_cycle, truck, dynamics, queueing, mission</text>
+<text class="k" x="313" y="256" text-anchor="start">AMS</text>
+<rect class="e" x="309" y="266" width="255" height="62" rx="6"/>
+<text class="n" x="317" y="284" text-anchor="start">AmsAdapter</text>
+<text class="c" x="317" y="301" text-anchor="start">event-level</text>
+<text class="m" x="317" y="318" text-anchor="start">ams, mission, reconciliation, messaging</text>
+<line class="a" x1="297.0" y1="300.0" x2="299.0" y2="300.0"/><polygon class="ah" points="308.0,300.0 299.0,295.5 299.0,304.5"/>
+<text class="k" x="578" y="256" text-anchor="start">ADS</text>
+<rect class="e" x="574" y="266" width="255" height="62" rx="6"/>
+<text class="n" x="582" y="284" text-anchor="start">AdsAdapter</text>
+<text class="c" x="582" y="301" text-anchor="start">event-level</text>
+<text class="m" x="582" y="318" text-anchor="start">localisation, perception, planning, control</text>
+<line class="a" x1="562.0" y1="300.0" x2="564.0" y2="300.0"/><polygon class="ah" points="573.0,300.0 564.0,295.5 564.0,304.5"/>
+<text class="k" x="843" y="256" text-anchor="start">VCS</text>
+<rect class="e" x="839" y="266" width="255" height="62" rx="6"/>
+<text class="n" x="847" y="284" text-anchor="start">VcsAdapter</text>
+<text class="c" x="847" y="301" text-anchor="start">event-level</text>
+<text class="m" x="847" y="318" text-anchor="start">dynamics, platform, truck</text>
+<line class="a" x1="827.0" y1="300.0" x2="829.0" y2="300.0"/><polygon class="ah" points="838.0,300.0 829.0,295.5 829.0,304.5"/>
+<rect class="g" x="30" y="424" width="1080" height="108" rx="6"/>
+<text class="k" x="44" y="444" text-anchor="start">Supporting elements (outside the chain)</text>
+<text class="k" x="48" y="462" text-anchor="start">Independent safety</text>
+<rect class="e" x="44" y="466" width="255" height="62" rx="6"/>
+<text class="n" x="52" y="484" text-anchor="start">IsfAdapter</text>
+<text class="c" x="52" y="501" text-anchor="start">event-level</text>
+<text class="m" x="52" y="518" text-anchor="start">safety, control_room</text>
+<text class="k" x="313" y="462" text-anchor="start">Onboard safety</text>
+<rect class="e" x="309" y="466" width="255" height="62" rx="6"/>
+<text class="n" x="317" y="484" text-anchor="start">OssAdapter</text>
+<text class="c" x="317" y="501" text-anchor="start">event-level</text>
+<text class="m" x="317" y="518" text-anchor="start">safety, platform, energy</text>
+<text class="k" x="578" y="462" text-anchor="start">Manned-vehicle devices</text>
+<rect class="e" x="574" y="466" width="255" height="62" rx="6"/>
+<text class="n" x="582" y="484" text-anchor="start">MvdAdapter</text>
+<text class="c" x="582" y="501" text-anchor="start">event-level</text>
+<text class="m" x="582" y="518" text-anchor="start">mixed_fleet</text>
+<text class="k" x="843" y="462" text-anchor="start">People (roles)</text>
+<rect class="s" x="839" y="466" width="255" height="62" rx="6"/>
+<text class="n" x="847" y="484" text-anchor="start">ProcedureAdapter</text>
+<text class="c" x="847" y="501" text-anchor="start">scripted (stub)</text>
+<text class="m" x="847" y="518" text-anchor="start">control_room, scenarios</text>
+<rect class="g" x="30" y="546" width="1080" height="108" rx="6"/>
+<text class="k" x="44" y="566" text-anchor="start">Site, network and fleet models</text>
+<text class="k" x="48" y="584" text-anchor="start">Plant</text>
+<rect class="e" x="44" y="588" width="255" height="62" rx="6"/>
+<text class="n" x="52" y="606" text-anchor="start">PlantAdapter</text>
+<text class="c" x="52" y="623" text-anchor="start">event-level</text>
+<text class="m" x="52" y="640" text-anchor="start">plant</text>
+<text class="k" x="313" y="584" text-anchor="start">Network</text>
+<rect class="e" x="309" y="588" width="255" height="62" rx="6"/>
+<text class="n" x="317" y="606" text-anchor="start">NetworkAdapter</text>
+<text class="c" x="317" y="623" text-anchor="start">event-level</text>
+<text class="m" x="317" y="640" text-anchor="start">network, reconciliation</text>
+<text class="k" x="578" y="584" text-anchor="start">Reliability</text>
+<rect class="w" x="574" y="588" width="255" height="62" rx="6"/>
+<text class="n" x="582" y="606" text-anchor="start">ReliabilityAdapter</text>
+<text class="c" x="582" y="623" text-anchor="start">wrapped run</text>
+<text class="m" x="582" y="640" text-anchor="start">reliability</text>
+<text class="k" x="843" y="584" text-anchor="start">Energy (BEV)</text>
+<rect class="w" x="839" y="588" width="255" height="62" rx="6"/>
+<text class="n" x="847" y="606" text-anchor="start">EnergyAdapter</text>
+<text class="c" x="847" y="623" text-anchor="start">wrapped run</text>
+<text class="m" x="847" y="640" text-anchor="start">energy, truck, fms</text>
+<text class="n" x="44" y="682" text-anchor="start">Coupling:</text>
+<rect class="e" x="154" y="670" width="26" height="16" rx="3"/>
+<text class="m" x="186" y="683" text-anchor="start">event-level</text>
+<rect class="w" x="354" y="670" width="26" height="16" rx="3"/>
+<text class="m" x="386" y="683" text-anchor="start">wrapped run</text>
+<rect class="s" x="554" y="670" width="26" height="16" rx="3"/>
+<text class="m" x="586" y="683" text-anchor="start">scripted (stub)</text>
+<text class="c" x="1100" y="682" text-anchor="end">telemetry / analytics: KPIs from the event log</text>
+</svg>
+<figcaption><span class="fig-no">Figure 2</span> Integrated simulator module map aligned to FMS–AMS–ADS–VCS and supporting elements <span class="fig-id">FIG-23-01-01</span></figcaption></figure>
+<p>The grouping is not decoration; it carries the authority rules of ch-01-04 into the code <code>[H]</code>:</p>
+<table>
+<thead>
+<tr>
+<th>Adapter</th>
+<th>Element</th>
+<th>Coupling</th>
+<th>Wraps</th>
+<th>Handles (inputs)</th>
+<th>Emits</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ShiftLogAdapter</code></td>
+<td>FMS</td>
+<td>wrapped run</td>
+<td><code>fms</code>, <code>telemetry</code>, <code>haul_cycle</code>, <code>kpi</code></td>
+<td>— (schedules the shift log)</td>
+<td>cycle states, segment traversals, dumps, delay codes, stops, resumes, key events</td>
+</tr>
+<tr>
+<td><code>HaulLoopAdapter</code></td>
+<td>FMS</td>
+<td>event-level</td>
+<td><code>haul_cycle</code>, <code>truck</code>, <code>dynamics</code>, <code>queueing</code>, <code>mission</code></td>
+<td>arrivals, Spotting and service ends</td>
+<td><code>cycle_state</code>, <code>dump_complete</code></td>
+</tr>
+<tr>
+<td><code>AmsAdapter</code></td>
+<td>AMS</td>
+<td>event-level</td>
+<td><code>ams</code>, <code>mission</code>, <code>reconciliation</code>, <code>messaging</code></td>
+<td>permission events, controller &quot;confirm out&quot;, entry requests, <code>comms_lost</code></td>
+<td>reservation and permission records</td>
+</tr>
+<tr>
+<td><code>AdsAdapter</code></td>
+<td>ADS</td>
+<td>event-level</td>
+<td><code>localisation</code>, <code>perception</code>, <code>planning</code>, <code>control</code></td>
+<td>detections, integrity changes, cause cleared, AMS resume</td>
+<td><code>stop</code>, <code>resume</code>, <code>derate</code>, <code>alarm</code></td>
+</tr>
+<tr>
+<td><code>VcsAdapter</code></td>
+<td>VCS</td>
+<td>event-level</td>
+<td><code>dynamics</code>, <code>platform</code>, <code>truck</code></td>
+<td>brake command</td>
+<td><code>stop</code> at standstill</td>
+</tr>
+<tr>
+<td><code>IsfAdapter</code></td>
+<td>Independent safety function</td>
+<td>event-level</td>
+<td><code>safety</code>, <code>control_room</code></td>
+<td>remote stop</td>
+<td>brake commands, <code>alarm</code></td>
+</tr>
+<tr>
+<td><code>OssAdapter</code></td>
+<td>Onboard safety-related system</td>
+<td>event-level</td>
+<td><code>safety</code>, <code>platform</code>, <code>energy</code></td>
+<td>fire</td>
+<td><code>alarm</code>, brake command</td>
+</tr>
+<tr>
+<td><code>MvdAdapter</code></td>
+<td>Manned-vehicle devices</td>
+<td>event-level</td>
+<td><code>mixed_fleet</code></td>
+<td>position-report check</td>
+<td><code>alarm</code> (PRU stale / lost)</td>
+</tr>
+<tr>
+<td><code>ProcedureAdapter</code></td>
+<td>People</td>
+<td>stub</td>
+<td><code>control_room</code>, <code>scenarios</code></td>
+<td>scripted steps</td>
+<td><code>scenario_key_event</code></td>
+</tr>
+<tr>
+<td><code>PlantAdapter</code></td>
+<td>Plant</td>
+<td>event-level</td>
+<td><code>plant</code></td>
+<td>plant state</td>
+<td><code>plant_state</code></td>
+</tr>
+<tr>
+<td><code>NetworkAdapter</code></td>
+<td>Network</td>
+<td>event-level</td>
+<td><code>network</code>, <code>reconciliation</code></td>
+<td>site down</td>
+<td><code>comms_lost</code>, <code>comms_restored</code></td>
+</tr>
+<tr>
+<td><code>ReliabilityAdapter</code></td>
+<td>Reliability</td>
+<td>wrapped run</td>
+<td><code>reliability</code></td>
+<td>down, up</td>
+<td><code>work_order</code></td>
+</tr>
+<tr>
+<td><code>EnergyAdapter</code></td>
+<td>Energy (BEV)</td>
+<td>wrapped run</td>
+<td><code>energy</code>, <code>truck</code>, <code>fms</code></td>
+<td>—</td>
+<td>deliveries, charging states</td>
+</tr>
+</tbody>
+</table>
+<p>Thirteen adapters: nine event-level, three wrapped runs, one stub (<code>engine.adapter_catalogue()</code>). Note what is
+<em>absent</em>. No FMS adapter handles a brake command. The AMS adapter can withhold a reservation
+and hold a truck, but has no input that clears a vehicle-side stop; the ADS adapter refuses an AMS resume while a
+vehicle-side cause is active and logs the refusal as an alarm. The independent safety function acts on its listed
+trucks after its own latency without consulting the AMS or ADS adapters. The onboard safety-related system raises its
+alarm and commands a controlled stop whatever the network state. These are the boundaries of ch-01-04,
+expressed as the absence of an input.</p>
+<p>One simplification goes with the table: the event schema of Volume 22 has no source for independent safety
+functions, onboard safety-related systems, manned-vehicle devices or people, so the engine logs their records under
+<code>CONTROL_ROOM</code> or <code>VCS</code> and keeps the element in the payload <code>[H]</code>.</p>
+<h3 id="s-4-4" class="layer-head layer-detail" data-layer="detail" data-fold="fold-s-4-4">4.4 The adapter interface and stubs</h3>
+<details class="layer-fold layer-detail" id="fold-s-4-4" data-layer="detail"><summary><span class="layer-tag layer-detail">Detail</span>Show 4.4</summary>
+<p>Every adapter implements the same small protocol <code>[H]</code>:</p>
+<ul>
+<li><code>name</code>, <code>element</code>, <code>coupling</code> — identity, architecture element and coupling level;</li>
+<li><code>inputs</code> — the event kinds it handles (<code>&quot;*&quot;</code> for all);</li>
+<li><code>outputs</code> — the entity states or results it writes;</li>
+<li><code>emits</code> — the event kinds it schedules;</li>
+<li><code>attach(engine)</code> — called once when the adapter is added; a wrapped-run adapter runs its module here and schedules
+the results; an event-level adapter registers its entities and first events;</li>
+<li><code>handle(event)</code> — called for each event whose kind is in <code>inputs</code>.</li>
+</ul>
+<p>An adapter never calls another adapter; it only schedules events. That makes adapters replaceable: any object with
+the same name and declared interface can take an adapter's place.</p>
+<p>The coupling level matters for interpretation. The FMS shift log is a <strong>wrapped run</strong> of one <code>fms.simulate_fleet</code> run
+(through <code>telemetry.synthetic_shift</code>): truck-level stops and holds are overlaid on each truck's own timeline without
+re-simulating the other trucks' queues, and holds that an event-level recipe adds later (a permission, a remote stop)
+are counted but not fed back into the fleet log. An <strong>event-level</strong> adapter interacts with other adapters event by
+event, the closest the simulator comes to integration in the full sense. A <strong>stub</strong> reproduces an interface without the
+behaviour behind it.</p>
+<p><code>engine.StubAdapter</code> takes an adapter's name, element, inputs and emits; it records what it receives and emits nothing,
+or a scripted response per input kind. <code>engine.replace_adapter(name, stub)</code> puts it in place before the run. Section 6.3
+replaces the AMS adapter of the cancellation chain this way. A stub is a test instrument that isolates the part under
+test; it is not a model of a failed AMS, whose behaviour is a subject of its own (ch-02-08).</p>
+<p>People are represented by the one adapter that is a stub by design. <code>ProcedureAdapter</code> takes key steps, each naming an
+actor, an element, the step it follows and a delay <code>[A]</code>; a step that needs the field data link waits until the link is
+back or an alternative path such as the radio is available. For registered scenarios without a specific model the
+delays are the gaps between the registry's key events, so such a run reproduces the registry timeline by construction
+(section 4.7).</p>
+</details>
+<h3 id="s-4-5" class="layer-head layer-detail" data-layer="detail" data-fold="fold-s-4-5">4.5 The dependency graph</h3>
+<details class="layer-fold layer-detail" id="fold-s-4-5" data-layer="detail"><summary><span class="layer-tag layer-detail">Detail</span>Show 4.5</summary>
+<p>Integrating fifty modules can fail in two ways the separate modules could not: an import cycle, which makes a module's
+meaning depend on load order, and a plotting import in the engine, which makes batch runs need a display. Two rules
+prevent this <code>[H]</code>: the module-level import graph of <code>ahs_sim</code> is acyclic, and <code>ahs_sim</code> never imports <code>ahs_sim_viz</code>,
+matplotlib or a GUI library (the same check as <code>tools/validate.py sim-deps</code>).</p>
+<p><code>engine.check_dependencies()</code> reads the source with Python's <code>ast</code> module, without importing anything, and builds the
+graph. LAB-23-01-02 finds 50 modules and 159 module-level imports; the graph is acyclic and free of visualisation
+imports. FIG-23-01-03 shows the part of it around the engine and the scenario runner.</p>
+<figure id="FIG-23-01-03" class="fig"><pre class="mermaid">flowchart TB
+  subgraph INT[&quot;Integration layer (V23)&quot;]
+    mscenariorunner[&quot;scenario_runner&quot;]
+    mruncore[&quot;_run_core&quot;]
+    mrunstudies[&quot;_run_studies&quot;]
+    mengine[&quot;engine&quot;]
+    mengcore[&quot;_eng_core&quot;]
+    mengadapters[&quot;_eng_adapters&quot;]
+    mengmodels[&quot;_eng_models&quot;]
+  end
+  subgraph DAT[&quot;Data path (V22)&quot;]
+    mtelemetry[&quot;telemetry&quot;]
+    mtelshift[&quot;_tel_shift&quot;]
+    mtelschema[&quot;_tel_schema&quot;]
+    mteltransport[&quot;_tel_transport&quot;]
+    manalytics[&quot;analytics&quot;]
+  end
+  DOM[&quot;Earlier-volume modules (V01–V21)&lt;br/&gt;38 modules incl. package __init__&lt;br/&gt;none imports engine or scenario_runner&quot;]
+  VIZ[&quot;ahs_sim_viz&lt;br/&gt;dashboard → analytics, network → mine&lt;br/&gt;sim_timeline: plain rows&quot;]
+  NOTE[&quot;Whole package: 50 modules, 159 module-level imports, acyclic&lt;br/&gt;dashed: function-level import (deferred), not executed at import time&quot;]
+  mengadapters --&gt; mengcore
+  mengcore --&gt; mtelschema
+  mengmodels --&gt; mengadapters
+  mengmodels --&gt; mengcore
+  mruncore --&gt; mengadapters
+  mruncore --&gt; mengcore
+  mruncore --&gt; mengmodels
+  mruncore --&gt; mtelschema
+  mruncore --&gt; mtelshift
+  mruncore --&gt; manalytics
+  mrunstudies --&gt; mengadapters
+  mrunstudies --&gt; mengcore
+  mrunstudies --&gt; mengmodels
+  mrunstudies --&gt; mruncore
+  mrunstudies --&gt; mtelschema
+  mrunstudies --&gt; mtelshift
+  mrunstudies --&gt; manalytics
+  mtelshift --&gt; mtelschema
+  mtelshift --&gt; mteltransport
+  mteltransport --&gt; mtelschema
+  manalytics --&gt; mtelschema
+  manalytics --&gt; mtelshift
+  mengine --&gt; mengadapters
+  mengine --&gt; mengcore
+  mengine --&gt; mengmodels
+  mscenariorunner --&gt; mengadapters
+  mscenariorunner --&gt; mengcore
+  mscenariorunner --&gt; mengmodels
+  mscenariorunner --&gt; mruncore
+  mscenariorunner --&gt; mrunstudies
+  mscenariorunner --&gt; manalytics
+  mtelemetry --&gt; mtelschema
+  mtelemetry --&gt; mtelshift
+  mtelemetry --&gt; mteltransport
+  mscenariorunner --&gt;|&quot;haul_cycle, queueing&quot;| DOM
+  mruncore --&gt;|&quot;mine, scenarios&quot;| DOM
+  mrunstudies --&gt;|&quot;_econ_geometry, ams, control_room, dynamics +7&quot;| DOM
+  mengadapters --&gt;|&quot;ams, dynamics, haul_cycle, mine +3&quot;| DOM
+  mengmodels --&gt;|&quot;dynamics, haul_cycle, mine, planning&quot;| DOM
+  mtelshift --&gt;|&quot;fms, haul_cycle, kpi, mine +2&quot;| DOM
+  manalytics --&gt;|&quot;kpi, reliability&quot;| DOM
+  mengadapters -.-&gt; mtelshift
+  mtelshift -.-&gt; mtelemetry
+  manalytics -.-&gt; mtelemetry
+  VIZ --&gt; manalytics
+  VIZ --&gt; DOM
+  classDef integ fill:#dbe9fa,stroke:#2a78d6,color:#0b0b0b
+  classDef data fill:#d5f2e6,stroke:#1baf7a,color:#0b0b0b
+  classDef dom fill:#f4f4f2,stroke:#52514e,color:#0b0b0b
+  classDef viz fill:#fde4d8,stroke:#eb6834,color:#0b0b0b
+  class mscenariorunner,mruncore,mrunstudies,mengine,mengcore,mengadapters,mengmodels integ
+  class mtelemetry,mtelshift,mtelschema,mteltransport,manalytics data
+  class DOM,NOTE dom
+  class VIZ viz
+</pre><figcaption><span class="fig-no">Figure 3</span> Module dependency graph around engine and scenario_runner (V01–V22 modules, ahs_sim_viz) <span class="fig-id">FIG-23-01-03</span></figcaption></figure>
+<p>Three properties are worth checking by eye. The engine core (<code>_eng_core</code>) imports only the event schema
+<code>_tel_schema</code> at module level; everything domain-specific sits in the adapters. No earlier-volume module imports the
+engine or the runner, so the models of Volumes 01 to 22 keep the meaning their chapters gave them. And <code>ahs_sim_viz</code>
+imports <code>ahs_sim</code> (dashboard → <code>analytics</code>, network plot → <code>mine</code>), never the reverse.</p>
+<p>One cycle remains, and it is reported rather than hidden. <code>telemetry</code> imports <code>_tel_shift</code> at module level, and
+<code>_tel_shift</code> imports <code>telemetry</code> inside a function. A function-level import runs only when the function is called,
+after both modules are loaded, so it cannot cause an import-time failure; the check lists it separately as a deferred
+cycle. It is still a cycle in the design: the two modules cannot be tested entirely apart. The engine's own deferred
+imports (<code>_eng_core</code> reads the package version, mine and paths inside <code>default_config</code>; <code>_eng_adapters</code> loads
+<code>_tel_shift</code>, <code>energy</code> and <code>reliability</code> inside the adapters that wrap them) close no cycle. Removing the <code>_tel_shift</code> ↔
+<code>telemetry</code> cycle means moving the shared names into a third module; until then the deferred-cycle list keeps it
+visible.</p>
+</details>
+<h3 id="s-4-6" class="layer-head layer-core" data-layer="core">4.6 Reproducibility: configuration, seed, versions and run hash</h3>
+<p>A run is reproducible when everything that influences its event log is either fixed by the code or written in its
+configuration. <code>engine.RunConfig</code> records <code>[H]</code>:</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Baseline value</th>
+<th>Why it is needed</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Mine version</td>
+<td>0.3.0</td>
+<td>geometry, speed limits, areas and equipment come from <code>mine.yaml</code></td>
+</tr>
+<tr>
+<td>Seed</td>
+<td>0</td>
+<td>every random draw comes from seeded generators</td>
+</tr>
+<tr>
+<td>Module versions</td>
+<td><code>ahs_sim</code> 0.25.0, telemetry schema 1.0, scenario registry schema 1</td>
+<td>the models, the record format and the registry format</td>
+</tr>
+<tr>
+<td>Scenario IDs</td>
+<td>SCN-BASELINE-SHIFT</td>
+<td>what is injected</td>
+</tr>
+<tr>
+<td>Options</td>
+<td>shift, request, injected scenarios</td>
+<td>everything else the recipe uses</td>
+</tr>
+</tbody>
+</table>
+<p>The configuration has its own hash; changing the seed changes it. The <strong>run hash</strong> is SHA-256 over the event log:
+one canonical line per record (fields in schema order, times rounded to 10⁻⁶ s, payload as sorted JSON), in log order.</p>
+<p>LAB-23-01-02 runs SCN-BASELINE-SHIFT through the scenario runner. With seed 0 the log has 28,650 records and the run
+hash begins <code>6a578f1729cfc5f2</code>; a second run with the same request gives the same hash. Seeds 0 to 4 give five
+different hashes and 183,920 to 185,680 t. The planner's two runs in section 1.1 (184,140 t and 184,360 t) are seed 0
+and seed 1 of the same model: a replication, not a change. The fleet behind these tonnes is model M6 of section 4.10
+(37 producing trucks, queues, service and travel variability, no acceleration). Changing one dump record's time by one
+millisecond, or swapping two records, also changes the hash.</p>
+<p>The hash covers the <em>log</em>, not the configuration: the rehearsal of section 8.3, with an explicit fleet state equal to
+the defaults, gives the same run hash as the default request, while the configuration hashes differ. It is
+<em>order-sensitive</em>, as determinism requires. And it is <em>exact</em>: it says whether two runs are identical, not whether they
+are close; tolerances belong to the regression suite of ch-23-10.</p>
+<p>The configuration holds version strings, not content: if <code>mine.yaml</code> were edited without a version change, two runs
+with the same configuration would read different geometry. It does not hold the Python or library versions either; the
+pinned environment of <code>make setup</code> covers them in practice, but the run record does not show it. LAB-23-01-02 prints
+content fingerprints of the four shared files a run reads; REQ-23-01-004 asks for both kinds of record.</p>
+<p><strong>Comparability.</strong> Two results may be used together in a discussion only if they come from comparable runs <code>[H]</code>:
+same mine version, same module versions, same scenarios and same options. A different seed is allowed and marks a
+replication, to be compared with intervals rather than single values (ch-23-10). <code>engine.comparable</code> implements the
+rule. On two configurations from <code>default_config</code> with seeds 0 and 1 it returns &quot;comparable, seeds differ&quot;. On the
+summaries of two <code>run_scenario</code> runs with seeds 0 and 1 it returns &quot;not comparable&quot;: the runner stores the whole
+request, seed included, in the options, so the seed is counted twice. With the seed removed from the embedded request
+(LAB-23-01-02) the answer is &quot;comparable, seeds differ&quot;; a changed mine version or fleet state stays &quot;not comparable&quot;.</p>
+<h3 id="s-4-7" class="layer-head layer-detail" data-layer="detail" data-fold="fold-s-4-7">4.7 The scenario runner and the scenario request</h3>
+<details class="layer-fold layer-detail" id="fold-s-4-7" data-layer="detail"><summary><span class="layer-tag layer-detail">Detail</span>Show 4.7</summary>
+<p>The scenario runner is the operations door into the engine. <code>ScenarioRequest</code> carries the fields an operations person
+can state <code>[H]</code>:</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Meaning</th>
+<th>Example (section 8.3)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>scenario_id</code></td>
+<td>registered scenario</td>
+<td>SCN-MISSION-CANCEL-M20481</td>
+</tr>
+<tr>
+<td><code>shift</code></td>
+<td>DAY or NIGHT</td>
+<td>DAY</td>
+</tr>
+<tr>
+<td><code>fleet_state</code></td>
+<td>number of trucks (at most 40), dispatch policy</td>
+<td>40, fixed</td>
+</tr>
+<tr>
+<td><code>injected_events</code></td>
+<td>extra events: time after the trigger, kind, target, payload</td>
+<td>none</td>
+</tr>
+<tr>
+<td><code>outputs</code></td>
+<td>KPIs, timeline, log, metrics</td>
+<td>KPIs, timeline, metrics</td>
+</tr>
+<tr>
+<td><code>seed</code></td>
+<td>random seed</td>
+<td>0</td>
+</tr>
+<tr>
+<td><code>trigger_s</code></td>
+<td>trigger time after shift start; default from the recipe</td>
+<td>3600 s (07:00)</td>
+</tr>
+</tbody>
+</table>
+<p><code>run_scenario</code> returns a <code>ScenarioResult</code> whose <code>summary()</code> holds the scenario, status, configuration, run hash, KPIs,
+timeline verdict and limitation. A registry key event passes if it was simulated, lies within max(10 s, 25 % of its
+registry time) <code>[A]</code> and does not come before the steps that precede it.</p>
+<p>The runner covers every registered scenario, but not equally. <code>limitations_register()</code> lists the 65 scenarios of the
+registry. It flags 64 as registered: for SCN-FIRE-DT17-COMMS (fire on DT17 during a CT3 outage, ch-23-09) the runner
+composes its own timeline and still sets <code>registered=False</code>, a known limitation. Fifteen run end to end. Six run
+partially with a scenario-specific model recipe. Forty-four run with the default recipe: the baseline shift plus the
+registry key events scripted with the registry's own gaps as response times. For those 44 the timeline check passes by
+construction: the times compared are the times that were scripted. Such a pass shows only that the scenario is wired
+into the runner, so a timeline pass is always quoted with its group.</p>
+</details>
+<h3 id="s-4-8" class="layer-head layer-detail" data-layer="detail" data-fold="fold-s-4-8">4.8 People as scripted decision policies</h3>
+<details class="layer-fold layer-detail" id="fold-s-4-8" data-layer="detail"><summary><span class="layer-tag layer-detail">Detail</span>Show 4.8</summary>
+<p>In the simulator, the AHS Controller, Pit Supervisor, Shovel Operator, ERT and Survey do not decide. They perform
+scripted steps at assumed times <code>[A]</code>: the controller acknowledges an alarm 5 s after it appears, the ERT arrives at
+the zone boundary after a stated travel time, the Pit Supervisor confirms an area clear at the registry's time. The
+values sit in <code>scenario_runner.RESPONSE_S</code> or in a chapter's lab, each one tagged <code>[A]</code>.</p>
+<p>The handbook has no validated model of human behaviour, and an invented one would look more authoritative than it
+is. A scripted step makes the assumption visible and changeable. In the cancellation chain the controller's radio call
+is one step at T+5 s, taken from ch-01-04; nothing says a controller <em>should</em> take 5 s, and simulated response times
+are not performance standards. A step that depends on a system waits for it, which is what a rehearsal of a
+communication loss needs to show (ch-23-09 explores SCN-FIRE-DT17-COMMS, a fire during the CT3 outage).</p>
+</details>
+<h3 id="s-4-9" class="layer-head layer-detail" data-layer="detail" data-fold="fold-s-4-9">4.9 Trade-offs and model limits</h3>
+<details class="layer-fold layer-detail" id="fold-s-4-9" data-layer="detail"><summary><span class="layer-tag layer-detail">Detail</span>Show 4.9</summary>
+<ul>
+<li><strong>Event-driven core, time-stepped detail</strong> inside single events where motion is continuous.</li>
+<li><strong>Wrapped runs for scale, event-level for interaction.</strong> One fleet-model run per shift is cheap and verified; holds
+added later do not reshape the other trucks' queues.</li>
+<li><strong>Strict determinism, explicit randomness.</strong> Variation comes only from seeds; a result shown alone is one draw.</li>
+<li><strong>Exact hash, separate tolerances.</strong> Whether a change matters is decided by the regression tolerances of ch-23-10.</li>
+<li><strong>No middleware, no game engine.</strong> The engine is a few hundred lines of Python on the standard library; robotics
+middleware or a 3-D environment would add infrastructure without a learning objective that needs it.</li>
+</ul>
+</details>
+<h3 id="s-4-10" class="layer-head layer-core" data-layer="core">4.10 Why the cycle and production numbers differ: model conditions</h3>
+<p>The handbook quotes several &quot;baseline&quot; numbers for the same reference mine: DT17's 1564 s cycle (ch-01-01), 1592.3 s in
+the time-stepped model (ch-07-01), 184,140 t for the baseline shift (ch-22-06 and section 4.6) and whatever the live
+world of the simulator UI shows. Read across chapters they look like competing values. They are answers of different
+models under different conditions, and none was adjusted to agree with another. The table runs each model once with its
+conditions stated (LAB-23-01-02, Part H, <code>ahs_sim</code> 0.27.0, mine 0.3.0, DAY shift of 12 h, HT220 at 220 t, fixed
+dispatch). The last column puts them on one measure: the time each EX02 truck spends per load delivered (trucks at
+EX02 × period ÷ EX02 loads), which equals the cycle when nothing else intervenes. M1 to M8 are labels of this table.</p>
+<p><strong>Conditions.</strong> Queues: whether trucks wait for loading units and destinations. Accel. (acceleration): whether speed
+changes take time (in the live world also corner speed caps, speed control and granted paths). Seed: the random draw of service
+(and in M6 travel) times; &quot;none&quot; means deterministic.</p>
+<table>
+<thead>
+<tr>
+<th>Row</th>
+<th>Model (module)</th>
+<th>Trucks</th>
+<th>Period</th>
+<th>Queues</th>
+<th>Accel.</th>
+<th>Disturbances</th>
+<th>Seed</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>M1</td>
+<td>Steady-state cycle (<code>haul_cycle</code>; ch-01-01)</td>
+<td>1</td>
+<td>one cycle</td>
+<td>no</td>
+<td>no</td>
+<td>none</td>
+<td>none</td>
+</tr>
+<tr>
+<td>M2</td>
+<td>Time-stepped cycle (<code>dynamics</code>; ch-07-01)</td>
+<td>1</td>
+<td>one cycle</td>
+<td>no</td>
+<td>yes</td>
+<td>none</td>
+<td>none</td>
+</tr>
+<tr>
+<td>M3</td>
+<td>Live world, one truck per unit (<code>live</code>)</td>
+<td>4</td>
+<td>4 h</td>
+<td>rare</td>
+<td>yes</td>
+<td>none</td>
+<td>0</td>
+</tr>
+<tr>
+<td>M4</td>
+<td>M1 per loading unit × allocation</td>
+<td>37</td>
+<td>12 h</td>
+<td>no</td>
+<td>no</td>
+<td>none</td>
+<td>none</td>
+</tr>
+<tr>
+<td>M5</td>
+<td>Fleet model (<code>fms.simulate_fleet</code>)</td>
+<td>37</td>
+<td>12 h</td>
+<td>yes</td>
+<td>no</td>
+<td>none</td>
+<td>none</td>
+</tr>
+<tr>
+<td>M6</td>
+<td>Fleet model in the baseline shift log</td>
+<td>37</td>
+<td>12 h</td>
+<td>yes</td>
+<td>no</td>
+<td>none</td>
+<td>0</td>
+</tr>
+<tr>
+<td>M7</td>
+<td>Live world, baseline allocation (<code>live</code>)</td>
+<td>37</td>
+<td>12 h</td>
+<td>yes</td>
+<td>yes</td>
+<td>none</td>
+<td>0</td>
+</tr>
+<tr>
+<td>M8</td>
+<td>Live world, simulator UI default (<code>live</code>)</td>
+<td>40</td>
+<td>12 h</td>
+<td>yes</td>
+<td>yes</td>
+<td>none</td>
+<td>0</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Results.</strong> Queue per load: at the loading units / at the destinations. M8's 40 trucks are the 37 of the baseline
+allocation and ECO-01 to ECO-03.</p>
+<table>
+<thead>
+<tr>
+<th>Row</th>
+<th>Cycle or production</th>
+<th>Queue per load (s)</th>
+<th>EX02 truck time per load (s)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>M1</td>
+<td>cycle 1564.1 s; 27 loads, 5,940 t per truck in 12 h</td>
+<td>0 / 0</td>
+<td>1600</td>
+</tr>
+<tr>
+<td>M2</td>
+<td>cycle 1592.3 s; 27 loads per truck in 12 h</td>
+<td>0 / 0</td>
+<td>1600</td>
+</tr>
+<tr>
+<td>M3</td>
+<td>DT11's 7 cycles at EX02: 1631.8 to 1694.5 s, mean 1662.1 s</td>
+<td>—</td>
+<td>(1662)</td>
+</tr>
+<tr>
+<td>M4</td>
+<td>909 loads, 199,980 t (upper bound)</td>
+<td>0 / 0</td>
+<td>1600</td>
+</tr>
+<tr>
+<td>M5</td>
+<td>869 loads, 191,180 t</td>
+<td>25.8 / 68.6</td>
+<td>1743</td>
+</tr>
+<tr>
+<td>M6</td>
+<td>837 loads, 184,140 t</td>
+<td>89.5 / 68.7</td>
+<td>1783</td>
+</tr>
+<tr>
+<td>M7</td>
+<td>757 loads, 166,540 t</td>
+<td>42.7 / 207.4</td>
+<td>2090</td>
+</tr>
+<tr>
+<td>M8</td>
+<td>775 loads, 170,500 t</td>
+<td>57.0 / 310.4</td>
+<td>2298</td>
+</tr>
+</tbody>
+</table>
+<p>Read down the table, one condition at a time <code>[A]</code> (all values from the lab, none fitted):</p>
+<ul>
+<li><strong>M1 to M2: acceleration.</strong> Accelerating and braking add 28.2 s per cycle. Both still fit 27 whole cycles into 12 h
+(27 × 1564.1 s = 42,229.6 s; 970.4 s of the shift are left over), so loads per truck do not change and the time per
+load is 1600 s in both.</li>
+<li><strong>M2 to M3: the live truck.</strong> Alone at its loading unit, a live truck needs 39.5 to 102.2 s more per cycle than M2:
+corner speed caps at every interior node of its route, speed control with actuator lag, a granted path extended
+block by block and varied service times. The lab does not separate these causes.</li>
+<li><strong>M4: the fleet without queues is not possible.</strong> Summing M1 over the 37 producing trucks gives 909 loads, but EX01
+would need 45,090 s of Spotting and loading and C01, with one tipping position, 46,170 s of Spotting and tipping in a
+43,200 s shift. Queues must form.</li>
+<li><strong>M4 to M5: queues.</strong> With queues the fleet delivers 869 loads. C01 tips 469 ore loads, 42,210 s of its 43,200 s:
+ore is limited by the crusher, not by the trucks, and EX02's time per load rises to 1743 s.</li>
+<li><strong>M5 to M6: variation.</strong> Varied service and travel times (seed 0) cost 32 loads more, 837 loads or 184,140 t, with
+89.5 s of queue per load at the loading units. Other seeds give 183,920 to 185,680 t (section 4.6).</li>
+<li><strong>M6 to M7: the live world, same fleet.</strong> The same 37 trucks deliver 757 loads, 166,540 t, 9.6 % less. C01 receives
+392 ore loads, one every 110 s on average against one every 96 s in M6, because a live tipping slot is held from the
+truck's admission onto the last lane block until dumping ends, and trucks drive as in M3. The queue at the
+destinations grows from 68.7 to 207.4 s per load.</li>
+<li><strong>M7 to M8: three more trucks.</strong> The UI's 40 trucks add ECO-01 to ECO-03 at EX01, EX02 and EX03 (the live world's
+allocation, not DT29, DT39 and DT40). They add 18 loads, 17 of them waste: C01 receives 393 ore loads, one more, so the
+extra ore trucks only queue (310.4 s per load at the destinations) and EX02's time per load rises to 2298 s.</li>
+</ul>
+<p>So the 1564 s cycle, the fleet's 184,140 t and the live world's 166,540 or 170,500 t are not an error and its
+correction. Each answers its own question: the cycle of one truck on an empty mine; a shift with queues and variation
+but steady speeds; a shift with motion, traffic and admission to service positions. A number is quoted with its row, and
+a difference between two numbers is explained by the conditions that differ before anyone calls it a discrepancy
+(REQ-23-01-006).</p>
+<h2 id="s-5" class="layer-head layer-detail" data-layer="detail" data-fold="fold-s-5">5. Responsibilities and interface boundaries</h2>
+<details class="layer-fold layer-detail" id="fold-s-5" data-layer="detail"><summary><span class="layer-tag layer-detail">Detail</span>Show section 5</summary>
+<table>
+<thead>
+<tr>
+<th>Element</th>
+<th>In the simulator</th>
+<th>May do</th>
+<th>Must not do</th>
+<th>Not represented</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>FMS</td>
+<td><code>ShiftLogAdapter</code> (fleet run), <code>HaulLoopAdapter</code>, recipe steps</td>
+<td>assign, dispatch, re-plan, code delays, request a cancel</td>
+<td>stop or move a truck directly; assume a cancel done before the AMS confirms</td>
+<td>vendor dispatch logic; real production data</td>
+</tr>
+<tr>
+<td>AMS</td>
+<td><code>AmsAdapter</code>, recipe adapters</td>
+<td>hold and release reservations, lock areas, withhold entry, freeze reservations of a lost truck</td>
+<td>clear a vehicle-side stop; grant entry while a permission is locked or unconfirmed (fail closed)</td>
+<td>full traffic simulation of every block</td>
+</tr>
+<tr>
+<td>ADS</td>
+<td><code>AdsAdapter</code>, recipe adapters</td>
+<td>stop for a detection or lost integrity, derate, refuse an AMS resume while a cause is active</td>
+<td>override an independent stop</td>
+<td>sensors, perception algorithms, detection performance</td>
+</tr>
+<tr>
+<td>VCS</td>
+<td><code>VcsAdapter</code></td>
+<td>brake to standstill on the grade, report the stop</td>
+<td>choose route or destination</td>
+<td>ECU behaviour, actuator faults beyond the models of Volume 08</td>
+</tr>
+<tr>
+<td>Independent safety functions</td>
+<td><code>IsfAdapter</code></td>
+<td>stop listed trucks after a latency, independent of AMS and ADS</td>
+<td>restart trucks</td>
+<td>real radio paths, certified timing</td>
+</tr>
+<tr>
+<td>Onboard safety-related systems</td>
+<td><code>OssAdapter</code></td>
+<td>alarm and controlled stop on fire, independent of network</td>
+<td>—</td>
+<td>detector physics, suppression performance</td>
+</tr>
+<tr>
+<td>Manned-vehicle devices</td>
+<td><code>MvdAdapter</code></td>
+<td>report position; raise stale / lost alarms</td>
+<td>grant anything</td>
+<td>radio voice traffic</td>
+</tr>
+<tr>
+<td>People</td>
+<td><code>ProcedureAdapter</code> (scripted steps)</td>
+<td>perform steps at assumed times; wait for a system when the step needs it</td>
+<td>decide outside the script</td>
+<td>judgement, workload, fatigue, skill</td>
+</tr>
+<tr>
+<td>Engine core</td>
+<td><code>Engine</code></td>
+<td>order, dispatch and log events; hash the log</td>
+<td>contain domain rules</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Scenario runner</td>
+<td><code>run_scenario</code>, recipes</td>
+<td>build and run plans; compare timelines</td>
+<td>change a registry scenario</td>
+<td>real-mine validation</td>
+</tr>
+<tr>
+<td>Visualisation</td>
+<td><code>ahs_sim_viz</code></td>
+<td>plot results</td>
+<td>be imported by <code>ahs_sim</code></td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<p>Two boundaries deserve emphasis. <strong>Engine and models:</strong> the engine knows nothing about trucks or permissions; every
+domain rule lives in an adapter that names the module it wraps, so each behaviour can be traced to its source chapter.
+<strong>Simulator and mine:</strong> the simulator reads only <code>mine.yaml</code>, <code>equipment.yaml</code> and the registries, sends nothing
+anywhere and holds no live data (ch-12-10).</p>
+</details>
+<h2 id="s-6" class="layer-head layer-core" data-layer="core">6. Normal, abnormal and degraded operation</h2>
+<p>Sections 6, 7 and 8 follow SCN-MISSION-CANCEL-M20481 as walked in ch-01-04 section 6.1 and ch-10-08: DT17 is loaded
+on R01, 50 m past P1; the FMS cancels M-20481 with disposition <em>hold loaded</em> because C01 will stop accepting trucks at
+T+120 s for a chute inspection <code>[A]</code>. The registry gives three key events: cancel request at T+0 s, cancel acknowledged
+at T+1 s, reservations released and hold issued at T+40 s. The intermediate times come from ch-01-04 and ch-10-08
+(message delay 0.3 s, processing 0.7 s, path planning 1.0 s, release behind the truck 0.1 s, all <code>[A]</code>) and DT17's
+positions from the steady-state truck model. LAB-23-01-01 runs this chain through four lab-local and public adapters.</p>
+<h3 id="s-6-1" class="layer-head layer-core" data-layer="core">6.1 Normal operation: the cancellation through the adapters (shared timeline)</h3>
+<table>
+<thead>
+<tr>
+<th>Time</th>
+<th>Event (engine kind)</th>
+<th>Adapter (element)</th>
+<th>Engine log</th>
+<th>People</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>T+0 s</td>
+<td>FMS sends cancel, key FMS-CANCEL-M20481-1 (<code>_cancel_send</code>)</td>
+<td>FMS</td>
+<td>key event, step 0</td>
+<td>—</td>
+</tr>
+<tr>
+<td>T+0.3 s</td>
+<td>cancel reaches the AMS (<code>_cancel</code>)</td>
+<td>AMS</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<td>T+1.0 s</td>
+<td>AMS applies the cancel: HAULING → STOPPING_LOADED; holding location C01-Q (<code>_ams_do</code>)</td>
+<td>AMS</td>
+<td>key event, step 1</td>
+<td>—</td>
+</tr>
+<tr>
+<td>T+1.3 s</td>
+<td>ACK at the FMS: <em>cancelling</em> (<code>_ack</code>)</td>
+<td>FMS</td>
+<td>—</td>
+<td>HMI shows M-20481 <em>cancelling</em></td>
+</tr>
+<tr>
+<td>T+2.3 s</td>
+<td>shortened path ending at C01-Q reaches DT17 (<code>_path</code>)</td>
+<td>ADS</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<td>T+3.3 s</td>
+<td>PATH_ACK reaches the AMS: DT17 can stop within about 1,214 m against 120.6 m needed (<code>_path_ack</code>)</td>
+<td>AMS</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<td>T+4.0 s</td>
+<td>AMS releases R21 (<code>_ams_do</code>)</td>
+<td>AMS</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<td>T+4.3 s</td>
+<td><em>accepted by vehicle</em> at the FMS (<code>_accepted</code>)</td>
+<td>FMS</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<td>T+5.0 s</td>
+<td>controller informs the Pit Supervisor by radio (<code>_step</code>)</td>
+<td>People</td>
+<td>key event, step 10</td>
+<td>AHS Controller, Pit Supervisor</td>
+</tr>
+<tr>
+<td>T+39.6 s</td>
+<td>DT17 clears X onto R02 (<code>_pass_X</code>)</td>
+<td>ADS</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<td>T+40.0 s</td>
+<td>AMS releases R01 and X, issues the hold at C01-Q (<code>_ams_do</code>)</td>
+<td>AMS</td>
+<td>key event, step 2</td>
+<td>—</td>
+</tr>
+<tr>
+<td>T+102.3 s</td>
+<td>DT17 at the end of its path, brake request; VCS reports standstill (<code>_brake</code>, <code>stop</code>)</td>
+<td>ADS, VCS</td>
+<td><code>stop</code> (VCS)</td>
+<td>—</td>
+</tr>
+<tr>
+<td>T+103.3 s</td>
+<td>AMS applies <em>safe stop reached</em>: HOLD_LOADED; releases R02 (<code>_ams_do</code>)</td>
+<td>AMS</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<td>T+103.6 s</td>
+<td><em>complete</em> at the FMS (<code>_complete</code>)</td>
+<td>FMS</td>
+<td>—</td>
+<td>controller confirms DT17 holding with 220 t</td>
+</tr>
+</tbody>
+</table>
+<p>The run processes 24 events and logs 5 records; the three registry key events are reproduced at T+0, T+1.0 and
+T+40.0 s, within tolerance, and a second run gives the same hash. The steady-state model has no deceleration phase, so DT17's arrival at C01-Q is also its standstill: the
+VCS adapter reports the stop at once because the commanded speed is zero <code>[A]</code>.</p>
+<h3 id="s-6-2" class="layer-head layer-detail" data-layer="detail" data-fold="fold-s-6-2">6.2 Abnormal operation: a duplicated cancel and a run that does not repeat</h3>
+<details class="layer-fold layer-detail" id="fold-s-6-2" data-layer="detail"><summary><span class="layer-tag layer-detail">Detail</span>Show 6.2</summary>
+<p>At T+5 s the FMS sends the same cancel again, with the same key <code>[A]</code>. The AMS adapter receives it at T+5.3 s, the
+mission state machine (<code>ahs_sim.mission</code>) discards it as a duplicate at T+6.0 s, and nothing else changes: same release
+times, same stop, HOLD_LOADED at T+103.3 s. The engine log, however, now holds six records (the second send is logged),
+and the run hash is different.</p>
+<p>This is the abnormal case for the simulator itself. The hash says &quot;different run&quot;; the outcome says &quot;same
+rehearsal&quot;. Both are right: the hash answers the reproducibility question, the outcome the rehearsal question, and
+neither says the model is right. A run that unexpectedly does not repeat is traced through its summary in this order:
+configuration (mine version, module versions, scenario, options, injected events), seed, then the log. Here the
+injected duplicate explains the difference.</p>
+</details>
+<h3 id="s-6-3" class="layer-head layer-detail" data-layer="detail" data-fold="fold-s-6-3">6.3 Degraded operation: the AMS model replaced by a stub</h3>
+<details class="layer-fold layer-detail" id="fold-s-6-3" data-layer="detail"><summary><span class="layer-tag layer-detail">Detail</span>Show 6.3</summary>
+<p>The same request runs with the AMS adapter replaced by <code>engine.StubAdapter</code>, which receives events and emits nothing.</p>
+<table>
+<thead>
+<tr>
+<th>Time</th>
+<th>What happens</th>
+<th>Element</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>T+0 s</td>
+<td>FMS sends the cancel</td>
+<td>FMS</td>
+</tr>
+<tr>
+<td>T+0.3 s</td>
+<td>the stub records the cancel; no acknowledgement, no shortened path</td>
+<td>AMS (stub)</td>
+</tr>
+<tr>
+<td>T+10 s</td>
+<td>no ACK within 10 s <code>[A]</code>: FMS alarm <em>cancel not acknowledged</em>; FMS shows <em>cancel pending</em></td>
+<td>FMS</td>
+</tr>
+<tr>
+<td>T+39.6 s</td>
+<td>DT17 clears X; position report recorded by the stub; R01 and X stay reserved</td>
+<td>ADS, AMS (stub)</td>
+</tr>
+<tr>
+<td>T+102.3 s</td>
+<td>DT17 passes C01-Q: its granted path still ends on R21</td>
+<td>ADS</td>
+</tr>
+<tr>
+<td>T+205.5 s</td>
+<td>DT17 stops at the end of its last granted path on R21</td>
+<td>ADS, VCS</td>
+</tr>
+</tbody>
+</table>
+<p>Registry steps 1 and 2 are never reached, so the timeline check fails, as it should. The run shows two properties of
+the architecture: the FMS does not treat the cancel as done without the AMS (ch-01-04) and only raises an alarm to a
+person; and DT17 stays within its authority, driving to the end of the path it was last granted and stopping there
+(ch-10-08 describes the same end when every copy of the cancel is lost). A stub that silently &quot;acknowledged&quot; everything
+would have hidden both.</p>
+</details>
+<h2 id="s-7" class="layer-head layer-detail" data-layer="detail" data-fold="fold-s-7">7. Engineering view</h2>
+<details class="layer-fold layer-detail" id="fold-s-7" data-layer="detail"><summary><span class="layer-tag layer-detail">Detail</span>Show section 7 (7.1 Design decisions and trade-offs; 7.2 Failure modes and mitigations; 7.3 Interface and timing considerations)</summary>
+<h3 id="s-7-1" class="layer-head layer-detail" data-layer="detail">7.1 Design decisions and trade-offs</h3>
+<p><strong>Event-driven, with time-stepped calls inside events.</strong> The cost is that continuous behaviour must be summarised as
+events: the cancellation chain has no deceleration phase, and a speed trace needs the time-stepped model of ch-07-01.</p>
+<p><strong>One log, in the schema of Volume 22.</strong> Every logged event is a <code>telemetry.EventRecord</code>. The engine's KPIs therefore
+come from the same <code>analytics.kpi_pipeline</code> that ch-22-06 reconciles with <code>ahs_sim.kpi</code>; for the baseline the pipeline
+gives 184,140 t, 837 loads, Physical Availability 0.9487 and Production Effectiveness 0.6132, the values of ch-22-06.
+The price is that internal messages, such as PATH and PATH_ACK, are not in the log; the lab records them with an
+engine hook.</p>
+<p><strong>Adapters, not inheritance from the models.</strong> An earlier module is called, never modified. The cancellation chain
+calls <code>ahs_sim.mission.Mission</code> for the state machine and <code>ahs_sim.ams.ReservationTable</code> for the reservations; the
+state machine still enforces the idempotent cancel of ch-02-07 and ch-10-08 unchanged.</p>
+<p><strong>Three coupling levels, labelled.</strong> Coupling is declared on the adapter and reported in every result, so a reader of
+a result knows whether the fleet was re-simulated or overlaid.</p>
+<p><strong>Determinism over parallelism.</strong> The engine does not run adapters in parallel or batch events across time; both
+would make the order depend on scheduling.</p>
+<h3 id="s-7-2" class="layer-head layer-detail" data-layer="detail">7.2 Failure modes and mitigations</h3>
+<table>
+<thead>
+<tr>
+<th>Failure mode</th>
+<th>Effect on results</th>
+<th>Mitigation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Simultaneous events ordered by something outside the inputs</td>
+<td>runs differ without a configuration difference</td>
+<td>total queue key (REQ-23-01-001); test with simultaneous arrivals</td>
+</tr>
+<tr>
+<td>An adapter calls another adapter directly</td>
+<td>hidden coupling; stubs no longer isolate</td>
+<td>adapters communicate only through events (REQ-23-01-002); review</td>
+</tr>
+<tr>
+<td>A central model clears a vehicle-side stop</td>
+<td>wrong architecture taught</td>
+<td>no such input in AMS adapters; ADS refuses and logs (REQ-23-01-003)</td>
+</tr>
+<tr>
+<td>Import cycle or visualisation import</td>
+<td>import-order bugs; batch runs need a display</td>
+<td><code>check_dependencies</code> in the test suite; deferred cycles listed (REQ-23-01-005)</td>
+</tr>
+<tr>
+<td>Shared data edited without a version change</td>
+<td>same configuration, different geometry</td>
+<td>content fingerprints in the run record (REQ-23-01-004)</td>
+</tr>
+<tr>
+<td>Seed counted as a configuration difference</td>
+<td>replications rejected as incomparable</td>
+<td>compare with the seed removed from embedded copies (section 4.6)</td>
+</tr>
+<tr>
+<td>Default-recipe timeline pass read as validation</td>
+<td>false confidence</td>
+<td>execution status shown with every pass (REQ-23-01-007)</td>
+</tr>
+<tr>
+<td>Stub left in a production run</td>
+<td>missing behaviour presented as a result</td>
+<td>stubs reported in the coupling of the result; review of the adapter list</td>
+</tr>
+<tr>
+<td>Scheduled event in the past or at NaN</td>
+<td>silent reordering</td>
+<td>the engine raises an error</td>
+</tr>
+</tbody>
+</table>
+<h3 id="s-7-3" class="layer-head layer-detail" data-layer="detail">7.3 Interface and timing considerations</h3>
+<p>Lay the timeline of section 6.1 against the interfaces. The FMS–AMS interface carries four messages (cancel, ACK,
+accepted, complete) at T+0, 1.3, 4.3 and 103.6 s; the AMS–ADS interface carries one path and its acknowledgement at
+T+2.3 and 3.3 s; the ADS–VCS interface carries one brake request at T+102.3 s. In the engine each crossing is an event
+scheduled by the sender at the receiver's arrival time; the receiver's processing delay is another event, at which the
+state change happens. That is why the AMS adapter releases R21 not at T+3.3 s, when PATH_ACK arrives, but at
+T+4.0 s, after its 0.7 s processing (the example in FIG-23-01-02). An adapter that changed state on arrival and only
+<em>recorded</em> a later time would put the AMS state ahead of its own processing. Within one instant priorities order the
+work: at T+40.0 s the key event of the release is scheduled at priority −1, so it is logged before anything that reacts
+to the release.</p>
+<p>The timing values are assumptions taken from ch-01-04 and ch-10-08; the engine adds none of its own. The simulator can
+show that the release follows the acknowledgement and precedes the stop under the stated assumptions. It cannot show
+how long a real AMS takes.</p>
+<p>The runner's own recipe for SCN-MISSION-CANCEL-M20481 is a different, closed-form variant: DT17 at the middle of R01
+stops at a hold line 30 m before X with comfort deceleration, and the reservations are released at T+32.1 s. Both
+variants reproduce the registry's key events within tolerance; the walkthrough of ch-01-04 and ch-10-08 is the one this
+chapter follows. A reader who compares the two must state which variant each number comes from.</p>
+</details>
+<h2 id="s-8" class="layer-head layer-core" data-layer="core">8. Operations view</h2>
+<h3 id="s-8-1" class="layer-head layer-core" data-layer="core">8.1 What the control room sees</h3>
+<p>The simulator has no HMI. An operations reader sees the timeline and the run summary. The <strong>timeline</strong> of the
+rehearsal shows the events of section 6.1 with the element that acted. It answers the rehearsal's questions as
+sequences: did <em>cancelling</em> come before <em>accepted by vehicle</em>, the hold only after DT17 cleared X, <em>complete</em> only after
+the truck stopped?</p>
+<p>The <strong>run summary</strong> carries, for every run:</p>
+<ul>
+<li>scenario ID and execution status (end to end, partial with a model recipe, or partial with scripted key events);</li>
+<li>configuration: mine version, module versions, scenario, options (including the request), seed;</li>
+<li>run hash;</li>
+<li>KPIs (tonnes, loads, Physical Availability, Use of Availability, Production Effectiveness, unplanned stops, queue
+time per load);</li>
+<li>timeline verdict and the recorded limitation.</li>
+</ul>
+<p>Before two results go on one slide, check the two summaries line by line <code>[H]</code>: mine version equal; module versions
+equal; scenario and options equal (apart from the seed copied inside the request); seeds equal (same run) or different
+(replication: compare with intervals). For the planner's two baseline runs of section 1.1 the check reads: mine 0.3.0
+and 0.3.0; <code>ahs_sim</code> 0.25.0, schema 1.0 and registry schema 1 on both; scenario SCN-BASELINE-SHIFT on both; options equal
+except the seed; seeds 0 and 1. Verdict: comparable, a replication. The 220 t difference is within the spread of
+seeds 0 to 4 (183,920 to 185,680 t) and shows no change in the model.</p>
+<h3 id="s-8-2" class="layer-head layer-detail" data-layer="detail" data-fold="fold-s-8-2">8.2 Who decides what</h3>
+<details class="layer-fold layer-detail" id="fold-s-8-2" data-layer="detail"><summary><span class="layer-tag layer-detail">Detail</span>Show 8.2</summary>
+<table>
+<thead>
+<tr>
+<th>Decision</th>
+<th>Responsible</th>
+<th>Accountable</th>
+<th>Consulted</th>
+<th>Informed</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Which scenario to rehearse and what to learn from it</td>
+<td>Pit Supervisor</td>
+<td>Pit Supervisor</td>
+<td>AHS Controller, trainer</td>
+<td>site engineer</td>
+</tr>
+<tr>
+<td>Writing the scenario request</td>
+<td>AHS Controller or trainer</td>
+<td>Pit Supervisor</td>
+<td>site engineer</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Running the request, recording configuration and run hash</td>
+<td>site engineer</td>
+<td>site engineer</td>
+<td>—</td>
+<td>requester</td>
+</tr>
+<tr>
+<td>Whether two results may be compared</td>
+<td>site engineer</td>
+<td>Pit Supervisor</td>
+<td>planner</td>
+<td>review attendees</td>
+</tr>
+<tr>
+<td>Whether a result may be used outside the training or planning discussion</td>
+<td>not permitted: the simulator is not a basis for operational decisions <code>[H]</code></td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Adding a module, adapter or recipe</td>
+<td>simulator maintainer</td>
+<td>site engineering</td>
+<td>ch-23-10 regression owner</td>
+<td>users</td>
+</tr>
+</tbody>
+</table>
+<p><em>Site engineer</em> and <em>simulator maintainer</em> are functions, not job titles <code>[H]</code>.</p>
+</details>
+<h3 id="s-8-3" class="layer-head layer-core" data-layer="core">8.3 Procedure excerpt — requesting and reading a rehearsal</h3>
+<p>The AHS Controller asks for a rehearsal of the M-20481 cancellation.</p>
+<ol>
+<li><strong>Controller:</strong> name the scenario by its registry ID (SCN-MISSION-CANCEL-M20481) and say what the rehearsal must
+show (the order of <em>cancelling</em>, <em>accepted</em>, hold and <em>complete</em>).</li>
+<li><strong>Controller:</strong> state the shift (DAY), the trigger time (07:00, T+3600 s after shift start), the fleet state (40
+trucks, fixed allocation), injected events (none) and the outputs wanted (timeline, KPIs, metrics).</li>
+<li><strong>Controller:</strong> state the seed (0) or accept the default, so the run can be repeated.</li>
+<li><strong>Site engineer:</strong> check the scenario's execution status in the limitations register and tell the requester if it
+runs only as scripted key events.</li>
+<li><strong>Site engineer:</strong> run the request; record the configuration hash and the run hash with the result.</li>
+<li><strong>Controller and Pit Supervisor:</strong> read the timeline against the purpose of step 1; note every response time that
+is an assumption (the controller's T+5 s radio call).</li>
+<li><strong>Pit Supervisor:</strong> before quoting any number from the run in another meeting, compare its summary with the other
+run's (section 8.1).</li>
+<li><strong>All:</strong> record that the rehearsal supplements, and does not replace, site training and authorisation (ch-16-09).</li>
+</ol>
+<p>Steps 1 to 3 in the runner's form are LAB-23-01-02's <code>REHEARSAL</code>: it runs end to end, passes the timeline check and
+repeats to the same hash. The runner returns its closed-form variant (release at T+32.1 s, section 7.3); the chain of
+section 6.1 is the lab's own model.</p>
+<h3 id="s-8-4" class="layer-head layer-detail" data-layer="detail" data-fold="fold-s-8-4">8.4 KPIs and delay codes affected</h3>
+<details class="layer-fold layer-detail" id="fold-s-8-4" data-layer="detail"><summary><span class="layer-tag layer-detail">Detail</span>Show 8.4</summary>
+<p>The architecture itself moves no KPI. It decides where KPIs come from: the engine's event log through
+<code>analytics.kpi_pipeline</code>, so the time-usage KPIs follow ch-01-05 and ch-22-06. In the cancellation, DT17's hold at C01-Q
+is coded DLY-OD-10 from T+102 s while C01 is down (ch-01-04); the rehearsal chain of this chapter does not run the
+delay coding, which belongs to the fleet log. For the baseline the summary carries 184,140 t, 837 loads, Physical
+Availability 0.9487, Use of Availability 1.0, Production Effectiveness 0.6132 and 89.5 s queue per load (seed 0; model M6
+of section 4.10).</p>
+<p>The simulator can help with sequence, timing under stated assumptions and the <em>relative</em> throughput effect of a
+scenario against the baseline of the same configuration. It cannot give safety assurance or forecast what any mine
+will produce.</p>
+</details>
+<h3 id="s-8-5" class="layer-head layer-detail" data-layer="detail" data-fold="fold-s-8-5">8.5 Training and competency implications</h3>
+<details class="layer-fold layer-detail" id="fold-s-8-5" data-layer="detail"><summary><span class="layer-tag layer-detail">Detail</span>Show 8.5</summary>
+<p>People who request rehearsals need the scenario registry IDs, the fields of a scenario request, the three execution
+statuses and the comparability check of section 8.1, and should recognise every simulated response time as an
+assumption. Engineers who maintain the simulator need the ordering rules, the adapter protocol, the dependency rules
+and the configuration fields (LAB-23-01-01 and LAB-23-01-02). Trainers should use the simulator for learning sequences
+and interfaces, not as a training system that reproduces a site's HMI; simulator sessions do not count towards
+authorisation (ch-16-09).</p>
+</details>
+<h2 id="s-9" class="layer-head layer-reference" data-layer="reference" data-fold="fold-s-9">9. Requirements and acceptance criteria</h2>
+<details class="layer-fold layer-reference" id="fold-s-9" data-layer="reference"><summary><span class="layer-tag layer-reference">Reference</span>Show section 9</summary>
+<p>REQ-23-01-001 [H]
+The simulation engine shall order events by time, then by priority, then by insertion sequence, shall not advance its
+clock backwards, and shall reject events scheduled before the current time; equal inputs shall produce equal event
+logs.
+Rationale: an order that depends on anything outside the inputs makes runs differ without a configuration difference
+(section 4.2: six random tie seeds gave six logs).
+Verification: test (LAB-23-01-01 queue order and simultaneous arrivals; <code>sim/tests/test_engine.py</code>).</p>
+<p>REQ-23-01-002 [H]
+Every module of an earlier volume shall be connected to the engine only through an adapter that declares its
+architecture element, coupling level, inputs, outputs and emitted event kinds; adapters shall communicate only by
+scheduling events and shall not call one another.
+Rationale: declared interfaces make each behaviour traceable to its source chapter and let a stub replace an adapter
+(sections 4.3 and 4.4).
+Verification: inspection of <code>engine.adapter_catalogue()</code>; test (LAB-23-01-01 with the AMS adapter replaced by a stub).</p>
+<p>REQ-23-01-003 [H]
+No adapter representing the FMS or the AMS shall have an input that stops a truck directly or clears a vehicle-side
+stop cause; the ADS adapter shall refuse and log an AMS resume while a vehicle-side cause is active, and adapters for
+independent safety functions and onboard safety-related systems shall act without consulting the AMS or ADS adapters.
+Rationale: the simulator must teach the authority boundaries of ch-01-04, not contradict them (section 4.3).
+Verification: inspection of adapter inputs; test (<code>sim/tests/test_engine.py</code>, <code>sim/tests/test_scenario_runner.py</code>
+remote-stop and fire cases).</p>
+<p>REQ-23-01-004 [H]
+Every run shall record a configuration with the reference-mine version, seed, module and schema versions, scenario IDs
+and options, and the hash of its event log; the record should also hold content fingerprints of the shared data files
+the run reads and the interpreter and dependency versions.
+Rationale: a version string does not detect an edited data file, and a result without its configuration cannot be
+reproduced or compared (section 4.6).
+Verification: test (LAB-23-01-02 identical hash on repeat, distinct hashes across seeds); inspection of the run record.</p>
+<p>REQ-23-01-005 [H]
+The module-level import graph of <code>ahs_sim</code> shall be acyclic, <code>ahs_sim</code> shall not import a visualisation or GUI library
+or <code>ahs_sim_viz</code>, no earlier-volume module shall import the engine or the scenario runner, and every cycle that closes
+only through a function-level import shall be listed in the dependency report.
+Rationale: integration must depend on the models, not the reverse; a hidden deferred cycle is still a design coupling
+(section 4.5).
+Verification: test (LAB-23-01-02; <code>engine.check_dependencies</code>; <code>tools/validate.py sim-deps</code>).</p>
+<p>REQ-23-01-006 [H]
+A simulation result shall be compared with another only if both share the reference-mine version, module versions,
+scenarios and options; results with different seeds shall be presented as replications with intervals, not as single
+values.
+Rationale: two runs of the same baseline differ by 220 t from the seed alone (sections 1.1 and 8.1).
+Verification: demonstration (LAB-23-01-02 comparability cases); inspection of review material.</p>
+<p>REQ-23-01-007 [H]
+Every timeline result shall state the scenario's execution status (end to end, partial with a model recipe, or partial
+with scripted key events); a timeline pass of a scenario run with scripted key events shall not be presented as
+validation of the scenario's behaviour.
+Rationale: 44 of 65 scenarios pass by construction (section 4.7).
+Verification: inspection of reports; test (LAB-23-01-02 coupling counts; <code>scenario_runner.limitations_register</code>).</p>
+<p>REQ-23-01-008 [H]
+A scenario request shall state the scenario ID, shift, fleet state, injected events, outputs and seed; the result
+shall return the request with its configuration and run hash.
+Rationale: with these fields an engineer can run the request without further clarification, and the requester can
+repeat it (section 8.3).
+Verification: demonstration (LAB-23-01-02 rehearsal request run twice, same hash).</p>
+<p>REQ-23-01-009 [H]
+Every simulated human response time shall be a named parameter tagged as an assumption, and simulator results shall
+not be used as a performance standard for people or as a basis for operational decisions.
+Rationale: the handbook has no validated model of human performance; scripted policies make the assumption visible
+(section 4.8).
+Verification: inspection of <code>scenario_runner.RESPONSE_S</code> and lab parameters; inspection of reports.</p>
+</details>
+<h2 id="s-10" class="layer-head layer-detail" data-layer="detail" data-fold="fold-s-10">10. Verification and validation</h2>
+<details class="layer-fold layer-detail" id="fold-s-10" data-layer="detail"><summary><span class="layer-tag layer-detail">Detail</span>Show section 10</summary>
+<p><strong>Verification of the architecture</strong> (run by <code>make test CH=ch-23-01</code>, 13 tests, and by <code>sim/tests/test_engine.py</code>):</p>
+<ul>
+<li>the engine cycle on M-20481 equals the steady-state cycle (1564.06 s, difference 2.3 × 10⁻¹³ s) and reproduces the
+SCN-BASELINE-SHIFT key events within 0.06 s;</li>
+<li>tie-breaking orders simultaneous events repeatably; random tie-breaking does not;</li>
+<li>the nominal cancellation reproduces the walkthrough of ch-01-04 and ch-10-08 (T+1.3, 4.0, 4.3, 40.0, 102.3, 103.6 s)
+and the three registry key events; the duplicate is discarded with the outcome unchanged; with the AMS stubbed the FMS
+alarm comes at T+10 s and DT17 stops at the end of R21 at T+205.5 s;</li>
+<li>the baseline repeats to the same hash, five seeds give five hashes, and a 1 ms change changes the hash;</li>
+<li>the dependency graph is acyclic and viz-free, the deferred cycle is listed, and no earlier module imports the engine;</li>
+<li>the adapter catalogue has 13 adapters (9 event-level, 3 wrapped run, 1 stub).</li>
+</ul>
+<p><strong>Validation</strong> against registry timelines is the work of ch-23-04 to ch-23-10, reported in ch-23-10. Both scenarios of
+this chapter run end to end and pass their timeline checks. In the lab's cancellation chain the times come from the
+adapters' delays and the truck model, not from the registry; since the delays were chosen to reproduce ch-01-04, the
+pass shows consistency with that chapter, not with a real AMS.</p>
+<p><strong>What the checks do not show.</strong> No check here compares the simulator with a real mine or a real system. Registry
+times are themselves illustrative <code>[A]</code>; a pass means consistency with the handbook's scenario skeleton. Simulation
+credibility as verification evidence needs its own validation (ch-03-07, ch-18-02); published practice for it is not
+yet verified for this handbook <code>[TBV]</code> (SRC-PUB-SIMULATION-CREDIBILITY).</p>
+<p><strong>Findings recorded for the simulator.</strong> Two behaviours of <code>ahs_sim</code> 0.25.0 matter to users of this chapter and are
+reported, not changed here: <code>engine.comparable</code> applied to two <code>run_scenario</code> summaries counts the seed twice, because
+the request inside the options carries it (section 4.6); and the runner's recipe for SCN-MISSION-CANCEL-M20481 models a
+different holding point from ch-01-04 and ch-10-08 (section 7.3).</p>
+</details>
+<h2 id="s-11" class="layer-head layer-detail" data-layer="detail" data-fold="fold-s-11">11. Common mistakes</h2>
+<details class="layer-fold layer-detail" id="fold-s-11" data-layer="detail"><summary><span class="layer-tag layer-detail">Detail</span>Show section 11 (11.1 Design mistakes; 11.2 Operational mistakes)</summary>
+<h3 id="s-11-1" class="layer-head layer-detail" data-layer="detail">11.1 Design mistakes</h3>
+<ul>
+<li><strong>Choosing a fixed time step for whole-shift runs</strong> because it is easier to write. It costs 1,728,000 truck-steps
+per shift at 1 s and still leaves an error; use events and call time-stepped models inside events.</li>
+<li><strong>Breaking ties by set order.</strong> Python's set order for strings changes between processes; use an explicit insertion
+counter.</li>
+<li><strong>Letting an adapter call another adapter.</strong> It works until someone replaces one of them with a stub. Communicate
+through events.</li>
+<li><strong>Changing state on message arrival and logging a later time.</strong> The state is then ahead of its own processing
+(section 7.3).</li>
+<li><strong>Putting domain rules in the engine.</strong> A permission rule in the engine cannot be traced to ch-10-06 or stubbed.</li>
+<li><strong>Importing plotting code</strong> in an <code>ahs_sim</code> module &quot;for a quick check&quot;. Put it in <code>ahs_sim_viz</code>.</li>
+<li><strong>Hiding a deferred import cycle</strong> because the module-level check passes. List it and plan its removal.</li>
+<li><strong>Recording only version strings.</strong> An edited <code>mine.yaml</code> without a version change goes undetected.</li>
+</ul>
+<h3 id="s-11-2" class="layer-head layer-detail" data-layer="detail">11.2 Operational mistakes</h3>
+<ul>
+<li><strong>Comparing two results without comparing their summaries.</strong> The planner's 220 t was a seed, not a change.</li>
+<li><strong>Reading a timeline pass as proof</strong> for a scenario that runs as scripted key events.</li>
+<li><strong>Quoting a simulated response time as a target</strong> (&quot;the controller should acknowledge in 5 s&quot;). It is an assumption.</li>
+<li><strong>Requesting &quot;run the fire scenario&quot;</strong> without ID, shift, fleet state and outputs; the result cannot be repeated.</li>
+<li><strong>Treating a rehearsal as training credit.</strong> It supplements site training and authorisation; it does not replace
+them (ch-16-09).</li>
+<li><strong>Using a simulated tonnage as a forecast</strong> in a production meeting. The simulator gives relative effects under
+stated assumptions.</li>
+</ul>
+</details>
+<h2 id="s-12" class="layer-head layer-detail" data-layer="detail" data-fold="fold-s-12">12. Worked examples</h2>
+<details class="layer-fold layer-detail" id="fold-s-12" data-layer="detail"><summary><span class="layer-tag layer-detail">Detail</span>Show section 12</summary>
+<p><strong>Example 1 — event-driven against fixed step.</strong> 35 + 132 + 803.96 + 40 + 50 + 503.11 = 1564.06 s (steady-state
+model). With <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x00394;</mi><mi>t</mi></mrow></math> = 1 s: 35 + 132 + 804 + 40 + 50 + 504 = 1565 s (+0.94 s, 1565 steps) against 15 events; over a
+shift 40 × 43,200 / 1 = 1,728,000 truck-steps against 28,659 events.</p>
+<p><strong>Example 2 — tie-breaking.</strong> Events <code>_b</code> at 10 s (priority 0), <code>_a</code> at 5 s (0), <code>_c</code> at 10 s (−1), <code>_d</code> at 10 s (0),
+inserted in that order, come out as <code>_a</code>, <code>_c</code>, <code>_b</code>, <code>_d</code>.</p>
+<p><strong>Example 3 — can DT17 accept the shortened path?</strong> At T+2.3 s DT17 is at 50 + 13.89 × 2.3 ≈ 82 m past P1, with
+1,246 m from its T+0 s position to C01-Q minus 32 m travelled, about 1,214 m. At 50 km/h (13.89 m/s) and 0.8 m/s²
+<code>[A]</code> it needs 13.89² / (2 × 0.8) = 120.6 m. It accepts; PATH_ACK reaches the AMS at T+3.3 s and R21 is released at
+T+4.0 s.</p>
+<p><strong>Example 4 — reading two summaries.</strong> Run A: mine 0.3.0, <code>ahs_sim</code> 0.25.0, SCN-BASELINE-SHIFT, seed 0, 184,140 t.
+Run B: same, seed 1, 184,360 t. Comparable as a replication. Five seeds give 183,920 to 185,680 t, a range of 1,760 t;
+the 220 t between A and B is inside it. Run C: same as A but fleet state 38 trucks: not comparable with A as a
+replication; it is a different question, and its effect must be estimated with replications of both.</p>
+<p><strong>Example 5 — execution status.</strong> Of 65 scenarios, 15 end to end + 6 partial with a model recipe + 44 partial with
+scripted key events = 65. A report that says &quot;the suite passes 65 of 65 timelines&quot; without the split overstates what was
+shown by the 44 scripted ones.</p>
+</details>
+<h2 id="s-13" class="layer-head layer-reference" data-layer="reference" data-fold="fold-s-13">13. Hands-on labs</h2>
+<details class="layer-fold layer-reference" id="fold-s-13" data-layer="reference"><summary><span class="layer-tag layer-reference">Reference</span>Show section 13</summary>
+<p>Two labs reproduce every number in this chapter; instructions, expected results and the operations interpretation are in
+labs/README.md.</p>
+<ul>
+<li><strong>LAB-23-01-01 — Minimal discrete-event engine on the reference mine.</strong> DT17 on M-20481 through <code>ahs_sim.engine</code>
+against <code>haul_cycle</code>; a fixed time-step comparison; deterministic tie-breaking; the cancellation chain through FMS,
+AMS, ADS and VCS adapters, with a duplicate cancel and a stubbed AMS. Uses <code>engine</code>, <code>mine</code>, <code>truck</code>, <code>haul_cycle</code>,
+<code>mission</code>, <code>ams</code>.</li>
+<li><strong>LAB-23-01-02 — Reproducibility and dependency checks.</strong> Run configuration and hash; the baseline twice and over five
+seeds; comparability; what the configuration omits; the dependency graph; coupling counts; a scenario request for a
+rehearsal. Uses <code>engine</code>, <code>scenario_runner</code>, <code>rng</code>.</li>
+</ul>
+<p>This chapter has no browser widget.</p>
+</details>
+<h2 id="s-14" class="layer-head layer-detail" data-layer="detail" data-fold="fold-s-14">14. Discussion questions and assignments</h2>
+<details class="layer-fold layer-detail" id="fold-s-14" data-layer="detail"><summary><span class="layer-tag layer-detail">Detail</span>Show section 14 (14.1 Engineering assignments; 14.2 Operations assignments)</summary>
+<h3 id="s-14-1" class="layer-head layer-detail" data-layer="detail">14.1 Engineering assignments</h3>
+<ol>
+<li>Write an adapter for the plant model that emits <code>plant_state</code> NOT_READY and READY for SCN-CRUSHER-C01-DOWN, declare
+its interface, and replace it with a stub in a test. Which inputs and emits did you declare, and why?</li>
+<li>Extend the cancellation chain with message loss from <code>ahs_sim.messaging.Faults</code> as in ch-10-08. Which registry step
+fails first as the loss rate grows?</li>
+<li>Design the configuration fields of REQ-23-01-004 that the engine does not yet record (data fingerprints, interpreter
+and dependency versions). Where should they be computed, and how does <code>comparable</code> use them?</li>
+<li>Propose how to remove the deferred <code>_tel_shift</code> ↔ <code>telemetry</code> cycle without changing any public name.</li>
+</ol>
+<h3 id="s-14-2" class="layer-head layer-detail" data-layer="detail">14.2 Operations assignments</h3>
+<ol>
+<li>Write a scenario request for a rehearsal of SCN-RSTOP-AANORTH with the controller, Pit Supervisor and staged
+restart steps. Which response times in it are assumptions?</li>
+<li>Two results arrive for a meeting: 185,240 t (seed 2) and 183,920 t (seed 4). Write the two-sentence note that goes
+with them.</li>
+<li>A colleague says &quot;the simulator proves the cancel takes 40 s&quot;. Correct the statement in one paragraph.</li>
+</ol>
+</details>
+<h2 id="s-15" class="layer-head layer-core" data-layer="core">15. Key takeaways</h2>
+<ul>
+<li>The integrated simulator is event-driven: the clock jumps between state changes; time-stepped models run inside
+single events where continuous motion matters.</li>
+<li>Events are ordered by time, priority and insertion sequence; equal inputs give equal logs, and a list order is an
+input.</li>
+<li>Adapters mirror FMS, AMS, ADS, VCS, independent safety functions, onboard safety-related systems, manned-vehicle
+devices and people; they communicate only through events, declare their coupling, and authority boundaries appear as
+inputs an adapter does not have.</li>
+<li>The module graph is acyclic and free of visualisation imports; one deferred cycle (<code>_tel_shift</code> ↔ <code>telemetry</code>) is
+listed, not hidden.</li>
+<li>A run is reproducible from its configuration (mine version, seed, versions, scenarios, options) and identified by its
+run hash; the configuration should also record data content and environment.</li>
+<li>Compare results only when their summaries match; different seeds are replications.</li>
+<li>People are scripted decision policies; every simulated response time is an assumption, and no result is a basis for
+operational decisions.</li>
+</ul>
+<h2 id="s-16" class="layer-head layer-reference" data-layer="reference" data-fold="fold-s-16">16. Glossary terms introduced</h2>
+<details class="layer-fold layer-reference" id="fold-s-16" data-layer="reference"><summary><span class="layer-tag layer-reference">Reference</span>Show section 16</summary>
+<p><code>simulation-clock</code>, <code>event-queue</code>, <code>deterministic-tie-breaking</code>, <code>fixed-time-step-simulation</code>, <code>module-adapter</code>,
+<code>adapter-coupling-level</code>, <code>stub-adapter</code>, <code>run-configuration</code>, <code>run-hash</code>, <code>reproducibility</code>, <code>scenario-runner</code>,
+<code>scenario-request</code>, <code>scripted-decision-policy</code>. Used from earlier chapters: <code>discrete-event-simulation</code>,
+<code>independent-safety-function</code>, <code>onboard-safety-related-system</code>, <code>position-reporting-unit</code>, <code>digital-twin</code>,
+<code>simulation-fidelity</code>, <code>operational-scenario</code>, <code>scenario-registry</code>, <code>event-log</code>, <code>telemetry</code>, <code>verification</code>,
+<code>validation</code>, <code>configuration-item</code>.</p>
+</details>
+<nav aria-label="Introductory chapters"><p><a href="../handbook.html">Handbook contents</a> · <a href="ch-23-02.en.html">Next chapter</a></p></nav>
+</main>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.1/dist/mermaid.min.js"></script>
+<script>if(window.ahsRenderMermaid){window.ahsRenderMermaid();}</script>
+</body>
+</html>

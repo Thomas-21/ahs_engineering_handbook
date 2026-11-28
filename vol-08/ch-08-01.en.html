@@ -1,0 +1,1796 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="generator" content="ahs-handbook build_articles 2.0.0">
+<meta name="ahs:id" content="ch-08-01">
+<meta name="ahs:version" content="0.1.2">
+<meta name="ahs:status" content="approved">
+<meta name="ahs:source-sha256" content="e31af5edfb6348d7">
+<title>Vehicle architecture</title>
+<style>
+:root {
+  --bg: #fbfaf7;
+  --fg: #1d1f21;
+  --muted: #5d6166;
+  --accent: #1f6f8b;
+  --accent-soft: #e3f0f4;
+  --border: #d9d6cf;
+  --code-bg: #f1efea;
+  --warn-bg: #fff6e0;
+  --warn-border: #e2b54a;
+  --watermark: rgba(200, 60, 60, 0.07);
+  --font-body: system-ui, -apple-system, "Segoe UI", "Hiragino Sans", "Hiragino Kaku Gothic ProN",
+    "Noto Sans JP", "Yu Gothic", Meiryo, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #15171a;
+    --fg: #e6e4df;
+    --muted: #a3a7ad;
+    --accent: #6cc3de;
+    --accent-soft: #1d3440;
+    --border: #33373d;
+    --code-bg: #1f2226;
+    --warn-bg: #2e2716;
+    --warn-border: #8c7330;
+    --watermark: rgba(255, 120, 120, 0.06);
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #15171a;
+  --fg: #e6e4df;
+  --muted: #a3a7ad;
+  --accent: #6cc3de;
+  --accent-soft: #1d3440;
+  --border: #33373d;
+  --code-bg: #1f2226;
+  --warn-bg: #2e2716;
+  --warn-border: #8c7330;
+  --watermark: rgba(255, 120, 120, 0.06);
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0 auto;
+  max-width: 52rem;
+  padding: 1.25rem 16px 3rem;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-body);
+  font-size: 1.0625rem;
+  line-height: 1.7;
+  overflow-wrap: anywhere;
+}
+h1 { font-size: 1.9rem; line-height: 1.3; margin: 0.6rem 0 1rem; }
+h2 { font-size: 1.4rem; margin-top: 2.4rem; border-bottom: 1px solid var(--border); padding-bottom: 0.2rem; }
+h3 { font-size: 1.15rem; margin-top: 1.8rem; }
+a { color: var(--accent); }
+code { font-family: var(--font-mono); background: var(--code-bg); padding: 0.05rem 0.3rem; border-radius: 3px; font-size: 0.92em; }
+pre { background: var(--code-bg); padding: 0.8rem 1rem; overflow-x: auto; border-radius: 6px; line-height: 1.45; }
+pre code { background: none; padding: 0; }
+table { border-collapse: collapse; width: 100%; display: block; overflow-x: auto; margin: 1rem 0; }
+th, td { border: 1px solid var(--border); padding: 0.35rem 0.6rem; text-align: left; vertical-align: top; }
+/* Never break inside numbers or IDs in table cells; wide tables scroll horizontally instead. */
+th, td { overflow-wrap: normal; word-break: normal; }
+th { background: var(--accent-soft); }
+blockquote { margin: 1rem 0; padding: 0.2rem 1rem; border-left: 4px solid var(--accent); color: var(--muted); }
+.article-header .meta-row { display: flex; flex-wrap: wrap; gap: 0.4rem 0.9rem; align-items: center; font-size: 0.85rem; color: var(--muted); }
+.chapter-id { font-family: var(--font-mono); font-weight: 600; color: var(--fg); }
+.status { padding: 0.05rem 0.5rem; border: 1px solid var(--border); border-radius: 999px; }
+.status-draft, .status-revision, .status-in-review { border-color: var(--warn-border); background: var(--warn-bg); }
+.theme-toggle { font: inherit; font-size: 0.8rem; color: var(--fg); background: transparent; border: 1px solid var(--border); border-radius: 4px; padding: 0.1rem 0.5rem; cursor: pointer; }
+.disclaimer { background: var(--warn-bg); border: 1px solid var(--warn-border); border-radius: 6px; padding: 0.6rem 0.9rem; font-size: 0.9rem; }
+.disclaimer p { margin: 0.25rem 0; }
+.toc { border: 1px solid var(--border); border-radius: 6px; padding: 0.6rem 1rem; margin: 1.2rem 0; font-size: 0.92rem; }
+.toc ol { margin: 0.3rem 0 0; padding-left: 1.2rem; }
+.fig { margin: 1.6rem 0; text-align: center; }
+.fig img, .fig svg { max-width: 100%; height: auto; }
+.fig pre.mermaid { background: transparent; text-align: center; }
+figcaption { font-size: 0.9rem; color: var(--muted); margin-top: 0.5rem; }
+.fig-no { font-weight: 600; color: var(--fg); }
+.fig-id { font-family: var(--font-mono); font-size: 0.75rem; opacity: 0.7; }
+.math-block { overflow-x: auto; margin: 1rem 0; }
+math { font-size: 1.1em; }
+.widget { border: 1px solid var(--border); border-radius: 8px; padding: 1rem; margin: 1.5rem 0; background: var(--accent-soft); }
+.widget label { display: block; margin: 0.4rem 0; font-size: 0.95rem; }
+.widget select, .widget input { font: inherit; color: var(--fg); background: var(--bg); border: 1px solid var(--border); border-radius: 4px; padding: 0.15rem 0.3rem; max-width: 100%; }
+.widget .result { font-size: 1.05rem; margin-top: 0.7rem; }
+.widget table { font-size: 0.88rem; }
+.watermark { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; pointer-events: none; font-size: 22vw; font-weight: 800; color: var(--watermark); transform: rotate(-24deg); z-index: 0; }
+.article-header, .toc, .article-body, .article-footer { position: relative; z-index: 1; }
+.article-footer { margin-top: 3rem; font-size: 0.8rem; color: var(--muted); border-top: 1px solid var(--border); padding-top: 0.6rem; }
+@media (max-width: 600px) {
+  body { font-size: 1rem; }
+  h1 { font-size: 1.55rem; }
+}
+@media print { .watermark { color: rgba(0, 0, 0, 0.06); } .theme-toggle { display: none; } }
+
+</style>
+<script>
+(function () {
+  var root = document.documentElement;
+  try {
+    var saved = localStorage.getItem("ahs-theme");
+    if (saved === "dark" || saved === "light") root.dataset.theme = saved;
+  } catch (e) {}
+  var mq = window.matchMedia ? window.matchMedia("(prefers-color-scheme: dark)") : null;
+  // No explicit choice: follow the system theme (CSS does the same through prefers-color-scheme).
+  function isDark() {
+    return root.dataset.theme ? root.dataset.theme === "dark" : !!(mq && mq.matches);
+  }
+  // Mermaid diagrams keep their original definition in data-source and are re-rendered with the theme that
+  // matches the page whenever the theme changes (review 2026-11-14, R22).
+  window.ahsRenderMermaid = function () {
+    if (!window.mermaid) return;
+    var nodes = Array.prototype.slice.call(document.querySelectorAll("pre.mermaid"));
+    if (!nodes.length) return;
+    nodes.forEach(function (el) {
+      if (el.getAttribute("data-source") === null) {
+        el.setAttribute("data-source", el.textContent);
+      } else {
+        el.removeAttribute("data-processed");
+        el.textContent = el.getAttribute("data-source");
+      }
+    });
+    window.mermaid.initialize({ startOnLoad: false, securityLevel: "strict", theme: isDark() ? "dark" : "default" });
+    var done = window.mermaid.run({ nodes: nodes });
+    if (done && done.catch) done.catch(function (err) { if (window.console) console.error(err); });
+  };
+  function syncButton(btn) {
+    btn.setAttribute("aria-pressed", isDark() ? "true" : "false");
+  }
+  document.addEventListener("DOMContentLoaded", function () {
+    var btn = document.querySelector(".theme-toggle");
+    if (btn) syncButton(btn);
+    if (mq) {
+      var onSystemChange = function () {
+        if (root.dataset.theme) return;
+        if (btn) syncButton(btn);
+        window.ahsRenderMermaid();
+      };
+      if (mq.addEventListener) mq.addEventListener("change", onSystemChange);
+      else if (mq.addListener) mq.addListener(onSystemChange);
+    }
+    if (!btn) return;
+    btn.addEventListener("click", function () {
+      root.dataset.theme = isDark() ? "light" : "dark";
+      try { localStorage.setItem("ahs-theme", root.dataset.theme); } catch (e) {}
+      syncButton(btn);
+      window.ahsRenderMermaid();
+    });
+  });
+})();
+
+</script>
+<link rel="canonical" href="https://thomas-21.github.io/ahs_engineering_handbook/vol-08/ch-08-01.en.html">
+</head>
+<body data-chapter-id="ch-08-01" data-status="approved">
+<header class="article-header">
+  <div class="meta-row">
+    <a class="home-link" href="../handbook.html">All chapters</a>
+    <span class="chapter-id">ch-08-01</span>
+    <button type="button" class="theme-toggle" aria-label="Theme">Theme</button>
+  </div>
+  <h1>Vehicle architecture</h1>
+</header>
+<nav class="toc" aria-label="Contents"><strong>Contents</strong><ol><li><a href="#s-1">1. Overview</a></li><li><a href="#s-2">2. Operational motivation: the problem at the reference mine</a></li><li><a href="#s-3">3. Terminology and foundations</a></li><li><a href="#s-4">4. Technical explanation</a></li><li><a href="#s-5">5. Responsibilities and interface boundaries</a></li><li><a href="#s-6">6. Normal, abnormal and degraded operation</a></li><li><a href="#s-7">7. Engineering view</a></li><li><a href="#s-8">8. Operations view</a></li><li><a href="#s-9">9. Requirements and acceptance criteria</a></li><li><a href="#s-10">10. Verification and validation</a></li><li><a href="#s-11">11. Common mistakes</a></li><li><a href="#s-12">12. Worked examples</a></li><li><a href="#s-13">13. Hands-on labs</a></li><li><a href="#s-14">14. Discussion questions and assignments</a></li><li><a href="#s-15">15. Key takeaways</a></li><li><a href="#s-16">16. Glossary terms introduced</a></li></ol></nav>
+<main class="article-body">
+<h2 id="s-1">1. Overview</h2>
+<h3 id="s-1-1">1.1 Why this chapter matters</h3>
+<p>13:20, day shift. DT17 stops on R03 in the X-bound lane, 600 m from Intersection X, empty and on its way back from the
+waste dump D01. Five seconds later the AHS Controller in CR1 reads the alarm row: <em>DT17 — fault stop — drivetrain —
+R03</em> (SCN-RECOVER-DT17, ch-16-05). The row also says <em>mode autonomous, parking brake holding, body down, no onboard
+alarm, remote stop not latched</em>.</p>
+<p>The Field Technician asks which box on the truck has failed and whether they can reset it at the truck. The Pit
+Supervisor asks whether &quot;parking brake holding&quot; on a screen can be trusted — who measures it, and what would the screen
+show if the truck could not tell. The Maintenance Planner asks whether the fault is in the base truck or in the autonomy
+equipment fitted to it. And at the morning briefing the Emergency Response Team had asked where the isolation points,
+emergency stops and manual fire-suppression actuators of an autonomous truck are, and what they do.</p>
+<p>Each question is about the architecture of the vehicle: which subsystems exist, which architectural element each belongs
+to, what each depends on for power and data, and what the truck can still do — and still report — when one fails.</p>
+<p>This chapter covers:</p>
+<ul>
+<li>the <strong>decomposition</strong> of the generic HT220 into subsystems and their allocation to base machine, VCS, ADS (the
+autonomy kit), independent safety function and onboard safety-related systems (FIG-08-01-01), consistent with ch-02-03
+and ch-02-04;</li>
+<li>the <strong>power and data architecture</strong> of the autonomy kit, with supply, protection and environmental assumptions
+(FIG-08-01-02);</li>
+<li>a <strong>dependency model</strong> and a search for <strong>single points of failure</strong> across the ADS–VCS boundary, with mitigations
+and what they cannot remove (LAB-08-01-01);</li>
+<li>the <strong>status set</strong> a stopped truck must report to the AMS, and the subsystem that owns each signal;</li>
+<li>what a Field Technician may do in the field, what the kit adds to planned maintenance, and a <strong>briefing for the
+Emergency Response Team</strong>.</li>
+</ul>
+<p>The HT220 is a generic handbook class <code>[H]</code>. No manufacturer's architecture, bus, electronic control unit or interface is
+described; every element, dependency, supply and timing value is an illustrative assumption <code>[A]</code>.</p>
+<h3 id="s-1-2">1.2 Learning objectives — Engineering</h3>
+<p>After this chapter an engineering reader will be able to:</p>
+<ol>
+<li>Decompose the HT220 diesel-electric truck into subsystems (engine–alternator, traction drive, braking, steering,
+hoist, electrical, autonomy kit, onboard safety-related systems) and allocate each to VCS, ADS, independent safety
+functions or onboard safety-related systems.</li>
+<li>Specify, as an interface block diagram, the power and data architecture for autonomy hardware (compute, sensors,
+radios; no position-reporting-unit receiver on the truck — manned-vehicle devices never connect to a truck, ch-02-04)
+including supply, protection and environmental assumptions <code>[A]</code>.</li>
+<li>Identify single points of failure across the ADS–VCS boundary and propose architectural mitigations.</li>
+<li>Define the status signals a stopped truck must report to the AMS (mode, parking-brake hold, hoist position,
+isolation state, onboard safety-related system state) and allocate each to the subsystem that owns it.</li>
+</ol>
+<h3 id="s-1-3">1.3 Learning objectives — Operations</h3>
+<p>After this chapter an operations reader will be able to:</p>
+<ol>
+<li>Identify which truck components a Field Technician may isolate, inspect or reset in the field and which require
+workshop attendance, using the subsystem map.</li>
+<li>Explain to the Maintenance Planner which inspection tasks the autonomy kit and onboard safety-related systems add to
+planned maintenance.</li>
+<li>Read the truck status view on the HMI for a stopped DT17 (mode, isolation, parking brake, onboard systems) and
+confirm the information required before a Field Technician approaches in SCN-RECOVER-DT17.</li>
+<li>Brief the Emergency Response Team on the generic location and function of external isolation points, emergency stop
+devices and manual suppression actuation on an autonomous truck, so that they can act safely at a stopped truck <code>[A]</code>.</li>
+</ol>
+<h2 id="s-2">2. Operational motivation: the problem at the reference mine</h2>
+<p>The reference mine runs 40 HT220 trucks, DT01 to DT40 (<code>equipment.yaml</code>). Each is three things bolted together. There is
+the <strong>base machine</strong>: a 220 t class rigid-frame truck with a diesel engine driving a traction alternator, electric wheel
+motors, hydraulic steering, brakes and body hoist, a 24 V electrical system and a cab. There is the <strong>autonomy kit</strong>:
+perception sensors, positioning, a compute unit and radios that let the truck drive without a person. And there are the
+devices that sit beside both: fire detection and suppression, payload monitoring, tyre pressure and temperature
+monitoring, the emergency stop at the machine (SF-02) and the receiver of the independent remote stop (SF-01).</p>
+<p>Volumes 02 and 04 decided who <em>decides</em> what: the ADS perceives, plans and stops for objects; the VCS actuates and
+protects the machine; the onboard safety-related systems request a safe state on their own; the remote stop acts through
+the VCS without the ADS (ch-02-03, ch-02-04, ch-04-04). They did not need to say which physical parts carry each
+function, and what those parts share. The gap shows up in three ways.</p>
+<p><strong>The same stop looks different depending on which box failed.</strong> When DT17's traction drive control fails, the ADS and
+the site radio still work: CR1 sees a fault stop with a complete status row within seconds. If the kit's power
+distribution fails instead, the VCS stops the truck on loss of commands and the AMS hears nothing more — on the HMI, a
+communication loss. The architecture made two different failures look alike.</p>
+<p><strong>A status on a screen is only as good as the path that carries it.</strong> &quot;Parking brake holding&quot; is measured by the VCS,
+passed to the ADS, sent over the site network and drawn by the AMS. If any link is missing, the screen must not show the
+last good value. ch-16-05 made &quot;nobody approaches a truck whose state cannot be confirmed&quot; an operating
+rule; this chapter makes it a design property.</p>
+<p><strong>The people who touch the truck need a map</strong> of what they may isolate, inspect or reset in the field, what the kit adds
+to planned maintenance, and — for the ERT — what each safety device does when nobody is in the cab. Volume 02's
+diagrams are about decisions, not parts. A wrong reading of the status row sends a person towards a truck whose state is
+unknown, or holds R03 — the only road to D01, closed for 1710 s in SCN-RECOVER-DT17 (ch-16-05) — for a reason a better
+architecture would have reported.</p>
+<h2 id="s-3">3. Terminology and foundations</h2>
+<p><strong>HT220</strong> <code>[H]</code>. The handbook's generic 220 t class diesel-electric haul truck (<code>equipment.yaml</code>): empty mass 165 t, rated
+Payload 220 t, net power 1800 kW, maximum speed 55 km/h — all <code>[A]</code>. It is not a model of any manufacturer's truck.</p>
+<p><strong>Subsystem</strong> <code>[H]</code>. A group of parts with one purpose that can be isolated, tested and replaced as a unit.</p>
+<p><strong>Allocation groups</strong> <code>[H]</code>. Every subsystem of the HT220 belongs to exactly one of five groups:</p>
+<ul>
+<li><strong>Base machine</strong> — power, drivetrain hardware, hydraulics, frame, cab and the 24 V electrical system. It decides
+nothing; the VCS commands it and everything draws power from it.</li>
+<li><strong>VCS</strong> (glossary <code>vehicle-control-system</code>) — the controllers that command propulsion, braking, steering and hoist,
+protect the machine and own the machine state (ch-02-03 F13).</li>
+<li><strong>ADS</strong> — the automated driving system, physically the <strong>autonomy kit</strong> (glossary <code>autonomy-kit</code>): perception sensors,
+positioning, compute and the site radio (ch-02-03 F11, F12, F14).</li>
+<li><strong>Independent safety function (ISF)</strong> — here the stop receiver and its antenna, which execute the remote stop SF-01
+through the VCS and not through the ADS (ch-02-04, ch-04-04). The emergency stop at the machine, SF-02, is a device of
+the same kind; <code>equipment.yaml</code> records that the HT220 has one, without number, location or performance <code>[A]</code>.</li>
+<li><strong>Onboard safety-related systems (OSS)</strong> — fire detection and suppression, payload monitoring, tyre pressure and
+temperature monitoring (<code>equipment.yaml</code>; ch-02-04 section 4.4).</li>
+</ul>
+<p><strong>Dependency model</strong> <code>[H]</code>. A directed graph in which each element lists what it needs in order to work. A requirement
+written <code>A|B</code> is met if either A or B works: that is how redundancy is written. A <em>function</em> — &quot;remote stop&quot;, &quot;status
+report to the AMS&quot; — is an element whose requirements are the parts it needs.</p>
+<p><strong>Single point of failure</strong> (glossary <code>single-point-of-failure</code>). An element whose loss alone makes a function
+unavailable. <strong>Common-cause failure</strong> (glossary <code>common-cause-failure</code>): one element on which two functions depend.</p>
+<p><strong>Stopped-truck status set</strong> <code>[H]</code>. The signals a stopped truck reports so that people can decide whether and how to
+approach it (section 4.6). Each signal has one owner — the subsystem that measures or decides it.</p>
+<p><strong>Fail-safe interpretation</strong> <code>[H]</code>. A signal not received within its timeout is <em>unknown</em>, never <em>normal</em>
+(<code>ahs_sim.platform.OnboardSignal</code> reads UNKNOWN).</p>
+<p><strong>Machine mode</strong> <code>[H]</code>. The state of the machine as the VCS holds it: <code>ahs_sim.platform.Mode</code> has MANUAL, AUTONOMOUS,
+MAINTENANCE, REMOTE and ISOLATED (energy isolated for people to work on or near the truck). The first three are the
+operating modes of ch-16-05; ISOLATED is the state ch-16-05 enters at T+897 s in SCN-RECOVER-DT17; REMOTE is not
+discussed here. Transitions need interlocks (<code>MODE_TRANSITIONS</code>, ch-08-03).</p>
+<p><strong>Isolation point</strong> <code>[H]</code>. A device on the truck that removes or locks out one energy source — electrical, hydraulic,
+stored mechanical — so that people can work on or near it. Which devices a given truck has, where they are and in which
+order they are used is the manufacturer's and the site's information <code>[TBV]</code> (SRC-PUB-AUTONOMOUS-ISOLATION,
+SRC-REG-AU-ISOLATION-LOCKOUT). The handbook names their functions, not their locations.</p>
+<h2 id="s-4">4. Technical explanation</h2>
+<h3 id="s-4-1">4.1 Decomposing the HT220</h3>
+<p>FIG-08-01-01 shows the 32 elements of the dependency model in their five allocation boxes and the signals between the
+boxes. It is drawn from the allocation table of LAB-08-01-01, and a test checks that every element of the model appears
+in the figure in both languages.</p>
+<figure id="FIG-08-01-01" class="fig"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 650" role="img" aria-label="HT220 subsystem block diagram: base machine, VCS, autonomy kit (ADS), independent safety function and onboard safety-related systems, with the signals between them">
+<style>
+.t{fill:var(--fg,#1d1f21);font-size:12px}
+.h{fill:var(--fg,#1d1f21);font-size:15px;font-weight:700}
+.g{fill:var(--fg,#1d1f21);font-size:13px;font-weight:700}
+.m{fill:var(--muted,#5d6166);font-size:11.5px}
+.box{fill:none;stroke:var(--muted,#5d6166);stroke-width:1.4}
+.el{fill:var(--accent-soft,#e3f0f4);stroke:var(--muted,#5d6166);stroke-width:1}
+.isf{fill:none;stroke:#eb6834;stroke-width:2;stroke-dasharray:7 4}
+.oss{fill:none;stroke:#1baf7a;stroke-width:2;stroke-dasharray:3 3}
+.ln{fill:none;stroke:var(--fg,#1d1f21);stroke-width:1.5}
+.ah{fill:var(--fg,#1d1f21)}
+</style>
+<text class="h" x="20" y="28">HT220 (generic class): subsystems and allocation boundaries</text>
+<rect class="box" x="20" y="60" width="420" height="230" rx="8"/>
+<text class="g" x="30" y="80">Autonomy kit — ADS</text>
+<rect class="el" x="30" y="92" width="192" height="20" rx="4"/>
+<text class="t" x="36" y="106">Autonomy-kit power distribution</text>
+<rect class="el" x="230" y="92" width="192" height="20" rx="4"/>
+<text class="t" x="236" y="106">ADS compute</text>
+<rect class="el" x="30" y="118" width="192" height="20" rx="4"/>
+<text class="t" x="36" y="132">GNSS receiver</text>
+<rect class="el" x="230" y="118" width="192" height="20" rx="4"/>
+<text class="t" x="236" y="132">Inertial unit</text>
+<rect class="el" x="30" y="144" width="192" height="20" rx="4"/>
+<text class="t" x="36" y="158">Front lidar</text>
+<rect class="el" x="230" y="144" width="192" height="20" rx="4"/>
+<text class="t" x="236" y="158">Front radar</text>
+<rect class="el" x="30" y="170" width="192" height="20" rx="4"/>
+<text class="t" x="36" y="184">Site wireless radio</text>
+<rect class="el" x="230" y="170" width="192" height="20" rx="4"/>
+<text class="t" x="236" y="184">ADS–VCS command link</text>
+<rect class="box" x="580" y="60" width="400" height="230" rx="8"/>
+<text class="g" x="590" y="80">VCS — vehicle control</text>
+<rect class="el" x="590" y="92" width="372" height="20" rx="4"/>
+<text class="t" x="596" y="106">VCS controller</text>
+<rect class="el" x="590" y="118" width="372" height="20" rx="4"/>
+<text class="t" x="596" y="132">Traction drive control</text>
+<rect class="el" x="590" y="144" width="372" height="20" rx="4"/>
+<text class="t" x="596" y="158">Traction inverters and wheel motors</text>
+<rect class="el" x="590" y="170" width="372" height="20" rx="4"/>
+<text class="t" x="596" y="184">Service brake and retarding control</text>
+<rect class="el" x="590" y="196" width="372" height="20" rx="4"/>
+<text class="t" x="596" y="210">Service brakes and retarding</text>
+<rect class="el" x="590" y="222" width="372" height="20" rx="4"/>
+<text class="t" x="596" y="236">Steering control valve</text>
+<rect class="el" x="590" y="248" width="372" height="20" rx="4"/>
+<text class="t" x="596" y="262">Hoist control valve</text>
+<rect class="isf" x="50" y="340" width="190" height="100" rx="8"/>
+<text class="g" x="60" y="360">Independent safety function</text>
+<rect class="el" x="60" y="372" width="162" height="20" rx="4"/>
+<text class="t" x="66" y="386">Stop receiver</text>
+<rect class="el" x="60" y="398" width="162" height="20" rx="4"/>
+<text class="t" x="66" y="412">Stop-radio antenna</text>
+<rect class="oss" x="260" y="340" width="290" height="150" rx="8"/>
+<text class="g" x="270" y="360">Onboard safety-related systems</text>
+<rect class="el" x="270" y="372" width="262" height="20" rx="4"/>
+<text class="t" x="276" y="386">Fire detection and suppression</text>
+<rect class="el" x="270" y="398" width="262" height="20" rx="4"/>
+<text class="t" x="276" y="412">Fire system back-up supply</text>
+<rect class="el" x="270" y="424" width="262" height="20" rx="4"/>
+<text class="t" x="276" y="438">Tyre pressure and temperature monitoring</text>
+<rect class="el" x="270" y="450" width="262" height="20" rx="4"/>
+<text class="t" x="276" y="464">Payload monitoring</text>
+<rect class="box" x="580" y="340" width="400" height="200" rx="8"/>
+<text class="g" x="590" y="360">Base machine (power, drivetrain, hydraulics)</text>
+<rect class="el" x="590" y="372" width="182" height="20" rx="4"/>
+<text class="t" x="596" y="386">Diesel engine</text>
+<rect class="el" x="780" y="372" width="182" height="20" rx="4"/>
+<text class="t" x="786" y="386">Traction alternator</text>
+<rect class="el" x="590" y="398" width="182" height="20" rx="4"/>
+<text class="t" x="596" y="412">24 V charging alternator</text>
+<rect class="el" x="780" y="398" width="182" height="20" rx="4"/>
+<text class="t" x="786" y="412">24 V batteries</text>
+<rect class="el" x="590" y="424" width="182" height="20" rx="4"/>
+<text class="t" x="596" y="438">24 V distribution</text>
+<rect class="el" x="780" y="424" width="182" height="20" rx="4"/>
+<text class="t" x="786" y="438">Machine data bus</text>
+<rect class="el" x="590" y="450" width="182" height="20" rx="4"/>
+<text class="t" x="596" y="464">Steering pump</text>
+<rect class="el" x="780" y="450" width="182" height="20" rx="4"/>
+<text class="t" x="786" y="464">Steering accumulator</text>
+<rect class="el" x="590" y="476" width="182" height="20" rx="4"/>
+<text class="t" x="596" y="490">Parking brake (spring-applied)</text>
+<rect class="el" x="780" y="476" width="182" height="20" rx="4"/>
+<text class="t" x="786" y="490">Cab controls</text>
+<rect class="el" x="590" y="502" width="182" height="20" rx="4"/>
+<text class="t" x="596" y="516">Body position sensor</text>
+<rect class="box" x="60" y="590" width="200" height="34" rx="8"/>
+<text class="g" x="72" y="612">AMS (control room)</text>
+<rect class="isf" x="60" y="500" width="200" height="34" rx="8"/>
+<text class="g" x="72" y="522">Remote-stop transmitters</text>
+<polyline class="ln" points="440.0,120.0 578.0,120.0"/><polygon class="ah" points="578.0,120.0 568.8,123.9 568.8,116.1"/>
+<text class="m" x="446" y="104">commands, heartbeat</text>
+<polyline class="ln" points="580.0,220.0 442.0,220.0"/><polygon class="ah" points="442.0,220.0 451.2,216.1 451.2,223.9"/>
+<text class="m" x="446" y="240">machine state, faults</text>
+<polyline class="ln" points="145.0,340.0 145.0,308.0 640.0,308.0 640.0,292.0"/><polygon class="ah" points="640.0,292.0 643.9,301.2 636.1,301.2"/>
+<text class="m" x="150" y="302">stop (latched)</text>
+<polyline class="ln" points="520.0,340.0 520.0,324.0 760.0,324.0 760.0,292.0"/><polygon class="ah" points="760.0,292.0 763.9,301.2 756.1,301.2"/>
+<text class="m" x="600" y="336">safe-state request</text>
+<polyline class="ln" points="380.0,340.0 380.0,292.0"/><polygon class="ah" points="380.0,292.0 383.9,301.2 376.1,301.2"/>
+<text class="m" x="386" y="334">events</text>
+<polyline class="ln" points="900.0,290.0 900.0,338.0"/><polygon class="ah" points="900.0,338.0 896.1,328.8 903.9,328.8"/>
+<text class="m" x="906" y="318">actuation</text>
+<polyline class="ln" points="30.0,290.0 30.0,607.0 58.0,607.0"/><polygon class="ah" points="58.0,607.0 48.8,610.9 48.8,603.1"/>
+<text class="m" x="36" y="462">status, events</text>
+<text class="m" x="36" y="477">(site wireless)</text>
+<polyline class="ln" points="160.0,500.0 160.0,442.0"/><polygon class="ah" points="160.0,442.0 163.9,451.2 156.1,451.2"/>
+<text class="m" x="166" y="476">stop radio</text>
+<text class="m" x="20" y="642">Conceptual diagram of a generic handbook class [H]. Elements and dependencies are assumptions [A] (LAB-08-01-01). Not a manufacturer&#x27;s architecture.</text>
+</svg>
+<figcaption><span class="fig-no">Figure 1</span> HT220 subsystem block diagram with VCS, ADS, independent safety and onboard safety-related system boundaries <span class="fig-id">FIG-08-01-01</span></figcaption></figure>
+<p>The table groups the elements into the subsystems that the first engineering objective names.</p>
+<table>
+<thead>
+<tr>
+<th>Subsystem <code>[H]</code></th>
+<th>Elements in the model <code>[A]</code></th>
+<th>Group</th>
+<th>Decides</th>
+<th>Stopped-truck signal it owns</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Engine–alternator</td>
+<td>diesel engine, traction alternator, 24 V charging alternator</td>
+<td>Base machine</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Traction drive</td>
+<td>traction drive control; inverters and wheel motors</td>
+<td>VCS</td>
+<td>propulsion within limits, propulsion inhibit</td>
+<td>propulsion inhibited (via the VCS controller)</td>
+</tr>
+<tr>
+<td>Braking and retarding</td>
+<td>service brake and retarding control; service brakes and retarding; parking brake (spring-applied)</td>
+<td>VCS / base machine</td>
+<td>brake application on any stop request</td>
+<td>parking brake applied and holding</td>
+</tr>
+<tr>
+<td>Steering</td>
+<td>steering pump, steering accumulator, steering control valve</td>
+<td>base machine / VCS</td>
+<td>— (executes)</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Hoist</td>
+<td>hoist control valve; body position sensor</td>
+<td>VCS / base machine</td>
+<td>hoist inhibit while moving</td>
+<td>body down / hoist position</td>
+</tr>
+<tr>
+<td>Electrical</td>
+<td>24 V batteries, 24 V distribution, machine data bus</td>
+<td>Base machine</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Vehicle control</td>
+<td>VCS controller; cab controls</td>
+<td>VCS / base machine</td>
+<td>machine mode, arbitration of stop sources, fault reaction</td>
+<td>mode, stop state and source, isolation state, fault codes</td>
+</tr>
+<tr>
+<td>Autonomy kit</td>
+<td>kit power distribution, ADS compute, GNSS, inertial unit, front lidar, front radar, site radio, ADS–VCS command link</td>
+<td>ADS</td>
+<td>perception, planning, stops for objects and authority</td>
+<td>— (it forwards the status set)</td>
+</tr>
+<tr>
+<td>Remote-stop path</td>
+<td>stop receiver, stop-radio antenna</td>
+<td>ISF</td>
+<td>— (executes a person's stop)</td>
+<td>remote stop latched, receiver health</td>
+</tr>
+<tr>
+<td>Onboard safety-related systems</td>
+<td>fire detection and suppression with back-up supply, tyre monitoring, payload monitoring</td>
+<td>OSS</td>
+<td>safe-state request on fire</td>
+<td>fire, tyre and payload state</td>
+</tr>
+</tbody>
+</table>
+<p>Three features of the table carry the rest of the chapter.</p>
+<p><strong>The base machine decides nothing, but everything stands on it.</strong> The 24 V distribution, the machine data bus and the
+stopping hardware appear in every function's dependencies (section 4.4).</p>
+<p><strong>The autonomy kit owns no stopped-truck signal; it forwards them.</strong> Mode, brake state, hoist position and isolation
+state are measured or decided on the VCS side, so they stay true when the kit fails, even if they can no longer be sent.</p>
+<p><strong>The ISF and the OSS are beside the chain, not inside it.</strong> Their arrows go to the VCS. The OSS also send events to the
+ADS, but the safe state does not wait for it (ch-02-04, REQ-02-04-006; ch-04-07; section 6.4).</p>
+<h3 id="s-4-2">4.2 Allocation rules for the platform</h3>
+<p>The allocation of ch-02-03 is written at the level of functions (F01–F19). Mapping it onto parts adds five rules <code>[H]</code>.</p>
+<ol>
+<li><strong>One group per element.</strong> An element that two groups claim is split. The ADS–VCS command link is allocated to the
+ADS side because the ADS sends on it and the VCS treats it as untrusted input (ch-08-02, ch-08-03).</li>
+<li><strong>Safe-state paths end at the VCS and do not pass through the ADS.</strong> The stop receiver's stop demand and the fire
+system's safe-state request reach the VCS on their own paths (FIG-08-01-02): ch-02-04's independence condition,
+applied to wires.</li>
+<li><strong>The VCS owns the machine state.</strong> Mode, stop source, parking-brake state, body position, isolation state and
+active faults are produced on the VCS side. The ADS may add a stop reason or a position, but does not own the state.</li>
+<li><strong>Manual operation does not need the kit.</strong> Driving from the cab — the manual recovery of ch-16-05 — depends only
+on base-machine and VCS elements (REQ-08-01-002).</li>
+<li><strong>Central systems reach the truck only through the ADS's radio, and only with information.</strong> The AMS sends granted
+paths and holds; it never commands an actuator. No manned-vehicle device talks to the truck (ch-02-04 section 4.1).</li>
+</ol>
+<p>Rule 5 is why engineering objective 2 lists no receiver for position reporting units: the HT220 carries none. Manned vehicles are kept apart from trucks by plan — permissions
+and granted paths from the AMS — not by trucks reacting to their broadcasts (ch-02-04). Whatever the truck needs to know
+about them reaches it over the site radio, which is the element the model contains.</p>
+<p>One point of published scope matters for the allocation: the 2026 edition of ISO 19014-2 states that its scope excludes
+awareness-only systems and fire suppression unless they interact with another safety control system <code>[F]</code>
+(SRC-STD-ISO19014, catalogue level). Whether a fire system's safe-state request to the VCS makes it such an interacting
+system is a safety-analysis question (ch-04-03) that the handbook does not answer.</p>
+<h3 id="s-4-3">4.3 Power and data architecture of the autonomy kit</h3>
+<p>FIG-08-01-02 draws the paths along which the kit receives power and exchanges data. It is an interface block diagram:
+every line is an interface that someone must specify, test and maintain.</p>
+<figure id="FIG-08-01-02" class="fig"><pre class="mermaid">flowchart LR
+  subgraph PWR[&quot;Truck 24 V system [A]&quot;]
+    B[&quot;24 V batteries&quot;]
+    C[&quot;24 V charging alternator&lt;br/&gt;(engine running)&quot;]
+    D[&quot;24 V distribution&quot;]
+  end
+  subgraph KIT[&quot;Autonomy kit (ADS) [A]&quot;]
+    P[&quot;Kit power distribution&lt;br/&gt;fused branches, hold-up for&lt;br/&gt;orderly compute shutdown&quot;]
+    A[&quot;ADS compute&quot;]
+    S[&quot;Perception sensors&lt;br/&gt;lidar, radar, cameras&quot;]
+    G[&quot;GNSS receiver and&lt;br/&gt;inertial unit&quot;]
+    R[&quot;Site wireless radio&quot;]
+  end
+  subgraph MACH[&quot;VCS and machine [A]&quot;]
+    V[&quot;VCS controller&quot;]
+    M[&quot;Machine data bus&quot;]
+    O[&quot;Onboard safety-related&lt;br/&gt;systems: fire, tyre, payload&quot;]
+  end
+  RX[&quot;Stop receiver&lt;br/&gt;(independent safety function)&quot;]
+  AMS[&quot;AMS&lt;br/&gt;(site wireless network)&quot;]
+  RSR[&quot;Remote-stop radio&quot;]
+  B --&gt; D
+  C --&gt; D
+  D == &quot;kit feed&quot; ==&gt; P
+  D == &quot;VCS feed&quot; ==&gt; V
+  D == &quot;own feed&quot; ==&gt; RX
+  P ==&gt; A
+  P ==&gt; S
+  P ==&gt; G
+  P ==&gt; R
+  S -- &quot;Ethernet [A]&quot; --&gt; A
+  G -- &quot;position, time&quot; --&gt; A
+  A -- &quot;command link:&lt;br/&gt;commands, heartbeat&quot; --&gt; V
+  V -- &quot;machine state,&lt;br/&gt;status set, faults&quot; --&gt; A
+  V --- M
+  O --- M
+  O -- &quot;safe-state request&lt;br/&gt;(hard-wired [A])&quot; --&gt; V
+  R &lt;-- &quot;status, events,&lt;br/&gt;granted paths&quot; --&gt; AMS
+  A --- R
+  RSR -. &quot;stop command&quot; .-&gt; RX
+  RX -- &quot;stop demand&quot; --&gt; V
+</pre><figcaption><span class="fig-no">Figure 2</span> Autonomy kit power and data paths <span class="fig-id">FIG-08-01-02</span></figcaption></figure>
+<p>The 24 V distribution is fed by the batteries or by the charging alternator (<code>batt24|chg24</code>). Three feeds leave it: the
+<strong>kit feed</strong> to the kit power distribution, which feeds compute, positioning, sensors and site radio through fused
+branches; the <strong>VCS feed</strong>; and an <strong>own feed</strong> to the stop receiver, so that the remote stop does not depend on the
+kit. The data side has four links — sensors to compute, positioning to compute, the ADS–VCS command link, and the site
+radio to the AMS. The onboard systems sit on the machine data bus; the fire system also has a hard-wired safe-state
+request to the VCS <code>[A]</code>. The table gives the assumptions; they are teaching values <code>[A]</code>, not a specification.</p>
+<table>
+<thead>
+<tr>
+<th>Interface <code>[H]</code></th>
+<th>Supply and protection <code>[A]</code></th>
+<th>Data <code>[A]</code></th>
+<th>Environment <code>[A]</code></th>
+<th>Why it matters</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>24 V distribution → kit power distribution</td>
+<td>one protected feed; fused branch per consumer; hold-up long enough for the compute to stop in order</td>
+<td>—</td>
+<td>engine-bay heat avoided; vibration-rated mounting</td>
+<td>a kit power fault must not reach the VCS feed</td>
+</tr>
+<tr>
+<td>Kit power distribution → ADS compute</td>
+<td>fused branch; hold-up</td>
+<td>local network to sensors; command link to the VCS</td>
+<td>sealed enclosure, dust and water ingress, wide temperature range, shock and vibration</td>
+<td>the compute is the kit's single biggest dependency</td>
+</tr>
+<tr>
+<td>→ perception sensors</td>
+<td>fused branch per sensor</td>
+<td>local network</td>
+<td>exposed: dust, water, mud, sun, cleaning water</td>
+<td>a sensor fault should cost one sensor, not the kit</td>
+</tr>
+<tr>
+<td>→ GNSS receiver, inertial unit</td>
+<td>fused branch</td>
+<td>serial or network</td>
+<td>antenna clear of the body, cabling protected</td>
+<td>positioning feeds every driving decision</td>
+</tr>
+<tr>
+<td>→ site radio</td>
+<td>fused branch</td>
+<td>network to the compute</td>
+<td>antenna placement, cable routing</td>
+<td>the only path for the status set to the AMS</td>
+</tr>
+<tr>
+<td>24 V distribution → stop receiver</td>
+<td>own feed, not through the kit</td>
+<td>stop demand to the VCS</td>
+<td>as for the radio</td>
+<td>independence of SF-01 from the kit</td>
+</tr>
+<tr>
+<td>Fire system → VCS</td>
+<td>own back-up supply (`bus24</td>
+<td>fire_batt`)</td>
+<td>hard-wired safe-state request; events on the machine data bus</td>
+<td>engine-bay temperatures</td>
+</tr>
+<tr>
+<td>ADS ↔ VCS command link</td>
+<td>—</td>
+<td>commands with heartbeat, alive counter and checksum; machine state back</td>
+<td>cable route protected</td>
+<td>the boundary where ADS faults must be caught (ch-08-02, ch-08-04)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Hold-up</strong> keeps the compute alive briefly after its supply fails, so that it ends in a known state; it does not keep
+the truck driving. <strong>Fusing per branch</strong> turns a short in one sensor cable into the loss of one sensor, not of the kit.
+<strong>The environment</strong> — dust, washdown water, vibration, engine heat — is harsh; the 2026 edition of ISO 19014-3 addresses
+environmental performance and test requirements for electronic components in safety-related parts of earth-moving
+machinery <code>[F]</code> (SRC-STD-ISO19014, title and scope only). Which tests apply to which kit component is not stated here.</p>
+<h3 id="s-4-4">4.4 The dependency model and the search for single points of failure</h3>
+<p>LAB-08-01-01 writes the HT220 as a dependency map. For a function <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>f</mi></mrow></math> and a candidate failed element <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>x</mi></mrow></math>, the function
+still works if every one of its requirements is met by at least one alternative that still works:</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mrow><mi mathvariant="normal">o</mi><mi mathvariant="normal">k</mi></mrow><mo stretchy="false">&#x00028;</mo><mi>e</mi><mo>&#x02223;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mo minsize="1.2em" maxsize="1.2em">[</mo><mi>e</mi><mo>&#x02260;</mo><mi>x</mi><mo minsize="1.2em" maxsize="1.2em">]</mo><mo>&#x02227;</mo><msub><mo>&#x022C0;</mo><mrow><mi>r</mi><mo>&#x02208;</mo><mi>R</mi><mo stretchy="false">&#x00028;</mo><mi>e</mi><mo stretchy="false">&#x00029;</mo></mrow></msub><mspace width="0.278em" /><msub><mo>&#x022C1;</mo><mrow><mi>a</mi><mo>&#x02208;</mo><mi>r</mi></mrow></msub><mrow><mi mathvariant="normal">o</mi><mi mathvariant="normal">k</mi></mrow><mo stretchy="false">&#x00028;</mo><mi>a</mi><mo>&#x02223;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo></mrow></math></div>
+<p>where <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>R</mi><mo stretchy="false">&#x00028;</mo><mi>e</mi><mo stretchy="false">&#x00029;</mo></mrow></math> is the list of requirements of element <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>e</mi></mrow></math> and each requirement <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>r</mi></mrow></math> is a set of alternatives (<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>r</mi><mo>&#x0003D;</mo><mo stretchy="false">&#x0007B;</mo><mi>A</mi><mo stretchy="false">&#x0007D;</mo></mrow></math>
+for a plain dependency, <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>r</mi><mo>&#x0003D;</mo><mo stretchy="false">&#x0007B;</mo><mi>A</mi><mo>&#x0002C;</mo><mi>B</mi><mo stretchy="false">&#x0007D;</mo></mrow></math> for <code>A|B</code>). An element without requirements works unless it is the failed one.
+The single points of failure of <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>f</mi></mrow></math> are the elements whose loss alone breaks it:</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mrow><mi mathvariant="normal">S</mi><mi mathvariant="normal">P</mi><mi mathvariant="normal">O</mi><mi mathvariant="normal">F</mi></mrow><mo stretchy="false">&#x00028;</mo><mi>f</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mo stretchy="false">&#x0007B;</mo><mspace width="0.167em" /><mi>x</mi><mo>&#x02260;</mo><mi>f</mi><mi>:</mi><mi>&#x000AC;</mi><mspace width="0.167em" /><mrow><mi mathvariant="normal">o</mi><mi mathvariant="normal">k</mi></mrow><mo stretchy="false">&#x00028;</mo><mi>f</mi><mo>&#x02223;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo><mspace width="0.167em" /><mo stretchy="false">&#x0007D;</mo></mrow></math></div>
+<p><code>ahs_sim.platform.dependency_spof</code> implements exactly this recursion. The search is over single failures only; two
+simultaneous failures are the subject of reliability analysis (ch-08-08).</p>
+<p>The model defines eight functions <code>[A]</code>. Their single points of failure in the baseline architecture A:</p>
+<table>
+<thead>
+<tr>
+<th>Function</th>
+<th>SPOFs</th>
+<th>Single points of failure (architecture A)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Autonomous driving</td>
+<td>16</td>
+<td>ADS compute, traction alternator, brake control, brakes, 24 V distribution, command link, traction drive control, engine, GNSS, inertial unit, kit power distribution, machine data bus, site radio, steering valve, traction, VCS controller</td>
+</tr>
+<tr>
+<td>ADS-commanded controlled stop</td>
+<td>8</td>
+<td>ADS compute, brake control, brakes, 24 V distribution, command link, kit power distribution, machine data bus, VCS controller</td>
+</tr>
+<tr>
+<td>VCS safe stop on command loss</td>
+<td>5</td>
+<td>brake control, brakes, 24 V distribution, machine data bus, VCS controller</td>
+</tr>
+<tr>
+<td>Remote stop (SF-01)</td>
+<td>7</td>
+<td>brake control, brakes, 24 V distribution, machine data bus, stop-radio antenna, stop receiver, VCS controller</td>
+</tr>
+<tr>
+<td>Fire-triggered safe state (SF-05)</td>
+<td>6</td>
+<td>brake control, brakes, 24 V distribution, fire system, machine data bus, VCS controller</td>
+</tr>
+<tr>
+<td>Hold at standstill</td>
+<td>1</td>
+<td>parking brake</td>
+</tr>
+<tr>
+<td>Status report to the AMS</td>
+<td>6</td>
+<td>ADS compute, 24 V distribution, command link, kit power distribution, site radio, VCS controller</td>
+</tr>
+<tr>
+<td>Manual driving (recovery)</td>
+<td>11</td>
+<td>traction alternator, brake control, brakes, 24 V distribution, cab controls, traction drive control, engine, machine data bus, steering valve, traction, VCS controller</td>
+</tr>
+</tbody>
+</table>
+<p>Four readings give the architecture's character.</p>
+<p><strong>A single point of failure of a driving function costs availability; one of a stop function costs safety.</strong> An
+autonomous truck that loses its GNSS receiver <em>should</em> stop driving; 16 single points of failure for autonomous driving
+are not a flaw in themselves. The perception sensors are not on the list, because <code>lidar_f|radar_f</code> lets either see
+ahead <code>[A]</code> — redundancy against loss, not against error (Volume 06).</p>
+<p><strong>Holding at standstill depends on one element and needs no power.</strong> The model's parking brake is spring-applied and
+released by pressure <code>[A]</code>: when power or pressure is lost, it applies — the right direction for a failure. A brake that
+has failed mechanically is invisible to software redundancy; it is inspected (section 4.8).</p>
+<p><strong>The 24 V distribution, the VCS controller and the stopping hardware are in every stop function.</strong> In the lab's inverse
+view, the VCS controller and the 24 V distribution each remove 7 of the 8 functions; the machine data bus, the brake
+control and the brakes each remove 6. At the other end, 11 of the 32 elements are a single point of failure of nothing:
+the batteries and charging alternator back each other up, as do steering pump and accumulator, and lidar and radar; the
+fire system's back-up supply, the body position sensor, the hoist valve and the tyre and payload monitors are needed by
+no function of the model.</p>
+<p><strong>Manual driving does not depend on the kit.</strong> Its 11 single points of failure are base-machine or VCS elements, and a
+search of everything it depends on, directly or not, finds no kit element.</p>
+<h3 id="s-4-5">4.5 Shared items across the ADS–VCS boundary, and what mitigation can buy</h3>
+<p>ch-02-04 wrote the independence of the remote stop as a condition on component sets. With the dependency model the
+overlap can be computed. The elements whose single loss removes <em>both</em> the ADS-commanded stop and the remote stop are, in
+architecture A:</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mrow><mi mathvariant="normal">S</mi><mi mathvariant="normal">P</mi><mi mathvariant="normal">O</mi><mi mathvariant="normal">F</mi></mrow><mo stretchy="false">&#x00028;</mo><mtext>ADS&#x000A0;stop</mtext><mo stretchy="false">&#x00029;</mo><mo>&#x02229;</mo><mrow><mi mathvariant="normal">S</mi><mi mathvariant="normal">P</mi><mi mathvariant="normal">O</mi><mi mathvariant="normal">F</mi></mrow><mo stretchy="false">&#x00028;</mo><mtext>remote&#x000A0;stop</mtext><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mo stretchy="false">&#x0007B;</mo><mtext>brake&#x000A0;control,&#x000A0;brakes,&#x000A0;24&#x000A0;V&#x000A0;distribution,&#x000A0;machine&#x000A0;data&#x000A0;bus,&#x000A0;VCS&#x000A0;controller</mtext><mo stretchy="false">&#x0007D;</mo></mrow></math></div>
+<p>None of them is in the autonomy kit: the remote stop's independence from the ADS holds. What both stop paths share is
+the truck's own stopping capability and what it stands on — the conclusion ch-02-04 (section 4.3) and ch-04-04 (section
+4.1) reached from the other side. Its integrity is ch-08-04's subject.</p>
+<p>The lab compares architecture A with a mitigated architecture B <code>[A]</code> that makes four changes:</p>
+<ol>
+<li><strong>Two kit power distributions</strong> (A and B), with the compute able to run from either and the lidar and radar fed from
+different ones.</li>
+<li><strong>Two ADS compute units and two command links,</strong> either of which can drive and stop the truck.</li>
+<li><strong>A hard-wired stop demand</strong> from the stop receiver and the ADS to the brake control, beside the machine data bus.</li>
+<li><strong>A second status path:</strong> the VCS can send the status set to the AMS through its own telemetry radio when the ADS
+cannot.</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th>Function</th>
+<th>SPOFs, A</th>
+<th>SPOFs, B</th>
+<th>What is left in B</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Autonomous driving</td>
+<td>16</td>
+<td>13</td>
+<td>machine elements, GNSS, inertial unit, site radio</td>
+</tr>
+<tr>
+<td>ADS-commanded controlled stop</td>
+<td>8</td>
+<td>4</td>
+<td>brake control, brakes, 24 V distribution, VCS controller</td>
+</tr>
+<tr>
+<td>VCS safe stop on command loss</td>
+<td>5</td>
+<td>4</td>
+<td>the same four</td>
+</tr>
+<tr>
+<td>Remote stop (SF-01)</td>
+<td>7</td>
+<td>6</td>
+<td>the same four, stop receiver, antenna</td>
+</tr>
+<tr>
+<td>Fire-triggered safe state (SF-05)</td>
+<td>6</td>
+<td>5</td>
+<td>the same four, fire system</td>
+</tr>
+<tr>
+<td>Hold at standstill</td>
+<td>1</td>
+<td>1</td>
+<td>parking brake</td>
+</tr>
+<tr>
+<td>Status report to the AMS</td>
+<td>6</td>
+<td>2</td>
+<td>24 V distribution, VCS controller</td>
+</tr>
+<tr>
+<td>Manual driving (recovery)</td>
+<td>11</td>
+<td>11</td>
+<td>unchanged</td>
+</tr>
+</tbody>
+</table>
+<p>The shared elements of the two stop paths fall from 5 to 4: the hard-wired stop demand removes the machine data bus from
+the intersection. Everything else that remains is the stopping capability and its supply.</p>
+<p>Three lessons apply to any truck, not only to this model.</p>
+<ul>
+<li><strong>Redundancy in the kit buys availability and reporting, not stopping.</strong> Doubling compute and command link removes
+four single points of failure of the ADS stop, but the VCS safe stop on command loss already covered them. What B buys
+is that the truck keeps <em>driving</em> after one compute fails and keeps <em>reporting</em> after the kit fails.</li>
+<li><strong>The status path is where operations gain most.</strong> B reduces the status report's single points of failure from 6 to
+2. The gain is at the approach: the controller can confirm the truck's state instead of treating it as unknown
+(section 6.3).</li>
+<li><strong>Irreducible single points must be named.</strong> The VCS controller, its supply and the stopping hardware are in every
+stop function in both architectures; their integrity, diagnostics and inspection carry the stops (REQ-08-01-003).</li>
+</ul>
+<p>Whether B is worth more parts, more configuration and a second radio is a reliability and cost question (ch-08-08).</p>
+<h3 id="s-4-6">4.6 The stopped-truck status set</h3>
+<p>When a truck has stopped, the people who may go to it need to know what state it is in. The handbook defines eleven
+signals <code>[H]</code>, each owned by one subsystem:</p>
+<table>
+<thead>
+<tr>
+<th>Signal <code>[H]</code></th>
+<th>Owner (element)</th>
+<th>Group</th>
+<th>Before an approach it answers</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Machine mode</td>
+<td>VCS controller</td>
+<td>VCS</td>
+<td>Is the truck autonomous, manual, in maintenance or isolated?</td>
+</tr>
+<tr>
+<td>Stop state and stop source</td>
+<td>VCS controller</td>
+<td>VCS</td>
+<td>Which source holds the stop — VCS, ADS, onboard system, remote stop, person at the truck (ch-16-05 section 4.1)?</td>
+</tr>
+<tr>
+<td>Parking brake applied and holding</td>
+<td>parking brake (switch read by the VCS)</td>
+<td>VCS</td>
+<td>Will the truck stay where it is without power?</td>
+</tr>
+<tr>
+<td>Propulsion inhibited</td>
+<td>VCS controller</td>
+<td>VCS</td>
+<td>Is propulsion blocked by the VCS?</td>
+</tr>
+<tr>
+<td>Body down and hoist position</td>
+<td>body position sensor</td>
+<td>VCS</td>
+<td>Is the body raised, and can it come down?</td>
+</tr>
+<tr>
+<td>Isolation state at the truck</td>
+<td>VCS controller</td>
+<td>VCS</td>
+<td>Has someone applied the truck's isolation (ch-16-05 section 3)?</td>
+</tr>
+<tr>
+<td>Fire system state</td>
+<td>fire system</td>
+<td>OSS</td>
+<td>Fire, suppression activated, discharged, fault, not armed?</td>
+</tr>
+<tr>
+<td>Tyre monitoring state</td>
+<td>tyre monitor</td>
+<td>OSS</td>
+<td>Is a tyre hot or under-inflated (SCN-TYRE-DT17)?</td>
+</tr>
+<tr>
+<td>Payload state</td>
+<td>payload monitor</td>
+<td>OSS</td>
+<td>Is the truck loaded, and is the load within limits?</td>
+</tr>
+<tr>
+<td>Remote stop latched and receiver health</td>
+<td>stop receiver</td>
+<td>ISF</td>
+<td>Is a remote stop in force? Can the receiver hear the stop radio?</td>
+</tr>
+<tr>
+<td>Active fault codes</td>
+<td>VCS controller</td>
+<td>VCS</td>
+<td>What has failed, and is it on the remote-reset list (ch-16-08)?</td>
+</tr>
+</tbody>
+</table>
+<p>The ADS adds the truck's position and its own stop reason to each report. The AMS adds what only it knows: whether a
+mission is held, whether a path is granted and which permissions cover the truck. Those central fields are the
+<em>central</em> isolation of ch-16-05; the eleven signals include the isolation <em>at the truck</em>.</p>
+<p>Every signal reaches the AMS along the same path: owner → VCS controller → command link → ADS compute → site radio →
+AMS. Each report carries its measurement time <code>[H]</code>. The rule that matters most is the fail-safe one: <strong>a signal that
+has not been received within its timeout is shown as unknown, with the time of the last report, never as its last
+value</strong> (REQ-08-01-004). The truck applies the same rule inside itself (section 12, example 3).</p>
+<p>The lab computes, for any failed element, which signals the AMS can still show. Two cases matter for SCN-RECOVER-DT17:</p>
+<ul>
+<li><strong>Traction drive control fails</strong> (the scenario's drivetrain fault, placed there <code>[A]</code>): all 11 signals are reported.
+The owner of every signal and the whole reporting path still work. The truck has lost autonomous and manual driving;
+it has lost nothing it needs to <em>tell</em>.</li>
+<li><strong>Kit power distribution fails</strong> (a contrast <code>[A]</code>): all 11 signals become unknown at the AMS. The truck itself still
+knows its mode, its brake, its body and its isolation — the owners are on the VCS side and still powered — but it
+cannot send them. In architecture B, with a second kit distribution and the VCS telemetry path, all 11 are reported.</li>
+</ul>
+<p>Same position on R03, same &quot;stopped&quot; icon: in one case the controller can confirm the truck's state, in the other
+nobody can. That difference is the core of section 8.</p>
+<h3 id="s-4-7">4.7 What a Field Technician may isolate, inspect or reset in the field</h3>
+<p>The subsystem map is also a work map. The handbook's rule <code>[H]</code>: in the field, a Field Technician works only on what the
+site's procedure lists, on an isolated truck (ch-16-05), and leaves lifting, pressurised or high-voltage systems and
+recommissioning tests to the workshop. The table is a teaching example <code>[A]</code>; a site's list comes from the manufacturer's
+manuals and its own risk assessment.</p>
+<table>
+<thead>
+<tr>
+<th>Subsystem</th>
+<th>In the field (truck isolated) <code>[A]</code></th>
+<th>Workshop <code>[A]</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Autonomy kit — sensors</td>
+<td>inspect, clean, check mounting; replace a sensor only if the site allows field calibration checks (ch-06-03)</td>
+<td>bracket repair, sensor replacement with calibration and verification (ch-18-06)</td>
+</tr>
+<tr>
+<td>Autonomy kit — compute, radio, positioning</td>
+<td>read fault codes; check connectors and fuses; power-cycle the kit if the procedure allows</td>
+<td>replace units; software changes (configuration register, ch-18-06)</td>
+</tr>
+<tr>
+<td>VCS and traction drive</td>
+<td>read fault codes; request the vehicle's self-test; reset faults that the vehicle allows after the check</td>
+<td>traction inverters, wheel motors, alternator; any fault the vehicle does not clear</td>
+</tr>
+<tr>
+<td>Braking, steering, hoist</td>
+<td>visual inspection for leaks and damage</td>
+<td>any repair to hydraulics or brakes; functional tests</td>
+</tr>
+<tr>
+<td>Electrical (24 V)</td>
+<td>check batteries, isolators, fuses</td>
+<td>wiring repairs</td>
+</tr>
+<tr>
+<td>Onboard safety-related systems</td>
+<td>read the state; never reset a fire system or recharge it at the roadside (ch-16-06, ch-18-06)</td>
+<td>inspection, recharge and recommissioning test</td>
+</tr>
+<tr>
+<td>Remote-stop receiver</td>
+<td>read its health</td>
+<td>repair; any latch is released only at its source (ch-04-05)</td>
+</tr>
+</tbody>
+</table>
+<p>Two limits apply whatever the site's list says. <strong>A latch is released by its owner.</strong> The remote stop is released at its
+source, a fire-triggered safe state only after the ERT and with logs secured, and a machine emergency stop at the
+machine. A Field Technician never &quot;clears&quot; a stop they do not own. <strong>A reset is a request to the vehicle.</strong> Resetting a
+fault asks the vehicle to re-run its checks; it ends the fault stop only if the vehicle finds the fault gone (ch-16-05
+section 3). The subsystem map tells the Field Technician who owns the fault before they press anything.</p>
+<h3 id="s-4-8">4.8 What the autonomy kit and the onboard systems add to planned maintenance</h3>
+<p>A manned HT220 already has a maintenance plan for its engine, drive, hydraulics, tyres and frame. Conversion to autonomous
+operation adds two groups of planned work, and the Maintenance Planner needs both in the same plan (ch-18-06 builds it).</p>
+<table>
+<thead>
+<tr>
+<th>Added item <code>[H]</code></th>
+<th>Planned task <code>[A]</code></th>
+<th>Why it is planned rather than left to fault codes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Perception sensors</td>
+<td>inspection, cleaning, mount check; calibration check after work near a sensor (ch-06-03, REQ-06-03-007)</td>
+<td>dirt and disturbed mounts degrade detection before any code appears</td>
+</tr>
+<tr>
+<td>Positioning (GNSS, inertial unit)</td>
+<td>antenna and cable inspection; comparison of fix quality with other trucks (ch-18-06)</td>
+<td>slow degradation is visible only by comparison</td>
+</tr>
+<tr>
+<td>Site radio and antennas</td>
+<td>antenna and cable inspection; link quality compared with other trucks</td>
+<td>same</td>
+</tr>
+<tr>
+<td>ADS compute and kit power distribution</td>
+<td>connector, fuse and enclosure inspection; record of software and calibration versions</td>
+<td>failures are sudden; the inspection finds damage and wrong configuration</td>
+</tr>
+<tr>
+<td>ADS–VCS command link</td>
+<td>cable route inspection</td>
+<td>a chafed cable shows up as intermittent heartbeat faults (SCN-HEARTBEAT-DT17, ch-08-02)</td>
+</tr>
+<tr>
+<td>Stop receiver</td>
+<td>functional check of the remote stop (ch-04-10 evidence EV-16)</td>
+<td>a latent receiver fault is invisible until a stop is needed</td>
+</tr>
+<tr>
+<td>Machine emergency stop (SF-02)</td>
+<td>functional check</td>
+<td>same</td>
+</tr>
+<tr>
+<td>Fire detection and suppression</td>
+<td>periodic inspection (500 h in ch-18-06's model <code>[A]</code>); intervals and content per the site's fire-protection maintenance <code>[TBV]</code></td>
+<td>latent faults are found only by inspection (ch-18-06)</td>
+</tr>
+<tr>
+<td>Tyre and payload monitoring</td>
+<td>calibration records (ch-04-10 evidence EV-36)</td>
+<td>wrong values look like normal values</td>
+</tr>
+<tr>
+<td>Parking brake</td>
+<td>holding test</td>
+<td>the single point of failure of &quot;hold at standstill&quot; (section 4.4)</td>
+</tr>
+</tbody>
+</table>
+<p>The common thread is that the added items are mostly <em>protective</em>. A protective item that has failed latently costs
+nothing until it is needed; that is why it is inspected on a schedule rather than repaired when it reports a fault
+(ch-18-06 section 4.1).</p>
+<h3 id="s-4-9">4.9 Briefing the Emergency Response Team at a stopped truck</h3>
+<p>The ERT may reach a stopped autonomous truck in a fire (SCN-FIRE-DT17, ch-16-06) or after an incident. On a manned truck
+an operator would say what has been done; on DT17 nobody can. The ERT therefore needs a briefing, before they ever
+attend, on the safety devices an HT220 carries and what each does. The handbook gives its structure <code>[H]</code>; the devices and
+their locations come from the manufacturer's documentation and the site's procedure <code>[TBV]</code>
+(SRC-PUB-AUTONOMOUS-ISOLATION, SRC-PUB-UNMANNED-FIRE-ACTUATION).</p>
+<table>
+<thead>
+<tr>
+<th>Device <code>[H]</code></th>
+<th>Function on an autonomous truck</th>
+<th>What the ERT must know <code>[A]</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Emergency stop at the machine (SF-02)</td>
+<td>stops the truck through the VCS and latches; works with or without the ADS and the AMS</td>
+<td>where the controls are reachable from the ground and from the cab; that pressing one does not isolate energy</td>
+</tr>
+<tr>
+<td>Electrical isolation (24 V)</td>
+<td>removes power from the VCS, the kit and the radios</td>
+<td>that the truck then stops reporting — CR1 loses the status set; the spring-applied parking brake holds (section 4.4)</td>
+</tr>
+<tr>
+<td>Engine shutdown</td>
+<td>stops the engine and with it the traction alternator and hydraulic pumps</td>
+<td>that steering and hoist may still hold stored energy (accumulators, a raised body)</td>
+</tr>
+<tr>
+<td>Manual fire-suppression actuation</td>
+<td>releases the agent locally; works without the AMS, the network and the ADS (ch-04-07)</td>
+<td>where the actuators are; that automatic actuation may already have discharged the system</td>
+</tr>
+<tr>
+<td>Stop receiver</td>
+<td>keeps the remote stop latched</td>
+<td>that a latched remote stop is released only at its source, never at the truck</td>
+</tr>
+</tbody>
+</table>
+<p>Three facts belong in every briefing because they differ from a manned truck <code>[H]</code>. <strong>The truck may move on its own
+logic or on a central grant;</strong> neither is in the ERT's hands, and both are removed only by isolation at the truck
+together with the AMS's central isolation (ch-16-05). <strong>Electrical isolation makes the truck silent:</strong> CR1 then loses its
+state, so the ERT reports by radio what they isolated and when. <strong>Nobody assumes the cab is empty;</strong> a truck in manual
+recovery has a person in it. Whether any regulator or standard prescribes the briefing's content is not asserted here
+<code>[TBV]</code>.</p>
+<h3 id="s-4-10">4.10 Trade-offs and limits</h3>
+<ul>
+<li><strong>Granularity.</strong> 32 elements show the architecture's character; a real model has hundreds, built from the
+manufacturer's and the kit supplier's documentation.</li>
+<li><strong>Single failures only.</strong> Double failures are for the reliability models of ch-08-08.</li>
+<li><strong>Loss, not error.</strong> A sensor reporting wrong values, a weak brake or a status bit stuck at &quot;holding&quot; are invisible to
+the graph; they need diagnostics (ch-08-06) and inspection (section 4.8).</li>
+<li><strong>Redundancy has a price.</strong> Architecture B shows where redundancy acts; it is not a recommendation to fit it.</li>
+<li><strong>Shared location.</strong> Two redundant cables in one loom are one element for a fire or a rock strike; routing and
+segregation are a separate review.</li>
+</ul>
+<h2 id="s-5">5. Responsibilities and interface boundaries</h2>
+<table>
+<thead>
+<tr>
+<th>Element</th>
+<th>Owns on the platform</th>
+<th>Must not</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>FMS</td>
+<td>assignments; production records of DT17's downtime</td>
+<td>command anything on the truck</td>
+</tr>
+<tr>
+<td>AMS</td>
+<td>central isolation (no mission, no path, permissions); display of the status set with age; holds of other traffic</td>
+<td>treat a missing status as normal; grant a path to a truck whose state is unknown</td>
+</tr>
+<tr>
+<td>ADS (autonomy kit)</td>
+<td>perception, positioning, planning; forwarding the status set and events; ADS-commanded stops</td>
+<td>own the machine state; sit in the path of the remote stop or the fire safe state</td>
+</tr>
+<tr>
+<td>VCS</td>
+<td>machine mode, stop arbitration, propulsion and brake control, stop on command loss, the status set</td>
+<td>depend on the ADS for any stop; accept a central command that removes a stop</td>
+</tr>
+<tr>
+<td>Independent safety function</td>
+<td>stop receiver: latched stop through the VCS; receiver health</td>
+<td>depend on the kit's power distribution or on the ADS</td>
+</tr>
+<tr>
+<td>Onboard safety-related systems</td>
+<td>fire detection and suppression with safe-state request; tyre and payload monitoring states</td>
+<td>wait for the ADS or the AMS for a protective function (ch-04-07)</td>
+</tr>
+<tr>
+<td>Base machine</td>
+<td>power, drivetrain hardware, hydraulics, spring-applied parking brake</td>
+<td>— (it decides nothing)</td>
+</tr>
+<tr>
+<td>People</td>
+<td>AHS Controller: reads the status set, confirms central isolation, refuses an approach on unknown state; Field Technician: isolation at the truck, field tasks on the list; Maintenance Planner: planned inspections, workshop work; ERT: actions at the truck under the briefing</td>
+<td>act on a status they cannot confirm; reset a latch they do not own</td>
+</tr>
+</tbody>
+</table>
+<h2 id="s-6">6. Normal, abnormal and degraded operation</h2>
+<h3 id="s-6-1">6.1 Normal operation — DT17 running on the waste circuit</h3>
+<p>In normal running DT17's status set travels with every state report: mode autonomous, no stop, parking brake released,
+body down, not isolated, onboard systems normal, payload empty on the way back from D01, remote stop not latched, no
+fault. The architecture earns its keep only when something fails — and the first check is always whether the row is
+current.</p>
+<h3 id="s-6-2">6.2 Abnormal operation — SCN-RECOVER-DT17, traced through the subsystems (shared timeline for sections 7 and 8)</h3>
+<p>T+0 s is 13:20:00. The registry gives T+0, 60, 900 and 2400 s; the other times are those of ch-16-05, used here without change (its lab
+reproduces the registry's skeleton within 3 s, so isolation is confirmed at T+897 s and the fault cleared at T+2397 s).
+The drivetrain fault is placed in the traction drive control <code>[A]</code>. The subsystem and status columns are added by this
+chapter.</p>
+<table>
+<thead>
+<tr>
+<th>Time</th>
+<th>Event (ch-16-05)</th>
+<th>Subsystems (LAB-08-01-01)</th>
+<th>Status set at the AMS</th>
+<th>People</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>T+0 s</td>
+<td>Drivetrain fault; controlled stop in the X-bound lane, 600 m from X</td>
+<td>traction drive control lost: autonomous and manual driving lost; ADS stop, VCS safe stop, remote stop, fire safe state, hold and status report still available</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<td>T+5 s</td>
+<td>Stopped state and fault code at the AMS; HMI alarm</td>
+<td>VCS: stop source VCS, propulsion inhibited, parking brake applied</td>
+<td>all 11 signals reported, current</td>
+<td>Controller sees <em>DT17 — fault stop — drivetrain</em></td>
+</tr>
+<tr>
+<td>T+60 s</td>
+<td>Triage: fault stop, not on the remote-reset list (ch-16-08); crew dispatched</td>
+<td>—</td>
+<td>complete row: no onboard alarm, remote stop not latched, body down</td>
+<td>Controller dispatches; informs Pit Supervisor and Maintenance Planner</td>
+</tr>
+<tr>
+<td>T+747 s</td>
+<td>Crew at the stand-off point; R03 closed</td>
+<td>—</td>
+<td>row still current; report age seconds</td>
+<td>Crew calls CR1</td>
+</tr>
+<tr>
+<td>T+897 s</td>
+<td>Isolation confirmed centrally and at the truck</td>
+<td>mode AUTONOMOUS → ISOLATED accepted only after the AMS release (interlocks stationary, parking brake, AMS released)</td>
+<td>isolation at the truck: applied</td>
+<td>Crew, controller</td>
+</tr>
+<tr>
+<td>T+897–1497 s</td>
+<td>Diagnosis at the truck</td>
+<td>fault codes of the traction drive control read on the VCS side</td>
+<td>—</td>
+<td>Crew, Maintenance Planner</td>
+</tr>
+<tr>
+<td>T+2397 s</td>
+<td>Fault cleared; vehicle self-test passed, including sensor health (ch-06-03)</td>
+<td>traction drive control restored</td>
+<td>fault codes cleared</td>
+<td>Crew</td>
+</tr>
+<tr>
+<td>T+2457 s</td>
+<td>Isolation removed; crew clear</td>
+<td>—</td>
+<td>isolation at the truck: removed</td>
+<td>Crew reports by radio</td>
+</tr>
+<tr>
+<td>T+2684 s</td>
+<td>DT17 reset; mission; staged restart</td>
+<td>all functions available</td>
+<td>normal row</td>
+<td>Controller watches DT17 move off</td>
+</tr>
+</tbody>
+</table>
+<p><strong>The fault took away driving, not reporting.</strong> The traction drive control is a VCS-side element on which no status
+signal depends, so CR1 had a complete, current row from T+5 s — which let the controller classify the stop at T+60 s as
+a fault stop with nobody at the truck and no onboard alarm. <strong>The mode interlock repeats the procedure's order.</strong>
+<code>ModeMachine</code> refuses AUTONOMOUS → ISOLATED while the AMS has not released the truck (missing interlock:
+<code>ams_released</code>) and accepts it once it has.</p>
+<p>ch-16-05's manual-recovery variant is open only if the fault leaves DT17 drivable: in the model the traction drive
+control is a single point of failure of manual driving too <code>[A]</code>. The diagnosis at T+1497 s must answer two questions:
+can it be repaired here, and can it be driven at all.</p>
+<h3 id="s-6-3">6.3 Degraded operation — the same stop, but the kit's power distribution fails</h3>
+<p>SCN-KITPOWER-DT17, a variant of SCN-RECOVER-DT17 (times <code>[A]</code>): at 13:20 on the same spot DT17's kit power distribution
+fails instead. At T+0 s the VCS stops receiving commands and performs its own controlled stop — the VCS safe stop does
+not depend on the kit — and applies the parking brake. On the truck nothing is unknown; at the AMS everything is. All 11
+signals are unknown: their owners still work, but the report has lost its compute and radio. At T+10 s, after the AMS's
+timeout, DT17 is shown communication-lost at its last position.</p>
+<p>ch-16-05's rules apply as written; the architecture explains why:</p>
+<ul>
+<li><strong>The cause is on the truck (T+60 s).</strong> Other trucks served by the same comms site keep reporting; one silent truck
+among reporting neighbours points to the truck, and the Maintenance Planner, not network support, is informed (the
+same distinction as SCN-HEARTBEAT-DT17, ch-08-02).</li>
+<li><strong>Nobody approaches DT17 until its state is confirmed</strong> (ch-16-05 section 4.1); no signal arrives to confirm it.</li>
+<li><strong>The confirmed state comes from the stop path, not the screen (T+120 s).</strong> The controller remote-stops the area, or
+waits for a renewed report (ch-16-05 section 6.6). The stop receiver has its own feed, so the remote stop acts on DT17
+whatever the kit is doing; the trucks it holds are coded DLY-OD-13.</li>
+<li><strong>Attendance (T+900 s).</strong> The Field Technician arrives under permission and isolation and finds the kit power fault.</li>
+</ul>
+<p>In architecture B the failure costs one of two kit distributions and the status set still arrives: the attendance starts
+from a confirmed state instead of from a remote stop of the area.</p>
+<h3 id="s-6-4">6.4 SCN-FIRE-DT17 — an onboard safety-related system beside the chain</h3>
+<p>The fire scenario shows how an OSS acts without the ADS–VCS chain. The registry times are T+0, 5, 10, 15, 60 and 600 s;
+the platform paths are this chapter's model.</p>
+<table>
+<thead>
+<tr>
+<th>Time</th>
+<th>Event (registry)</th>
+<th>Platform path</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>T+0 s</td>
+<td>Fire detection alarm on DT17, loaded on R05</td>
+<td>fire system detects; safe-state request to the VCS on its hard-wired path; event to the ADS on the machine data bus</td>
+</tr>
+<tr>
+<td>T+5 s</td>
+<td>DT17 begins controlled stop; stop-location logic evaluated</td>
+<td>VCS acts on the request; the ADS chooses where within the safe-state logic (ch-04-07); if the ADS were unavailable the VCS would stop at once</td>
+</tr>
+<tr>
+<td>T+10 s</td>
+<td>AMS receives the fire event; exclusion zone; R05 held</td>
+<td>event, safe-state status and suppression status via ADS and site radio</td>
+</tr>
+<tr>
+<td>T+15 s</td>
+<td>Alarm acknowledged; ERT and Pit Supervisor notified</td>
+<td>status set: fire alarm, stop source onboard, parking brake</td>
+</tr>
+<tr>
+<td>T+60 s</td>
+<td>FMS re-plans EX02's trucks; delay coded</td>
+<td>—</td>
+</tr>
+<tr>
+<td>T+600 s</td>
+<td>ERT at the exclusion-zone boundary under positive communication</td>
+<td>the ERT briefing (section 4.9) applies</td>
+</tr>
+</tbody>
+</table>
+<p>The fire-triggered safe state has 6 single points of failure in architecture A, none in the kit. A fire that destroys the
+kit's compute removes only the event to the AMS — the coordinating part, which ch-04-07 already treats as slower and
+less certain. With its back-up supply <code>[A]</code> the fire system keeps detecting and actuating even if the 24 V distribution is
+lost, although the VCS can then no longer act on the request.</p>
+<h2 id="s-7">7. Engineering view</h2>
+<h3 id="s-7-1">7.1 Design decisions and trade-offs</h3>
+<p><strong>Allocate the status set to the VCS side.</strong> If the ADS assembled the truck's state, the kit would stand between the
+truck and the truth about it. With the VCS as owner, a kit failure loses only the transmission of a correct state; a
+second status path (architecture B) recovers even that. The cost is a VCS that time-stamps eleven signals.</p>
+<p><strong>Give the stop receiver its own feed.</strong> A wire and a fuse make SF-01 independent of the kit's power distribution — the
+element that, in section 6.3, takes away everything the AMS can see. The independence is checked in the harness
+(section 10).</p>
+<p><strong>Hard-wire the stop demands beside the machine data bus.</strong> In architecture A a bus-off (ch-08-02) is in every stop
+function. A hard-wired demand to the brake control removes the bus from the intersection; the price is wiring that can
+fail latently unless it is exercised.</p>
+<p><strong>Accept that the stopping capability is shared, and say so.</strong> The answer is integrity and monitoring of the VCS and
+the brakes (ch-08-04) and inspection of the parking brake, not more boxes.</p>
+<p><strong>Keep manual driving free of the kit.</strong> A display or a mode selector read only by the ADS can creep into the manual
+path; rule 4 is checked by program in the lab and by review in a real design.</p>
+<h3 id="s-7-2">7.2 Failure modes and mitigations</h3>
+<table>
+<thead>
+<tr>
+<th>Failure <code>[A]</code></th>
+<th>Functions lost (architecture A)</th>
+<th>What CR1 sees</th>
+<th>Mitigation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Traction drive control (SCN-RECOVER-DT17)</td>
+<td>autonomous and manual driving</td>
+<td>fault stop, complete status set</td>
+<td>field diagnosis; workshop if not cleared; manual recovery only if drivable</td>
+</tr>
+<tr>
+<td>Kit power distribution</td>
+<td>autonomous driving, ADS stop, status report</td>
+<td>silent truck → communication-lost</td>
+<td>VCS safe stop on command loss; remote stop of the area before any approach; B: second distribution and status path</td>
+</tr>
+<tr>
+<td>ADS compute</td>
+<td>autonomous driving, ADS stop, status report</td>
+<td>as above</td>
+<td>VCS safe stop; B: second compute</td>
+</tr>
+<tr>
+<td>ADS–VCS command link</td>
+<td>autonomous driving, ADS stop, status report</td>
+<td>as above; the VCS sees command timeout (SCN-HEARTBEAT-DT17)</td>
+<td>timeout and alive counter at the VCS (ch-08-02, ch-08-03); B: second link</td>
+</tr>
+<tr>
+<td>Site radio</td>
+<td>autonomous driving, status report</td>
+<td>communication-lost</td>
+<td>fail-closed authority (SF-04): the truck stops within its granted path</td>
+</tr>
+<tr>
+<td>Machine data bus</td>
+<td>every function except hold and status report</td>
+<td>bus fault reported (the status path is intact)</td>
+<td>brake control applies the brakes on loss of its bus — a fail-safe direction the graph cannot express (ch-08-04); B: hard-wired stop demand</td>
+</tr>
+<tr>
+<td>VCS controller or 24 V distribution</td>
+<td>every function except hold (the fire system keeps detecting on its back-up supply)</td>
+<td>silent truck</td>
+<td>fail-safe direction of brakes on loss of control and supply; integrity and diagnostics of the VCS (ch-08-04); spring-applied parking brake holds</td>
+</tr>
+<tr>
+<td>Parking brake (mechanical)</td>
+<td>hold at standstill</td>
+<td>nothing until it is needed</td>
+<td>holding test in planned maintenance</td>
+</tr>
+<tr>
+<td>Stop receiver</td>
+<td>remote stop</td>
+<td>receiver health in the status set</td>
+<td>loss of the stop radio is treated as a stop (<code>equipment.yaml</code>, ch-02-04)</td>
+</tr>
+</tbody>
+</table>
+<p>The last row shows a mitigation that is easy to overlook. A receiver that cannot hear the stop radio stops its truck
+(<code>loss_of_stop_radio: stop</code>). The single point of failure of the remote stop is made <em>self-revealing</em>: its failure turns
+into a stop, not into a silent loss of protection.</p>
+<h3 id="s-7-3">7.3 Interface and timing considerations</h3>
+<p>Four interfaces carry the SCN-RECOVER-DT17 timeline, each with its own timing class <code>[A]</code>:</p>
+<ul>
+<li><strong>ADS → VCS commands and heartbeat,</strong> checked by the VCS for timeout, alive counter and checksum (ch-08-02, ch-08-03);
+in section 6.3 this turns the kit failure into a VCS safe stop.</li>
+<li><strong>Onboard systems → VCS,</strong> read UNKNOWN after a timeout (500 ms in <code>ahs_sim.platform</code> <code>[A]</code>).</li>
+<li><strong>VCS → ADS → AMS status set,</strong> periodic and on change, time-stamped by each owner. At T+747 s and T+897 s, when the
+crew asks CR1 to confirm, the controller reads the age as well as the value.</li>
+<li><strong>Stop radio → stop receiver → VCS,</strong> independent of the others; it acts whether or not it can be reported.</li>
+</ul>
+<p>Two rules follow <code>[H]</code>: no status is shown older than its timeout without being marked unknown; and the timeout exceeds
+the report period plus the worst normal network delay, or healthy trucks flicker to unknown on marginal roads such as
+R05 and R04 (as ch-14-02 shows for PRU reports). The values are design choices <code>[A]</code>.</p>
+<h2 id="s-8">8. Operations view</h2>
+<h3 id="s-8-1">8.1 What the control room sees</h3>
+<p>The truck detail view on the HMI shows the status set as one block, each line with its value, its source and its age
+<code>[H]</code>. For DT17 at T+5 s in SCN-RECOVER-DT17:</p>
+<table>
+<thead>
+<tr>
+<th>Line</th>
+<th>Value</th>
+<th>Source</th>
+<th>Age</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Mode</td>
+<td>Autonomous</td>
+<td>VCS</td>
+<td>1 s</td>
+</tr>
+<tr>
+<td>Stop</td>
+<td>Fault stop — drivetrain (VCS)</td>
+<td>VCS</td>
+<td>1 s</td>
+</tr>
+<tr>
+<td>Parking brake</td>
+<td>Applied, holding</td>
+<td>VCS</td>
+<td>1 s</td>
+</tr>
+<tr>
+<td>Propulsion</td>
+<td>Inhibited</td>
+<td>VCS</td>
+<td>1 s</td>
+</tr>
+<tr>
+<td>Body</td>
+<td>Down</td>
+<td>VCS</td>
+<td>1 s</td>
+</tr>
+<tr>
+<td>Isolation at the truck</td>
+<td>Not applied</td>
+<td>VCS</td>
+<td>1 s</td>
+</tr>
+<tr>
+<td>Fire / tyre / payload</td>
+<td>Normal / normal / empty</td>
+<td>onboard systems</td>
+<td>1 s</td>
+</tr>
+<tr>
+<td>Remote stop</td>
+<td>Not latched; receiver healthy</td>
+<td>stop receiver</td>
+<td>1 s</td>
+</tr>
+<tr>
+<td>Faults</td>
+<td>traction drive control</td>
+<td>VCS</td>
+<td>1 s</td>
+</tr>
+<tr>
+<td>Central isolation</td>
+<td>mission withdrawn; no path; no permission</td>
+<td>AMS</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<p>The values in the table are illustrative <code>[A]</code>. The layout matters more than the values: <strong>source</strong> tells the controller
+which subsystem said it, and <strong>age</strong> tells them whether it is still true. In the degraded case of section 6.3 every
+line reads <em>unknown — last report 13:20:01</em> and the row header reads <em>communication lost</em>.</p>
+<h3 id="s-8-2">8.2 Who decides what</h3>
+<table>
+<thead>
+<tr>
+<th>Decision</th>
+<th>Responsible</th>
+<th>Accountable</th>
+<th>Consulted</th>
+<th>Informed</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Classify the stop from the status set (fault, safety, remote, comms-lost)</td>
+<td>AHS Controller</td>
+<td>Pit Supervisor</td>
+<td>Maintenance Planner</td>
+<td>FMS</td>
+</tr>
+<tr>
+<td>Treat a silent truck as unknown and remote-stop the area before attendance</td>
+<td>AHS Controller</td>
+<td>Pit Supervisor</td>
+<td>—</td>
+<td>Shovel Operators of the area</td>
+</tr>
+<tr>
+<td>Decide field task or workshop from the subsystem map</td>
+<td>Field Technician</td>
+<td>Maintenance Planner</td>
+<td>AHS Controller</td>
+<td>Pit Supervisor</td>
+</tr>
+<tr>
+<td>Reset a fault the vehicle allows</td>
+<td>Field Technician (request to the vehicle)</td>
+<td>Maintenance Planner</td>
+<td>AHS Controller</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Plan kit and OSS inspections</td>
+<td>Maintenance Planner</td>
+<td>Maintenance Planner</td>
+<td>ADS support function <code>[A]</code>, site engineering function <code>[A]</code></td>
+<td>Pit Supervisor</td>
+</tr>
+<tr>
+<td>Brief the ERT on the truck's safety devices</td>
+<td>Pit Supervisor</td>
+<td>Pit Supervisor</td>
+<td>Maintenance Planner (truck configuration)</td>
+<td>AHS Controller</td>
+</tr>
+</tbody>
+</table>
+<h3 id="s-8-3">8.3 Procedure excerpt — reading the status set before an approach</h3>
+<p>Keyed to the SCN-RECOVER-DT17 timeline. It adds the architecture's checks to steps 1, 2, 5 and 6 of ch-16-05's
+procedure; it does not replace them.</p>
+<ol>
+<li><strong>AHS Controller (T+5 s):</strong> open DT17's detail view; check the <strong>age</strong> of every line before any value. If a line is
+unknown, go to step 7.</li>
+<li><strong>AHS Controller (T+5 s):</strong> read the <strong>stop source</strong>: VCS with a fault code → fault stop; onboard system → ch-16-06
+for fire; remote stop → released only at its source; ADS → safety stop (ch-16-05).</li>
+<li><strong>AHS Controller (by T+60 s):</strong> read <strong>parking brake</strong>, <strong>body</strong> and <strong>propulsion</strong>; a raised body or a brake not
+reported holding is passed to the crew as a hazard, with the onboard alarms (ch-16-05 section 6.5).</li>
+<li><strong>AHS Controller (T+60 s):</strong> read the fault code against the subsystem map. A VCS-side drivetrain fault → field
+diagnosis, and the Maintenance Planner told that manual recovery depends on the truck being drivable; a kit fault →
+connectors and fuses in the field, replacement in the workshop.</li>
+<li><strong>Field Technician crew (T+747 s, at the stand-off point):</strong> ask CR1 to read back the status set <em>with ages</em>: mode,
+stop source, parking brake, body, onboard states, remote stop, central isolation.</li>
+<li><strong>Field Technician crew (T+897 s):</strong> apply SF-02 and the site's isolation at the truck; confirm with CR1 that the
+status set now shows <em>isolation applied</em> and that the mode reads ISOLATED. If the line does not change, stop: the
+status path or the isolation is not what it seems.</li>
+<li><strong>AHS Controller (any time a line is unknown):</strong> do not authorise an approach on that truck. Confirm the stop by the
+remote stop of its area, or wait until the truck reports again (ch-16-05 section 4.1). Call the Maintenance Planner if
+the truck is silent while its neighbours report.</li>
+<li><strong>AHS Controller (T+2457 s to T+2684 s):</strong> before the release, confirm <em>isolation removed</em> from the truck's own line,
+not only from the crew's radio report — both are needed (ch-16-05 step 12).</li>
+</ol>
+<h3 id="s-8-4">8.4 KPIs and delay codes affected</h3>
+<table>
+<thead>
+<tr>
+<th>Interval</th>
+<th>Machine</th>
+<th>Code</th>
+<th>Time category</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>DT17 from the stop to its return to autonomous operation (SCN-RECOVER-DT17)</td>
+<td>DT17</td>
+<td>DLY-DN-01</td>
+<td>Downtime</td>
+</tr>
+<tr>
+<td>Kit power failure (section 6.3, SCN-KITPOWER-DT17): DT17 until the cause is known and repaired</td>
+<td>DT17</td>
+<td>DLY-DN-01</td>
+<td>Downtime</td>
+</tr>
+<tr>
+<td>Trucks held by the remote stop of the area in section 6.3</td>
+<td>trucks in the area</td>
+<td>DLY-OD-13</td>
+<td>Operating Delay</td>
+</tr>
+<tr>
+<td>Trucks held behind a stopped DT17 on R03</td>
+<td>waste trucks</td>
+<td>DLY-OD-04 — DT17 is in Downtime, so the held trucks do not carry its cause (<code>coding_rules</code>, ch-16-05 section 8.4)</td>
+<td>Operating Delay</td>
+</tr>
+<tr>
+<td>Planned kit and OSS inspections (section 4.8)</td>
+<td>each truck</td>
+<td>DLY-DN-02</td>
+<td>Downtime</td>
+</tr>
+</tbody>
+</table>
+<p>The architecture changes no code; it changes how fast the right one is chosen. A truck silent among reporting
+neighbours is coded DLY-DN-01 for its own fault, not DLY-OD-05 for communication loss. Two indicators are worth
+reporting by subsystem <code>[R]</code>: stops whose cause was first shown as communication loss and later found on the truck, and
+the mean age of the status set at the moment a crew asks CR1 to confirm isolation.</p>
+<h3 id="s-8-5">8.5 Training and competency implications</h3>
+<ul>
+<li><strong>AHS Controllers</strong> learn the status set line by line and to read the age before the value; they practise the
+section 6.3 case until &quot;confirm the stop, then attend&quot; is automatic.</li>
+<li><strong>Field Technicians</strong> learn the subsystem map, that a reset is a request to the vehicle, and — from the
+manufacturer's documentation — which isolation device removes which energy.</li>
+<li><strong>Maintenance Planners</strong> learn the added inspection items and why protective items are inspected on a schedule.</li>
+<li><strong>ERT members</strong> are briefed with the card of section 4.9 and practise reporting by radio what they isolated.</li>
+</ul>
+<h2 id="s-9">9. Requirements and acceptance criteria</h2>
+<p>REQ-08-01-001 [H]
+Every subsystem and element of an autonomous truck class shall be allocated to exactly one of the groups base machine,
+VCS, ADS, independent safety function and onboard safety-related systems, and the allocation shall be recorded under
+configuration control. The stop paths of the independent safety function and the safe-state requests of onboard
+safety-related systems shall reach the VCS without passing through any ADS element.
+Rationale: allocation by part makes ch-02-04's independence conditions checkable (section 4.2).
+Verification: inspection of the allocation record; analysis with the dependency model (LAB-08-01-01).</p>
+<p>REQ-08-01-002 [H]
+Manual operation of the truck from the cab shall not depend on any element of the autonomy kit.
+Rationale: recovery must remain possible when the kit is what has failed (section 4.2, rule 4).
+Verification: analysis (LAB-08-01-01 <code>kit_in_manual_path</code> returns an empty list); test with the kit isolated.</p>
+<p>REQ-08-01-003 [H]
+A dependency model of each truck class shall be maintained, and for each stop function (ADS-commanded stop, VCS safe
+stop, remote stop, fire-triggered safe state, hold at standstill) every single point of failure shall be listed with
+either a mitigation or a named justification; elements shared by the ADS-commanded stop and the independent stop path
+shall be identified as common-cause items.
+Rationale: the shared stopping capability cannot be removed and must be visible (section 4.5).
+Verification: analysis; review of the list at each change to the truck's configuration.</p>
+<p>REQ-08-01-004 [H]
+A stopped truck shall report to the AMS the status set of section 4.6, each signal with its source and measurement time.
+The AMS shall show any signal not received within its configured timeout as unknown with the time of the last report,
+and shall never show it as its last value.
+Rationale: a stale value read as current is a fail-open at the approach (section 4.6).
+Verification: test (interrupt the reporting path; LAB-08-01-01 <code>status_at_ams</code>); inspection of the HMI.</p>
+<p>REQ-08-01-005 [H]
+The AMS shall not show a truck as available for attendance while any line of its status set is unknown, and the
+procedure shall require the stop to be confirmed by the independent safety function or by a renewed report before any
+approach.
+Rationale: section 6.3; ch-16-05 section 4.1.
+Verification: test of the HMI state; inspection of the procedure; drill.</p>
+<p>REQ-08-01-006 [H]
+The autonomy kit shall be supplied through a protected feed of its own with fused branches; the stop receiver and the VCS
+shall be supplied by feeds that do not pass through the kit's power distribution.
+Rationale: a kit power fault must not remove the independent stop or the VCS (sections 4.3, 6.3).
+Verification: inspection of the wiring diagram and the harness; test (kit feed opened, remote stop exercised).</p>
+<p>REQ-08-01-007 [H]
+For each truck class the site shall keep a field-work list stating, per subsystem, what a Field Technician may isolate,
+inspect or reset in the field and what requires the workshop. No latch shall be released except by its own source.
+Rationale: section 4.7.
+Verification: inspection of the list against the manufacturer's documentation; audit of field records.</p>
+<p>REQ-08-01-008 [H]
+The site shall keep, for each truck class and configuration, a briefing for the Emergency Response Team stating the
+function and location of the emergency stop controls, isolation points and manual fire-suppression actuators, and the
+facts of section 4.9; it shall be reviewed whenever the truck's configuration changes.
+Rationale: nobody is in the cab to tell the ERT what has been done (section 4.9).
+Verification: inspection; exercise with the ERT.</p>
+<p>REQ-08-01-009 [H]
+The planned maintenance of each autonomous truck shall include the inspection and functional-check tasks of section 4.8
+for the autonomy kit, the stop receiver, the machine emergency stop, the onboard safety-related systems and the parking
+brake.
+Rationale: their failures are mostly latent (section 4.8; ch-18-06).
+Verification: inspection of the maintenance plan.</p>
+<h2 id="s-10">10. Verification and validation</h2>
+<ul>
+<li><strong>Allocation and independence by analysis.</strong> The lab checks that the intersection of the two stop paths' single points
+of failure contains no kit element and that manual driving depends on none (REQ-08-01-001 to -003); the model is
+reviewed against the wiring diagrams.</li>
+<li><strong>Independence by test,</strong> because the harness, not the diagram, is what fails. With the kit's feed opened: the VCS
+stops the truck on command loss, the remote stop still acts, and the status set turns unknown at the AMS within its
+timeout (REQ-08-01-004, -006).</li>
+<li><strong>Status set by fault injection.</strong> Each owner is disconnected in turn; only its signal may turn unknown. A stuck
+signal — a parking-brake switch reading &quot;holding&quot; whatever the brake does — needs a plausibility check on the VCS
+side and the holding test of section 4.8.</li>
+<li><strong>Field-work list and ERT briefing by inspection and drill</strong> (REQ-08-01-007, -008). Whether any regulation or standard
+sets requirements for isolation of autonomous trucks or for manual suppression on unmanned machines is not asserted
+here <code>[TBV]</code> (SRC-REG-AU-ISOLATION-LOCKOUT, SRC-PUB-AUTONOMOUS-ISOLATION, SRC-PUB-UNMANNED-FIRE-ACTUATION).</li>
+<li><strong>Commissioning.</strong> The static tests of the truck commissioning checklist (ch-18-04 section 4.9, item 5) include the
+status set and the onboard systems' reporting; this chapter adds the kit-feed test above.</li>
+</ul>
+<h2 id="s-11">11. Common mistakes</h2>
+<h3 id="s-11-1">11.1 Design mistakes</h3>
+<ul>
+<li><strong>Letting the ADS own the machine state.</strong> A kit failure then turns a known truck into an unknown one.</li>
+<li><strong>Feeding the stop receiver from the kit's distribution.</strong> The independent stop then shares the kit's most likely
+single failure.</li>
+<li><strong>Showing the last value of a lost signal.</strong> &quot;Parking brake holding&quot; from ten minutes ago looks exactly like a current
+&quot;holding&quot;.</li>
+<li><strong>Counting redundancy in the kit as redundancy of the stop.</strong> Two compute units do not make the brakes redundant.</li>
+<li><strong>Drawing redundancy that shares a loom.</strong> Two cables in one harness are one element for a rock strike or a fire.</li>
+<li><strong>Putting a kit element into the manual path.</strong> A mode selector read only by the ADS can make manual recovery
+impossible when the kit fails.</li>
+</ul>
+<h3 id="s-11-2">11.2 Operational mistakes</h3>
+<ul>
+<li><strong>Reading the value before the age.</strong> The single most common misreading of a status row.</li>
+<li><strong>Calling network support for a silent truck among reporting neighbours.</strong> The cause is on the truck.</li>
+<li><strong>Resetting a stop at the truck that belongs to another source.</strong> A remote stop is released at its source; a fire
+safe state after the ERT and with logs secured.</li>
+<li><strong>Assuming electrical isolation is harmless for CR1.</strong> It removes the status set; the ERT or the crew must say by radio
+what they isolated.</li>
+<li><strong>Assuming a stopped autonomous truck is unmanned.</strong> In manual recovery it is not.</li>
+</ul>
+<h2 id="s-12">12. Worked examples</h2>
+<p><strong>Example 1 — single points of failure of the ADS-commanded stop by hand.</strong> The function needs <code>ads</code>, <code>cmd_bus</code>, <code>vcs</code>
+and <code>brakes</code> <code>[A]</code>. Following the dependencies: <code>ads</code> needs <code>kit_pdu</code>, which needs <code>bus24</code>; <code>vcs</code> needs <code>bus24</code>; <code>brakes</code>
+needs <code>brake_ctl</code>, which needs <code>vcs</code>, <code>bus24</code> and <code>mbus</code>; <code>bus24</code> needs <code>batt24|chg24</code>. The direct requirements give 4
+elements; the chains add <code>kit_pdu</code>, <code>brake_ctl</code>, <code>mbus</code> and <code>bus24</code>: 8 single points of failure. <code>batt24</code> and <code>chg24</code>
+are not on the list, because each covers the loss of the other. The lab gives the same 8.</p>
+<p><strong>Example 2 — what CR1 can confirm.</strong> The status report needs <code>vcs</code>, <code>cmd_bus</code>, <code>ads</code> and <code>radio</code>, with <code>kit_pdu</code> and
+<code>bus24</code> behind them: 6 single points of failure. A traction drive control fault is neither among them nor the
+owner of any signal: all 11 signals are reported. A kit power fault is among them: all 11 are unknown. With architecture
+B the status report's requirement becomes <code>ads_report|vcs_telemetry</code>; the two alternatives share only <code>vcs</code> and <code>bus24</code>,
+which become the only 2 single points of failure, and losing one kit distribution leaves all 11 signals reported.</p>
+<p><strong>Example 3 — the onboard view.</strong> The fire system reports every 100 ms; the tyre monitor's last report is at 200 ms (its
+reports stop 300 ms after the start). At 2000 ms the VCS reads the fire system NORMAL (last report 0 ms old) and the tyre
+monitor UNKNOWN (1800 ms old, more than the 500 ms timeout) <code>[A]</code>. A display of the tyre's last value would show
+NORMAL.</p>
+<h2 id="s-13">13. Hands-on labs</h2>
+<p><strong>LAB-08-01-01 — Vehicle architecture dependency model</strong> (labs/README.md). The HT220 as a dependency
+graph of 32 elements in five allocation groups with power and data dependencies and <code>A|B</code> redundancy; single points of
+failure of eight functions with <code>ahs_sim.platform.dependency_spof</code>; the inverse impact view; the common-cause set of the
+two stop paths; a check that manual driving needs no kit element; the stopped-truck status set at the AMS for any failed
+element; SCN-RECOVER-DT17 traced through the subsystems with <code>ModeMachine</code> for the isolation interlock; the kit-power
+contrast; architecture B. Tests: <code>make test CH=ch-08-01</code> (9 tests, including one that checks FIG-08-01-01 against the
+model).</p>
+<h2 id="s-14">14. Discussion questions and assignments</h2>
+<h3 id="s-14-1">14.1 Engineering assignments</h3>
+<ol>
+<li>Add a second traction drive control to the model as <code>drive_ctl|drive_ctl_b</code>. Which functions gain, and why does
+manual driving not lose its other single points of failure?</li>
+<li>Steering needs <code>steer_pump|steer_accum</code>. What does the accumulator buy with the engine off, and what can the
+dependency model not tell you about it?</li>
+<li>Move the stop receiver's feed to the kit power distribution and rerun the common-cause analysis. Which element joins
+the intersection, and which requirement of this chapter does the change violate?</li>
+<li>Design the status-set message: fields, owner, time stamp, period, on-change rule and timeout. Justify each timeout
+against the report period and the worst normal network delay on R05 <code>[A]</code>.</li>
+<li>Propose a plausibility check that would detect a parking-brake switch stuck at &quot;holding&quot;. Which other signal on the
+truck could it use?</li>
+</ol>
+<h3 id="s-14-2">14.2 Operations assignments</h3>
+<ol>
+<li>Write the ERT briefing card for the HT220 using section 4.9 as the structure. Mark each item that the manufacturer's
+documentation must supply.</li>
+<li>From the status row of section 8.1, write the radio read-back a controller gives a crew at the stand-off point.</li>
+<li>A truck on R04 goes silent while two trucks on R04 keep reporting. Write the controller's decisions for the first
+five minutes and the delay codes they use.</li>
+<li>With the Maintenance Planner, turn the table of section 4.8 into a weekly plan for 40 trucks that avoids taking more
+than two trucks out at a time <code>[A]</code>.</li>
+</ol>
+<h2 id="s-15">15. Key takeaways</h2>
+<ul>
+<li>The HT220 is a base machine, a VCS, an autonomy kit, an independent stop path and onboard safety-related systems; each
+element belongs to one group, and the safe-state paths reach the VCS without the ADS.</li>
+<li>A dependency model with <code>A|B</code> redundancy turns independence claims into checks: autonomous driving has 16 single
+points of failure, the ADS stop 8, manual driving 11 — none of the last in the kit.</li>
+<li>The two stop paths share the truck's stopping capability and its supply. Kit redundancy cannot remove it; it must be
+named and made reliable.</li>
+<li>The VCS owns the stopped-truck status set; the kit only forwards it. A kit failure therefore loses the <em>transmission</em>
+of a correct state — which is why a silent truck is unknown, not &quot;probably fine&quot;.</li>
+<li>The status row is read age first, value second. An unknown line blocks the approach until the stop is confirmed by the
+independent stop path or a renewed report.</li>
+<li>The subsystem map is also a work map for Field Technicians, a maintenance plan for the Maintenance Planner and a
+briefing for the ERT.</li>
+</ul>
+<h2 id="s-16">16. Glossary terms introduced</h2>
+<ul>
+<li><code>dependency-model</code> — Dependency model</li>
+<li><code>stopped-truck-status-set</code> — Stopped-truck status set</li>
+<li><code>isolation-point</code> — Isolation point</li>
+<li><code>body-hoist</code> — Body hoist</li>
+</ul>
+<p>Existing terms used: <code>autonomy-kit</code>, <code>single-point-of-failure</code>, <code>common-cause-failure</code>, <code>redundancy</code>, <code>parking-brake</code>,
+<code>isolation</code>, <code>personal-isolation</code>, <code>stop-receiver</code>, <code>remote-stop</code>, <code>emergency-stop</code>, <code>controlled-stop</code>, <code>safe-state</code>,
+<code>fire-detection-and-suppression</code>, <code>operating-mode</code>, <code>manual-recovery</code>, <code>return-to-autonomous-checks</code>, <code>stand-off-point</code>,
+<code>field-attendance</code>, <code>electronic-control-unit</code>, <code>configuration-register</code>, <code>drive-by-wire</code>, <code>heartbeat</code>, <code>vehicle-control-system</code>.</p>
+<nav aria-label="Introductory chapters"><p><a href="../handbook.html">Handbook contents</a> · <a href="ch-08-02.en.html">Next chapter</a></p></nav>
+</main>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.1/dist/mermaid.min.js"></script>
+<script>if(window.ahsRenderMermaid){window.ahsRenderMermaid();}</script>
+</body>
+</html>

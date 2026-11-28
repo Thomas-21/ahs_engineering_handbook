@@ -1,0 +1,1360 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="generator" content="ahs-handbook build_articles 2.0.0">
+<meta name="ahs:id" content="ch-02-01">
+<meta name="ahs:version" content="0.1.4">
+<meta name="ahs:status" content="approved">
+<meta name="ahs:source-sha256" content="e9457d7c40988d9e">
+<title>System-of-systems architecture</title>
+<style>
+:root {
+  --bg: #fbfaf7;
+  --fg: #1d1f21;
+  --muted: #5d6166;
+  --accent: #1f6f8b;
+  --accent-soft: #e3f0f4;
+  --border: #d9d6cf;
+  --code-bg: #f1efea;
+  --warn-bg: #fff6e0;
+  --warn-border: #e2b54a;
+  --watermark: rgba(200, 60, 60, 0.07);
+  --font-body: system-ui, -apple-system, "Segoe UI", "Hiragino Sans", "Hiragino Kaku Gothic ProN",
+    "Noto Sans JP", "Yu Gothic", Meiryo, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #15171a;
+    --fg: #e6e4df;
+    --muted: #a3a7ad;
+    --accent: #6cc3de;
+    --accent-soft: #1d3440;
+    --border: #33373d;
+    --code-bg: #1f2226;
+    --warn-bg: #2e2716;
+    --warn-border: #8c7330;
+    --watermark: rgba(255, 120, 120, 0.06);
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #15171a;
+  --fg: #e6e4df;
+  --muted: #a3a7ad;
+  --accent: #6cc3de;
+  --accent-soft: #1d3440;
+  --border: #33373d;
+  --code-bg: #1f2226;
+  --warn-bg: #2e2716;
+  --warn-border: #8c7330;
+  --watermark: rgba(255, 120, 120, 0.06);
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0 auto;
+  max-width: 52rem;
+  padding: 1.25rem 16px 3rem;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-body);
+  font-size: 1.0625rem;
+  line-height: 1.7;
+  overflow-wrap: anywhere;
+}
+h1 { font-size: 1.9rem; line-height: 1.3; margin: 0.6rem 0 1rem; }
+h2 { font-size: 1.4rem; margin-top: 2.4rem; border-bottom: 1px solid var(--border); padding-bottom: 0.2rem; }
+h3 { font-size: 1.15rem; margin-top: 1.8rem; }
+a { color: var(--accent); }
+code { font-family: var(--font-mono); background: var(--code-bg); padding: 0.05rem 0.3rem; border-radius: 3px; font-size: 0.92em; }
+pre { background: var(--code-bg); padding: 0.8rem 1rem; overflow-x: auto; border-radius: 6px; line-height: 1.45; }
+pre code { background: none; padding: 0; }
+table { border-collapse: collapse; width: 100%; display: block; overflow-x: auto; margin: 1rem 0; }
+th, td { border: 1px solid var(--border); padding: 0.35rem 0.6rem; text-align: left; vertical-align: top; }
+/* Never break inside numbers or IDs in table cells; wide tables scroll horizontally instead. */
+th, td { overflow-wrap: normal; word-break: normal; }
+th { background: var(--accent-soft); }
+blockquote { margin: 1rem 0; padding: 0.2rem 1rem; border-left: 4px solid var(--accent); color: var(--muted); }
+.article-header .meta-row { display: flex; flex-wrap: wrap; gap: 0.4rem 0.9rem; align-items: center; font-size: 0.85rem; color: var(--muted); }
+.chapter-id { font-family: var(--font-mono); font-weight: 600; color: var(--fg); }
+.status { padding: 0.05rem 0.5rem; border: 1px solid var(--border); border-radius: 999px; }
+.status-draft, .status-revision, .status-in-review { border-color: var(--warn-border); background: var(--warn-bg); }
+.theme-toggle { font: inherit; font-size: 0.8rem; color: var(--fg); background: transparent; border: 1px solid var(--border); border-radius: 4px; padding: 0.1rem 0.5rem; cursor: pointer; }
+.disclaimer { background: var(--warn-bg); border: 1px solid var(--warn-border); border-radius: 6px; padding: 0.6rem 0.9rem; font-size: 0.9rem; }
+.disclaimer p { margin: 0.25rem 0; }
+.toc { border: 1px solid var(--border); border-radius: 6px; padding: 0.6rem 1rem; margin: 1.2rem 0; font-size: 0.92rem; }
+.toc ol { margin: 0.3rem 0 0; padding-left: 1.2rem; }
+.fig { margin: 1.6rem 0; text-align: center; }
+.fig img, .fig svg { max-width: 100%; height: auto; }
+.fig pre.mermaid { background: transparent; text-align: center; }
+figcaption { font-size: 0.9rem; color: var(--muted); margin-top: 0.5rem; }
+.fig-no { font-weight: 600; color: var(--fg); }
+.fig-id { font-family: var(--font-mono); font-size: 0.75rem; opacity: 0.7; }
+.math-block { overflow-x: auto; margin: 1rem 0; }
+math { font-size: 1.1em; }
+.widget { border: 1px solid var(--border); border-radius: 8px; padding: 1rem; margin: 1.5rem 0; background: var(--accent-soft); }
+.widget label { display: block; margin: 0.4rem 0; font-size: 0.95rem; }
+.widget select, .widget input { font: inherit; color: var(--fg); background: var(--bg); border: 1px solid var(--border); border-radius: 4px; padding: 0.15rem 0.3rem; max-width: 100%; }
+.widget .result { font-size: 1.05rem; margin-top: 0.7rem; }
+.widget table { font-size: 0.88rem; }
+.watermark { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; pointer-events: none; font-size: 22vw; font-weight: 800; color: var(--watermark); transform: rotate(-24deg); z-index: 0; }
+.article-header, .toc, .article-body, .article-footer { position: relative; z-index: 1; }
+.article-footer { margin-top: 3rem; font-size: 0.8rem; color: var(--muted); border-top: 1px solid var(--border); padding-top: 0.6rem; }
+@media (max-width: 600px) {
+  body { font-size: 1rem; }
+  h1 { font-size: 1.55rem; }
+}
+@media print { .watermark { color: rgba(0, 0, 0, 0.06); } .theme-toggle { display: none; } }
+
+</style>
+<script>
+(function () {
+  var root = document.documentElement;
+  try {
+    var saved = localStorage.getItem("ahs-theme");
+    if (saved === "dark" || saved === "light") root.dataset.theme = saved;
+  } catch (e) {}
+  var mq = window.matchMedia ? window.matchMedia("(prefers-color-scheme: dark)") : null;
+  // No explicit choice: follow the system theme (CSS does the same through prefers-color-scheme).
+  function isDark() {
+    return root.dataset.theme ? root.dataset.theme === "dark" : !!(mq && mq.matches);
+  }
+  // Mermaid diagrams keep their original definition in data-source and are re-rendered with the theme that
+  // matches the page whenever the theme changes (review 2026-11-14, R22).
+  window.ahsRenderMermaid = function () {
+    if (!window.mermaid) return;
+    var nodes = Array.prototype.slice.call(document.querySelectorAll("pre.mermaid"));
+    if (!nodes.length) return;
+    nodes.forEach(function (el) {
+      if (el.getAttribute("data-source") === null) {
+        el.setAttribute("data-source", el.textContent);
+      } else {
+        el.removeAttribute("data-processed");
+        el.textContent = el.getAttribute("data-source");
+      }
+    });
+    window.mermaid.initialize({ startOnLoad: false, securityLevel: "strict", theme: isDark() ? "dark" : "default" });
+    var done = window.mermaid.run({ nodes: nodes });
+    if (done && done.catch) done.catch(function (err) { if (window.console) console.error(err); });
+  };
+  function syncButton(btn) {
+    btn.setAttribute("aria-pressed", isDark() ? "true" : "false");
+  }
+  document.addEventListener("DOMContentLoaded", function () {
+    var btn = document.querySelector(".theme-toggle");
+    if (btn) syncButton(btn);
+    if (mq) {
+      var onSystemChange = function () {
+        if (root.dataset.theme) return;
+        if (btn) syncButton(btn);
+        window.ahsRenderMermaid();
+      };
+      if (mq.addEventListener) mq.addEventListener("change", onSystemChange);
+      else if (mq.addListener) mq.addListener(onSystemChange);
+    }
+    if (!btn) return;
+    btn.addEventListener("click", function () {
+      root.dataset.theme = isDark() ? "light" : "dark";
+      try { localStorage.setItem("ahs-theme", root.dataset.theme); } catch (e) {}
+      syncButton(btn);
+      window.ahsRenderMermaid();
+    });
+  });
+})();
+
+</script>
+<link rel="canonical" href="https://thomas-21.github.io/ahs_engineering_handbook/vol-02/ch-02-01.en.html">
+</head>
+<body data-chapter-id="ch-02-01" data-status="approved">
+<header class="article-header">
+  <div class="meta-row">
+    <a class="home-link" href="../handbook.html">All chapters</a>
+    <span class="chapter-id">ch-02-01</span>
+    <span class="lab-link">No lab in this chapter</span>
+    <button type="button" class="theme-toggle" aria-label="Theme">Theme</button>
+  </div>
+  <h1>System-of-systems architecture</h1>
+</header>
+<nav class="toc" aria-label="Contents"><strong>Contents</strong><ol><li><a href="#s-1">1. Overview</a></li><li><a href="#s-2">2. Operational motivation: the problem at the reference mine</a></li><li><a href="#s-3">3. Terminology and foundations</a></li><li><a href="#s-4">4. Technical explanation</a></li><li><a href="#s-5">5. Responsibilities and interface boundaries</a></li><li><a href="#s-6">6. Normal, abnormal and degraded operation</a></li><li><a href="#s-7">7. Engineering view</a></li><li><a href="#s-8">8. Operations view</a></li><li><a href="#s-9">9. Requirements and acceptance criteria</a></li><li><a href="#s-10">10. Verification and validation</a></li><li><a href="#s-11">11. Common mistakes</a></li><li><a href="#s-12">12. Worked examples</a></li><li><a href="#s-13">13. Hands-on labs</a></li><li><a href="#s-14">14. Discussion questions and assignments</a></li><li><a href="#s-15">15. Key takeaways</a></li><li><a href="#s-16">16. Glossary terms introduced</a></li></ol></nav>
+<main class="article-body">
+<h2 id="s-1">1. Overview</h2>
+<h3 id="s-1-1">1.1 Why this chapter matters</h3>
+<p>It is 10:40 on a DAY shift <code>[A]</code>. DT17 is climbing the main ramp R05 with a full load of ore when its fire
+detection system raises an alarm. Within a quarter of a minute the AHS Controller in CR1 has four new things on
+the screens: an onboard alarm from DT17, an exclusion zone drawn by the AMS around the truck, a row of trucks
+held on and around R05, and — a minute later — an FMS message that the assignments of the EX02 trucks have been
+re-planned. Ten minutes later two Emergency Response Team vehicles drive in from the MIA along the same central
+road on which the AMS is now sending loaded trucks around the blocked ramp.</p>
+<p>No single system did all of this, and none was designed to. The fire system detects and suppresses; the ADS stops
+the truck in a suitable place; the AMS protects the road and coordinates traffic; the FMS keeps the shovels working.
+The combined behaviour — a pit run through its west ramp with emergency vehicles threading through the rerouted
+traffic — exists only because these systems act on each other, and the people in CR1 must coordinate one response to
+something that arrives as many separate messages.</p>
+<p>That raises questions that ch-01-04 could not answer with a single chain of elements:</p>
+<ul>
+<li>Who owns behaviour that belongs to no one system?</li>
+<li>Where does the AHS end, and what lies outside it that it still depends on?</li>
+<li>What happens when one of these systems is upgraded and the others are not?</li>
+<li>Whom does the controller call when a problem appears between two systems?</li>
+</ul>
+<p>This chapter covers:</p>
+<ul>
+<li>the characteristics that make an autonomous mine a <strong>system of systems</strong>, and its constituent systems at the
+reference mine;</li>
+<li>the <strong>context boundary</strong> of the AHS and a classification of its external interfaces;</li>
+<li><strong>emergent behaviour</strong> across constituents, walked through with SCN-FIRE-DT17;</li>
+<li>the version-compatibility risk created by independent release cycles, and where compatibility is checked;</li>
+<li>what this means in CR1: one incident view, the right owner to call, and procedure reviews after any upgrade.</li>
+</ul>
+<h3 id="s-1-2">1.2 Learning objectives — Engineering</h3>
+<p>After this chapter an engineering reader will be able to:</p>
+<ol>
+<li>Explain the characteristics that make an autonomous mine a system of systems (operational and managerial
+independence of constituents, evolutionary development, emergent behaviour) and identify the constituents at the
+reference mine.</li>
+<li>Analyse SCN-FIRE-DT17 as an emergent, cross-system behaviour: list every constituent system that must act and
+the information each needs from the others.</li>
+<li>Draw the context boundary of the AHS at the reference mine and classify each external interface (plant, manned
+vehicles, survey, enterprise systems).</li>
+<li>Explain how the independent evolution of constituents (separate releases of FMS, AMS and vehicle software)
+creates version-compatibility risk, and identify where compatibility must be checked before deployment.</li>
+</ol>
+<h3 id="s-1-3">1.3 Learning objectives — Operations</h3>
+<p>After this chapter an operations reader will be able to:</p>
+<ol>
+<li>Explain to a Pit Supervisor why a change in one system (for example a new shovel assignment rule in the FMS) can
+produce behaviour in another (queueing at Intersection X) that neither system was designed to show on its own.</li>
+<li>Identify which constituent system's owner must be contacted when a cross-system problem appears in the control
+room, using the cancellation of M-20481 as the example.</li>
+<li>Describe how the controller recognises on the HMI that one event spans several systems (the fire on DT17 shown
+as an onboard alarm, an AMS exclusion zone and an FMS assignment change) and coordinates a single response.</li>
+<li>Explain why site procedures must be reviewed when any constituent system is upgraded, even if only one system
+changes.</li>
+</ol>
+<h2 id="s-2">2. Operational motivation: the problem at the reference mine</h2>
+<p>Ch-01-04 drew the AHS as a chain — FMS → AMS → ADS → VCS — with supporting elements beside it. That picture is
+correct about responsibilities, but it hides three facts that every site discovers in its first year of autonomous
+operation.</p>
+<p>First, the boxes in the chain are not parts of one machine. They are separate systems, often from different
+suppliers, running on different computers in different places, each with its own release plan, support contract and
+engineering team. The FMS keeps running if the trucks are parked; the trucks keep driving their granted paths for a
+while if the AMS stops answering; the fire suppression system on DT17 discharges whether or not anyone in CR1 has
+noticed.</p>
+<p>Second, the most important behaviour at the reference mine is a property of the combination. Tonnes per hour, the
+queue at C01-Q, the waiting at Intersection X and the response to a fire are not produced by any one system.</p>
+<p>Third, the systems change at different times. In a typical year the site may install a new FMS version, a new AMS
+version, a new ADS release on 40 trucks over ten days, new truck firmware and a new map every week. Each change is
+tested by its supplier; the combination that is actually running in the pit on a given day may never have been
+tested by anyone.</p>
+<p>At the reference mine these facts show up as four conversations:</p>
+<ul>
+<li>The Pit Supervisor: &quot;The FMS team changed the dispatch rule last week. Nobody touched the AMS. Why are trucks now
+queueing at Intersection X?&quot;</li>
+<li>The AHS Controller: &quot;FMS shows M-20481 as cancelled and DT17 is still driving. Do I call the FMS people, the AHS
+supplier or the network team?&quot;</li>
+<li>The AHS Controller again, during the fire on DT17: &quot;I have an onboard alarm, an AMS exclusion zone, a row of held trucks
+and an FMS re-plan. Is that one event or four?&quot;</li>
+<li>The Maintenance Planner: &quot;The truck firmware update is only a VCS change. Why does the control room want to
+review its procedures?&quot;</li>
+</ul>
+<p>The method of this chapter: treat the mine as a system of systems, draw its boundary deliberately, name an owner for
+every constituent and every cross-system behaviour that matters, and check compatibility whenever anything changes.</p>
+<h2 id="s-3">3. Terminology and foundations</h2>
+<p><strong>System of systems (SoS).</strong> A system whose elements are themselves systems that can operate, and are managed, on
+their own. The handbook uses the term as defined in its glossary. Definitions in the systems-engineering literature
+differ in wording; the characteristics used in this chapter follow a widely cited formulation by Maier (1998,
+<em>Systems Engineering</em> 1(4); SRC-PUB-SOS-MAIER-1998 — bibliographic data verified, the list of characteristics <code>[TBV]</code>),
+and the taxonomy follows ISO/IEC/IEEE 21841:2019 (SRC-STD-ISO21841). The handbook relies on the characteristics only as
+a teaching frame, not as a normative definition.</p>
+<p><strong>Constituent system.</strong> One of the systems that together form the SoS. At the reference mine: FMS, AMS, ADS, VCS,
+onboard safety-related systems, the independent safety function, manned-vehicle devices — and the people and
+organisations who operate them <code>[H]</code>. A constituent system may have many deployed instances: one ADS design runs on
+40 trucks.</p>
+<p><strong>Context boundary.</strong> The line that separates what the AHS is responsible for and controls the configuration of
+from what it depends on or informs but does not control <code>[H]</code>. Systems outside the boundary are <em>external systems</em>;
+the connections across it are <em>external interfaces</em>.</p>
+<p><strong>Emergent behaviour.</strong> Behaviour of the SoS that no constituent shows on its own and that arises from the
+interaction of constituents. It may be intended (production, a coordinated fire response) or unintended (a queue at
+Intersection X that no system was designed to create).</p>
+<p><strong>System owner.</strong> The organisation accountable for a constituent system's configuration, releases and support: a
+supplier for the product, and a named site owner for its deployment <code>[H]</code>. Owners are organisations, not handbook
+roles; the operational roles (AHS Controller, Pit Supervisor, Shovel Operator, Field Technician, Maintenance Planner,
+Survey, Emergency Response Team) contact them.</p>
+<p><strong>Integration authority.</strong> The site organisation accountable for the AHS as a whole: the constituent register, the
+context boundary, the compatibility of versions and the end-to-end behaviour of cross-system scenarios <code>[H]</code>. At the
+reference mine it sits in site AHS engineering <code>[A]</code>.</p>
+<p><strong>Compatibility matrix.</strong> The approved list of version combinations of constituent systems that may run together
+<code>[H]</code>. A combination not in the matrix is not approved, however small the change.</p>
+<p>Three terms from Volume 01 are used throughout. The <strong>interface control document</strong> (ICD) specifies each interface
+(ch-02-06). <strong>Configuration management</strong> keeps track of what is deployed where. <strong>Change management</strong> is the
+technical process by which a change is assessed, approved and deployed; it is different from the organisational
+change management of Volume 20.</p>
+<h2 id="s-4">4. Technical explanation</h2>
+<h3 id="s-4-1">4.1 What makes an autonomous mine a system of systems</h3>
+<p>The SoS literature describes several characteristics that distinguish a system of systems from a large, complex
+system <code>[TBV]</code>. Four of them matter at the reference mine, and each can be checked against the site rather than
+taken on trust.</p>
+<p><strong>Operational independence of constituents.</strong> Each constituent can do useful work on its own. The FMS can plan the
+shift and report production when no truck is moving. An ADS on DT17 can bring the truck to a controlled stop and
+hold it without any central system. The fire detection and suppression system detects and discharges by itself. The
+remote stop acts regardless of the AMS and ADS (ch-01-04, REQ-01-04-005). Several of the handbook's safety principles
+depend on this independence.</p>
+<p><strong>Managerial independence.</strong> Each constituent is acquired, configured and maintained by its own owner. At the
+reference mine the FMS is supplied by an FMS supplier and run by the site's production-systems team; the AMS and ADS
+by an AHS supplier with site AHS engineering; the VCS and its electronic control units by the truck manufacturer
+with site maintenance; the site wireless network by the communications team <code>[A]</code>. Nobody owns everything, and no
+supplier sees the whole site. That is why the integration authority exists.</p>
+<p><strong>Evolutionary development.</strong> The SoS is never finished. Constituents are added, replaced and upgraded on their own
+schedules, and the mine itself changes underneath them: shovels move, roads are reworked, CT3 is relocated. The
+reference mine has already grown a second ramp (R24, mine 0.2.0). FIG-02-01-02 (section 4.6) shows one illustrative
+year of releases.</p>
+<p><strong>Emergent behaviour.</strong> The behaviour that matters most — tonnes per hour, safety of the mixed fleet, response to an
+emergency — is produced by the interaction of the constituents (section 4.5).</p>
+<p>Geographic distribution, also listed in the literature <code>[TBV]</code>, holds trivially here; its consequences are the subject
+of ch-02-02.</p>
+<p>ISO/IEC/IEEE 21841:2019 names four taxa of SoS — <em>directed</em>, <em>acknowledged</em>, <em>collaborative</em> and <em>virtual</em> <code>[F]</code>
+(SRC-STD-ISO21841, catalogue and table of contents only). In the usual reading they differ in how much central
+authority exists over the constituents — from <em>directed</em> (built and run centrally for one purpose) through
+<em>acknowledged</em> (a recognised SoS owner, but constituents keep their own owners) and <em>collaborative</em> to <em>virtual</em> (no
+central authority) <code>[TBV]</code>. The reference mine is closest to an
+acknowledged SoS <code>[A]</code>: the integration authority sets the boundary, the compatibility matrix and the cross-system
+requirements, but it cannot redesign a supplier's product. Its levers are requirements, ICDs, acceptance tests and
+release approval — the subjects of this chapter, of ch-02-06 and of Volume 03.</p>
+<h3 id="s-4-2">4.2 The constituent systems of the reference mine</h3>
+<p>The table lists the constituents inside the AHS boundary <code>[H]</code>. Owners, locations and cadences are illustrative
+<code>[A]</code>; they do not describe any supplier.</p>
+<table>
+<thead>
+<tr>
+<th>Constituent</th>
+<th>Instances at the reference mine</th>
+<th>Main location</th>
+<th>Can operate on its own?</th>
+<th>Owner (supplier / site) <code>[A]</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>FMS</td>
+<td>1</td>
+<td>MIA servers, HMI in CR1</td>
+<td>Yes: plans, reports; cannot move trucks</td>
+<td>FMS supplier / site production systems</td>
+</tr>
+<tr>
+<td>AMS</td>
+<td>1 (primary and standby)</td>
+<td>MIA servers, HMI in CR1</td>
+<td>Yes: holds state and authority; trucks need it to receive new paths</td>
+<td>AHS supplier / site AHS engineering</td>
+</tr>
+<tr>
+<td>ADS</td>
+<td>40 (DT01–DT40)</td>
+<td>Onboard each truck</td>
+<td>Yes: drives within its granted path, stops on its own</td>
+<td>AHS supplier / site AHS engineering</td>
+</tr>
+<tr>
+<td>VCS and ECUs</td>
+<td>40</td>
+<td>Onboard each truck</td>
+<td>Yes: protects the machine, executes setpoints or a safe state</td>
+<td>Truck manufacturer / site maintenance</td>
+</tr>
+<tr>
+<td>Onboard safety-related systems</td>
+<td>40 sets (fire, payload, tyres)</td>
+<td>Onboard each truck</td>
+<td>Yes: detect and react locally</td>
+<td>Equipment suppliers / site maintenance</td>
+</tr>
+<tr>
+<td>Independent safety function</td>
+<td>Remote stop: console in CR1, portable transmitters, onboard receivers</td>
+<td>CR1, field, onboard</td>
+<td>Yes, by design</td>
+<td>Safety-system supplier / site AHS engineering</td>
+</tr>
+<tr>
+<td>Manned-vehicle devices</td>
+<td>PRU, radio and field terminal on LV01–LV12, DZ01–DZ04, WT01–WT03</td>
+<td>Manned vehicles</td>
+<td>Partly: report and display; grant nothing</td>
+<td>Device supplier / site vehicle maintenance</td>
+</tr>
+<tr>
+<td>AHS map data</td>
+<td>1 master, copies in AMS and onboard</td>
+<td>MIA and onboard</td>
+<td>— (data, not a system)</td>
+<td>Survey</td>
+</tr>
+<tr>
+<td>People and procedures</td>
+<td>AHS Controller, Pit Supervisor and the other roles</td>
+<td>CR1 and field</td>
+<td>Yes</td>
+<td>Mine operations</td>
+</tr>
+</tbody>
+</table>
+<p>Two entries need comment. The <strong>AHS map</strong> is data rather than a system, but it evolves faster than any constituent
+(weekly or more often) and every constituent that moves trucks must agree on its version (ch-12-08), so it is managed
+like a constituent <code>[H]</code>. <strong>People and procedures</strong> are constituents in the same sense as software: they operate
+independently, are managed separately (by mine operations, not by suppliers), evolve (rosters, training, new
+procedures) and contribute to emergent behaviour. Leaving them out of the SoS model is how procedure gaps go unseen.</p>
+<p>The instance count matters. One ADS release is one design decision but 40 deployments, rolled out truck by truck. For
+days at a time the reference mine runs two ADS versions side by side (section 4.6).</p>
+<h3 id="s-4-3">4.3 The context boundary</h3>
+<p>FIG-02-01-01 draws the AHS as one system with its external systems around it. Inside the boundary are the
+constituents of section 4.2. Outside are five groups of systems that the AHS depends on or informs but whose
+configuration it does not control.</p>
+<figure id="FIG-02-01-01" class="fig"><pre class="mermaid">flowchart LR
+  PLANT[&quot;&lt;b&gt;Processing plant&lt;/b&gt;&lt;br/&gt;C01 plant control&quot;]
+  SURV[&quot;&lt;b&gt;Survey and mine planning&lt;/b&gt;&lt;br/&gt;surveyed roads · mine plan&quot;]
+  ENT[&quot;&lt;b&gt;Enterprise systems&lt;/b&gt;&lt;br/&gt;maintenance management&lt;br/&gt;production reporting&quot;]
+  AHS[&quot;&lt;b&gt;AHS at the reference mine&lt;/b&gt;&lt;br/&gt;&lt;i&gt;everything inside the context boundary&lt;/i&gt;&lt;br/&gt;&lt;br/&gt;People in CR1: AHS Controller · Pit Supervisor&lt;br/&gt;FMS · AMS (MIA servers)&lt;br/&gt;Onboard DT01–DT40: ADS · VCS ·&lt;br/&gt;onboard safety-related systems&lt;br/&gt;Independent safety function (remote stop)&lt;br/&gt;Manned-vehicle devices: PRU · radio · field terminal&quot;]
+  MANNED[&quot;&lt;b&gt;Manned equipment and people&lt;/b&gt;&lt;br/&gt;LV07 · DZ03 · WT02 · EX02&lt;br/&gt;field crews · ERT&quot;]
+  INFRA[&quot;&lt;b&gt;Site infrastructure&lt;/b&gt;&lt;br/&gt;wireless network CT1–CT3&lt;br/&gt;GNSS base station GB1&lt;br/&gt;power · time source&quot;]
+  PLANT --&gt;|&quot;&lt;b&gt;P&lt;/b&gt; → FMS, AMS&lt;br/&gt;C01 ready / not ready&quot;| AHS
+  SURV --&gt;|&quot;&lt;b&gt;S&lt;/b&gt; → AMS, FMS&lt;br/&gt;road and map data, mine plan&quot;| AHS
+  ENT &lt;--&gt;|&quot;&lt;b&gt;E&lt;/b&gt; ↔ FMS&lt;br/&gt;equipment status in&lt;br/&gt;production and delays out&quot;| AHS
+  AHS &lt;--&gt;|&quot;&lt;b&gt;M&lt;/b&gt; ↔ devices, CR1 radio&lt;br/&gt;positions, requests, grants, voice&quot;| MANNED
+  AHS &lt;==&gt;|&quot;&lt;b&gt;I&lt;/b&gt; ↔ AMS, onboard&lt;br/&gt;carries every AMS–vehicle message&lt;br/&gt;RTK corrections, power, time&quot;| INFRA
+  classDef sys fill:#e3f0f4,stroke:#1f6f8b,stroke-width:3px,color:#1d1f21
+  class AHS sys
+</pre><figcaption><span class="fig-no">Figure 1</span> Context diagram of the reference-mine AHS and its external systems <span class="fig-id">FIG-02-01-01</span></figcaption></figure>
+<p>The boundary is a design decision, not a fact of nature. The handbook draws it with one test <code>[H]</code>: <em>a system is
+inside if the AHS integration authority approves its configuration and it takes part in movement authority, in
+stopping or in the representation of people and manned vehicles to the AHS.</em> By this test:</p>
+<ul>
+<li><strong>The FMS is inside</strong>, although ISO 23725:2024 (<em>Autonomous system and fleet management system
+interoperability</em>, edition 1, ISO/TC 82/SC 8) treats the FMS and the AHS as two systems with an interface between
+them for dispatching haul trucks and coordinating production information in surface mining <code>[F]</code>
+(SRC-STD-ISO23725, catalogue level). The handbook keeps the FMS inside its AHS boundary because the FMS's
+assignments drive every mission; the FMS–AMS interface is nevertheless a supplier boundary, and ch-02-05 treats
+what the standard can be cited for.</li>
+<li><strong>Manned-vehicle devices are inside; the manned vehicles are outside.</strong> LV07's PRU and field terminal are part of
+how the AHS knows about LV07 and grants it access. LV07 itself, its driver, DZ03 and the shovel EX02 are external:
+the AHS must represent and protect them but does not control them.</li>
+<li><strong>The site wireless network is outside</strong> <code>[A]</code>. CT1–CT3 carry every AMS–vehicle message, so the AHS depends on them
+completely, but at the reference mine they are owned by the communications team and also serve other site users.
+The dependency is managed through an interface (service levels, change notices) and through the failure-domain
+analysis of ch-02-02. A site that dedicates its network to the AHS could draw the line the other way.</li>
+<li><strong>The processing plant is outside.</strong> The control system of crusher C01 reports <em>ready</em> and <em>not ready</em>; the AHS
+decides what to do about it but does not run the plant (SCN-CRUSHER-C01-DOWN, ch-02-06).</li>
+</ul>
+<p>The value of the test is not that it gives the only right answer, but that it forces the question for every system
+the AHS touches, and records the answer.</p>
+<h3 id="s-4-4">4.4 Classifying the external interfaces</h3>
+<p>Each external interface is classified on four attributes <code>[H]</code>: the <strong>class</strong> of external system, the
+<strong>direction</strong> of information, the <strong>criticality</strong> of the interface for the AHS, and the <strong>timing class</strong> in which the
+AHS uses it (ch-01-04, section 4.5). Criticality has three levels: <em>safety-related</em> (a failure can affect who may move
+where), <em>production-critical</em> (a failure stops or misdirects production) and <em>informational</em> (a failure degrades
+reports).</p>
+<table>
+<thead>
+<tr>
+<th>Class</th>
+<th>External system</th>
+<th>Constituent(s) touched</th>
+<th>Direction</th>
+<th>Criticality <code>[H]</code></th>
+<th>Timing class</th>
+<th>Fail-closed behaviour if lost</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>P — plant</td>
+<td>C01 plant control</td>
+<td>FMS, AMS</td>
+<td>In: ready / not ready, stoppage reason</td>
+<td>Production-critical</td>
+<td>Seconds to minutes</td>
+<td>Treat C01 as <em>not ready</em>; hold trucks at C01-Q</td>
+</tr>
+<tr>
+<td>S — spatial data</td>
+<td>Survey and mine planning</td>
+<td>AMS (roads, map), FMS (plan)</td>
+<td>In: surveyed roads, map changes, mine plan</td>
+<td>Safety-related (map) and production-critical (plan)</td>
+<td>Hours to days</td>
+<td>Keep the last validated map; no unvalidated change</td>
+</tr>
+<tr>
+<td>E — enterprise</td>
+<td>Maintenance management, production reporting</td>
+<td>FMS</td>
+<td>In: equipment status; out: production, delays</td>
+<td>Informational (reports), production-critical (equipment status)</td>
+<td>Minutes to shifts</td>
+<td>FMS keeps its last status; trucks not released to production without it</td>
+</tr>
+<tr>
+<td>M — manned equipment and people</td>
+<td>LV07, DZ03, WT02, EX02, field crews, ERT</td>
+<td>Manned-vehicle devices, AMS, CR1 by radio</td>
+<td>Both: positions, requests, grants, voice</td>
+<td>Safety-related</td>
+<td>Seconds</td>
+<td>No reply means no entry; a lost position report is treated as unknown position</td>
+</tr>
+<tr>
+<td>I — infrastructure</td>
+<td>Wireless network CT1–CT3, GNSS base GB1, power, time source</td>
+<td>AMS, onboard systems</td>
+<td>Both: carries messages, corrections, time</td>
+<td>Safety-related</td>
+<td>Sub-second to seconds</td>
+<td>Trucks stop within their granted paths; degraded localisation stops or derates trucks</td>
+</tr>
+</tbody>
+</table>
+<p>Every class has at least one safety-related or production-critical interface, so none may be treated as &quot;just IT&quot;.
+The fail-closed column is an obligation on the constituent that receives the data, not on the external system: the
+plant need not know how the AHS reacts to a lost status message. And the timing classes span four orders of magnitude,
+so &quot;the interface is up&quot; is not one question but five.</p>
+<h3 id="s-4-5">4.5 Emergent behaviour across constituents</h3>
+<p>Emergence in an autonomous mine is not mysterious. It arises from a small number of mechanisms that can be named and
+looked for <code>[H]</code>:</p>
+<ul>
+<li><strong>Shared resources.</strong> Constituents compete for, or depend on, the same road, intersection, tipping bay, comms site
+or person. The AMS allocates roads; the FMS creates the demand for them.</li>
+<li><strong>Feedback between decision loops.</strong> The FMS adjusts assignments based on cycle times that the AMS's traffic
+decisions have produced; the AMS's traffic responds to the assignments. Two loops that are each stable can together
+oscillate or bunch.</li>
+<li><strong>Different timing classes.</strong> The FMS decides in minutes, the AMS in seconds, the ADS in tenths of a second. A
+decision taken on one time scale meets the consequence of another taken on a different one.</li>
+<li><strong>Different information.</strong> Each constituent acts on its own copy of the state, of a different age.</li>
+</ul>
+<p><strong>An intended emergence: the response to a fire.</strong> SCN-FIRE-DT17 crosses seven element groups in the scenario
+registry: onboard safety-related systems, VCS, ADS, AMS, FMS, the independent safety function and people. The fire
+response is designed piece by piece, in ch-04-07, ch-08-05 and ch-16-06, but its overall behaviour exists only at SoS
+level. Section 6 follows it on one timeline.</p>
+<p><strong>An unintended emergence: the reroute meets the emergency route.</strong> When the AMS holds R05 around DT17, the shortest
+remaining routes out of the pit run over the west ramp R24, through Intersection V and along R12 to Intersection X.
+Computed with <code>ahs_sim</code> on the baseline allocation without DT17 (36 trucks), Intersection V goes from no haul traffic
+to 141.5 passes per hour — one every 25.4 s (section 12, example 2). The ERT, called out from the MIA, drives G01 → V
+→ X → P1 on R13, R12 and R01 (2016.4 m). Neither the AMS routing rule nor the ERT callout procedure is wrong; together
+they put emergency vehicles and rerouted loaded trucks on the same road at the same time. This interaction is visible
+only to someone who looks across constituents — which is the integration authority's job before the event and the
+controller's during it.</p>
+<p><strong>An unintended emergence from a rule change: queueing at Intersection X.</strong> The AMS reserves Intersection X for one
+crossing movement at a time <code>[H]</code>. At the baseline 155.5 passes per hour and an assumed 12 s per crossing reservation
+<code>[A]</code>, X is occupied 51.8 % of the time and the mean headway is 23.2 s, so trucks arriving evenly would hardly ever
+wait. Suppose the FMS team introduces a new dispatch rule that re-balances trucks between shovels by sending the next
+empty trucks from C01 and D01 together to the shovel with the longest wait <code>[A]</code>. The rule is sensible for shovel
+utilisation and passes its own tests. But it makes trucks travel in groups. A group of four arriving at X together
+waits 0, 12, 24 and 36 s: 72 s in total. At ten such groups an hour that is 0.20 truck-hours of waiting per hour, or
+2.4 truck-hours per 12 h shift (section 12, example 3). The FMS sees slightly longer cycles; the AMS sees reservations
+working correctly. Only someone who looks at both sees the cause. This is the case the Pit Supervisor raised in section
+2 and that the controller must be able to explain (section 8).</p>
+<p>The lesson for design is that emergent behaviour must be <em>owned</em>. The handbook assigns each registered scenario that
+crosses three or more constituents to a named owner in the integration authority, who maintains its end-to-end
+expectations and reruns it after every relevant change (REQ-02-01-008).</p>
+<h3 id="s-4-6">4.6 Independent evolution and version compatibility</h3>
+<p>FIG-02-01-02 shows an illustrative year of releases at the reference mine <code>[A]</code>. Each row is a constituent with its
+owners, its location and its release cadence; each dot is a release.</p>
+<figure id="FIG-02-01-02" class="fig"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 588" role="img" aria-label="Constituent systems of the reference-mine AHS with owner, location, release cadence and an illustrative year of releases"><style>
+.s21-fg{fill:var(--fg,#1d1f21)} .s21-mu{fill:var(--muted,#5d6166)}
+.s21-t{font-size:12.5px;font-weight:700} .s21-s{font-size:11px} .s21-h{font-size:14px;font-weight:700}
+.s21-ch{font-size:11px;font-weight:700}
+.s21-row{fill:var(--accent-soft,#e3f0f4);fill-opacity:0.35;stroke:none}
+.s21-ext{fill:var(--code-bg,#f1efea);stroke:var(--border,#d9d6cf);stroke-dasharray:4 3}
+.s21-grid{stroke:var(--border,#d9d6cf);stroke-width:1;fill:none}
+.s21-band{fill:var(--warn-bg,#fff6e0);stroke:var(--warn-border,#e2b54a);stroke-width:1}
+.s21-rel{fill:var(--accent,#1f6f8b)} .s21-relx{fill:var(--muted,#5d6166)}
+.s21-patch{fill:var(--bg,#fbfaf7);stroke:var(--accent,#1f6f8b);stroke-width:1.6}
+.s21-tick{stroke:var(--accent,#1f6f8b);stroke-width:1.2}
+.s21-roll{fill:var(--accent,#1f6f8b);fill-opacity:0.55}
+</style><text class="s21-h s21-fg" x="16.0" y="22.0" text-anchor="start">Constituent systems and their independent lifecycles (illustrative year) [A]</text><rect class="s21-band" x="792.0" y="70" width="24.0" height="444"/><rect class="s21-band" x="864.0" y="70" width="24.0" height="444"/><text class="s21-ch s21-fg" x="16.0" y="46.0" text-anchor="start">Constituent system</text><text class="s21-ch s21-fg" x="224.0" y="46.0" text-anchor="start">Owner: supplier / site</text><text class="s21-ch s21-fg" x="400.0" y="46.0" text-anchor="start">Location</text><text class="s21-ch s21-fg" x="548.0" y="46.0" text-anchor="start">Cadence</text><text class="s21-ch s21-fg" x="696.0" y="46.0" text-anchor="start">Releases in one year</text><text class="s21-s s21-mu" x="708.0" y="64.0" text-anchor="middle">J</text><text class="s21-s s21-mu" x="732.0" y="64.0" text-anchor="middle">F</text><text class="s21-s s21-mu" x="756.0" y="64.0" text-anchor="middle">M</text><text class="s21-s s21-mu" x="780.0" y="64.0" text-anchor="middle">A</text><text class="s21-s s21-mu" x="804.0" y="64.0" text-anchor="middle">M</text><text class="s21-s s21-mu" x="828.0" y="64.0" text-anchor="middle">J</text><text class="s21-s s21-mu" x="852.0" y="64.0" text-anchor="middle">J</text><text class="s21-s s21-mu" x="876.0" y="64.0" text-anchor="middle">A</text><text class="s21-s s21-mu" x="900.0" y="64.0" text-anchor="middle">S</text><text class="s21-s s21-mu" x="924.0" y="64.0" text-anchor="middle">O</text><text class="s21-s s21-mu" x="948.0" y="64.0" text-anchor="middle">N</text><text class="s21-s s21-mu" x="972.0" y="64.0" text-anchor="middle">D</text><line class="s21-grid" x1="696.0" y1="70" x2="696.0" y2="514"/><line class="s21-grid" x1="720.0" y1="70" x2="720.0" y2="514"/><line class="s21-grid" x1="744.0" y1="70" x2="744.0" y2="514"/><line class="s21-grid" x1="768.0" y1="70" x2="768.0" y2="514"/><line class="s21-grid" x1="792.0" y1="70" x2="792.0" y2="514"/><line class="s21-grid" x1="816.0" y1="70" x2="816.0" y2="514"/><line class="s21-grid" x1="840.0" y1="70" x2="840.0" y2="514"/><line class="s21-grid" x1="864.0" y1="70" x2="864.0" y2="514"/><line class="s21-grid" x1="888.0" y1="70" x2="888.0" y2="514"/><line class="s21-grid" x1="912.0" y1="70" x2="912.0" y2="514"/><line class="s21-grid" x1="936.0" y1="70" x2="936.0" y2="514"/><line class="s21-grid" x1="960.0" y1="70" x2="960.0" y2="514"/><line class="s21-grid" x1="984.0" y1="70" x2="984.0" y2="514"/><rect class="s21-row" x="8" y="74" width="984" height="44" rx="4"/><text class="s21-t s21-fg" x="16.0" y="92.0" text-anchor="start">FMS</text><text class="s21-s s21-mu" x="16.0" y="108.0" text-anchor="start">1 system</text><text class="s21-s s21-fg" x="224.0" y="92.0" text-anchor="start">FMS supplier</text><text class="s21-s s21-mu" x="224.0" y="108.0" text-anchor="start">site production systems</text><text class="s21-s s21-fg" x="400.0" y="100.0" text-anchor="start">MIA servers, CR1</text><text class="s21-s s21-fg" x="548.0" y="100.0" text-anchor="start">quarterly</text><circle class="s21-rel" cx="732.0" cy="96.0" r="6"/><circle class="s21-rel" cx="804.0" cy="96.0" r="6"/><circle class="s21-rel" cx="876.0" cy="96.0" r="6"/><circle class="s21-rel" cx="948.0" cy="96.0" r="6"/><text class="s21-t s21-fg" x="16.0" y="136.0" text-anchor="start">AMS</text><text class="s21-s s21-mu" x="16.0" y="152.0" text-anchor="start">primary + standby</text><text class="s21-s s21-fg" x="224.0" y="136.0" text-anchor="start">AHS supplier</text><text class="s21-s s21-mu" x="224.0" y="152.0" text-anchor="start">site AHS engineering</text><text class="s21-s s21-fg" x="400.0" y="144.0" text-anchor="start">MIA servers, CR1</text><text class="s21-s s21-fg" x="548.0" y="144.0" text-anchor="start">twice a year</text><circle class="s21-rel" cx="780.0" cy="140.0" r="6"/><circle class="s21-rel" cx="924.0" cy="140.0" r="6"/><rect class="s21-row" x="8" y="162" width="984" height="44" rx="4"/><text class="s21-t s21-fg" x="16.0" y="180.0" text-anchor="start">ADS</text><text class="s21-s s21-mu" x="16.0" y="196.0" text-anchor="start">40 instances</text><text class="s21-s s21-fg" x="224.0" y="180.0" text-anchor="start">AHS supplier</text><text class="s21-s s21-mu" x="224.0" y="196.0" text-anchor="start">site AHS engineering</text><text class="s21-s s21-fg" x="400.0" y="188.0" text-anchor="start">onboard DT01–DT40</text><text class="s21-s s21-fg" x="548.0" y="188.0" text-anchor="start">twice a year + patch</text><rect class="s21-roll" x="756.0" y="192.0" width="8.0" height="6"/><circle class="s21-rel" cx="756.0" cy="184.0" r="6"/><rect class="s21-roll" x="900.0" y="192.0" width="8.0" height="6"/><circle class="s21-rel" cx="900.0" cy="184.0" r="6"/><circle class="s21-patch" cx="828.0" cy="184.0" r="4.5"/><text class="s21-t s21-fg" x="16.0" y="224.0" text-anchor="start">VCS and ECUs</text><text class="s21-s s21-mu" x="16.0" y="240.0" text-anchor="start">40 instances</text><text class="s21-s s21-fg" x="224.0" y="224.0" text-anchor="start">truck manufacturer</text><text class="s21-s s21-mu" x="224.0" y="240.0" text-anchor="start">site maintenance</text><text class="s21-s s21-fg" x="400.0" y="232.0" text-anchor="start">onboard DT01–DT40</text><text class="s21-s s21-fg" x="548.0" y="232.0" text-anchor="start">yearly</text><circle class="s21-rel" cx="852.0" cy="228.0" r="6"/><rect class="s21-row" x="8" y="250" width="984" height="44" rx="4"/><text class="s21-t s21-fg" x="16.0" y="268.0" text-anchor="start">Onboard safety-related</text><text class="s21-s s21-mu" x="16.0" y="284.0" text-anchor="start">fire, payload, tyres</text><text class="s21-s s21-fg" x="224.0" y="268.0" text-anchor="start">equipment suppliers</text><text class="s21-s s21-mu" x="224.0" y="284.0" text-anchor="start">site maintenance</text><text class="s21-s s21-fg" x="400.0" y="276.0" text-anchor="start">onboard DT01–DT40</text><text class="s21-s s21-fg" x="548.0" y="276.0" text-anchor="start">on hardware change</text><text class="s21-t s21-fg" x="16.0" y="312.0" text-anchor="start">Independent safety function</text><text class="s21-s s21-mu" x="16.0" y="328.0" text-anchor="start">remote stop</text><text class="s21-s s21-fg" x="224.0" y="312.0" text-anchor="start">safety-system supplier</text><text class="s21-s s21-mu" x="224.0" y="328.0" text-anchor="start">site AHS engineering</text><text class="s21-s s21-fg" x="400.0" y="320.0" text-anchor="start">CR1, portable, onboard</text><text class="s21-s s21-fg" x="548.0" y="320.0" text-anchor="start">on change</text><rect class="s21-row" x="8" y="338" width="984" height="44" rx="4"/><text class="s21-t s21-fg" x="16.0" y="356.0" text-anchor="start">Manned-vehicle devices</text><text class="s21-s s21-mu" x="16.0" y="372.0" text-anchor="start">PRU, radio, terminal</text><text class="s21-s s21-fg" x="224.0" y="356.0" text-anchor="start">device supplier</text><text class="s21-s s21-mu" x="224.0" y="372.0" text-anchor="start">site vehicle maintenance</text><text class="s21-s s21-fg" x="400.0" y="364.0" text-anchor="start">LV01–LV12, DZ, WT</text><text class="s21-s s21-fg" x="548.0" y="364.0" text-anchor="start">yearly</text><circle class="s21-rel" cx="804.0" cy="360.0" r="6"/><text class="s21-t s21-fg" x="16.0" y="400.0" text-anchor="start">Site wireless network</text><text class="s21-s s21-mu" x="16.0" y="416.0" text-anchor="start">CT1–CT3</text><text class="s21-s s21-fg" x="224.0" y="400.0" text-anchor="start">network supplier</text><text class="s21-s s21-mu" x="224.0" y="416.0" text-anchor="start">site communications team</text><text class="s21-s s21-fg" x="400.0" y="408.0" text-anchor="start">MIA, crest, pit floor</text><text class="s21-s s21-fg" x="548.0" y="408.0" text-anchor="start">as needed</text><circle class="s21-rel" cx="708.0" cy="404.0" r="6"/><circle class="s21-rel" cx="876.0" cy="404.0" r="6"/><rect class="s21-row" x="8" y="426" width="984" height="44" rx="4"/><text class="s21-t s21-fg" x="16.0" y="444.0" text-anchor="start">AHS map data</text><text class="s21-s s21-mu" x="16.0" y="460.0" text-anchor="start">roads, zones</text><text class="s21-s s21-fg" x="224.0" y="444.0" text-anchor="start">—</text><text class="s21-s s21-mu" x="224.0" y="460.0" text-anchor="start">Survey (site role)</text><text class="s21-s s21-fg" x="400.0" y="452.0" text-anchor="start">AMS and onboard copies</text><text class="s21-s s21-fg" x="548.0" y="452.0" text-anchor="start">weekly</text><line class="s21-tick" x1="698.8" y1="441.0" x2="698.8" y2="455.0"/><line class="s21-tick" x1="704.3" y1="441.0" x2="704.3" y2="455.0"/><line class="s21-tick" x1="709.8" y1="441.0" x2="709.8" y2="455.0"/><line class="s21-tick" x1="715.4" y1="441.0" x2="715.4" y2="455.0"/><line class="s21-tick" x1="720.9" y1="441.0" x2="720.9" y2="455.0"/><line class="s21-tick" x1="726.5" y1="441.0" x2="726.5" y2="455.0"/><line class="s21-tick" x1="732.0" y1="441.0" x2="732.0" y2="455.0"/><line class="s21-tick" x1="737.5" y1="441.0" x2="737.5" y2="455.0"/><line class="s21-tick" x1="743.1" y1="441.0" x2="743.1" y2="455.0"/><line class="s21-tick" x1="748.6" y1="441.0" x2="748.6" y2="455.0"/><line class="s21-tick" x1="754.2" y1="441.0" x2="754.2" y2="455.0"/><line class="s21-tick" x1="759.7" y1="441.0" x2="759.7" y2="455.0"/><line class="s21-tick" x1="765.2" y1="441.0" x2="765.2" y2="455.0"/><line class="s21-tick" x1="770.8" y1="441.0" x2="770.8" y2="455.0"/><line class="s21-tick" x1="776.3" y1="441.0" x2="776.3" y2="455.0"/><line class="s21-tick" x1="781.8" y1="441.0" x2="781.8" y2="455.0"/><line class="s21-tick" x1="787.4" y1="441.0" x2="787.4" y2="455.0"/><line class="s21-tick" x1="792.9" y1="441.0" x2="792.9" y2="455.0"/><line class="s21-tick" x1="798.5" y1="441.0" x2="798.5" y2="455.0"/><line class="s21-tick" x1="804.0" y1="441.0" x2="804.0" y2="455.0"/><line class="s21-tick" x1="809.5" y1="441.0" x2="809.5" y2="455.0"/><line class="s21-tick" x1="815.1" y1="441.0" x2="815.1" y2="455.0"/><line class="s21-tick" x1="820.6" y1="441.0" x2="820.6" y2="455.0"/><line class="s21-tick" x1="826.2" y1="441.0" x2="826.2" y2="455.0"/><line class="s21-tick" x1="831.7" y1="441.0" x2="831.7" y2="455.0"/><line class="s21-tick" x1="837.2" y1="441.0" x2="837.2" y2="455.0"/><line class="s21-tick" x1="842.8" y1="441.0" x2="842.8" y2="455.0"/><line class="s21-tick" x1="848.3" y1="441.0" x2="848.3" y2="455.0"/><line class="s21-tick" x1="853.8" y1="441.0" x2="853.8" y2="455.0"/><line class="s21-tick" x1="859.4" y1="441.0" x2="859.4" y2="455.0"/><line class="s21-tick" x1="864.9" y1="441.0" x2="864.9" y2="455.0"/><line class="s21-tick" x1="870.5" y1="441.0" x2="870.5" y2="455.0"/><line class="s21-tick" x1="876.0" y1="441.0" x2="876.0" y2="455.0"/><line class="s21-tick" x1="881.5" y1="441.0" x2="881.5" y2="455.0"/><line class="s21-tick" x1="887.1" y1="441.0" x2="887.1" y2="455.0"/><line class="s21-tick" x1="892.6" y1="441.0" x2="892.6" y2="455.0"/><line class="s21-tick" x1="898.2" y1="441.0" x2="898.2" y2="455.0"/><line class="s21-tick" x1="903.7" y1="441.0" x2="903.7" y2="455.0"/><line class="s21-tick" x1="909.2" y1="441.0" x2="909.2" y2="455.0"/><line class="s21-tick" x1="914.8" y1="441.0" x2="914.8" y2="455.0"/><line class="s21-tick" x1="920.3" y1="441.0" x2="920.3" y2="455.0"/><line class="s21-tick" x1="925.8" y1="441.0" x2="925.8" y2="455.0"/><line class="s21-tick" x1="931.4" y1="441.0" x2="931.4" y2="455.0"/><line class="s21-tick" x1="936.9" y1="441.0" x2="936.9" y2="455.0"/><line class="s21-tick" x1="942.5" y1="441.0" x2="942.5" y2="455.0"/><line class="s21-tick" x1="948.0" y1="441.0" x2="948.0" y2="455.0"/><line class="s21-tick" x1="953.5" y1="441.0" x2="953.5" y2="455.0"/><line class="s21-tick" x1="959.1" y1="441.0" x2="959.1" y2="455.0"/><line class="s21-tick" x1="964.6" y1="441.0" x2="964.6" y2="455.0"/><line class="s21-tick" x1="970.2" y1="441.0" x2="970.2" y2="455.0"/><line class="s21-tick" x1="975.7" y1="441.0" x2="975.7" y2="455.0"/><line class="s21-tick" x1="981.2" y1="441.0" x2="981.2" y2="455.0"/><rect class="s21-ext" x="8" y="470" width="984" height="44" rx="4"/><text class="s21-t s21-fg" x="16.0" y="488.0" text-anchor="start">C01 plant control</text><text class="s21-s s21-mu" x="16.0" y="504.0" text-anchor="start">outside the AHS boundary</text><text class="s21-s s21-fg" x="224.0" y="488.0" text-anchor="start">plant supplier</text><text class="s21-s s21-mu" x="224.0" y="504.0" text-anchor="start">processing plant</text><text class="s21-s s21-fg" x="400.0" y="496.0" text-anchor="start">crusher C01</text><text class="s21-s s21-fg" x="548.0" y="496.0" text-anchor="start">plant&#x27;s own</text><circle class="s21-relx" cx="828.0" cy="492.0" r="6"/><circle class="s21-rel" cx="24" cy="536" r="6"/><text class="s21-s s21-fg" x="36.0" y="540.0" text-anchor="start">release</text><circle class="s21-patch" cx="124" cy="536" r="4.5"/><text class="s21-s s21-fg" x="136.0" y="540.0" text-anchor="start">patch</text><rect class="s21-roll" x="214" y="531" width="22" height="10"/><text class="s21-s s21-fg" x="244.0" y="540.0" text-anchor="start">staged rollout (~10 days of mixed versions)</text><rect class="s21-band" x="560" y="529" width="18" height="14"/><text class="s21-s s21-fg" x="586.0" y="540.0" text-anchor="start">two or more AHS constituents change in the same month</text><text class="s21-s s21-mu" x="16.0" y="566.0" text-anchor="start">Owners, cadences and months are illustrative assumptions [A]; no supplier or product is implied.</text></svg>
+<figcaption><span class="fig-no">Figure 2</span> Constituent systems and their independent lifecycles: owner, release cadence and location (illustrative year) <span class="fig-id">FIG-02-01-02</span></figcaption></figure>
+<p>Three features of the figure carry the engineering argument.</p>
+<p><strong>Releases do not line up.</strong> The internal constituents release 13 software or firmware versions in the year — one
+every 4.0 weeks on average — and in two months (May and August in the figure) two constituents change in the same
+month. The map changes every week. There is no natural moment at which &quot;the system&quot; is released; the system is
+whatever combination is running.</p>
+<p><strong>The fleet is not uniform.</strong> An ADS release is rolled out truck by truck. At four trucks per day <code>[A]</code>, the 40 trucks
+run two ADS versions side by side for 10 days. During those days the AMS must work correctly with both versions, the
+controller's HMI must show which truck runs which, and any behaviour that differs between versions — for example where
+a truck chooses to stop after a fire alarm — differs between trucks on the same road.</p>
+<p><strong>Compatibility is more than message syntax.</strong> Two versions are compatible only if they agree on (1) the messages and
+their fields (syntax), (2) the meaning of those fields (semantics: what &quot;loaded&quot; or &quot;stopped&quot; means), (3) the timing
+(timeouts, rates) and (4) the behaviour each side expects of the other (for example that a truck stops at the end of
+its granted path, not after it). An ADS release that changes the stop-location logic after a fire alarm changes no
+message at all, yet it changes where the AMS's exclusion zone must be, where the ERT approaches and what the controller
+expects to see. That is a behavioural incompatibility, and it is the kind most often missed.</p>
+<p>Compatibility is therefore checked at four points <code>[H]</code>:</p>
+<ol>
+<li><strong>Integration test before release approval.</strong> The candidate version is integrated with the versions currently
+deployed (and with the next planned versions of its neighbours) and the registered cross-system scenarios are run
+against it — at least SCN-FIRE-DT17 and SCN-MISSION-CANCEL-M20481, and every scenario whose owner says it is
+affected. The result is an entry in the compatibility matrix (REQ-02-01-003).</li>
+<li><strong>Deployment gate.</strong> The release is installed only if the resulting combination of versions is in the matrix.
+During a staged rollout, the mixed combination is itself a matrix entry.</li>
+<li><strong>Runtime check.</strong> When a truck connects to the AMS, it reports its ADS software version and map version; the AMS
+issues no mission to a truck whose combination is not approved (REQ-02-01-004). This catches the truck that missed
+an update, or was repaired with an old software image. The rule fails closed: an unknown version is not approved.</li>
+<li><strong>Operational impact review.</strong> Before deployment, the change is reviewed for its effect on procedures, HMI,
+training and KPIs (REQ-02-01-007; section 8.5).</li>
+</ol>
+<p>The number of combinations explains why matrices are kept small. With two FMS, two AMS, three ADS, two VCS and two
+map versions in play, there are 48 possible combinations; testing each interface pair along the chain instead needs
+26 pairings (section 12, example 4). Pairwise testing is cheaper but misses behaviour that needs three constituents to
+appear — such as the fire response — so the registered cross-system scenarios are run as well.</p>
+<h3 id="s-4-7">4.7 Governance: owners, the integration authority and change</h3>
+<p>Managerial independence means that the right person to fix a problem may work for another organisation. The handbook
+therefore keeps three artefacts <code>[H]</code>: the <strong>constituent register</strong> (REQ-02-01-001), the <strong>context-boundary record</strong>
+with an owner on both sides of every external interface (REQ-02-01-002), and a <strong>change process</strong> in which each change
+names the versions before and after, the scenarios affected and the result of the operational impact review, and is
+approved jointly by the integration authority and mine operations. The register is what makes the question of section
+8.2 — <em>whom do I call?</em> — answerable at 03:00 on a NIGHT shift.</p>
+<h3 id="s-4-8">4.8 Trade-offs and limits</h3>
+<ul>
+<li><strong>Where to draw the boundary.</strong> A wider boundary gives the integration authority more control over systems it does
+not specialise in; a narrow one places more safety weight on interfaces with external owners.</li>
+<li><strong>One supplier or several.</strong> A single supplier for FMS, AMS and ADS reduces integration effort but does not remove
+the SoS character: trucks, plant, network and people remain independent.</li>
+<li><strong>Freezing versus evolving.</strong> Freezing versions delays fixes, including safety fixes. The compatibility matrix is
+the compromise: change is allowed, untested combinations are not.</li>
+<li><strong>Limits.</strong> The SoS characteristics are a teaching frame <code>[TBV]</code>, not a standard. Function allocation is ch-02-03;
+independent safety functions and onboard systems ch-02-04; interoperability ch-02-05; ICDs ch-02-06.</li>
+</ul>
+<h2 id="s-5">5. Responsibilities and interface boundaries</h2>
+<p>The table extends the responsibility table of ch-01-04 with the SoS view: what each constituent contributes to the
+whole, what it depends on from the others, and whom to contact <code>[H]</code>.</p>
+<table>
+<thead>
+<tr>
+<th>Constituent</th>
+<th>Contributes to the SoS</th>
+<th>Depends on (from other constituents or external systems)</th>
+<th>In SCN-FIRE-DT17</th>
+<th>Contact for problems <code>[A]</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>FMS</td>
+<td>Production intent: assignments, re-planning, production and delay records</td>
+<td>AMS (mission state, road state), plant (C01 status), enterprise (equipment status)</td>
+<td>Re-plans EX02 assignments; records delays</td>
+<td>Site production-systems team</td>
+</tr>
+<tr>
+<td>AMS</td>
+<td>Movement authority and traffic coordination; permissions; exclusion zones; operational state</td>
+<td>FMS (assignments), ADS (positions, acknowledgements), map (Survey), network</td>
+<td>Creates the exclusion zone; holds or reroutes traffic; grants ERT access</td>
+<td>Site AHS engineering (AHS supplier behind it)</td>
+</tr>
+<tr>
+<td>ADS</td>
+<td>Driving within granted paths; vehicle-side stops</td>
+<td>AMS (granted paths), VCS (machine state), GNSS corrections, map copy</td>
+<td>Chooses where to stop; stops; reports</td>
+<td>Site AHS engineering</td>
+</tr>
+<tr>
+<td>VCS and ECUs</td>
+<td>Actuation; machine protection</td>
+<td>ADS (setpoints), onboard safety-related systems (safe-state requests)</td>
+<td>Executes the stop; reports suppression state</td>
+<td>Site maintenance (truck manufacturer behind it)</td>
+</tr>
+<tr>
+<td>Onboard safety-related systems</td>
+<td>Detection and local reaction (fire, payload, tyres)</td>
+<td>Power on the truck only</td>
+<td>Detect the fire; suppress</td>
+<td>Site maintenance</td>
+</tr>
+<tr>
+<td>Independent safety function</td>
+<td>Stopping regardless of AMS and ADS state</td>
+<td>Its own path only</td>
+<td>Available to the Pit Supervisor and controller; not needed if the zone holds</td>
+<td>Site AHS engineering</td>
+</tr>
+<tr>
+<td>Manned-vehicle devices</td>
+<td>Representation of manned vehicles: positions, requests, acknowledgements</td>
+<td>Network, AMS</td>
+<td>Carry the ERT vehicles' positions and access requests</td>
+<td>Site vehicle maintenance</td>
+</tr>
+<tr>
+<td>People in CR1 and the field</td>
+<td>Decisions that are not automated; one coordinated response</td>
+<td>All displays; radio</td>
+<td>Acknowledge, call ERT and Pit Supervisor, decide on reroute, grant access</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<p>Every constituent depends on others, but the <em>safety reactions</em> depend on nothing central: the onboard systems need
+only the truck, the independent safety function its own path, the ADS its granted path. Production and coordination
+depend on everything working. This asymmetry is deliberate (ch-01-04, section 4.6) and is the first thing to check
+when a new constituent or interface is proposed.</p>
+<h2 id="s-6">6. Normal, abnormal and degraded operation</h2>
+<h3 id="s-6-1">6.1 Normal operation: production as an emergent property</h3>
+<p>On an undisturbed DAY shift with the baseline allocation (37 producing trucks, <code>equipment.yaml</code>), the reference mine
+moves ore and waste through Intersection X at 155.5 passes per hour, with no haul traffic through V, because every
+shortest route uses R05. Each ore truck on EX02 moves 506.4 t/h at a cycle of 1564.1 s without queueing. None of
+these numbers belongs to a single constituent: the FMS chose the allocation, the AMS the routes and reservations, the
+ADS the speeds within them, the VCS the actual motion. Normal operation is already emergent; we only notice when it
+changes.</p>
+<h3 id="s-6-2">6.2 Abnormal operation: fire on DT17 as one event across constituents (SCN-FIRE-DT17)</h3>
+<p>This is the chapter's walkthrough scenario; sections 7 and 8 use the same timeline.</p>
+<p><em>Initial state.</em> DT17 is loaded on M-20481, climbing R05 at about mid-ramp; other trucks are on R05 and at EX02
+(scenario registry). Production is otherwise normal. T+0 s is 10:40:00 <code>[A]</code>.</p>
+<p><em>Timeline.</em> The registered key events are at T+0, 5, 10, 15, 60 and 600 s. The events at T+12, 120 and 300 s are
+added for this chapter <code>[A]</code> to show the information that crosses constituent boundaries.</p>
+<table>
+<thead>
+<tr>
+<th>Time</th>
+<th>Event</th>
+<th>Constituent(s)</th>
+<th>Information crossing a boundary</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>T+0 s</td>
+<td>Fire detection alarm raised on DT17</td>
+<td>Onboard safety-related system</td>
+<td>Alarm to VCS and ADS (local, on the truck)</td>
+</tr>
+<tr>
+<td>T+5 s</td>
+<td>DT17 begins a controlled stop; stop-location logic evaluated</td>
+<td>ADS, VCS</td>
+<td>Stop reason <em>fire</em> from ADS to AMS, with position</td>
+</tr>
+<tr>
+<td>T+10 s</td>
+<td>AMS receives the fire event, creates an exclusion zone around DT17 and holds R05 traffic</td>
+<td>AMS</td>
+<td>Shortened granted paths and holds to the trucks on and near R05; alarm to the HMI</td>
+</tr>
+<tr>
+<td>T+12 s <code>[A]</code></td>
+<td>AMS reports to the FMS that DT17 is unavailable and R05 is blocked by an exclusion zone</td>
+<td>AMS → FMS</td>
+<td>Truck availability, road state</td>
+</tr>
+<tr>
+<td>T+15 s</td>
+<td>Controller acknowledges the alarm; ERT and Pit Supervisor notified by radio</td>
+<td>People</td>
+<td>Voice</td>
+</tr>
+<tr>
+<td>T+60 s</td>
+<td>FMS re-plans the EX02 assignments; delays coded</td>
+<td>FMS → AMS</td>
+<td>Revised assignments; held trucks remain held until the AMS reports a route</td>
+</tr>
+<tr>
+<td>T+120 s <code>[A]</code></td>
+<td>Pit Supervisor decides to continue production over the west ramp R24; controller applies it in the AMS; the AMS reroutes trucks not committed to R05</td>
+<td>People → AMS → ADS, AMS → FMS</td>
+<td>New routes and granted paths; route change and expected cycle times to the FMS</td>
+</tr>
+<tr>
+<td>T+300 s <code>[A]</code></td>
+<td>ERT vehicles request entry at AP-01 and AP-02; the controller grants it under positive communication; the AMS holds rerouted trucks at V and X while the ERT passes</td>
+<td>Manned-vehicle devices, AMS, people</td>
+<td>Requests, grants, acknowledgements; holds to trucks</td>
+</tr>
+<tr>
+<td>T+600 s</td>
+<td>ERT arrives at the exclusion-zone boundary under positive communication</td>
+<td>People, manned-vehicle devices, AMS</td>
+<td>Position of the ERT; permission state</td>
+</tr>
+</tbody>
+</table>
+<p>Read by constituent, the timeline shows four things. DT17 reacts at T+5 s with its own systems only (15.9 m after the
+alarm; waiting for the acknowledgement at T+15 s would have meant 47.7 m, section 12, example 1). The AMS acts at
+T+10 s on information that came <em>up</em> from the vehicle. The FMS adapts at T+60 s but cannot finish its plan until a
+human decision (T+120 s) has been applied in the AMS. And the ERT's approach at T+300 s meets a traffic pattern the
+reroute created. Each constituent behaves as designed; their coordination is the SoS behaviour that must be designed,
+tested and owned.</p>
+<h3 id="s-6-3">6.3 Degraded operation: the same event with a constituent unavailable</h3>
+<p>The SoS view asks what happens to the fire response when one constituent is missing. Three variants show the pattern
+<code>[H]</code>:</p>
+<ul>
+<li><strong>The DT17–AMS link is lost</strong> (lower R05 has marginal coverage, ch-01-03). DT17 still detects, suppresses and
+stops (REQ-01-04-006). The AMS sees only <em>communication lost</em>, freezes the reservations around DT17 (as in
+SCN-COMMS-R05) and alarms, but creates no exclusion zone. The fire reaches CR1 by radio from the field or when the
+link returns. Hence the onboard event must be stored and forwarded with its original time, and a comms-lost truck on
+a ramp treated as possibly abnormal (REQ-02-01-006).</li>
+<li><strong>The FMS is unavailable.</strong> Nothing up to T+15 s depends on it. The re-plan at T+60 s does not happen; trucks stay
+held, the Pit Supervisor decides production by radio and delay records are reconstructed afterwards.</li>
+<li><strong>The AMS is unavailable</strong> (SCN-AMS-RESTART, ch-02-02). Trucks stop within their granted paths; DT17 stops on
+its own; no zone and no digital permission can be created. The controller uses the remote stop where trucks must be
+stopped and radio for the ERT until the AMS has reconciled.</li>
+</ul>
+<p>In every variant the safety reactions survive and the coordination degrades. That is the intended shape of the SoS.</p>
+<h3 id="s-6-4">6.4 A decision that crosses owners: cancelling M-20481 (SCN-MISSION-CANCEL-M20481)</h3>
+<p>Ch-01-04 followed the cancellation of M-20481 through the chain: the FMS sends the cancel at T+0 s, the AMS
+acknowledges at T+1 s, the ADS accepts the revised granted path, reservations behind DT17 are released by T+40 s and
+DT17 stops at C01-Q at T+102 s. In SoS terms one decision has been taken in the FMS (supplier A, production-systems
+team) and executed in the AMS and ADS (supplier B, AHS engineering), over a network owned by a third team. When the
+layers disagree, the disagreement tells the controller not only <em>where</em> the problem is, but <em>whose</em> it is — the
+operations use of the constituent register in section 8.2.</p>
+<h2 id="s-7">7. Engineering view</h2>
+<h3 id="s-7-1">7.1 Design decisions and trade-offs</h3>
+<p><strong>Who creates the exclusion zone.</strong> The AMS creates it at T+10 s from the vehicle's event and position. Drawing it by
+hand would add at least the 5 s to acknowledgement and depend on the controller's attention at the moment of greatest
+load. The price is that the AMS must know the zone geometry for each event type, and that geometry depends on where the
+ADS chooses to stop — a behavioural coupling that belongs in the ICD and the compatibility matrix.</p>
+<p><strong>Automatic containment, human decision on rerouting.</strong> The AMS holds R05 traffic automatically (containment). It
+does not reroute the whole pit over R24 automatically: at T+120 s that is a decision for the Pit Supervisor <code>[H]</code>,
+because the reroute sends 141.5 loaded and empty passes per hour through V at the same time as the ERT is called out
+through V. An automatic reroute would be faster and would be right most of the time; it would also create the
+conflict of section 4.5 without anyone deciding to accept it.</p>
+<p><strong>FMS re-plans, AMS routes.</strong> At T+60 s the FMS knows that R05 is blocked but does not compute its own detour
+(ch-01-04: the FMS asks, the AMS decides). It re-plans only <em>which</em> truck serves <em>which</em> shovel and destination, and
+waits for the AMS's route and expected cycle (T+120 s) before it counts tonnes, so plan and traffic cannot diverge.</p>
+<p><strong>Correlation in one place.</strong> The four alarms of section 1.1 come from four constituents. The handbook requires them
+to be grouped in the control-room display by asset, place and time window, with the source of every item shown
+(REQ-02-01-005). The AMS is a natural host; the requirement is about the result, not the host.</p>
+<p><strong>Versions in the protocol.</strong> Every connection between constituents carries the versions of both sides, so that the
+runtime check of section 4.6 is possible and so that logs show which combination produced which behaviour.</p>
+<h3 id="s-7-2">7.2 Failure modes and mitigations</h3>
+<table>
+<thead>
+<tr>
+<th>SoS-level failure mode</th>
+<th>Effect</th>
+<th>Mitigation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Emergent conflict nobody owns (reroute through V while ERT is called out)</td>
+<td>Emergency vehicles meet rerouted loaded trucks on R12 and at V</td>
+<td>Named owner for each cross-system scenario (REQ-02-01-008); human decision on large reroutes; ERT routing considered in the scenario</td>
+</tr>
+<tr>
+<td>FMS rule change tested only inside the FMS</td>
+<td>Queueing at X; tonnes lost with no alarm</td>
+<td>Operational impact review (REQ-02-01-007); cross-system scenario regression; monitoring of intersection waiting</td>
+</tr>
+<tr>
+<td>Mixed ADS versions with different stop behaviour</td>
+<td>Exclusion zone geometry wrong for some trucks; ERT expectations wrong</td>
+<td>Behaviour in the compatibility matrix (REQ-02-01-003); HMI shows each truck's version</td>
+</tr>
+<tr>
+<td>Truck with an unapproved software or map version reconnects</td>
+<td>Truck executes missions on assumptions the AMS does not share</td>
+<td>Runtime version check, fail closed (REQ-02-01-004)</td>
+</tr>
+<tr>
+<td>Onboard event lost with the link</td>
+<td>AMS and CR1 unaware of fire; no automatic zone</td>
+<td>Store and forward with original time; comms-lost truck treated as possibly abnormal (REQ-02-01-006)</td>
+</tr>
+<tr>
+<td>One event shown as four alarms</td>
+<td>Controller handles them separately, in the wrong order</td>
+<td>Incident correlation (REQ-02-01-005)</td>
+</tr>
+<tr>
+<td>External system changes without notice (plant adds a new stoppage reason)</td>
+<td>AHS misinterprets <em>not ready</em></td>
+<td>External interfaces registered with owners on both sides and change notices (REQ-02-01-002; ch-02-06)</td>
+</tr>
+<tr>
+<td>Boundary drawn implicitly</td>
+<td>Dependencies discovered during incidents</td>
+<td>Context-boundary record with the test of section 4.3</td>
+</tr>
+</tbody>
+</table>
+<h3 id="s-7-3">7.3 Interface and timing considerations</h3>
+<p>The SCN-FIRE-DT17 timeline, read as a list of information needs, gives the interface requirements of the fire
+response at SoS level <code>[H]</code>. The detailed messages belong to ch-02-06 and Volume 04.</p>
+<table>
+<thead>
+<tr>
+<th>Constituent</th>
+<th>Needs</th>
+<th>From</th>
+<th>By when on the timeline</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ADS, VCS</td>
+<td>Fire alarm; suppression state</td>
+<td>Onboard safety-related systems</td>
+<td>Immediately (T+0 to T+5 s), on the truck</td>
+</tr>
+<tr>
+<td>AMS</td>
+<td>Event type, truck, position, time; DT17 stopped or stopping</td>
+<td>ADS (through the network)</td>
+<td>T+10 s</td>
+</tr>
+<tr>
+<td>AMS</td>
+<td>Zone geometry for a fire on a ramp; positions of all trucks and manned vehicles near R05</td>
+<td>Configuration; ADS; manned-vehicle devices</td>
+<td>T+10 s</td>
+</tr>
+<tr>
+<td>FMS</td>
+<td>DT17 unavailable; R05 blocked; which trucks are held</td>
+<td>AMS</td>
+<td>T+12 s, before its re-plan at T+60 s</td>
+</tr>
+<tr>
+<td>FMS</td>
+<td>Route change and expected cycle times</td>
+<td>AMS</td>
+<td>T+120 s</td>
+</tr>
+<tr>
+<td>AHS Controller</td>
+<td>One incident: alarm, zone, held trucks, re-plan, with sources and ages</td>
+<td>All, through the display</td>
+<td>T+15 s onwards</td>
+</tr>
+<tr>
+<td>Pit Supervisor</td>
+<td>Options and their production effect (hold the pit, run via R24)</td>
+<td>Controller, FMS</td>
+<td>Before T+120 s</td>
+</tr>
+<tr>
+<td>ERT</td>
+<td>Location, zone, approach route, truck state (suppression discharged, load, stopped)</td>
+<td>Controller (radio), AMS (permission)</td>
+<td>Before and at T+300 s</td>
+</tr>
+</tbody>
+</table>
+<p>Two timing points deserve emphasis. The FMS must receive &quot;R05 blocked&quot; <em>before</em> its re-plan; if the AMS's road-state
+message arrived after T+60 s, the FMS would re-plan on a road that no longer exists. And every item in the
+controller's incident view carries the time at which its source observed it; with constituents on different clocks, a
+display that orders events by arrival time can show the zone before the alarm. Clock synchronisation and event logging
+across deployed components are treated in ch-02-02.</p>
+<h2 id="s-8">8. Operations view</h2>
+<h3 id="s-8-1">8.1 What the control room sees</h3>
+<p>During SCN-FIRE-DT17 the AHS Controller should see one incident, not four alarms <code>[H]</code>:</p>
+<table>
+<thead>
+<tr>
+<th>Item in the incident view</th>
+<th>Source constituent</th>
+<th>At T+15 s</th>
+<th>At T+120 s</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Fire detection on DT17, suppression state</td>
+<td>Onboard safety-related system via ADS and AMS</td>
+<td>Active; DT17 stopped on R05</td>
+<td>Active; DT17 stopped</td>
+</tr>
+<tr>
+<td>Exclusion zone around DT17</td>
+<td>AMS</td>
+<td>Created at T+10 s</td>
+<td>Unchanged</td>
+</tr>
+<tr>
+<td>Trucks held on and near R05</td>
+<td>AMS</td>
+<td>Listed with IDs and positions</td>
+<td>Fewer: trucks below rerouted via R24</td>
+</tr>
+<tr>
+<td>EX02 assignments</td>
+<td>FMS</td>
+<td>—</td>
+<td>Re-planned at T+60 s; DT17 withdrawn</td>
+</tr>
+<tr>
+<td>Route state</td>
+<td>AMS</td>
+<td>R05 blocked</td>
+<td>R05 blocked; pit running via R24, V and R12</td>
+</tr>
+<tr>
+<td>ERT status</td>
+<td>People (radio log), manned-vehicle devices</td>
+<td>Called</td>
+<td>Approaching from the MIA</td>
+</tr>
+</tbody>
+</table>
+<p>The point of the source column is diagnosis and ownership. If the zone is shown but the fire alarm is not, the
+problem is in the event path from the truck; if the FMS re-plan has not appeared by T+60 s, the problem is between the
+AMS and the FMS. In both cases the incident itself is handled the same way; the missing item goes to its owner
+afterwards.</p>
+<h3 id="s-8-2">8.2 Who decides what, and whom to call</h3>
+<p>Decisions in the fire scenario <code>[H]</code>:</p>
+<table>
+<thead>
+<tr>
+<th>Decision</th>
+<th>Responsible</th>
+<th>Accountable</th>
+<th>Consulted</th>
+<th>Informed</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Stop DT17 and choose the stop location</td>
+<td>DT17 (onboard systems, ADS, VCS) by design</td>
+<td>Engineering design authority (ch-04-07)</td>
+<td>—</td>
+<td>AHS Controller</td>
+</tr>
+<tr>
+<td>Create the exclusion zone and hold R05 traffic</td>
+<td>AMS (automatic)</td>
+<td>AHS Controller</td>
+<td>—</td>
+<td>Pit Supervisor</td>
+</tr>
+<tr>
+<td>Call the ERT</td>
+<td>AHS Controller</td>
+<td>Pit Supervisor</td>
+<td>—</td>
+<td>ERT, Maintenance Planner</td>
+</tr>
+<tr>
+<td>Continue production via R24 or hold the pit</td>
+<td>Pit Supervisor</td>
+<td>Pit Supervisor</td>
+<td>AHS Controller (traffic and ERT route)</td>
+<td>Shovel Operators, FMS team</td>
+</tr>
+<tr>
+<td>Grant ERT access at AP-01 and AP-02</td>
+<td>AHS Controller</td>
+<td>Pit Supervisor</td>
+<td>ERT (route)</td>
+<td>All controllers</td>
+</tr>
+<tr>
+<td>Clear the exclusion zone</td>
+<td>AHS Controller in the AMS</td>
+<td>Pit Supervisor</td>
+<td>ERT (scene safe)</td>
+<td>Field Technician, Maintenance Planner</td>
+</tr>
+</tbody>
+</table>
+<p>Whom to call when the layers disagree, using the cancellation of M-20481 (section 6.4) as the example <code>[H]</code>:</p>
+<table>
+<thead>
+<tr>
+<th>What the controller sees</th>
+<th>Likely boundary</th>
+<th>Constituent to suspect</th>
+<th>Owner to contact <code>[A]</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>FMS shows <em>cancelled</em>, AMS shows M-20481 <em>active</em>, no cancel acknowledgement</td>
+<td>FMS → AMS</td>
+<td>FMS–AMS interface</td>
+<td>Site production-systems team first; AHS engineering if the FMS log shows the cancel sent</td>
+</tr>
+<tr>
+<td>AMS shows <em>cancelling</em>, alarm <em>cancel not confirmed by DT17</em></td>
+<td>AMS → ADS</td>
+<td>Network or DT17</td>
+<td>Communications team (site status of CT1–CT3); AHS engineering if the link is up</td>
+</tr>
+<tr>
+<td>AMS shows DT17 <em>holding at C01-Q</em>, FMS still shows <em>cancelling</em> after T+102 s</td>
+<td>AMS → FMS</td>
+<td>AMS–FMS status reporting</td>
+<td>AHS engineering and production-systems team together</td>
+</tr>
+<tr>
+<td>DT17 stopped with a fault reason not on the cancel path</td>
+<td>Vehicle</td>
+<td>VCS or onboard system</td>
+<td>Field Technician, then site maintenance</td>
+</tr>
+</tbody>
+</table>
+<p>The rule behind the table: <em>call the owner of the boundary where the layers first disagree, and give them the IDs and
+times on both sides.</em> A controller who reports &quot;the cancel didn't work&quot; to everyone wastes the first hour of
+diagnosis.</p>
+<h3 id="s-8-3">8.3 Procedure excerpt — coordinating one response to a cross-system event (fire on DT17)</h3>
+<ol>
+<li><strong>AHS Controller (T+15 s):</strong> acknowledge the incident, not the individual alarms. Confirm in the incident view:
+fire on DT17, DT17 stopped, exclusion zone created, R05 traffic held.</li>
+<li><strong>AHS Controller (T+15 s):</strong> call the ERT and inform the Pit Supervisor by radio: &quot;Fire on DT17 on R05,
+mid-ramp, truck stopped, zone established, R05 held.&quot;</li>
+<li><strong>AHS Controller (by T+60 s):</strong> check that every truck on R05 and within the zone is held and that the FMS has
+withdrawn DT17. If the FMS re-plan has not appeared, note it for the production-systems team; do not re-plan by
+hand in the FMS.</li>
+<li><strong>Pit Supervisor (by T+120 s):</strong> decide whether to hold the pit or continue via R24, consulting the controller on
+the ERT's route. If continuing, the controller applies the decision in the AMS and confirms the first rerouted
+trucks on R24.</li>
+<li><strong>AHS Controller (T+300 s):</strong> when the ERT requests entry, grant it under positive communication. Hold rerouted
+trucks at V and X while the ERT crosses, and tell the ERT where autonomous traffic is running.</li>
+<li><strong>AHS Controller:</strong> keep one incident record: times, sources, decisions and who took them. Do not close individual
+alarms in different systems before the incident is closed.</li>
+<li><strong>Pit Supervisor:</strong> when the ERT reports the scene safe, authorise clearing the zone (ch-16-06).</li>
+</ol>
+<h3 id="s-8-4">8.4 KPIs and delay codes affected</h3>
+<p>The handbook codes the event as follows <code>[H]</code>; categories follow the GMG Time Usage Model (SRC-PUB-GMG-TUM-2020) as
+in ch-01-05:</p>
+<ul>
+<li><strong>DT17:</strong> DLY-DN-01 (breakdown, Downtime) from T+0 s until it is returned to service.</li>
+<li><strong>Trucks held by the exclusion zone on and near R05:</strong> DLY-OD-14 (held by an incident exclusion zone), an Operating
+Delay, until rerouted or released <code>[H]</code>.</li>
+<li><strong>EX02 while it has no trucks:</strong> DLY-NP-03 (loading unit waiting for trucks).</li>
+<li><strong>Rerouted trucks:</strong> no delay code; the effect appears as longer cycles. On EX02 the cycle grows from 1564.1 s to
+1800.1 s (+236.0 s) and each truck's output falls from 506.4 to 440.0 t/h (section 12, example 2).</li>
+</ul>
+<p>Two cross-system KPI effects deserve a line in the shift report: the change in traffic through V (from no haul
+traffic to 141.5 passes per hour) and the waiting at Intersection X, which no single delay code captures. The second is
+also how the dispatch-rule effect of section 4.5 first becomes visible: as intersection waiting in the AMS records
+that rises after an FMS change.</p>
+<h3 id="s-8-5">8.5 Training and competency implications</h3>
+<p>Controllers need <strong>SoS literacy</strong>: knowing which constituent each item on their screens comes from, who owns it, and
+how one event appears in several places. Pit Supervisors need to recognise that a change in one system can change
+behaviour elsewhere, and that they are consulted in every operational impact review. Field crews and the ERT need to
+know that the truck's own reaction does not depend on CR1, and that their access does.</p>
+<p><em>Any</em> constituent change can change what people see or must do: a VCS firmware update may change fault codes on the
+HMI, an ADS release where trucks stop after an alarm, an FMS rule where queues form, a new map the routes. Procedures,
+HMI training material and shift-report templates are therefore reviewed for every change (REQ-02-01-007), even when
+the supplier calls it &quot;no functional change&quot;. The review may find nothing; it must still be done and recorded.</p>
+<h2 id="s-9">9. Requirements and acceptance criteria</h2>
+<p>REQ-02-01-001 [H]
+The AHS integration authority shall keep a register of every constituent system of the AHS stating, for each, its
+supplier and site owner, its deployed instances and their locations, its current version on each instance, its
+release process and its interfaces.
+Rationale: managerial independence means that no single organisation sees the whole SoS (sections 4.1, 4.7).
+Verification: inspection; audit of the register against the versions actually deployed.</p>
+<p>REQ-02-01-002 [H]
+The context boundary of the AHS shall be documented with every external interface, each classified by class (plant,
+spatial data, enterprise, manned equipment and people, infrastructure), direction, criticality and timing class, and
+each with a named owner on both sides and an interface control document.
+Rationale: dependencies on external systems must be known before an incident reveals them (sections 4.3, 4.4).
+Verification: inspection.</p>
+<p>REQ-02-01-003 [H]
+No release of a constituent system shall be deployed unless the resulting combination of versions, including any
+mixed combination during a staged rollout, is listed in an approved compatibility matrix supported by an integration
+test in which at least SCN-FIRE-DT17, SCN-MISSION-CANCEL-M20481 and every registered scenario declared affected by
+the change were run with that combination.
+Rationale: independent evolution creates untested combinations; behavioural incompatibility is not visible in message
+definitions (section 4.6).
+Verification: inspection of release records and test reports; test.</p>
+<p>REQ-02-01-004 [H]
+When a truck connects, and before it issues a mission to the truck, the AMS shall check that the truck's ADS software
+version and map version form a combination listed in the approved compatibility matrix, and shall not issue a mission
+to a truck whose combination is not listed or cannot be determined.
+Rationale: a truck that missed an update or was restored from an old image must not run on assumptions the AMS does
+not share; fail closed (section 4.6).
+Verification: test (approved, unapproved and unreported versions).</p>
+<p>REQ-02-01-005 [H]
+The control-room display shall group the alarms and state changes from different constituents that relate to one
+event — by asset, place and time window — into one incident, and shall show for each item its source constituent and
+the time at which the source observed it.
+Rationale: one response to one event (sections 7.1, 8.1).
+Verification: demonstration with the SCN-FIRE-DT17 timeline; inspection.</p>
+<p>REQ-02-01-006 [H]
+Each constituent shall define, in its interface documentation, its behaviour when each interface partner is
+unavailable or its data is stale; for movement and permissions that behaviour shall be fail-closed. Safety-related
+events raised on a vehicle while its link is down shall be stored and forwarded with their original time when the link
+returns.
+Rationale: degraded variants of section 6.3.
+Verification: inspection; fault-injection test (link loss during SCN-FIRE-DT17).</p>
+<p>REQ-02-01-007 [H]
+A change to any constituent system, including a configuration or rule change such as a new FMS dispatch rule, shall be
+preceded by an operational impact review that identifies the affected procedures, HMI displays, training material and
+KPIs, approved by mine operations and by the integration authority before deployment.
+Rationale: changes in one constituent change behaviour elsewhere (sections 4.5, 8.5).
+Verification: inspection of change records.</p>
+<p>REQ-02-01-008 [H]
+Every registered scenario that involves three or more constituent systems shall have a named owner in the integration
+authority, who maintains its expected end-to-end behaviour and has it rerun after every change declared to affect it.
+Rationale: emergent behaviour that nobody owns is discovered during incidents (section 4.5).
+Verification: inspection of the scenario ownership list and regression records.</p>
+<h2 id="s-10">10. Verification and validation</h2>
+<p><strong>Verification at SoS level</strong> asks whether the combination of constituents, as deployed, has the properties required
+of the whole. Four methods apply:</p>
+<ul>
+<li><strong>Inspection</strong> of the constituent register, the boundary record and the compatibility matrix against what is
+installed (REQ-02-01-001 to -003).</li>
+<li><strong>Cross-system scenario tests.</strong> The registered scenarios with their T+ timelines are ready-made SoS test cases. The
+SCN-FIRE-DT17 timeline of section 6.2, run against the integrated FMS, AMS and trucks (real or simulated), must
+produce the same events in the same order, with the information of section 7.3 arriving in time. The scenario is
+rerun for every change its owner declares relevant (REQ-02-01-008).</li>
+<li><strong>Fault injection across boundaries.</strong> Remove one constituent at a time during the scenario — the link, the FMS, the
+AMS (section 6.3) — and check that safety reactions survive and coordination degrades as specified.</li>
+<li><strong>Compatibility tests for mixed versions.</strong> During a staged rollout both ADS versions run the same scenarios on the
+same roads; differences in behaviour are reviewed before the rollout continues.</li>
+</ul>
+<p><strong>Validation</strong> asks whether the SoS serves the people who operate it. Table-top walkthroughs of SCN-FIRE-DT17 with
+controllers, the Pit Supervisor and the ERT check that the incident view, the procedure of section 8.3 and the owner
+table of section 8.2 are usable under time pressure. They also find emergent conflicts that no test case anticipated,
+such as the ERT route through rerouted traffic. Validation is repeated after significant changes (Volume 18).</p>
+<p>This chapter has no executable model. Cycle times, intersection passes and route lengths are computed with <code>ahs_sim</code>
+from <code>mine.yaml</code> (<code>figures/make_figures.py --numbers</code>); message behaviour across constituents is modelled from
+ch-02-07 onwards.</p>
+<h2 id="s-11">11. Common mistakes</h2>
+<h3 id="s-11-1">11.1 Design mistakes</h3>
+<p>Most design mistakes at SoS level are the failure modes of section 7.2 built in by omission. Three more deserve naming:</p>
+<ul>
+<li><strong>Designing the chain and forgetting the system of systems.</strong> Each constituent meets its requirements; the emergent
+behaviour is left to chance.</li>
+<li><strong>Defining compatibility as message compatibility.</strong> A new stop-location logic passes every schema check.</li>
+<li><strong>Drawing the boundary by habit.</strong> The network or the plant is &quot;someone else's problem&quot; until an incident shows that
+the AHS depends on it.</li>
+</ul>
+<h3 id="s-11-2">11.2 Operational mistakes</h3>
+<ul>
+<li><strong>Treating four alarms as four events.</strong> Acknowledging and closing them separately loses the order and the cause.</li>
+<li><strong>Calling every owner at once.</strong> Find the boundary where the layers first disagree and call its owner with IDs and
+times.</li>
+<li><strong>Re-planning by hand in the FMS during an AMS hold.</strong> The FMS then plans on roads the AMS has not opened.</li>
+<li><strong>Accepting &quot;no functional change&quot; as a reason to skip the procedure review.</strong> The review may be short; skipping it
+is how a changed alarm text or stop behaviour surprises the night shift.</li>
+<li><strong>Rerouting the pit without asking where the ERT will drive.</strong> The two decisions share V, R12 and X.</li>
+</ul>
+<h2 id="s-12">12. Worked examples</h2>
+<p>All values <code>[A]</code> unless stated; haul-cycle numbers computed with <code>ahs_sim</code> 0.5.0 on mine version 0.3.0 (steady state,
+as in ch-01-01) by <code>figures/make_figures.py --numbers</code>.</p>
+<p><strong>Example 1 — the vehicle reacts first.</strong> DT17 climbs R05 loaded at 11.4 km/h (3.18 m/s). Between the alarm (T+0 s)
+and the start of the controlled stop (T+5 s) it covers 15.9 m. Had the stop waited for the controller's
+acknowledgement at T+15 s, DT17 would have covered 47.7 m. The SoS lesson: the constituent closest to the hazard acts
+without waiting for any other.</p>
+<p><strong>Example 2 — what the reroute costs and where the traffic goes.</strong> With R05 held, the shortest routes from all four
+shovels use R24. Cycles change as follows:</p>
+<table>
+<thead>
+<tr>
+<th>Loading unit</th>
+<th>Cycle via R05 (s)</th>
+<th>Cycle via R24 (s)</th>
+<th>t/h per truck via R05</th>
+<th>t/h per truck via R24</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>EX01</td>
+<td>1572.4</td>
+<td>1808.4</td>
+<td>503.7</td>
+<td>437.9</td>
+</tr>
+<tr>
+<td>EX02</td>
+<td>1564.1</td>
+<td>1800.1</td>
+<td>506.4</td>
+<td>440.0</td>
+</tr>
+<tr>
+<td>EX03</td>
+<td>1914.7</td>
+<td>1875.3</td>
+<td>413.6</td>
+<td>422.3</td>
+</tr>
+<tr>
+<td>EX04</td>
+<td>1883.4</td>
+<td>1844.0</td>
+<td>420.5</td>
+<td>429.5</td>
+</tr>
+</tbody>
+</table>
+<p>The ore circuits lose (EX02 +236.0 s per cycle); the waste circuits gain slightly because R24 is shorter for the
+bench. With the baseline allocation less DT17 (36 trucks), Intersection V goes from 0 to 141.5 passes per hour (one
+every 25.4 s) and X from 155.5 to 141.5. The ERT route G01 → V → X → P1 (R13, R12, R01) is 2016.4 m long and shares V
+and R12 with that traffic.</p>
+<p><strong>Example 3 — a platoon at Intersection X.</strong> Passes per hour 155.5; crossing reservation 12 s <code>[A]</code>; utilisation
+155.5 × 12 / 3600 = 0.518; mean headway 23.2 s. A group of four trucks arriving together waits 0, 12, 24 and 36 s:
+72 s in total, 18 s on average. With 10 such groups per hour <code>[A]</code>, waiting is 720 s per hour, 0.20 truck-hours per
+hour, 2.4 truck-hours per 12 h shift — about the output of one ore truck for 2.4 hours, with no delay code to show it.</p>
+<p><strong>Example 4 — counting version combinations.</strong> FMS 2, AMS 2, ADS 3, VCS 2, map 2 versions <code>[A]</code>: 2 × 2 × 3 × 2 × 2
+= 48 combinations. Interface pairs along the chain: FMS–AMS 4, AMS–ADS 6, ADS–VCS 6, AMS–map 4, ADS–map 6: 26 pairings.
+An ADS rollout of 40 trucks at 4 per day takes 10 days, during which the mixed combination is the one in service.</p>
+<p><strong>Example 5 — how often something changes.</strong> From the table behind FIG-02-01-02: 13 internal software or firmware
+releases a year, one every 4.0 weeks on average, plus 52 map releases. Operational impact reviews are therefore routine
+work, and their format must be short and standard.</p>
+<h2 id="s-13">13. Hands-on labs</h2>
+<p>This chapter has no lab. It frames the architecture of the whole site; its numbers reuse the haul-cycle model of
+LAB-01-01-01 through <code>ahs_sim</code> and are printed by <code>figures/make_figures.py --numbers</code>. Executable models of
+cross-system behaviour — message exchange with idempotency and staleness, the mission state machine, restart and
+reconciliation — begin in ch-02-07 (LAB-02-07-01, LAB-02-07-02) and ch-02-08 (LAB-02-08-01), where they can be tested
+properly.</p>
+<h2 id="s-14">14. Discussion questions and assignments</h2>
+<h3 id="s-14-1">14.1 Engineering assignments</h3>
+<ol>
+<li>List the constituents that act in SCN-RSTOP-AANORTH (remote stop of AA-North) and, for each, the information it
+needs and from whom. Which of them is the scenario designed <em>not</em> to depend on?</li>
+<li>Apply the boundary test of section 4.3 to three systems not discussed in the chapter: a site weather station, the
+fuel-management system at FB1 and a dust-monitoring network. Classify each resulting external interface as in
+section 4.4.</li>
+<li>An ADS release changes the stop-location logic after a fire alarm so that trucks on ramps stop as close as possible
+to the windrow. List every other constituent, document and procedure whose behaviour or content must be checked,
+and write the compatibility-matrix entry for the 10-day mixed rollout.</li>
+<li>Propose a measurement that would detect the dispatch-rule effect of section 4.5 automatically, and name the
+constituent that should compute it.</li>
+</ol>
+<h3 id="s-14-2">14.2 Operations assignments</h3>
+<ol>
+<li>Write the radio message to the Pit Supervisor at T+15 s and the decision request at T+100 s in the fire scenario,
+including the effect of continuing via R24.</li>
+<li>For each row of the owner table in section 8.2, write the message you would send to the owner: what you saw, in
+which system, with which IDs and times.</li>
+<li>The supplier announces a VCS firmware update &quot;with no functional change&quot;. Draft the operational impact review: which
+screens, procedures and reports you would check, and whom you would ask.</li>
+<li>The Pit Supervisor says: &quot;Nobody changed the AMS, so the queue at X can't be an AMS problem.&quot; Explain in no more than
+five sentences why the queue can still appear at X and what you would look at first.</li>
+</ol>
+<h2 id="s-15">15. Key takeaways</h2>
+<ul>
+<li>An autonomous mine is a system of systems: its constituents operate, are managed and evolve independently, and the
+behaviour that matters most is emergent.</li>
+<li>The constituents at the reference mine include FMS, AMS, 40 ADS and VCS instances, onboard safety-related systems,
+the independent safety function, manned-vehicle devices, the map — and the people who run them.</li>
+<li>Draw the context boundary deliberately and classify every external interface; every class has safety-related or
+production-critical interfaces.</li>
+<li>Emergent behaviour must be owned. SCN-FIRE-DT17 crosses seven element groups; the reroute it triggers meets the ERT
+at V and on R12.</li>
+<li>Independent releases create combinations nobody tested. Check compatibility at integration test, deployment gate,
+truck connection and operational impact review.</li>
+<li>Safety reactions depend on nothing central; coordination depends on everything. Keep it that way.</li>
+<li>When layers disagree, call the owner of the boundary where they first disagree.</li>
+</ul>
+<h2 id="s-16">16. Glossary terms introduced</h2>
+<p><code>system-of-systems</code>, <code>constituent-system</code>, <code>emergent-behaviour</code>, <code>context-boundary</code>, <code>system-owner</code>,
+<code>integration-authority</code>, <code>compatibility-matrix</code>, <code>interface-control-document</code>, <code>configuration-management</code>,
+<code>change-management</code>, <code>interoperability</code>, <code>exclusion-zone</code>, <code>independent-safety-function</code>,
+<code>onboard-safety-related-system</code>, <code>manned-vehicle-device</code>, <code>map-version</code></p>
+<nav aria-label="Introductory chapters"><p><a href="../handbook.html">Handbook contents</a> · <a href="ch-02-02.en.html">Next chapter</a></p></nav>
+</main>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.1/dist/mermaid.min.js"></script>
+<script>if(window.ahsRenderMermaid){window.ahsRenderMermaid();}</script>
+</body>
+</html>
