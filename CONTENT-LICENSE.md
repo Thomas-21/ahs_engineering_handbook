@@ -1,15 +1,9 @@
-# Educational content license
+# Copyright and permissions
 
-Except where a different license or credit is stated, the project's educational
-text, handbook contents, simulator screenshot, and simulator demo recording are
-licensed under [Creative Commons Attribution 4.0 International (CC BY 4.0)](https://creativecommons.org/licenses/by/4.0/legalcode).
+All rights reserved for the original handbook text, illustrations, screenshots, and simulator recordings made available under this notice, to the extent the project holds the relevant rights.
 
-You may share and adapt these materials, including for commercial use, subject
-to the license terms. Credit **AHS Engineering & Operations Handbook**, link to
-the source and the license, and indicate any changes.
+You may read the handbook and watch the recordings on this site. Reproducing, reposting, redistributing, translating, editing, or otherwise adapting these materials requires prior written permission from the rights holder, except as permitted by applicable law or an existing licence. You may share a link to the original page.
 
-The website implementation, including the HTML markup, CSS, and JavaScript, is
-licensed under the [MIT License](LICENSE). The educational text embedded in the
-HTML is covered by CC BY 4.0.
+Third-party materials remain subject to their respective licences and credits.
 
-Previously granted licenses continue to apply to copies received under them.
+The [MIT License](LICENSE) applies to the website implementation. This copyright notice covers the educational and media content.
